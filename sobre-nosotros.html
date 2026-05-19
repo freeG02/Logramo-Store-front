@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Sobre Logramo — Quiénes somos y por qué creamos este lugar para dueños de perros." />
-  <title>Sobre Nosotros — Logramo</title>
+  <title>Nosotros — Logramo</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='62' r='28' fill='%23C55932'/></svg>" />
 </head>
@@ -17,7 +17,7 @@
   <div class="container">
     <div class="about-hero__inner">
       <div>
-        <span class="eyebrow" data-reveal>Sobre nosotros</span>
+        <span class="eyebrow" data-reveal>Nosotros</span>
         <h1 class="about-hero__title" data-reveal>
           Dueños<br><em>obsesionados</em><br>con hacerlo bien.
         </h1>
@@ -83,7 +83,7 @@
       <h2>Lo que nos mueve</h2>
       <p class="lead" style="max-width:520px;margin:16px auto 0">No vendemos cursos caros ni teoría académica. Vendemos lo que de verdad funciona — para dueños reales.</p>
     </div>
-    <div class="values-grid" data-stagger>
+    <div class="values-grid" data-stagger data-h-drag>
       <div class="value-card value-card--1">
         <div class="value-card__num">01</div>
         <h3 class="value-card__title">Información honesta</h3>
@@ -153,8 +153,8 @@
       <svg width="72" height="72" style="color:var(--c-golden)"><use href="#i-paw"/></svg>
     </div>
     <blockquote class="mission__quote" data-reveal>
-      No vendemos<br>"el secreto" del adiestramiento.<br>
-      Compartimos lo que <em>de verdad</em><br>nos hubiera ayudado.
+      No vendemos<br><em>secretos.</em><br>
+      Compartimos lo que<br>nos hubiera ayudado.
     </blockquote>
     <p class="mission__text" data-reveal>Nuestra misión es simple: hacer que más dueños tengan una buena relación con su perro. Sin estrés, sin tecnicismos, sin gastar fortunas. Solo información honesta y útil, con un toque de humor.</p>
     <div data-reveal>
@@ -171,7 +171,7 @@
       <h2 style="margin-top:8px">Detrás de cada guía<br>hay un proceso real</h2>
       <p class="lead" style="margin-top:16px">No copiamos de internet ni resumimos libros académicos. Cada guía pasa por estos pasos.</p>
     </div>
-    <div class="for-grid" data-stagger>
+    <div class="for-grid" data-stagger data-h-drag>
       <div class="for-card">
         <div class="for-card__icon"><svg class="icon icon--lg"><use href="#i-search"/></svg></div>
         <h3 class="for-card__title">01 / Investigamos</h3>
@@ -211,6 +211,9 @@
 <div id="partial-popups"></div>
 
 <script src="partials.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>
+<script src="animations.js"></script>
 </body>
 </html>

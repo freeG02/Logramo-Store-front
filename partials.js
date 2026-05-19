@@ -70,7 +70,7 @@ const NAV_HTML = `
       <li><a href="index.html" data-link="home">Inicio</a></li>
       <li><a href="biblioteca.html" data-link="biblioteca">Biblioteca</a></li>
       <li><a href="blog.html" data-link="blog">Blog</a></li>
-      <li><a href="sobre-nosotros.html" data-link="sobre">Sobre Nosotros</a></li>
+      <li><a href="sobre-nosotros.html" data-link="sobre">Nosotros</a></li>
     </ul>
     <div class="nav__actions">
       <a href="cuenta.html" class="nav__btn" aria-label="Mi cuenta" title="Mi cuenta" data-link="cuenta">
@@ -94,11 +94,11 @@ const NAV_HTML = `
     <button class="mobile-nav__close" id="menuClose" aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button>
   </div>
   <ul class="mobile-nav__links">
-    <li><a href="index.html">Inicio <svg class="icon"><use href="#i-arrow-right"/></svg></a></li>
-    <li><a href="biblioteca.html">Biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a></li>
-    <li><a href="blog.html">Blog <svg class="icon"><use href="#i-arrow-right"/></svg></a></li>
-    <li><a href="sobre-nosotros.html">Sobre Nosotros <svg class="icon"><use href="#i-arrow-right"/></svg></a></li>
-    <li><a href="cuenta.html">Mi cuenta <svg class="icon"><use href="#i-arrow-right"/></svg></a></li>
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="biblioteca.html">Biblioteca</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="sobre-nosotros.html">Nosotros</a></li>
+    <li><a href="cuenta.html">Mi cuenta</a></li>
   </ul>
 </div>`;
 
@@ -123,7 +123,7 @@ const FOOTER_HTML = `
           <li><a href="index.html">Inicio</a></li>
           <li><a href="biblioteca.html">Biblioteca</a></li>
           <li><a href="blog.html">Blog</a></li>
-          <li><a href="sobre-nosotros.html">Sobre nosotros</a></li>
+          <li><a href="sobre-nosotros.html">Nosotros</a></li>
         </ul>
       </div>
       <div class="footer__col">

@@ -72,7 +72,7 @@
       <h2 data-reveal><span class="eyebrow">Empieza aquí</span><br>Empieza<br>donde estás.</h2>
       <p class="lead" data-reveal>Elige tu camino y te llevamos paso a paso. No hace falta saber de perros — solo saber dónde te encuentras ahora.</p>
     </div>
-    <div class="start-here__grid" data-stagger>
+    <div class="start-here__grid" data-stagger data-stack-mobile>
       <a href="biblioteca.html" class="path-card path-card--1">
         <div class="path-card__num">01 / CAMINO</div>
         <div class="path-card__illo"><svg width="56" height="56"><use href="#i-paw"/></svg></div>
@@ -165,8 +165,8 @@
       <h2 data-reveal><span class="eyebrow">Del blog</span><br>Consejos<br><em style="color:var(--c-terracotta);font-style:normal">que sirven.</em></h2>
       <p class="lead" data-reveal>Sin tecnicismos, sin juicios. Solo lo que de verdad necesitas saber sobre tu perro.</p>
     </div>
-    <div class="blog-grid" data-stagger>
-      <a href="blog-post.html" class="article-card">
+    <div class="blog-grid" data-stagger data-stack-mobile>
+      <a href="blog-post.html" class="article-card article-card--sky">
         <div class="article-card__img-wrap">
           <span class="tag tag--solid article-card__tag">Adiestramiento</span>
           <img class="article-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -180,7 +180,7 @@
           </div>
         </div>
       </a>
-      <a href="blog-post.html" class="article-card">
+      <a href="blog-post.html" class="article-card article-card--peach">
         <div class="article-card__img-wrap">
           <span class="tag tag--terra article-card__tag">Cachorros</span>
           <img class="article-card__img" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -194,7 +194,7 @@
           </div>
         </div>
       </a>
-      <a href="blog-post.html" class="article-card">
+      <a href="blog-post.html" class="article-card article-card--golden">
         <div class="article-card__img-wrap">
           <span class="tag tag--forest article-card__tag">Conducta</span>
           <img class="article-card__img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -224,7 +224,7 @@
         <h2 style="margin-top:8px">Sin actores. Sin filtros.<br>Solo perros.</h2>
         <p class="lead" style="max-width:520px;margin:20px auto 0;color:var(--c-ink);opacity:.7">Dueños como tú compartiendo sus experiencias, sus logros y sus fails épicos.</p>
       </div>
-      <div class="video-grid" data-stagger>
+      <div class="video-grid" data-stagger data-video-tilt>
         <div class="video-card" onclick="openVideo(this)">
           <img class="video-card__thumb" src="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=600&q=80&fit=crop" alt="" loading="lazy">
           <div class="video-card__play"><svg class="icon icon--md"><use href="#i-play"/></svg></div>
@@ -265,7 +265,7 @@
       <h2 style="margin-bottom:16px">Gente real.<br>Resultados reales.</h2>
       <p class="reviews__avg"><strong>4.9</strong> de media · +340 valoraciones</p>
     </div>
-    <div class="reviews-grid" data-stagger>
+    <div class="reviews-grid" data-stagger data-h-drag>
       <div class="review-card review-card--terra">
         <div class="review-card__stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
         <p class="review-card__quote">"Llevaba semanas sin dormir porque el cachorro lloraba toda la noche. Seguí los consejos y en 4 días, silencio. Un silencio precioso."</p>
@@ -301,12 +301,11 @@
       <svg width="72" height="72" style="color:var(--c-golden)"><use href="#i-paw"/></svg>
     </div>
     <blockquote class="mission__quote" data-reveal>
-      Cada perro merece<br>un dueño <em>informado.</em><br>
-      Cada dueño, <em>apoyo real.</em>
+      Cada perro merece<br>un dueño <em>informado.</em>
     </blockquote>
     <p class="mission__text" data-reveal>En Logramo creemos que la relación entre un perro y su persona es una de las más bonitas que existen. Por eso creamos recursos reales, honestos y con humor.</p>
     <div data-reveal>
-      <a href="sobre-nosotros.html" class="btn btn--golden btn--lg">Conoce nuestra historia <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+      <a href="sobre-nosotros.html" class="btn btn--golden btn--lg">Nuestra historia <svg class="icon"><use href="#i-arrow-right"/></svg></a>
     </div>
   </div>
 </section>
@@ -331,6 +330,9 @@
 <div id="partial-popups"></div>
 
 <script src="partials.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>
+<script src="animations.js"></script>
 </body>
 </html>

@@ -470,18 +470,28 @@ h6 { font-size: .9rem; }
   display: flex; align-items: center; justify-content: center;
   box-shadow: var(--shadow-xs);
 }
-.mobile-nav__links { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.mobile-nav__head .nav__logo { color: var(--c-golden); }
+.mobile-nav__head .nav__logo svg,
+.mobile-nav__head .nav__logo svg path { fill: var(--c-golden) !important; color: var(--c-golden); }
+.mobile-nav__links {
+  display: flex; flex-direction: column; gap: 6px; flex: 1;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.mobile-nav__links li { width: 100%; text-align: center; }
 .mobile-nav__links a {
-  display: flex; align-items: center; justify-content: space-between;
-  font-family: var(--font-body);
-  font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 900;
-  text-transform: uppercase; letter-spacing: -.01em;
+  display: block;
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 10vw, 3.6rem); font-weight: 900;
+  text-transform: uppercase; letter-spacing: -.015em;
   color: var(--c-cream);
-  padding: 16px 0;
+  padding: 18px 0;
   border-bottom: var(--bw-1) solid rgba(254,250,232,.12);
   transition: color var(--transition), transform var(--transition);
 }
-.mobile-nav__links a:hover { color: var(--c-golden); transform: translateX(8px); }
+.mobile-nav__links li:last-child a { border-bottom: none; }
+.mobile-nav__links a:hover { color: var(--c-golden); transform: scale(1.04); }
 
 /* ============================================================
    HERO
@@ -598,7 +608,7 @@ h6 { font-size: .9rem; }
 .marquee-track {
   display: flex; align-items: center;
   white-space: nowrap;
-  animation: marquee 14s linear infinite;
+  animation: marquee 8s linear infinite;
 }
 .marquee-track > span {
   font-family: var(--font-body); font-weight: 900;
@@ -891,7 +901,7 @@ h6 { font-size: .9rem; }
 /* ============================================================
    BLOG / ARTICLE CARDS
    ============================================================ */
-.blog-preview { padding: var(--section-py) 0; }
+.blog-preview { padding: var(--section-py) 0; background: var(--c-cream); }
 .blog-preview__head {
   display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px;
   align-items: end; margin-bottom: 56px;
@@ -908,6 +918,18 @@ h6 { font-size: .9rem; }
   position: relative;
 }
 .article-card:hover { transform: translate(-4px,-4px); box-shadow: var(--shadow-md); }
+
+/* Color variants — shuffled brand palette */
+.article-card--sky    { background: var(--c-sky); }
+.article-card--peach  { background: var(--c-peach); }
+.article-card--golden { background: var(--c-golden); }
+.article-card--sage   { background: var(--c-sage); }
+.article-card--rose   { background: var(--c-rose); }
+.article-card--sky .article-card__excerpt,
+.article-card--peach .article-card__excerpt,
+.article-card--golden .article-card__excerpt,
+.article-card--sage .article-card__excerpt,
+.article-card--rose .article-card__excerpt { color: rgba(30,40,32,.78); }
 .article-card__img-wrap { position: relative; overflow: hidden; aspect-ratio: 4/3; border-bottom: var(--bw-1) solid var(--c-ink); }
 .article-card__img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease-out); }
 .article-card:hover .article-card__img { transform: scale(1.06); }
@@ -968,7 +990,7 @@ h6 { font-size: .9rem; }
 .video-card__overlay {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 22px;
+  padding: 22px 22px 12px;
   background: linear-gradient(to top, rgba(30,40,32,.9), transparent 50%);
 }
 .video-card__play {
@@ -1623,7 +1645,9 @@ h6 { font-size: .9rem; }
   position: relative;
   overflow: hidden;
 }
-.mission__inner { max-width: 880px; margin: 0 auto; position: relative; z-index: 2; }
+.mission__inner { max-width: 880px; margin: 0 auto; position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.mission__inner > * { width: 100%; }
+.mission__inner > [data-reveal]:last-child { display: flex; justify-content: center; width: auto; }
 .mission__quote {
   font-family: var(--font-body);
   font-weight: 900;
@@ -2202,10 +2226,98 @@ h6 { font-size: .9rem; }
   .hero__sticker--1, .hero__sticker--2, .hero__sticker--3 { font-size: .7rem; padding: 8px 14px; }
   .hero__ctas { flex-direction: column; align-items: stretch; }
   .hero__ctas .btn { justify-content: center; width: 100%; }
-  .video-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr; }
-  .stat { border-right: none; border-bottom: var(--bw-1) solid rgba(254,250,232,.15); }
-  .stat:last-child { border-bottom: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat { border-right: var(--bw-1) solid rgba(254,250,232,.15); border-bottom: var(--bw-1) solid rgba(254,250,232,.15); }
+  .stat:nth-child(2n) { border-right: none; }
+  .stat:nth-last-child(-n+2) { border-bottom: none; }
+}
+
+/* Video grid → horizontal carousel on mobile (next card peeks for scroll affordance) */
+@media (max-width: 768px) {
+  .videos__inner { position: relative; }
+  .video-grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto;
+    overflow-y: visible;
+    gap: 14px;
+    padding: 8px 20px 28px;
+    margin: 0 -20px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+  .video-grid::-webkit-scrollbar { display: none; }
+  .video-card {
+    flex: 0 0 74vw;
+    scroll-snap-align: start;
+    aspect-ratio: 4 / 5;
+  }
+  .video-card:last-child { scroll-snap-align: end; }
+}
+
+/* ============ HORIZONTAL SCROLL AFFORDANCES ============
+   - Right edge gradient fade
+   - "Swipe →" hint pill that pulses
+   - Dot indicators that highlight current card
+*/
+.h-scroll-wrap { position: relative; }
+
+.h-scroll-hint {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--c-ink);
+  color: var(--c-cream);
+  border: var(--bw-1) solid var(--c-ink);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-xs);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  pointer-events: none;
+  transition: opacity .35s var(--ease), transform .35s var(--ease-back);
+  animation: hScrollNudge 1.8s ease-in-out infinite;
+}
+.h-scroll-hint svg { width: 14px; height: 14px; }
+.h-scroll-wrap.is-scrolled .h-scroll-hint { opacity: 0; transform: translateX(20px); }
+@keyframes hScrollNudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(6px); }
+}
+
+.h-scroll-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-bottom: 4px;
+}
+.h-scroll-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(30,40,32,.2);
+  border: var(--bw-1) solid var(--c-ink);
+  transition: width .25s var(--ease), background .25s var(--ease);
+}
+.h-scroll-dot.is-active {
+  background: var(--c-ink);
+  width: 24px;
+  border-radius: var(--radius-full);
+}
+
+/* Hide affordances on desktop (only show under tablet/mobile) */
+@media (min-width: 900px) {
+  .h-scroll-hint,
+  .h-scroll-dots { display: none; }
 }
 
 /* ============================================================
@@ -2371,6 +2483,105 @@ h1, h2, h3, h4,
 .review-card--terra   .review-card__avatar { background: var(--c-cream); color: var(--c-ink); }
 .review-card__stars { color: var(--c-golden) !important; }
 .review-card__stars svg { width: 20px; height: 20px; }
+
+/* ============================================================
+   ANIMATION SUPPORT — sticky-stack + horizontal drag
+   ============================================================ */
+
+/* Horizontal drag track (always, both mobile & desktop for marked sections) */
+[data-h-drag] {
+  display: flex !important;
+  grid-template-columns: none !important;
+  overflow-x: auto;
+  overflow-y: visible;
+  gap: 24px;
+  padding: 32px 28px 56px;
+  margin: 0 -28px;
+  scroll-snap-type: x mandatory;
+  cursor: grab;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  perspective: 1400px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+[data-h-drag]::-webkit-scrollbar { display: none; }
+[data-h-drag] > * {
+  flex: 0 0 auto;
+  width: min(86vw, 400px);
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+  pointer-events: auto;
+}
+[data-h-drag].is-dragging { cursor: grabbing; }
+[data-h-drag].is-dragging > * { pointer-events: none; }
+[data-h-drag] img { pointer-events: none; -webkit-user-drag: none; }
+
+/* Force-visible inside h-drag (don't let data-stagger hide cards horizontally) */
+[data-h-drag] > * {
+  opacity: 1 !important;
+  transition: box-shadow .25s var(--ease-out), background .2s var(--ease) !important;
+}
+
+/* Mobile sticky stack */
+@media (max-width: 768px) {
+  [data-stack-mobile] {
+    display: block !important;
+    grid-template-columns: none !important;
+    padding-top: 8px;
+    padding-bottom: 32px;
+  }
+  [data-stack-mobile] > * {
+    position: sticky;
+    top: 90px;
+    margin-bottom: 22vh;
+    transform-origin: center top;
+    will-change: transform, opacity, filter;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+  [data-stack-mobile] > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Horizontal track on mobile = full bleed */
+@media (max-width: 768px) {
+  [data-h-drag] {
+    padding: 24px 20px 40px;
+    margin: 0 -20px;
+  }
+  [data-h-drag] > * { width: 84vw; }
+}
+
+/* Video card needs 3D context */
+[data-video-tilt] {
+  perspective: 1400px;
+}
+[data-video-tilt] > * {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.video-card__thumb {
+  will-change: transform;
+}
+.video-card__play {
+  will-change: transform;
+}
+
+/* Team cards need 3D context */
+.team-grid {
+  perspective: 1400px;
+}
+.team-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.team-card__img {
+  will-change: transform;
+  overflow: hidden;
+}
 
 /* Utilities */
 .hidden { display: none !important; }
