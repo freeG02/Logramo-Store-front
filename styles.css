@@ -11,39 +11,39 @@
 /* ---------- Helvetica Neue (local files) ---------- */
 @font-face {
   font-family: 'HelveticaNeue';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Roman.otf') format('opentype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Roman.otf') format('opentype');
   font-weight: 400; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'HelveticaNeue';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Medium.otf') format('opentype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Medium.otf') format('opentype');
   font-weight: 500; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'HelveticaNeue';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeueBold.ttf') format('truetype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeueBold.ttf') format('truetype');
   font-weight: 700; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'HelveticaNeue';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Heavy.otf') format('opentype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Heavy.otf') format('opentype');
   font-weight: 800; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'HelveticaNeue';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Black.otf') format('opentype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeue-Black.otf') format('opentype');
   font-weight: 900; font-style: normal; font-display: swap;
 }
 
 /* ---------- Helvetica Neue Condensed (local files) — display heading font ---------- */
 @font-face {
   font-family: 'HelveticaCond';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeueCondensedBold.ttf') format('truetype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeueCondensedBold.ttf') format('truetype');
   font-weight: 700; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'HelveticaCond';
-  src: url('../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeueCondensedBlack.ttf') format('truetype');
+  src: url('../../../Brand Assets/Fonts/Helvetica Neue/HelveticaNeueCondensedBlack.ttf') format('truetype');
   font-weight: 900; font-style: normal; font-display: swap;
 }
 
@@ -2488,40 +2488,38 @@ h1, h2, h3, h4,
    ANIMATION SUPPORT — sticky-stack + horizontal drag
    ============================================================ */
 
-/* Horizontal drag track (always, both mobile & desktop for marked sections) */
-[data-h-drag] {
-  display: flex !important;
-  grid-template-columns: none !important;
-  overflow-x: auto;
-  overflow-y: visible;
-  gap: 24px;
-  padding: 32px 28px 56px;
-  margin: 0 -28px;
-  scroll-snap-type: x mandatory;
-  cursor: grab;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  perspective: 1400px;
-  user-select: none;
-  -webkit-user-select: none;
-}
-[data-h-drag]::-webkit-scrollbar { display: none; }
-[data-h-drag] > * {
-  flex: 0 0 auto;
-  width: min(86vw, 400px);
-  scroll-snap-align: center;
-  transform-style: preserve-3d;
-  will-change: transform;
-  pointer-events: auto;
-}
-[data-h-drag].is-dragging { cursor: grabbing; }
-[data-h-drag].is-dragging > * { pointer-events: none; }
-[data-h-drag] img { pointer-events: none; -webkit-user-drag: none; }
-
-/* Force-visible inside h-drag (don't let data-stagger hide cards horizontally) */
-[data-h-drag] > * {
-  opacity: 1 !important;
-  transition: box-shadow .25s var(--ease-out), background .2s var(--ease) !important;
+/* Horizontal drag track — mobile/tablet only. On desktop keep original grid. */
+@media (max-width: 899px) {
+  [data-h-drag] {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto;
+    overflow-y: visible;
+    gap: 18px;
+    padding: 24px 20px 36px;
+    margin: 0 -20px;
+    scroll-snap-type: x mandatory;
+    cursor: grab;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    perspective: 1400px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  [data-h-drag]::-webkit-scrollbar { display: none; }
+  [data-h-drag] > * {
+    flex: 0 0 auto;
+    width: min(82vw, 380px);
+    scroll-snap-align: center;
+    transform-style: preserve-3d;
+    will-change: transform;
+    pointer-events: auto;
+    opacity: 1 !important;
+    transition: box-shadow .25s var(--ease-out), background .2s var(--ease) !important;
+  }
+  [data-h-drag].is-dragging { cursor: grabbing; }
+  [data-h-drag].is-dragging > * { pointer-events: none; }
+  [data-h-drag] img { pointer-events: none; -webkit-user-drag: none; }
 }
 
 /* Mobile sticky stack */

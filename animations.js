@@ -48,6 +48,10 @@
      tilt (rotateY) based on it, then ease back to flat.
   */
   function initDragScroll() {
+    // Only activate horizontal drag below 900px — on desktop the marked
+    // grids render as normal grids so we don't need to (and mustn't) hijack
+    // pointer/wheel events.
+    if (window.matchMedia('(min-width: 900px)').matches) return;
     document.querySelectorAll('[data-h-drag]').forEach(track => {
       let isDown = false, startX = 0, startScroll = 0, lastX = 0, lastT = 0;
       let velocity = 0, raf, dragged = false, dragDist = 0;
@@ -133,17 +137,7 @@
         if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; }
       }, true);
 
-      // Wheel → horizontal scroll on desktop
-      track.addEventListener('wheel', e => {
-        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-          e.preventDefault();
-          track.scrollLeft += e.deltaY;
-          velocity = e.deltaY * 0.25;
-          applyTilt(velocity);
-          clearTimeout(track._wt);
-          track._wt = setTimeout(() => { velocity = 0; settle(); }, 150);
-        }
-      }, { passive: false });
+      // No wheel hijack — let vertical page scrolling pass through.
     });
   }
 
