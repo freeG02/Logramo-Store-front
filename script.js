@@ -247,13 +247,64 @@ if (productHero && stickyCta && 'IntersectionObserver' in window) {
   obs.observe(productHero);
 }
 
-/* Filters */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const row = btn.closest('.filter-row');
-    row?.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+/* Filters — multi-toggle when row has [data-multi-filter] */
+document.querySelectorAll('.filter-row').forEach(row => {
+  const multi = row.hasAttribute('data-multi-filter');
+  const buttons = row.querySelectorAll('.filter-btn');
+
+  const applyFilter = () => {
+    if (!multi) return;
+    const active = [...buttons].filter(b => b.classList.contains('active') && b.dataset.filter && b.dataset.filter !== 'all').map(b => b.dataset.filter);
+    const cards = document.querySelectorAll('[data-cat]');
+    const allMode = active.length === 0;
+    let visible = 0;
+    cards.forEach(card => {
+      const match = allMode || active.includes(card.dataset.cat);
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    let empty = document.getElementById('filterEmpty');
+    if (!empty && cards.length) {
+      const grid = cards[0].parentElement;
+      empty = document.createElement('div');
+      empty.id = 'filterEmpty';
+      empty.style.cssText = 'grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--c-text-muted);font-weight:600';
+      empty.textContent = 'No hay artículos con esos filtros. Prueba con otra combinación.';
+      grid.appendChild(empty);
+    }
+    if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!multi) {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        return;
+      }
+      const isAll = btn.dataset.filter === 'all';
+      if (isAll) {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      } else {
+        btn.classList.toggle('active');
+        const allBtn = row.querySelector('[data-filter="all"]');
+        const anyActive = [...buttons].some(b => b.dataset.filter !== 'all' && b.classList.contains('active'));
+        if (allBtn) allBtn.classList.toggle('active', !anyActive);
+      }
+      applyFilter();
+    });
   });
+
+  const clearBtn = document.getElementById('filterClear');
+  if (multi && clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      const allBtn = row.querySelector('[data-filter="all"]');
+      if (allBtn) allBtn.classList.add('active');
+      applyFilter();
+    });
+  }
 });
 
 /* Comments */

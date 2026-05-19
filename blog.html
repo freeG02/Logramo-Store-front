@@ -16,7 +16,7 @@
 <section class="library-hero">
   <div class="container">
     <span class="eyebrow" data-reveal>El blog de Logramo</span>
-    <h1 data-reveal>Consejos que<br><em>realmente</em><br>sirven.</h1>
+    <h1 data-reveal>Consejos<br><em>que sirven.</em></h1>
     <p class="lead" data-reveal>Sin tecnicismos, sin juicios. Solo lo que de verdad necesitas saber sobre tu perro.</p>
     <form class="blog-search" onsubmit="event.preventDefault();showToast('Buscando…');" data-reveal>
       <input type="search" placeholder="Buscar artículos — ej. 'ladridos', 'cachorro'" aria-label="Buscar">
@@ -27,15 +27,16 @@
 
 <!-- ============ CATEGORIES ============ -->
 <div class="container">
-  <div class="filter-row" data-reveal>
-    <button class="filter-btn active">Todos</button>
-    <button class="filter-btn">Cachorros</button>
-    <button class="filter-btn">Educación</button>
-    <button class="filter-btn">Conducta</button>
-    <button class="filter-btn">Salud</button>
-    <button class="filter-btn">Alimentación</button>
-    <button class="filter-btn">Historias reales</button>
+  <div class="filter-row" data-reveal data-multi-filter>
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="cachorros">Cachorros</button>
+    <button class="filter-btn" data-filter="educacion">Educación</button>
+    <button class="filter-btn" data-filter="conducta">Conducta</button>
+    <button class="filter-btn" data-filter="salud">Salud</button>
+    <button class="filter-btn" data-filter="alimentacion">Alimentación</button>
+    <button class="filter-btn" data-filter="historias">Historias reales</button>
   </div>
+  <p class="filter-hint" data-reveal>Toca varios filtros para combinar temas · <button class="filter-clear" id="filterClear" type="button">Limpiar</button></p>
 </div>
 
 <!-- ============ BLOG MAIN ============ -->
@@ -66,7 +67,7 @@
           <span class="eyebrow">Últimos artículos</span>
         </div>
         <div class="posts-grid" data-stagger>
-          <a href="blog-post.html" class="article-card">
+          <a href="blog-post.html" class="article-card" data-cat="educacion">
             <div class="article-card__img-wrap">
               <span class="tag tag--solid article-card__tag">Educación</span>
               <img class="article-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -80,7 +81,7 @@
               </div>
             </div>
           </a>
-          <a href="blog-post.html" class="article-card">
+          <a href="blog-post.html" class="article-card" data-cat="cachorros">
             <div class="article-card__img-wrap">
               <span class="tag tag--terra article-card__tag">Cachorros</span>
               <img class="article-card__img" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -94,7 +95,7 @@
               </div>
             </div>
           </a>
-          <a href="blog-post.html" class="article-card">
+          <a href="blog-post.html" class="article-card" data-cat="conducta">
             <div class="article-card__img-wrap">
               <span class="tag tag--forest article-card__tag">Conducta</span>
               <img class="article-card__img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -108,7 +109,7 @@
               </div>
             </div>
           </a>
-          <a href="blog-post.html" class="article-card">
+          <a href="blog-post.html" class="article-card" data-cat="salud">
             <div class="article-card__img-wrap">
               <span class="tag tag--golden article-card__tag">Salud</span>
               <img class="article-card__img" src="https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -122,7 +123,7 @@
               </div>
             </div>
           </a>
-          <a href="blog-post.html" class="article-card">
+          <a href="blog-post.html" class="article-card" data-cat="educacion">
             <div class="article-card__img-wrap">
               <span class="tag tag--peach article-card__tag">Educación</span>
               <img class="article-card__img" src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80&fit=crop" alt="" loading="lazy">
@@ -136,7 +137,7 @@
               </div>
             </div>
           </a>
-          <a href="blog-post.html" class="article-card">
+          <a href="blog-post.html" class="article-card" data-cat="historias">
             <div class="article-card__img-wrap">
               <span class="tag tag--lavender article-card__tag">Historia real</span>
               <img class="article-card__img" src="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=600&q=80&fit=crop" alt="" loading="lazy">

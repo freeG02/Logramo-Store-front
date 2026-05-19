@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Logramo — Tu cuenta. Entra o crea una cuenta en segundos." />
+  <title>Mi cuenta — Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='62' r='28' fill='%23C55932'/><circle cx='28' cy='38' r='10' fill='%23F6D055'/><circle cx='42' cy='26' r='9' fill='%23FFCDB8'/><circle cx='58' cy='26' r='9' fill='%23B5C1AB'/><circle cx='72' cy='38' r='10' fill='%23ADCBEF'/></svg>" />
+  <style>
+    /* ============ AUTH PAGE ============ */
+    .auth {
+      padding: 80px 0 120px;
+      background: var(--c-cream);
+      min-height: calc(100vh - 80px);
+    }
+    .auth__inner {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .auth__head { text-align: center; margin-bottom: 32px; }
+    .auth__head .eyebrow { margin-bottom: 12px; }
+    .auth__title {
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1;
+      letter-spacing: -.03em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .auth__title em { font-style: normal; color: var(--c-terracotta); }
+    .auth__sub { color: var(--c-text-muted); max-width: 420px; margin: 0 auto; }
+
+    .auth-card {
+      background: var(--c-golden);
+      border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--c-ink);
+      border: var(--bw-1) solid var(--c-ink);
+      border-radius: var(--radius-full);
+      padding: 5px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      padding: 12px 18px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--c-cream);
+      background: transparent;
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .auth-tab.active { background: var(--c-cream); color: var(--c-ink); }
+
+    .auth-form { display: none; flex-direction: column; gap: 14px; }
+    .auth-form.active { display: flex; }
+
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+    .auth-field label {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--c-ink);
+    }
+    .auth-input {
+      padding: 16px 22px;
+      border-radius: var(--radius-full);
+      border: var(--bw-1) solid var(--c-ink);
+      background: var(--c-cream);
+      font-size: 1rem;
+      color: var(--c-ink);
+      outline: none;
+      box-shadow: var(--shadow-xs);
+      transition: transform .15s var(--ease-back), box-shadow .15s var(--ease-back);
+    }
+    .auth-input:focus { transform: translate(-2px,-2px); box-shadow: var(--shadow-sm); }
+    .auth-input::placeholder { color: #999; }
+
+    .auth-note {
+      font-size: .8rem;
+      color: var(--c-ink);
+      opacity: .75;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .auth-note a { font-weight: 700; text-decoration: underline; }
+
+    .auth-error {
+      background: var(--c-terracotta);
+      color: var(--c-cream);
+      border: var(--bw-1) solid var(--c-ink);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-size: .85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-xs);
+      display: none;
+    }
+    .auth-error.show { display: block; }
+
+    .auth-form .btn { margin-top: 6px; justify-content: center; }
+
+    /* ============ PROFILE (logged in) ============ */
+    .profile-card {
+      background: var(--c-cream);
+      border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .profile-avatar {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      background: var(--c-golden);
+      border: var(--bw-2) solid var(--c-ink);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: 2.4rem;
+      color: var(--c-ink);
+      box-shadow: var(--shadow-sm);
+      text-transform: uppercase;
+    }
+    .profile-name {
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: 1.8rem;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .profile-email { color: var(--c-text-muted); margin-bottom: 28px; }
+    .profile-actions {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .profile-actions .btn { width: 100%; justify-content: center; }
+
+    .delete-link {
+      display: inline-block;
+      margin-top: 28px;
+      color: var(--c-terracotta);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 6px 10px;
+      transition: color .2s var(--ease);
+    }
+    .delete-link:hover { color: var(--c-terra-dark); }
+
+    /* Editable username */
+    .profile-name-row {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .username-edit-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--c-cream);
+      border: var(--bw-1) solid var(--c-ink);
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-xs);
+      transition: transform .15s var(--ease-back), box-shadow .15s var(--ease-back);
+    }
+    .username-edit-btn:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-sm); background: var(--c-golden); }
+    .username-edit-btn svg { width: 14px; height: 14px; }
+    .username-edit-input {
+      font-family: var(--font-heading, var(--font-body));
+      font-weight: 700;
+      font-size: 1.6rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      border: var(--bw-1) solid var(--c-ink);
+      background: var(--c-cream);
+      outline: none;
+      box-shadow: var(--shadow-xs);
+      max-width: 280px;
+    }
+
+    @media (max-width: 560px) {
+      .auth-card, .profile-card { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body data-page="cuenta">
+
+<div id="partial-nav"></div>
+
+<!-- ============ AUTH ============ -->
+<section class="auth">
+  <div class="auth__inner">
+
+    <!-- LOGGED OUT VIEW -->
+    <div id="authLoggedOut">
+      <div class="auth__head">
+        <span class="eyebrow">Tu cuenta</span>
+        <h1 class="auth__title">Bienvenido<br>a <em>Logramo</em></h1>
+        <p class="auth__sub">Entra para guardar tus guías favoritas, seguir tu progreso y recibir consejos a medida.</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" data-tab="login" role="tab" aria-selected="true">Entrar</button>
+          <button class="auth-tab" data-tab="signup" role="tab" aria-selected="false">Crear cuenta</button>
+        </div>
+
+        <div class="auth-error" id="authError"></div>
+
+        <!-- LOGIN -->
+        <form class="auth-form active" id="loginForm" data-form="login" onsubmit="return handleLogin(event)">
+          <div class="auth-field">
+            <label for="loginEmail">Correo electrónico</label>
+            <input class="auth-input" id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email" required />
+          </div>
+          <div class="auth-field">
+            <label for="loginPassword">Contraseña</label>
+            <input class="auth-input" id="loginPassword" type="password" placeholder="Tu contraseña" autocomplete="current-password" required />
+          </div>
+          <button type="submit" class="btn btn--dark btn--lg">Entrar <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+          <p class="auth-note">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('signup');return false;">Crea una en 10 segundos</a></p>
+        </form>
+
+        <!-- SIGN UP -->
+        <form class="auth-form" id="signupForm" data-form="signup" onsubmit="return handleSignup(event)">
+          <div class="auth-field">
+            <label for="signupName">Nombre de usuario</label>
+            <input class="auth-input" id="signupName" type="text" placeholder="¿Cómo te llamamos?" autocomplete="username" required minlength="2" />
+          </div>
+          <div class="auth-field">
+            <label for="signupEmail">Correo electrónico</label>
+            <input class="auth-input" id="signupEmail" type="email" placeholder="tu@correo.com" autocomplete="email" required />
+          </div>
+          <div class="auth-field">
+            <label for="signupPassword">Contraseña</label>
+            <input class="auth-input" id="signupPassword" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
+          </div>
+          <button type="submit" class="btn btn--dark btn--lg"><svg class="icon"><use href="#i-paw"/></svg> Crear cuenta</button>
+          <p class="auth-note">Sin spam · sin tarjeta · solo lo esencial</p>
+        </form>
+      </div>
+    </div>
+
+    <!-- LOGGED IN VIEW -->
+    <div id="authLoggedIn" style="display:none">
+      <div class="auth__head">
+        <span class="eyebrow">Tu cuenta</span>
+        <h1 class="auth__title">Hola<br>de <em>nuevo</em></h1>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar">L</div>
+
+        <div class="profile-name-row">
+          <span class="profile-name" id="profileName">—</span>
+          <button class="username-edit-btn" id="editUsernameBtn" onclick="startEditUsername()" aria-label="Editar nombre">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+        </div>
+        <input type="text" class="username-edit-input" id="usernameEditInput" style="display:none" maxlength="24" />
+
+        <div class="profile-email" id="profileEmail">—</div>
+
+        <div class="profile-actions">
+          <a href="biblioteca.html" class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-book"/></svg> Ir a la biblioteca</a>
+          <button class="btn btn--cream btn--lg" onclick="handleLogout()">Cerrar sesión <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+        </div>
+
+        <button class="delete-link" onclick="handleDeleteAccount()">Eliminar mi cuenta</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div id="partial-footer"></div>
+<div id="partial-cart"></div>
+<div id="partial-chat"></div>
+<div id="partial-popups"></div>
+
+<script src="partials.js"></script>
+<script src="script.js"></script>
+<script>
+/* ============ ACCOUNT LOGIC (localStorage) ============ */
+const AUTH_KEY = 'logramo_user';
+
+function getUser() {
+  try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || null; }
+  catch { return null; }
+}
+function setUser(u) { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); }
+function clearUser() { localStorage.removeItem(AUTH_KEY); }
+
+function renderAuthState() {
+  const u = getUser();
+  const out = document.getElementById('authLoggedOut');
+  const inn = document.getElementById('authLoggedIn');
+  if (u) {
+    out.style.display = 'none';
+    inn.style.display = 'block';
+    document.getElementById('profileName').textContent = u.username;
+    document.getElementById('profileEmail').textContent = u.email;
+    document.getElementById('profileAvatar').textContent = (u.username || 'L').trim().charAt(0);
+  } else {
+    out.style.display = 'block';
+    inn.style.display = 'none';
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearError() {
+  const el = document.getElementById('authError');
+  el.classList.remove('show');
+  el.textContent = '';
+}
+
+function switchTab(tab) {
+  clearError();
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    const on = t.dataset.tab === tab;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('.auth-form').forEach(f => {
+    f.classList.toggle('active', f.dataset.form === tab);
+  });
+}
+
+document.querySelectorAll('.auth-tab').forEach(t => {
+  t.addEventListener('click', () => switchTab(t.dataset.tab));
+});
+
+function handleSignup(e) {
+  e.preventDefault();
+  clearError();
+  const username = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  const password = document.getElementById('signupPassword').value;
+  if (!username || !email || !password) { showError('Rellena todos los campos.'); return false; }
+  setUser({ username, email, password, createdAt: Date.now() });
+  if (typeof showToast === 'function') showToast(`¡Bienvenido, ${username}!`);
+  renderAuthState();
+  return false;
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  clearError();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const u = getUser();
+  if (!u) { showError('No encontramos una cuenta con ese correo. Crea una nueva.'); return false; }
+  if (u.email !== email || u.password !== password) {
+    showError('Correo o contraseña incorrectos.');
+    return false;
+  }
+  if (typeof showToast === 'function') showToast(`¡Hola otra vez, ${u.username}!`);
+  renderAuthState();
+  return false;
+}
+
+function handleLogout() {
+  clearUser();
+  if (typeof showToast === 'function') showToast('Sesión cerrada');
+  renderAuthState();
+}
+
+function startEditUsername() {
+  const u = getUser();
+  if (!u) return;
+  const nameEl = document.getElementById('profileName');
+  const btn = document.getElementById('editUsernameBtn');
+  const input = document.getElementById('usernameEditInput');
+  input.value = u.username;
+  nameEl.style.display = 'none';
+  btn.style.display = 'none';
+  input.style.display = 'inline-block';
+  input.focus();
+  input.select();
+  const save = () => {
+    const val = input.value.trim();
+    if (val.length >= 2) {
+      u.username = val;
+      setUser(u);
+      if (typeof showToast === 'function') showToast('Nombre actualizado');
+    }
+    renderAuthState();
+  };
+  input.onblur = save;
+  input.onkeydown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = u.username; input.blur(); }
+  };
+}
+
+function handleDeleteAccount() {
+  const u = getUser();
+  if (!u) return;
+  const ok = confirm(`¿Seguro que quieres eliminar la cuenta de ${u.username}? Esta acción no se puede deshacer.`);
+  if (!ok) return;
+  clearUser();
+  if (typeof showToast === 'function') showToast('Cuenta eliminada');
+  renderAuthState();
+}
+
+renderAuthState();
+</script>
+</body>
+</html>
