@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:\\\\Users\\\\rosem\\\\OneDrive\\\\Documents\\\\Logramo\\\\Logo Assets\\\\Website Assets\\\\Brand Assets\")",
+      "Bash(ls -la \"C:\\\\Users\\\\rosem\\\\OneDrive\\\\Documents\\\\Logramo\\\\Logo Assets\\\\Website Assets\\\\References\")",
+      "Bash(npx --version)",
+      "Bash(ls -la \"C:\\\\Users\\\\rosem\\\\OneDrive\\\\Documents\\\\Logramo\\\\Logo Assets\\\\Website Assets\\\\.claude\\\\\")"
+    ]
+  }
+}

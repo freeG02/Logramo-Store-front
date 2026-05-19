@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Biblioteca de libros y guías para dueños de perros — Logramo" />
+  <title>Biblioteca — Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='62' r='28' fill='%23C55932'/></svg>" />
+</head>
+<body data-page="biblioteca">
+
+<div id="partial-nav"></div>
+
+<!-- ============ HERO ============ -->
+<section class="library-hero">
+  <div class="container">
+    <span class="eyebrow" data-reveal>La biblioteca de Logramo</span>
+    <h1 data-reveal>Todo lo que necesitas<br>para criar <em>al mejor perro</em><br>del mundo.</h1>
+    <p class="lead" data-reveal>Libros y guías cuidadosamente escritos — algunos gratis, otros premium — para dueños reales con perros reales.</p>
+  </div>
+</section>
+
+<!-- ============ FILTERS ============ -->
+<div class="container">
+  <div class="filter-row" data-reveal>
+    <span style="font-family:var(--font-display);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;margin-right:8px"><svg class="icon icon--sm" style="vertical-align:middle"><use href="#i-grid"/></svg> Categorías:</span>
+    <button class="filter-btn active">Todos</button>
+    <button class="filter-btn">Gratis</button>
+    <button class="filter-btn">Cachorros</button>
+    <button class="filter-btn">Educación</button>
+    <button class="filter-btn">Salud</button>
+    <button class="filter-btn">Conducta</button>
+    <button class="filter-btn">Alimentación</button>
+    <button class="filter-btn">Paseos</button>
+  </div>
+</div>
+
+<!-- ============ FEATURED / BESTSELLER ============ -->
+<section style="padding: 0 0 60px">
+  <div class="container">
+    <div style="margin-bottom:24px;display:flex;align-items:center;gap:12px" data-reveal>
+      <span class="tag tag--golden"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Más vendido</span>
+      <span style="font-family:var(--font-display);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--c-text-muted)">El libro estrella de Logramo</span>
+    </div>
+    <article class="featured-book" data-reveal>
+      <div class="featured-book__body">
+        <span class="tag tag--terra">+800 dueños lo tienen</span>
+        <h2 class="featured-book__title">Cría un perro feliz: guía completa para nuevos dueños</h2>
+        <p class="featured-book__desc">12 semanas de plan estructurado para pasar de "no sé qué hago" a "esto está funcionando". Sin tecnicismos, sin teoría aburrida. Solo lo que de verdad necesitas.</p>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
+          <span style="font-family:var(--font-display);font-weight:900;font-size:2.4rem;color:var(--c-golden);letter-spacing:-.03em;line-height:1">€29.99</span>
+          <span style="color:rgba(254,250,232,.55);text-decoration:line-through">€49.99</span>
+          <span class="tag tag--golden">40% off</span>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="producto.html" class="btn btn--golden btn--lg">Ver detalles <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+          <button class="btn btn--cream btn--lg" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar</button>
+        </div>
+      </div>
+      <div class="featured-book__cover-wrap">
+        <a href="producto.html" class="featured-book__cover">
+          <div class="featured-book__cover-tag">Logramo Editorial</div>
+          <div class="featured-book__cover-title">Cría un<br>Perro Feliz</div>
+          <div style="display:flex;justify-content:center;margin:20px 0"><svg width="56" height="56"><use href="#i-paw"/></svg></div>
+          <div style="font-family:var(--font-display);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c-text-muted)">Guía Completa</div>
+        </a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ CATEGORY: CACHORROS ============ -->
+<section style="padding: 40px 0">
+  <div class="container">
+    <div class="library-section">
+      <div class="library-section__head" data-reveal>
+        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-paw"/></svg> Cachorros</h2>
+        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="library-grid" data-stagger>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--sky">
+            <span class="book-card__free-badge">Gratis</span>
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Guía PDF</div>
+              <div class="book-card__cover-title">Los Primeros<br>30 Días</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-paw"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Cachorros</span>
+            <h3 class="book-card__title">Los primeros 30 días con tu perro</h3>
+            <p class="book-card__desc">Todo lo que nadie te cuenta cuando llegas a casa con tu cachorro.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price book-card__price--free">Gratis</span>
+              <span class="book-card__cta">Descargar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--peach">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Libro Digital</div>
+              <div class="book-card__cover-title">Sueño<br>Tranquilo</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-clock"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Cachorros</span>
+            <h3 class="book-card__title">Sueño tranquilo: cómo dormir toda la noche</h3>
+            <p class="book-card__desc">El método paso a paso para que tu cachorro deje de llorar de noche.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€14.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--sage">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Guía Práctica</div>
+              <div class="book-card__cover-title">Salud del<br>Cachorro</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-shield"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Salud</span>
+            <h3 class="book-card__title">Manual de salud para cachorros</h3>
+            <p class="book-card__desc">Vacunas, desparasitación y todo lo que necesitas saber.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€19.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORY: EDUCACIÓN ============ -->
+<section style="padding: 40px 0">
+  <div class="container">
+    <div class="library-section">
+      <div class="library-section__head" data-reveal>
+        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-target"/></svg> Educación</h2>
+        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="library-grid" data-stagger>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--golden">
+            <div class="book-card__cover book-card__cover--forest">
+              <div class="book-card__cover-sub">Libro Estrella</div>
+              <div class="book-card__cover-title">Cría un<br>Perro Feliz</div>
+              <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-paw"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Educación</span>
+            <h3 class="book-card__title">Cría un perro feliz: guía completa</h3>
+            <p class="book-card__desc">12 semanas de plan estructurado para nuevos dueños.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€29.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--lavender">
+            <div class="book-card__cover book-card__cover--terra">
+              <div class="book-card__cover-sub">Libro Digital</div>
+              <div class="book-card__cover-title">Adiestramiento<br>Avanzado</div>
+              <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-target"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Educación</span>
+            <h3 class="book-card__title">Adiestramiento avanzado en casa</h3>
+            <p class="book-card__desc">Trucos, comandos avanzados y técnicas de obediencia.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€24.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--pink">
+            <span class="book-card__free-badge">Gratis</span>
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Mini Guía</div>
+              <div class="book-card__cover-title">5 Comandos<br>Básicos</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-check-circle"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Educación</span>
+            <h3 class="book-card__title">Los 5 comandos esenciales</h3>
+            <p class="book-card__desc">Las palabras que tu perro debe aprender primero.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price book-card__price--free">Gratis</span>
+              <span class="book-card__cta">Descargar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORY: SALUD ============ -->
+<section style="padding: 40px 0">
+  <div class="container">
+    <div class="library-section">
+      <div class="library-section__head" data-reveal>
+        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-shield"/></svg> Salud &amp; Bienestar</h2>
+        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="library-grid" data-stagger>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--sky">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Manual</div>
+              <div class="book-card__cover-title">Alimentación<br>Sana</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-bone"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Alimentación</span>
+            <h3 class="book-card__title">Alimentación sana para tu perro</h3>
+            <p class="book-card__desc">Qué comer, cuándo, cuánto y qué evitar absolutamente.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€19.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--sage">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Guía Práctica</div>
+              <div class="book-card__cover-title">Primeros<br>Auxilios</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-heart"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Salud</span>
+            <h3 class="book-card__title">Primeros auxilios caninos</h3>
+            <p class="book-card__desc">Qué hacer en emergencias antes de llegar al veterinario.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€16.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--peach">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Mini Libro</div>
+              <div class="book-card__cover-title">Ejercicio<br>Diario</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-flame"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Salud</span>
+            <h3 class="book-card__title">Ejercicio diario por raza y edad</h3>
+            <p class="book-card__desc">Plan de actividad física adaptado a tu perro.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€12.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORY: CONDUCTA ============ -->
+<section style="padding: 40px 0 var(--section-py)">
+  <div class="container">
+    <div class="library-section">
+      <div class="library-section__head" data-reveal>
+        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-flame"/></svg> Conducta</h2>
+        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="library-grid" data-stagger>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--lavender">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Libro Digital</div>
+              <div class="book-card__cover-title">Ladridos<br>Bajo Control</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-bell"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Conducta</span>
+            <h3 class="book-card__title">Ladridos bajo control</h3>
+            <p class="book-card__desc">Identifica el tipo de ladrido y soluciónalo de raíz.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€19.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--pink">
+            <div class="book-card__cover book-card__cover--forest">
+              <div class="book-card__cover-sub">Manual</div>
+              <div class="book-card__cover-title">Ansiedad por<br>Separación</div>
+              <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-heart"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Conducta</span>
+            <h3 class="book-card__title">Ansiedad por separación: el método</h3>
+            <p class="book-card__desc">Plan paso a paso para que se quede solo sin sufrir.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€22.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+        <a href="producto.html" class="book-card">
+          <div class="book-card__cover-wrap book-card__cover-wrap--golden">
+            <div class="book-card__cover">
+              <div class="book-card__cover-sub">Guía Express</div>
+              <div class="book-card__cover-title">Paseos<br>Sin Drama</div>
+              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-leaf"/></svg></div>
+            </div>
+          </div>
+          <div class="book-card__body">
+            <span class="book-card__category">Paseos</span>
+            <h3 class="book-card__title">Paseos sin tirones</h3>
+            <p class="book-card__desc">Camina con tu perro sin que parezca un rodeo.</p>
+            <div class="book-card__footer">
+              <span class="book-card__price">€14.99</span>
+              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER CTA ============ -->
+<section class="newsletter-section" data-reveal>
+  <div class="newsletter-section__inner">
+    <div style="display:flex;justify-content:center;margin-bottom:16px"><svg width="56" height="56" style="color:var(--c-cream)"><use href="#i-bell"/></svg></div>
+    <h2 class="newsletter-section__title">No te pierdas<br>los próximos libros</h2>
+    <p class="newsletter-section__desc">Te avisamos cuando publicamos nuevos libros y guías. Sin spam, solo perros.</p>
+    <form class="newsletter-section__form" onsubmit="handleSimpleNewsletter(event)">
+      <input type="email" class="newsletter-section__input" placeholder="tu@correo.com" required />
+      <button type="submit" class="btn btn--dark btn--lg">Notificarme <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+    </form>
+  </div>
+</section>
+
+<div id="partial-footer"></div>
+<div id="partial-cart"></div>
+<div id="partial-chat"></div>
+<div id="partial-popups"></div>
+
+<script src="partials.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

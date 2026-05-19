@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
+  <title>Blog — Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='62' r='28' fill='%23C55932'/></svg>" />
+</head>
+<body data-page="blog">
+
+<div id="partial-nav"></div>
+
+<!-- ============ BLOG HERO ============ -->
+<section class="library-hero">
+  <div class="container">
+    <span class="eyebrow" data-reveal>El blog de Logramo</span>
+    <h1 data-reveal>Consejos que<br><em>realmente</em><br>sirven.</h1>
+    <p class="lead" data-reveal>Sin tecnicismos, sin juicios. Solo lo que de verdad necesitas saber sobre tu perro.</p>
+    <form class="blog-search" onsubmit="event.preventDefault();showToast('Buscando…');" data-reveal>
+      <input type="search" placeholder="Buscar artículos — ej. 'ladridos', 'cachorro'" aria-label="Buscar">
+      <button type="submit"><svg class="icon icon--sm"><use href="#i-search"/></svg> Buscar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<div class="container">
+  <div class="filter-row" data-reveal>
+    <button class="filter-btn active">Todos</button>
+    <button class="filter-btn">Cachorros</button>
+    <button class="filter-btn">Educación</button>
+    <button class="filter-btn">Conducta</button>
+    <button class="filter-btn">Salud</button>
+    <button class="filter-btn">Alimentación</button>
+    <button class="filter-btn">Historias reales</button>
+  </div>
+</div>
+
+<!-- ============ BLOG MAIN ============ -->
+<section class="blog-main">
+  <div class="container">
+    <div class="blog-layout">
+
+      <!-- Articles -->
+      <div>
+        <!-- Featured -->
+        <div style="margin-bottom:24px" data-reveal>
+          <span class="eyebrow">Artículo destacado</span>
+        </div>
+        <a href="blog-post.html" class="featured-post" data-reveal>
+          <div class="featured-post__img">
+            <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=85&fit=crop" alt="" loading="eager">
+          </div>
+          <div class="featured-post__body">
+            <span class="tag tag--terra"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Más leído</span>
+            <h2 class="featured-post__title">Los primeros 30 días con tu perro: la guía honesta</h2>
+            <p class="featured-post__excerpt">Nadie te dice que el primer mes puede ser agotador, confuso y maravilloso a la vez. Te lo contamos sin filtros.</p>
+            <span class="btn btn--primary">Leer artículo <svg class="icon"><use href="#i-arrow-right"/></svg></span>
+          </div>
+        </a>
+
+        <!-- Grid -->
+        <div style="margin-bottom:24px;margin-top:8px" data-reveal>
+          <span class="eyebrow">Últimos artículos</span>
+        </div>
+        <div class="posts-grid" data-stagger>
+          <a href="blog-post.html" class="article-card">
+            <div class="article-card__img-wrap">
+              <span class="tag tag--solid article-card__tag">Educación</span>
+              <img class="article-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop" alt="" loading="lazy">
+            </div>
+            <div class="article-card__body">
+              <h3 class="article-card__title">Las 5 palabras que tu perro debe aprender primero</h3>
+              <p class="article-card__excerpt">No, "siéntate" no es la más importante.</p>
+              <div class="article-card__meta">
+                <span><svg class="icon icon--xs"><use href="#i-clock"/></svg> 5 MIN</span>
+                <span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+              </div>
+            </div>
+          </a>
+          <a href="blog-post.html" class="article-card">
+            <div class="article-card__img-wrap">
+              <span class="tag tag--terra article-card__tag">Cachorros</span>
+              <img class="article-card__img" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&q=80&fit=crop" alt="" loading="lazy">
+            </div>
+            <div class="article-card__body">
+              <h3 class="article-card__title">¿Tu cachorro llora toda la noche? Esto pasa</h3>
+              <p class="article-card__excerpt">Spoiler: no te odia. Te explicamos la razón real.</p>
+              <div class="article-card__meta">
+                <span><svg class="icon icon--xs"><use href="#i-clock"/></svg> 4 MIN</span>
+                <span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+              </div>
+            </div>
+          </a>
+          <a href="blog-post.html" class="article-card">
+            <div class="article-card__img-wrap">
+              <span class="tag tag--forest article-card__tag">Conducta</span>
+              <img class="article-card__img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop" alt="" loading="lazy">
+            </div>
+            <div class="article-card__body">
+              <h3 class="article-card__title">Por qué ladra a otros perros en el paseo</h3>
+              <p class="article-card__excerpt">El paseo que se convierte en concierto tiene solución.</p>
+              <div class="article-card__meta">
+                <span><svg class="icon icon--xs"><use href="#i-clock"/></svg> 6 MIN</span>
+                <span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+              </div>
+            </div>
+          </a>
+          <a href="blog-post.html" class="article-card">
+            <div class="article-card__img-wrap">
+              <span class="tag tag--golden article-card__tag">Salud</span>
+              <img class="article-card__img" src="https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600&q=80&fit=crop" alt="" loading="lazy">
+            </div>
+            <div class="article-card__body">
+              <h3 class="article-card__title">Vacunas básicas: qué necesitas y cuándo</h3>
+              <p class="article-card__excerpt">Sin dramatismos. El calendario básico explicado fácil.</p>
+              <div class="article-card__meta">
+                <span><svg class="icon icon--xs"><use href="#i-clock"/></svg> 5 MIN</span>
+                <span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+              </div>
+            </div>
+          </a>
+          <a href="blog-post.html" class="article-card">
+            <div class="article-card__img-wrap">
+              <span class="tag tag--peach article-card__tag">Educación</span>
+              <img class="article-card__img" src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80&fit=crop" alt="" loading="lazy">
+            </div>
+            <div class="article-card__body">
+              <h3 class="article-card__title">Caminar sin tirar de la correa: técnica real</h3>
+              <p class="article-card__excerpt">Paso a paso para el paseo que siempre quisiste.</p>
+              <div class="article-card__meta">
+                <span><svg class="icon icon--xs"><use href="#i-clock"/></svg> 7 MIN</span>
+                <span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+              </div>
+            </div>
+          </a>
+          <a href="blog-post.html" class="article-card">
+            <div class="article-card__img-wrap">
+              <span class="tag tag--lavender article-card__tag">Historia real</span>
+              <img class="article-card__img" src="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=600&q=80&fit=crop" alt="" loading="lazy">
+            </div>
+            <div class="article-card__body">
+              <h3 class="article-card__title">Lo que nadie te dice sobre adoptar un perro adulto</h3>
+              <p class="article-card__excerpt">Historia real de una adopción con todos sus altibajos.</p>
+              <div class="article-card__meta">
+                <span><svg class="icon icon--xs"><use href="#i-clock"/></svg> 8 MIN</span>
+                <span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div style="text-align:center;margin-top:48px" data-reveal>
+          <button class="btn btn--cream btn--lg" onclick="this.textContent='No hay más artículos por ahora';this.disabled=true;showToast('Estamos escribiendo más')">Cargar más artículos</button>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="blog-sidebar">
+
+        <div class="widget widget--terra">
+          <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40"><use href="#i-mail"/></svg></div>
+          <h3 style="text-align:center">Una vez por semana en tu correo</h3>
+          <p style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55;text-align:center">Consejos útiles, artículos nuevos y algún fail canino.</p>
+          <form onsubmit="handleSimpleNewsletter(event)" style="display:flex;flex-direction:column;gap:10px">
+            <input type="email" class="popup__input" placeholder="Tu correo" required style="background:var(--c-cream);color:var(--c-ink)">
+            <button type="submit" class="btn btn--golden full-w">Suscribirme</button>
+          </form>
+        </div>
+
+        <div class="widget">
+          <h3>Temas</h3>
+          <div class="cat-list">
+            <div class="cat-row"><a href="#">Cachorros</a><span class="cat-row__count">12</span></div>
+            <div class="cat-row"><a href="#">Educación</a><span class="cat-row__count">9</span></div>
+            <div class="cat-row"><a href="#">Conducta</a><span class="cat-row__count">8</span></div>
+            <div class="cat-row"><a href="#">Salud</a><span class="cat-row__count">7</span></div>
+            <div class="cat-row"><a href="#">Alimentación</a><span class="cat-row__count">5</span></div>
+            <div class="cat-row"><a href="#">Historias</a><span class="cat-row__count">4</span></div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <h3>Más leídos</h3>
+          <div class="sidebar-articles">
+            <a href="blog-post.html" class="sidebar-article">
+              <img class="sidebar-article__img" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=160&q=70&fit=crop" alt="" loading="lazy">
+              <div>
+                <div class="sidebar-article__title">Por qué llora tu cachorro de noche</div>
+                <div class="sidebar-article__date">Hace 2 días · 4 min</div>
+              </div>
+            </a>
+            <a href="blog-post.html" class="sidebar-article">
+              <img class="sidebar-article__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=160&q=70&fit=crop" alt="" loading="lazy">
+              <div>
+                <div class="sidebar-article__title">Los 5 comandos que todo perro debe saber</div>
+                <div class="sidebar-article__date">Hace 5 días · 5 min</div>
+              </div>
+            </a>
+            <a href="blog-post.html" class="sidebar-article">
+              <img class="sidebar-article__img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=160&q=70&fit=crop" alt="" loading="lazy">
+              <div>
+                <div class="sidebar-article__title">Por qué ladra a otros perros</div>
+                <div class="sidebar-article__date">Hace 1 semana · 6 min</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="widget widget--forest" style="text-align:center">
+          <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40" style="color:var(--c-golden)"><use href="#i-pdf"/></svg></div>
+          <h3>Guía gratuita</h3>
+          <p style="color:rgba(254,250,232,.7);font-size:.85rem;margin-bottom:16px;line-height:1.55">Los primeros 30 días con tu perro. PDF descargable.</p>
+          <button class="btn btn--golden full-w" data-popup="popup-freebie">Descargar gratis</button>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div id="partial-footer"></div>
+<div id="partial-cart"></div>
+<div id="partial-chat"></div>
+<div id="partial-popups"></div>
+
+<script src="partials.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
