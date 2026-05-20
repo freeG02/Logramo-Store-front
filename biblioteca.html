@@ -114,7 +114,7 @@
   }
 </style>
 
-<section style="padding: 0 0 60px">
+<section style="padding: 0 0 60px" id="destacados">
   <div class="container">
     <div style="margin-bottom:24px;display:flex;align-items:center;gap:12px" data-reveal>
       <span class="tag tag--golden"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Destacados</span>
@@ -554,7 +554,25 @@
   // Cache keywords on each card
   cards.forEach(function(c){ c._kw = keywords(c); });
 
+  // Destacados (featured carousel) moves to the bottom while filtering,
+  // and back to the top when "Todos" is selected.
+  var destacados = document.getElementById('destacados');
+  var firstCatSection = (document.querySelector('.library-section') || {}).closest
+    ? document.querySelector('.library-section').closest('section') : null;
+  var newsletter = document.querySelector('.newsletter-section');
+  function placeDestacados(filter){
+    if(!destacados) return;
+    if(filter === 'todos'){
+      if(firstCatSection && destacados.nextElementSibling !== firstCatSection){
+        firstCatSection.parentNode.insertBefore(destacados, firstCatSection);
+      }
+    } else if(newsletter && destacados.nextElementSibling !== newsletter){
+      newsletter.parentNode.insertBefore(destacados, newsletter);
+    }
+  }
+
   function apply(filter){
+    placeDestacados(filter);
     var anyVisible = false;
     cards.forEach(function(card){
       var show = filter === 'todos' || card._kw.indexOf(filter) > -1;
