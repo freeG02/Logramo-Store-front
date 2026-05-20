@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Biblioteca de libros y guías para dueños de perros — Logramo" />
+  <meta name="description" content="Guías y libros escritos por dueños que ya pasaron por esto — algunos gratis, otros premium. Todos sin tecnicismos y con mucho amor." />
   <title>Biblioteca — Logramo</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='62' r='28' fill='%23C55932'/></svg>" />
@@ -16,59 +16,206 @@
 <section class="library-hero">
   <div class="container">
     <span class="eyebrow" data-reveal>La biblioteca de Logramo</span>
-    <h1 data-reveal>Todo para criar<br><em>al mejor</em><br>compañero.</h1>
-    <p class="lead" data-reveal>Libros y guías cuidadosamente escritos — algunos gratis, otros premium — para dueños reales con perros reales.</p>
+    <h1 data-reveal>Todo lo que<br><em>nadie te explica</em><br>en un solo lugar.</h1>
+    <p class="lead" data-reveal>Guías y libros escritos por dueños que ya pasaron por esto — algunos gratis, otros premium. Todos sin tecnicismos y con mucho amor.</p>
   </div>
 </section>
 
 <!-- ============ FILTERS ============ -->
 <div class="container">
-  <div class="filter-row" data-reveal>
-    <span style="font-family:var(--font-display);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;margin-right:8px"><svg class="icon icon--sm" style="vertical-align:middle"><use href="#i-grid"/></svg> Categorías:</span>
-    <button class="filter-btn active">Todos</button>
-    <button class="filter-btn">Gratis</button>
-    <button class="filter-btn">Cachorros</button>
-    <button class="filter-btn">Educación</button>
-    <button class="filter-btn">Salud</button>
-    <button class="filter-btn">Conducta</button>
-    <button class="filter-btn">Alimentación</button>
-    <button class="filter-btn">Paseos</button>
+  <div class="filter-row" data-reveal style="justify-content:center;flex-wrap:wrap">
+    <button class="filter-btn active" data-cat-filter="todos">Todos</button>
+    <button class="filter-btn" data-cat-filter="gratis">Gratis</button>
+    <button class="filter-btn" data-cat-filter="cachorros">Cachorros</button>
+    <button class="filter-btn" data-cat-filter="educacion">Educación</button>
+    <button class="filter-btn" data-cat-filter="salud">Salud</button>
+    <button class="filter-btn" data-cat-filter="conducta">Conducta</button>
+    <button class="filter-btn" data-cat-filter="alimentacion">Alimentación</button>
+    <button class="filter-btn" data-cat-filter="paseos">Paseos</button>
   </div>
 </div>
 
-<!-- ============ FEATURED / BESTSELLER ============ -->
+<!-- ============ FEATURED CAROUSEL ============ -->
+<style>
+  /* --- Carousel shell --- */
+  .fc-wrapper { position:relative; overflow:hidden; border-radius:var(--radius-2xl); border:var(--bw-1) solid var(--c-ink); cursor:grab; user-select:none; box-shadow:var(--shadow-md); }
+  .fc-wrapper:active { cursor:grabbing; }
+  .fc-track { display:flex; transition:transform .45s cubic-bezier(.4,0,.2,1); will-change:transform; }
+
+  /* --- One slide = one full-width card: details (left) + cover (right) --- */
+  .fc-card { flex:0 0 100%; min-width:0; max-width:100%; box-sizing:border-box; display:grid; grid-template-columns:1.05fr .95fr; align-items:stretch; overflow:hidden; }
+  .fc-card__details { padding:56px 48px; display:flex; flex-direction:column; justify-content:center; }
+  .fc-card__title { font-family:var(--font-body); font-weight:900; font-size:clamp(1.8rem,3.4vw,2.8rem); line-height:1; letter-spacing:-.03em; text-transform:uppercase; margin:18px 0; color:var(--c-cream); }
+  .fc-card__desc { line-height:1.65; margin-bottom:28px; }
+  .fc-card__cover-wrap { display:flex; align-items:center; justify-content:center; padding:48px; min-height:440px; }
+  .fc-card__cover { background:var(--c-cream); color:var(--c-ink); border:var(--bw-2) solid var(--c-ink); border-radius:var(--radius-md); padding:36px 28px; text-align:center; max-width:280px; box-shadow:var(--shadow-lg); transform:rotate(-3deg); transition:transform .4s var(--ease-out); }
+  .fc-card__cover:hover { transform:rotate(0); }
+  .fc-card__cover-tag { font-family:var(--font-body); font-weight:800; font-size:.65rem; text-transform:uppercase; letter-spacing:.12em; margin-bottom:12px; color:var(--c-terracotta); }
+  .fc-card__cover-title { font-family:var(--font-body); font-weight:900; font-size:1.5rem; line-height:1; text-transform:uppercase; letter-spacing:-.02em; }
+
+  /* --- Shared pieces (identical markup on every slide) --- */
+  .fc-badge { margin-bottom:20px; align-self:flex-start; }
+  .fc-price-row { display:flex; align-items:center; gap:14px; margin-bottom:28px; flex-wrap:wrap; }
+  .fc-price { font-family:var(--font-display); font-weight:900; font-size:2.4rem; letter-spacing:-.03em; line-height:1; }
+  .fc-price-old { text-decoration:line-through; opacity:.55; }
+  .fc-cta-row { display:flex; gap:12px; flex-wrap:wrap; }
+  .fc-cover-icon { display:flex; justify-content:center; margin:20px 0; }
+  .fc-cover-sub { font-family:var(--font-display); font-weight:700; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; opacity:.65; }
+
+  /* --- Theme 1: forest + golden + terracotta --- */
+  .fc-card--1 { background:var(--c-forest); }
+  .fc-card--1 .fc-card__desc, .fc-card--1 .fc-price-old { color:rgba(254,250,232,.6); }
+  .fc-card--1 .fc-price { color:var(--c-golden); }
+  .fc-card--1 .fc-card__cover-wrap { background:var(--c-terracotta); }
+  .fc-card--1 .fc-cover-icon { color:var(--c-terracotta); }
+  .fc-card--1 .fc-badge { background:var(--c-terracotta); color:var(--c-cream); }
+  .fc-card--1 .fc-discount { background:var(--c-golden); color:var(--c-ink); }
+  .fc-card--1 .fc-btn-primary { background:var(--c-golden); color:var(--c-ink); }
+  .fc-card--1 .fc-btn-secondary { background:var(--c-cream); color:var(--c-ink); }
+
+  /* --- Theme 2: ink + sky --- */
+  .fc-card--2 { background:var(--c-ink); }
+  .fc-card--2 .fc-card__desc, .fc-card--2 .fc-price-old { color:rgba(254,250,232,.6); }
+  .fc-card--2 .fc-price { color:var(--c-sky); }
+  .fc-card--2 .fc-card__cover-wrap { background:var(--c-sky); }
+  .fc-card--2 .fc-cover-icon { color:var(--c-terracotta); }
+  .fc-card--2 .fc-badge { background:var(--c-sky); color:var(--c-ink); }
+  .fc-card--2 .fc-discount { background:var(--c-sky); color:var(--c-ink); }
+  .fc-card--2 .fc-btn-primary { background:var(--c-sky); color:var(--c-ink); }
+  .fc-card--2 .fc-btn-secondary { background:var(--c-cream); color:var(--c-ink); }
+
+  /* --- Dots --- */
+  .fc-dots { display:flex; justify-content:center; gap:10px; margin-top:20px; }
+  .fc-dot { width:12px; height:12px; border-radius:9999px; border:2px solid var(--c-ink); background:transparent; cursor:pointer; padding:0; transition:all .28s var(--ease-out); }
+  .fc-dot.active { background:var(--c-terracotta); width:32px; }
+  @media(max-width:760px){
+    .fc-card { grid-template-columns:1fr; }
+    .fc-card__cover-wrap{ order:-1; min-height:300px; padding:40px 36px; }
+    .fc-card__details{ order:1; padding:32px 28px 36px; text-align:center; align-items:center; }
+    .fc-card__desc, .fc-cover-sub { display:none; }
+    .fc-badge { align-self:center; }
+    .fc-price-row { justify-content:center; }
+    /* "Ver detalles" becomes a plain text link; "Comprar" stays a big button */
+    .fc-cta-row { align-items:center; justify-content:center; gap:18px; }
+    .fc-btn-primary {
+      background:transparent !important; border:none !important; box-shadow:none !important;
+      padding:6px 2px !important; min-height:0 !important;
+      text-decoration:underline; text-underline-offset:4px;
+    }
+    .fc-btn-primary:hover { transform:none !important; box-shadow:none !important; }
+    .fc-card--1 .fc-btn-primary { color:var(--c-golden) !important; }
+    .fc-card--2 .fc-btn-primary { color:var(--c-sky) !important; }
+  }
+</style>
+
 <section style="padding: 0 0 60px">
   <div class="container">
     <div style="margin-bottom:24px;display:flex;align-items:center;gap:12px" data-reveal>
-      <span class="tag tag--golden"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Más vendido</span>
-      <span style="font-family:var(--font-display);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--c-text-muted)">El libro estrella de Logramo</span>
+      <span class="tag tag--golden"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Destacados</span>
+      <span style="font-family:var(--font-display);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--c-text-muted)">Los libros estrella de Logramo</span>
     </div>
-    <article class="featured-book" data-reveal>
-      <div class="featured-book__body">
-        <span class="tag tag--terra">+800 dueños lo tienen</span>
-        <h2 class="featured-book__title">Cría un perro feliz: guía completa para nuevos dueños</h2>
-        <p class="featured-book__desc">12 semanas de plan estructurado para pasar de "no sé qué hago" a "esto está funcionando". Sin tecnicismos, sin teoría aburrida. Solo lo que de verdad necesitas.</p>
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
-          <span style="font-family:var(--font-display);font-weight:900;font-size:2.4rem;color:var(--c-golden);letter-spacing:-.03em;line-height:1">€29.99</span>
-          <span style="color:rgba(254,250,232,.55);text-decoration:line-through">€49.99</span>
-          <span class="tag tag--golden">40% off</span>
-        </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <a href="producto.html" class="btn btn--golden btn--lg">Ver detalles <svg class="icon"><use href="#i-arrow-right"/></svg></a>
-          <button class="btn btn--cream btn--lg" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar</button>
-        </div>
-      </div>
-      <div class="featured-book__cover-wrap">
-        <a href="producto.html" class="featured-book__cover">
-          <div class="featured-book__cover-tag">Logramo Editorial</div>
-          <div class="featured-book__cover-title">Cría un<br>Perro Feliz</div>
-          <div style="display:flex;justify-content:center;margin:20px 0"><svg width="56" height="56"><use href="#i-paw"/></svg></div>
-          <div style="font-family:var(--font-display);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c-text-muted)">Guía Completa</div>
-        </a>
-      </div>
-    </article>
+
+    <!-- Carousel -->
+    <div class="fc-wrapper" id="featuredCarousel" data-reveal>
+      <div class="fc-track" id="fcTrack">
+
+        <!-- SLIDE 1 — Cría un perro feliz (theme 1) -->
+        <article class="fc-card fc-card--1">
+          <!-- LEFT: product details -->
+          <div class="fc-card__details">
+            <span class="tag fc-badge">+800 dueños lo tienen</span>
+            <h2 class="fc-card__title">Cría un perro feliz: guía completa para nuevos dueños</h2>
+            <p class="fc-card__desc">Si llevas semanas improvisando y buscando en Google a deshoras, esto es para ti. 12 semanas de plan claro, paso a paso, sin tecnicismos y sin teoría aburrida.</p>
+            <div class="fc-price-row">
+              <span class="fc-price">€29.99</span>
+              <span class="fc-price-old">€49.99</span>
+              <span class="tag fc-discount">40% off</span>
+            </div>
+            <div class="fc-cta-row">
+              <a href="producto.html" class="btn btn--lg fc-btn-primary">Ver detalles <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+              <button class="btn btn--lg fc-btn-secondary" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar</button>
+            </div>
+          </div>
+          <!-- RIGHT: product cover -->
+          <div class="fc-card__cover-wrap">
+            <a href="producto.html" class="fc-card__cover">
+              <div class="fc-card__cover-tag">Logramo Editorial</div>
+              <div class="fc-card__cover-title">Cría un<br>Perro Feliz</div>
+              <div class="fc-cover-icon"><svg width="56" height="56"><use href="#i-paw"/></svg></div>
+              <div class="fc-cover-sub">Guía Completa · 12 semanas</div>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 2 — Sueño Tranquilo (theme 2 — same structure, different colors) -->
+        <article class="fc-card fc-card--2">
+          <!-- LEFT: product details -->
+          <div class="fc-card__details">
+            <span class="tag fc-badge">Más reseñas 5 ⭐</span>
+            <h2 class="fc-card__title">Sueño tranquilo: cómo hacer que tu cachorro duerma de noche</h2>
+            <p class="fc-card__desc">¿Llevas días sin dormir porque tu cachorro llora toda la noche? No eres el único. Este método paso a paso te da las noches de vuelta — en menos de dos semanas.</p>
+            <div class="fc-price-row">
+              <span class="fc-price">€14.99</span>
+              <span class="fc-price-old">€24.99</span>
+              <span class="tag fc-discount">40% off</span>
+            </div>
+            <div class="fc-cta-row">
+              <a href="producto.html" class="btn btn--lg fc-btn-primary">Ver detalles <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+              <button class="btn btn--lg fc-btn-secondary" data-add-to-cart data-id="sueno-tranquilo" data-name="Sueño Tranquilo" data-price="14.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar</button>
+            </div>
+          </div>
+          <!-- RIGHT: product cover -->
+          <div class="fc-card__cover-wrap">
+            <a href="producto.html" class="fc-card__cover">
+              <div class="fc-card__cover-tag">Logramo Editorial</div>
+              <div class="fc-card__cover-title">Sueño<br>Tranquilo</div>
+              <div class="fc-cover-icon"><svg width="56" height="56"><use href="#i-clock"/></svg></div>
+              <div class="fc-cover-sub">Método nocturno · PDF</div>
+            </a>
+          </div>
+        </article>
+
+      </div><!-- /fc-track -->
+    </div><!-- /fc-wrapper -->
+
+    <!-- Dots -->
+    <div class="fc-dots">
+      <button class="fc-dot active" data-fc="0" aria-label="Producto 1"></button>
+      <button class="fc-dot" data-fc="1" aria-label="Producto 2"></button>
+    </div>
   </div>
 </section>
+
+<script>
+(function(){
+  var track=document.getElementById('fcTrack');
+  var wrapper=document.getElementById('featuredCarousel');
+  var dots=document.querySelectorAll('.fc-dot');
+  var slides=document.querySelectorAll('.fc-card');
+  var current=0, autoTimer, isDragging=false, dragStart=0, dragDelta=0;
+  function goTo(i){
+    current=(i+slides.length)%slides.length;
+    track.style.transform='translateX(-'+current*100+'%)';
+    dots.forEach(function(d,n){d.classList.toggle('active',n===current);});
+  }
+  function startAuto(){ stopAuto(); autoTimer=setInterval(function(){goTo(current+1);},9000); }
+  function stopAuto(){ clearInterval(autoTimer); }
+  dots.forEach(function(d){d.addEventListener('click',function(){stopAuto();goTo(parseInt(d.dataset.fc));startAuto();});});
+  // drag / swipe
+  function onDragStart(x){isDragging=true;dragStart=x;dragDelta=0;stopAuto();}
+  function onDragMove(x){if(!isDragging)return;dragDelta=x-dragStart;}
+  function onDragEnd(){if(!isDragging)return;isDragging=false;if(Math.abs(dragDelta)>55){goTo(dragDelta<0?current+1:current-1);}dragDelta=0;startAuto();}
+  wrapper.addEventListener('mousedown',function(e){onDragStart(e.clientX);});
+  wrapper.addEventListener('touchstart',function(e){onDragStart(e.touches[0].clientX);},{passive:true});
+  window.addEventListener('mousemove',function(e){onDragMove(e.clientX);});
+  window.addEventListener('touchmove',function(e){if(isDragging)onDragMove(e.touches[0].clientX);},{passive:true});
+  window.addEventListener('mouseup',onDragEnd);
+  window.addEventListener('touchend',onDragEnd);
+  wrapper.addEventListener('mouseenter',stopAuto);
+  wrapper.addEventListener('mouseleave',function(){if(!isDragging)startAuto();});
+  goTo(0);startAuto();
+})();
+</script>
 
 <!-- ============ CATEGORY: CACHORROS ============ -->
 <section style="padding: 40px 0">
@@ -91,7 +238,7 @@
           <div class="book-card__body">
             <span class="book-card__category">Cachorros</span>
             <h3 class="book-card__title">Los primeros 30 días con tu perro</h3>
-            <p class="book-card__desc">Todo lo que nadie te cuenta cuando llegas a casa con tu cachorro.</p>
+            <p class="book-card__desc">Todo lo que ojalá alguien te hubiera contado antes del primer día.</p>
             <div class="book-card__footer">
               <span class="book-card__price book-card__price--free">Gratis</span>
               <span class="book-card__cta">Descargar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
@@ -109,7 +256,7 @@
           <div class="book-card__body">
             <span class="book-card__category">Cachorros</span>
             <h3 class="book-card__title">Sueño tranquilo: cómo dormir toda la noche</h3>
-            <p class="book-card__desc">El método paso a paso para que tu cachorro deje de llorar de noche.</p>
+            <p class="book-card__desc">El método paso a paso para que tu cachorro deje de llorar de noche. Y tú puedas dormir por fin.</p>
             <div class="book-card__footer">
               <span class="book-card__price">€14.99</span>
               <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
@@ -127,7 +274,7 @@
           <div class="book-card__body">
             <span class="book-card__category">Salud</span>
             <h3 class="book-card__title">Manual de salud para cachorros</h3>
-            <p class="book-card__desc">Vacunas, desparasitación y todo lo que necesitas saber.</p>
+            <p class="book-card__desc">Vacunas, desparasitación y salud básica — sin que te entre el pánico leyéndolo.</p>
             <div class="book-card__footer">
               <span class="book-card__price">€19.99</span>
               <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
@@ -150,6 +297,7 @@
       <div class="library-grid" data-stagger data-stack-mobile>
         <a href="producto.html" class="book-card">
           <div class="book-card__cover-wrap book-card__cover-wrap--golden">
+            <span class="book-card__badge book-card__badge--bestseller">Best Seller</span>
             <div class="book-card__cover book-card__cover--forest">
               <div class="book-card__cover-sub">Libro Estrella</div>
               <div class="book-card__cover-title">Cría un<br>Perro Feliz</div>
@@ -287,6 +435,7 @@
       <div class="library-grid" data-stagger data-stack-mobile>
         <a href="producto.html" class="book-card">
           <div class="book-card__cover-wrap book-card__cover-wrap--lavender">
+            <span class="book-card__badge book-card__badge--popular">Popular</span>
             <div class="book-card__cover">
               <div class="book-card__cover-sub">Libro Digital</div>
               <div class="book-card__cover-title">Ladridos<br>Bajo Control</div>
@@ -305,6 +454,7 @@
         </a>
         <a href="producto.html" class="book-card">
           <div class="book-card__cover-wrap book-card__cover-wrap--pink">
+            <span class="book-card__badge book-card__badge--new">Nuevo</span>
             <div class="book-card__cover book-card__cover--forest">
               <div class="book-card__cover-sub">Manual</div>
               <div class="book-card__cover-title">Ansiedad por<br>Separación</div>
@@ -314,7 +464,7 @@
           <div class="book-card__body">
             <span class="book-card__category">Conducta</span>
             <h3 class="book-card__title">Ansiedad por separación: el método</h3>
-            <p class="book-card__desc">Plan paso a paso para que se quede solo sin sufrir.</p>
+            <p class="book-card__desc">Plan paso a paso para que se quede solo sin sufrir — ni él ni tú.</p>
             <div class="book-card__footer">
               <span class="book-card__price">€22.99</span>
               <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
@@ -332,7 +482,7 @@
           <div class="book-card__body">
             <span class="book-card__category">Paseos</span>
             <h3 class="book-card__title">Paseos sin tirones</h3>
-            <p class="book-card__desc">Camina con tu perro sin que parezca un rodeo.</p>
+            <p class="book-card__desc">Camina con tu perro sin que parezca que él te lleva a ti. Técnica real, resultados reales.</p>
             <div class="book-card__footer">
               <span class="book-card__price">€14.99</span>
               <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
@@ -348,8 +498,8 @@
 <section class="newsletter-section" data-reveal>
   <div class="newsletter-section__inner">
     <div style="display:flex;justify-content:center;margin-bottom:16px"><svg width="56" height="56" style="color:var(--c-cream)"><use href="#i-bell"/></svg></div>
-    <h2 class="newsletter-section__title">No te pierdas<br>los próximos libros</h2>
-    <p class="newsletter-section__desc">Te avisamos cuando publicamos nuevos libros y guías. Sin spam, solo perros.</p>
+    <h2 class="newsletter-section__title">Hay más libros<br>en camino.</h2>
+    <p class="newsletter-section__desc">Sé el primero en saber cuándo publicamos algo nuevo. Solo un email, cuando haga falta.</p>
     <form class="newsletter-section__form" onsubmit="handleSimpleNewsletter(event)">
       <input type="email" class="newsletter-section__input" placeholder="tu@correo.com" required />
       <button type="submit" class="btn btn--dark btn--lg">Notificarme <svg class="icon"><use href="#i-arrow-right"/></svg></button>
@@ -367,5 +517,26 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>
 <script src="animations.js"></script>
+<script>
+// Auto-activate "Gratis" filter when arriving from ?filter=gratis
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('filter') === 'gratis'){
+    // Wait for DOM to be ready and script.js to have wired the filter buttons
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(function(){
+        var gratisBtn = document.querySelector('[data-cat-filter="gratis"]');
+        var todosBtn  = document.querySelector('[data-cat-filter="todos"]');
+        if(gratisBtn){
+          if(todosBtn) todosBtn.classList.remove('active');
+          gratisBtn.classList.add('active');
+          // Scroll smoothly to the filter row
+          gratisBtn.closest('.filter-row')?.scrollIntoView({ behavior:'smooth', block:'center' });
+        }
+      }, 150);
+    });
+  }
+})();
+</script>
 </body>
 </html>

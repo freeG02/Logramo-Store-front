@@ -109,7 +109,7 @@ const FOOTER_HTML = `
     <div class="footer__inner">
       <div>
         <div class="footer__brand-logo"><svg width="150" height="24" viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-        <p class="footer__brand-desc">Tu lugar favorito sobre perros. Guías reales, consejos honestos y una comunidad que entiende lo que es criar un perro desde cero.</p>
+        <p class="footer__brand-desc">El sitio que ojalá hubiéramos encontrado nosotros cuando empezamos. Guías reales, consejos honestos y cero tecnicismos — para dueños como tú.</p>
         <div class="footer__social">
           <a href="#" class="footer__social-link" aria-label="Instagram"><svg class="icon"><use href="#i-instagram"/></svg></a>
           <a href="#" class="footer__social-link" aria-label="Facebook"><svg class="icon"><use href="#i-facebook"/></svg></a>
@@ -147,7 +147,7 @@ const FOOTER_HTML = `
     </div>
     <div class="footer__bottom">
       <span>© 2026 Logramo · Todos los derechos reservados</span>
-      <span>Hecho con <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-label="amor"><path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z"/></svg> para perros y sus personas</span>
+      <span>Hecho con <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-label="amor"><path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z"/></svg> para perros y los humanos que los adoran</span>
     </div>
   </footer>
 </div>`;
@@ -169,7 +169,7 @@ const CART_HTML = `
 
 const CHAT_HTML = `
 <div class="chat-btn">
-  <div class="chat-btn__bubble">¿Necesitas ayuda?</div>
+  <div class="chat-btn__bubble">¿Perdido con tu perro? 😅</div>
   <button class="chat-btn__trigger" id="chatToggle" aria-label="Abrir chat"><svg class="icon"><use href="#i-chat"/></svg></button>
 </div>
 <div class="chat-panel" id="chatPanel">
