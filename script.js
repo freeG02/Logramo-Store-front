@@ -263,7 +263,9 @@ document.querySelectorAll('.filter-row').forEach(row => {
     const allMode = active.length === 0;
     let visible = 0;
     cards.forEach(card => {
-      const match = allMode || active.includes(card.dataset.cat);
+      // data-cat may hold several space-separated tags (e.g. "cachorros caliente")
+      const cardCats = (card.dataset.cat || '').split(/\s+/).filter(Boolean);
+      const match = allMode || active.some(a => cardCats.includes(a));
       card.style.display = match ? '' : 'none';
       if (match) visible++;
     });

@@ -23,16 +23,22 @@
 
 <!-- ============ FILTERS ============ -->
 <div class="container">
-  <div class="filter-row" data-reveal style="justify-content:center;flex-wrap:wrap">
-    <button class="filter-btn active" data-cat-filter="todos">Todos</button>
-    <button class="filter-btn" data-cat-filter="gratis">Gratis</button>
-    <button class="filter-btn" data-cat-filter="cachorros">Cachorros</button>
-    <button class="filter-btn" data-cat-filter="educacion">Educación</button>
-    <button class="filter-btn" data-cat-filter="salud">Salud</button>
-    <button class="filter-btn" data-cat-filter="conducta">Conducta</button>
-    <button class="filter-btn" data-cat-filter="alimentacion">Alimentación</button>
-    <button class="filter-btn" data-cat-filter="paseos">Paseos</button>
+  <div class="filter-row" data-reveal data-library-filter style="justify-content:center;flex-wrap:wrap">
+    <button class="filter-btn active" data-filter="todos">Todos</button>
+    <!-- Tags -->
+    <button class="filter-btn" data-filter="gratis">Gratis</button>
+    <button class="filter-btn" data-filter="bestseller">Best Seller</button>
+    <button class="filter-btn" data-filter="popular">Popular</button>
+    <button class="filter-btn" data-filter="nuevo">Nuevo</button>
+    <!-- Categories -->
+    <button class="filter-btn" data-filter="cachorros">Cachorros</button>
+    <button class="filter-btn" data-filter="educacion">Educación</button>
+    <button class="filter-btn" data-filter="salud">Salud</button>
+    <button class="filter-btn" data-filter="conducta">Conducta</button>
+    <button class="filter-btn" data-filter="alimentacion">Alimentación</button>
+    <button class="filter-btn" data-filter="paseos">Paseos</button>
   </div>
+  <p id="libraryEmpty" style="display:none;text-align:center;padding:40px 20px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">No hay libros con ese filtro todavía… pero estamos en ello 😉</p>
 </div>
 
 <!-- ============ FEATURED CAROUSEL ============ -->
@@ -518,23 +524,68 @@
 <script src="script.js?v=2"></script>
 <script src="animations.js"></script>
 <script>
-// Auto-activate "Gratis" filter when arriving from ?filter=gratis
+/* ============ BIBLIOTECA FILTER ============
+   Each book card's filter keywords are derived automatically from its
+   visible category label (.book-card__category) and its badges, so adding
+   a product (with a category + badge) makes it filterable with no extra work.
+*/
 (function(){
-  var params = new URLSearchParams(window.location.search);
-  if(params.get('filter') === 'gratis'){
-    // Wait for DOM to be ready and script.js to have wired the filter buttons
-    document.addEventListener('DOMContentLoaded', function(){
-      setTimeout(function(){
-        var gratisBtn = document.querySelector('[data-cat-filter="gratis"]');
-        var todosBtn  = document.querySelector('[data-cat-filter="todos"]');
-        if(gratisBtn){
-          if(todosBtn) todosBtn.classList.remove('active');
-          gratisBtn.classList.add('active');
-          // Scroll smoothly to the filter row
-          gratisBtn.closest('.filter-row')?.scrollIntoView({ behavior:'smooth', block:'center' });
-        }
-      }, 150);
+  var row = document.querySelector('[data-library-filter]');
+  if(!row) return;
+  var buttons = row.querySelectorAll('.filter-btn');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.book-card'));
+  var emptyMsg = document.getElementById('libraryEmpty');
+
+  function slug(s){
+    return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+  // Build the keyword set for a card: its category + each badge it carries
+  function keywords(card){
+    var kws = [];
+    var cat = card.querySelector('.book-card__category');
+    if(cat) kws.push(slug(cat.textContent));
+    if(card.querySelector('.book-card__free-badge')) kws.push('gratis');
+    if(card.querySelector('.book-card__badge--bestseller')) kws.push('bestseller');
+    if(card.querySelector('.book-card__badge--popular')) kws.push('popular');
+    if(card.querySelector('.book-card__badge--new')) kws.push('nuevo');
+    if(card.querySelector('.book-card__badge--offer')) kws.push('oferta');
+    return kws;
+  }
+  // Cache keywords on each card
+  cards.forEach(function(c){ c._kw = keywords(c); });
+
+  function apply(filter){
+    var anyVisible = false;
+    cards.forEach(function(card){
+      var show = filter === 'todos' || card._kw.indexOf(filter) > -1;
+      card.style.display = show ? '' : 'none';
+      if(show) anyVisible = true;
     });
+    // Hide category sections that have no visible cards
+    document.querySelectorAll('.library-section').forEach(function(sec){
+      var visible = Array.prototype.some.call(sec.querySelectorAll('.book-card'), function(c){ return c.style.display !== 'none'; });
+      var outer = sec.closest('section');
+      if(outer) outer.style.display = visible ? '' : 'none';
+    });
+    if(emptyMsg) emptyMsg.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  function select(filter, scroll){
+    var target = row.querySelector('[data-filter="'+filter+'"]') || row.querySelector('[data-filter="todos"]');
+    buttons.forEach(function(b){ b.classList.remove('active'); });
+    target.classList.add('active');
+    apply(target.getAttribute('data-filter'));
+    if(scroll) row.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  buttons.forEach(function(btn){
+    btn.addEventListener('click', function(){ select(btn.getAttribute('data-filter'), false); });
+  });
+
+  // Deep link: ?filter=<tag|category> (e.g. from the homepage "Guía gratis" CTA)
+  var initial = new URLSearchParams(location.search).get('filter');
+  if(initial && row.querySelector('[data-filter="'+initial+'"]')){
+    select(initial, true);
   }
 })();
 </script>
