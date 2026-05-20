@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Panel · Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <style>
+    body { background: var(--c-cream-alt); }
+    .admin-bar { display:flex; align-items:center; gap:14px; padding:18px 28px; background:var(--c-cream); border-bottom:var(--bw-1) solid var(--c-ink); position:sticky; top:0; z-index:50; }
+    .admin-bar__logo svg { height:24px; width:auto; }
+    .admin-bar__logo svg path { fill: var(--c-ink); }
+    .admin-bar__title { font-family:var(--font-display); font-weight:800; font-size:.78rem; text-transform:uppercase; letter-spacing:.1em; color:var(--c-text-muted); }
+    .admin-wrap { max-width:1180px; margin:0 auto; padding:36px 28px 100px; }
+    .admin-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:start; }
+    @media(max-width:900px){ .admin-grid { grid-template-columns:1fr; } }
+
+    .panel { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); padding:28px; }
+    .panel + .panel { margin-top:28px; }
+    .panel h2 { font-family:var(--font-display); font-weight:900; font-size:1.3rem; text-transform:uppercase; letter-spacing:-.02em; margin-bottom:6px; }
+    .panel__hint { color:var(--c-text-muted); font-size:.88rem; margin-bottom:22px; }
+
+    .field { margin-bottom:18px; }
+    .field > label { display:block; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+    .field input[type=text], .field input[type=number], .field textarea, .field select {
+      width:100%; box-sizing:border-box; padding:12px 14px;
+      border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream);
+      font-family:var(--font-body); font-size:.95rem; color:var(--c-ink);
+    }
+    .field textarea { resize:vertical; min-height:70px; }
+    .field input:focus, .field textarea:focus, .field select:focus { outline:none; box-shadow:var(--shadow-xs); }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .check { display:flex; align-items:center; gap:10px; font-family:var(--font-body); font-weight:600; font-size:.92rem; }
+    .check input { width:20px; height:20px; }
+
+    /* ---- Tag input component ---- */
+    .tagfield { border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); padding:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; position:relative; }
+    .tagfield__chip { display:inline-flex; align-items:center; gap:6px; padding:5px 6px 5px 11px; border-radius:var(--radius-full); border:var(--bw-1) solid var(--c-ink); font-family:var(--font-display); font-weight:800; font-size:.62rem; text-transform:uppercase; letter-spacing:.06em; }
+    .tagfield__chip button { background:rgba(0,0,0,.18); color:inherit; border:none; border-radius:50%; width:16px; height:16px; cursor:pointer; font-size:.7rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
+    .tagfield__chip button:hover { background:rgba(0,0,0,.4); }
+    .tagfield__input { flex:1; min-width:120px; border:none; outline:none; background:transparent; font-family:var(--font-body); font-size:.92rem; padding:6px 4px; }
+    .tagfield__dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:12px; box-shadow:var(--shadow-md); z-index:20; max-height:220px; overflow:auto; display:none; }
+    .tagfield__dropdown.open { display:block; }
+    .tagfield__opt { display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer; font-family:var(--font-body); font-size:.9rem; }
+    .tagfield__opt:hover, .tagfield__opt.active { background:var(--c-cream-alt); }
+    .tagfield__opt--create { font-weight:700; color:var(--c-terracotta); }
+
+    /* ---- Reusable tag badges (also used on the site) ---- */
+    .lib-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .lib-tag { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-display); font-weight:800; font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; padding:3px 9px; border-radius:var(--radius-full); border:var(--bw-1) solid var(--c-ink); }
+    .lib-tag--free        { background:var(--c-forest);     color:var(--c-cream); }
+    .lib-tag--hot         { background:var(--c-terracotta); color:var(--c-cream); }
+    .lib-tag--nuevo       { background:var(--c-sky);        color:var(--c-ink); }
+    .lib-tag--popular     { background:var(--c-golden);     color:var(--c-ink); }
+    .lib-tag--recomendado { background:var(--c-lavender);   color:var(--c-ink); }
+    .lib-tag--default     { background:var(--c-pink);       color:var(--c-ink); }
+
+    /* available tags manager */
+    .tagpool { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
+    .tagpool .lib-tag { cursor:pointer; }
+    .tagpool .lib-tag.is-used { opacity:.4; }
+    .newtag { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+    .newtag input { flex:1; min-width:120px; padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
+    .newtag select { padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
+
+    /* preview */
+    .preview-mount { display:flex; justify-content:center; }
+    .preview-mount .book-card { max-width:320px; width:100%; }
+    .preview-mount .book-card:hover { transform:none; }
+
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+    .saved-list { display:grid; gap:12px; }
+    .saved-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); }
+    .saved-item__info { flex:1; min-width:0; }
+    .saved-item__title { font-weight:700; font-size:.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .saved-item__meta { font-size:.76rem; color:var(--c-text-muted); }
+    .icon-btn { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:10px; padding:7px 12px; font-family:var(--font-display); font-weight:700; font-size:.7rem; text-transform:uppercase; cursor:pointer; }
+    .icon-btn:hover { background:var(--c-golden); }
+    .icon-btn--danger:hover { background:var(--c-burgundy); color:var(--c-cream); }
+    .export-area textarea { width:100%; box-sizing:border-box; min-height:120px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.78rem; border:var(--bw-1) solid var(--c-ink); border-radius:12px; padding:14px; background:#fff; }
+    .export-tabs { display:flex; gap:8px; margin-bottom:12px; }
+  </style>
+</head>
+<body data-page="admin">
+
+<header class="admin-bar">
+  <a href="index.html" class="admin-bar__logo" aria-label="Logramo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></a>
+  <span class="admin-bar__title">Panel · Productos</span>
+  <span style="margin-left:auto;font-size:.75rem;color:var(--c-text-muted)">Borrador local · nada se publica hasta exportar</span>
+</header>
+
+<div class="admin-wrap">
+  <div class="admin-grid">
+
+    <!-- ============ EDITOR ============ -->
+    <div>
+      <div class="panel">
+        <h2 id="editorTitle">Añadir producto</h2>
+        <p class="panel__hint">Rellena los datos, elige las etiquetas y mira la vista previa en tiempo real.</p>
+
+        <div class="field">
+          <label for="p-title">Título</label>
+          <input type="text" id="p-title" placeholder="Ej. Sueño tranquilo: cómo dormir toda la noche" />
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="p-cat">Categoría</label>
+            <select id="p-cat">
+              <option value="Cachorros">Cachorros</option>
+              <option value="Educación">Educación</option>
+              <option value="Salud">Salud</option>
+              <option value="Conducta">Conducta</option>
+              <option value="Alimentación">Alimentación</option>
+              <option value="Paseos">Paseos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="p-price">Precio (€)</label>
+            <input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade la etiqueta “Free” y muestra “Gratis”)</label>
+        </div>
+
+        <div class="field">
+          <label for="p-desc">Descripción</label>
+          <textarea id="p-desc" placeholder="Una línea honesta y cercana sobre el libro…"></textarea>
+        </div>
+
+        <!-- TAGS -->
+        <div class="field">
+          <label>Etiquetas</label>
+          <div class="tagfield" id="tagfield">
+            <!-- chips + input injected -->
+            <input type="text" class="tagfield__input" id="tagInput" placeholder="Escribe y pulsa Enter… (Free, Hot, Nuevo…)" autocomplete="off" />
+            <div class="tagfield__dropdown" id="tagDropdown"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Etiquetas disponibles (toca para añadir)</label>
+          <div class="tagpool" id="tagPool"></div>
+          <div class="newtag">
+            <input type="text" id="newTagName" placeholder="Crear nueva etiqueta…" />
+            <select id="newTagColor">
+              <option value="free">Verde (Free)</option>
+              <option value="hot">Naranja (Hot)</option>
+              <option value="nuevo">Azul (Nuevo)</option>
+              <option value="popular">Dorado (Popular)</option>
+              <option value="recomendado">Lila (Recomendado)</option>
+              <option value="default">Rosa</option>
+            </select>
+            <button type="button" class="icon-btn" id="createTagBtn">Crear</button>
+          </div>
+        </div>
+
+        <details class="field" style="margin-top:4px">
+          <summary style="cursor:pointer;font-family:var(--font-display);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em">Ajustes de portada (opcional)</summary>
+          <div style="margin-top:14px">
+            <div class="row2">
+              <div class="field">
+                <label for="p-color">Color de portada</label>
+                <select id="p-color">
+                  <option value="sky">Cielo</option>
+                  <option value="peach">Melocotón</option>
+                  <option value="sage">Salvia</option>
+                  <option value="golden">Dorado</option>
+                  <option value="lavender">Lavanda</option>
+                  <option value="pink">Rosa</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="p-icon">Icono</label>
+                <select id="p-icon">
+                  <option value="i-paw">Huella</option>
+                  <option value="i-book">Libro</option>
+                  <option value="i-clock">Reloj</option>
+                  <option value="i-shield">Escudo</option>
+                  <option value="i-target">Diana</option>
+                  <option value="i-heart">Corazón</option>
+                  <option value="i-bell">Campana</option>
+                  <option value="i-bone">Hueso</option>
+                  <option value="i-leaf">Hoja</option>
+                  <option value="i-flame">Llama</option>
+                  <option value="i-check-circle">Check</option>
+                </select>
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="p-coversub">Subtítulo de portada</label>
+                <input type="text" id="p-coversub" placeholder="Guía PDF" value="Guía PDF" />
+              </div>
+              <div class="field">
+                <label for="p-covertitle">Título de portada (usa Enter para 2 líneas)</label>
+                <textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div class="actions">
+          <button type="button" class="btn btn--primary" id="saveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar producto</button>
+          <button type="button" class="icon-btn" id="resetBtn">Limpiar</button>
+        </div>
+      </div>
+
+      <!-- SAVED -->
+      <div class="panel">
+        <h2>Productos guardados</h2>
+        <p class="panel__hint">Se guardan en este navegador. Edita, borra o expórtalos abajo.</p>
+        <div class="saved-list" id="savedList"></div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="panel export-area">
+        <h2>Exportar</h2>
+        <p class="panel__hint">Copia el código del producto actual para pegarlo en la biblioteca, o exporta todo en JSON.</p>
+        <div class="export-tabs">
+          <button type="button" class="icon-btn" id="copyHtmlBtn">Copiar HTML del producto</button>
+          <button type="button" class="icon-btn" id="copyJsonBtn">Copiar JSON (todos)</button>
+        </div>
+        <textarea id="exportOut" readonly placeholder="Aquí aparecerá el código…"></textarea>
+      </div>
+    </div>
+
+    <!-- ============ LIVE PREVIEW ============ -->
+    <div>
+      <div class="panel" style="position:sticky;top:96px">
+        <h2>Vista previa</h2>
+        <p class="panel__hint">Así se verá la tarjeta en la biblioteca.</p>
+        <div class="preview-mount" id="previewMount"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- icon sprite + logo -->
+<div id="partial-nav" hidden></div>
+<script src="partials.js"></script>
+
+<script>
+(function(){
+  /* ============ TAG REGISTRY ============ */
+  var DEFAULT_TAGS = {
+    free:        { label:'Free',        cls:'free' },
+    hot:         { label:'Hot',         cls:'hot' },
+    nuevo:       { label:'Nuevo',       cls:'nuevo' },
+    popular:     { label:'Popular',     cls:'popular' },
+    recomendado: { label:'Recomendado', cls:'recomendado' }
+  };
+  function loadCustom(){ try { return JSON.parse(localStorage.getItem('logramo_tags')||'{}'); } catch(e){ return {}; } }
+  function saveCustom(c){ localStorage.setItem('logramo_tags', JSON.stringify(c)); }
+  function registry(){ return Object.assign({}, DEFAULT_TAGS, loadCustom()); }
+  function slugify(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function tagInfo(slug){ var r=registry(); return r[slug] || { label: slug, cls:'default' }; }
+  function badgeHTML(slug){ var t=tagInfo(slug); return '<span class="lib-tag lib-tag--'+(t.cls||'default')+'">'+escapeHtml(t.label)+'</span>'; }
+
+  /* ============ STATE ============ */
+  var selected = [];          // array of tag slugs on the current product
+  var editingId = null;       // id of product being edited, or null
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ============ TAG FIELD ============ */
+  var tagInput = $('tagInput'), dropdown = $('tagDropdown'), tagfield = $('tagfield');
+
+  function renderChips(){
+    // remove existing chips (keep input + dropdown)
+    [].slice.call(tagfield.querySelectorAll('.tagfield__chip')).forEach(function(c){ c.remove(); });
+    selected.forEach(function(slug){
+      var t = tagInfo(slug);
+      var chip = document.createElement('span');
+      chip.className = 'tagfield__chip lib-tag--'+(t.cls||'default');
+      chip.innerHTML = escapeHtml(t.label) + ' <button type="button" aria-label="Quitar" data-slug="'+slug+'">✕</button>';
+      tagfield.insertBefore(chip, tagInput);
+    });
+    renderPool();
+    renderPreview();
+  }
+  function addTag(slug){ if(slug && selected.indexOf(slug)===-1){ selected.push(slug); renderChips(); } }
+  function removeTag(slug){ selected = selected.filter(function(s){ return s!==slug; }); renderChips(); }
+
+  tagfield.addEventListener('click', function(e){
+    var btn = e.target.closest('.tagfield__chip button');
+    if(btn){ removeTag(btn.dataset.slug); return; }
+    tagInput.focus();
+  });
+
+  function showDropdown(){
+    var q = slugify(tagInput.value);
+    var reg = registry();
+    var items = Object.keys(reg)
+      .filter(function(slug){ return selected.indexOf(slug)===-1; })
+      .filter(function(slug){ return !q || slug.indexOf(q)>-1 || slugify(reg[slug].label).indexOf(q)>-1; });
+    var html = items.map(function(slug){
+      return '<div class="tagfield__opt" data-slug="'+slug+'">'+badgeHTML(slug)+'<span>'+escapeHtml(reg[slug].label)+'</span></div>';
+    }).join('');
+    // offer to create if typed text isn't an existing tag
+    if(q && !reg[q]){
+      html += '<div class="tagfield__opt tagfield__opt--create" data-create="'+q+'">＋ Crear etiqueta “'+escapeHtml(tagInput.value.trim())+'”</div>';
+    }
+    dropdown.innerHTML = html;
+    dropdown.classList.toggle('open', html.length>0);
+  }
+  tagInput.addEventListener('focus', showDropdown);
+  tagInput.addEventListener('input', showDropdown);
+  tagInput.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var q = slugify(tagInput.value);
+      if(!q) return;
+      var reg = registry();
+      if(!reg[q]){ createTag(tagInput.value.trim(), 'default'); }
+      addTag(q);
+      tagInput.value=''; showDropdown();
+    } else if(e.key==='Backspace' && !tagInput.value && selected.length){
+      removeTag(selected[selected.length-1]);
+    }
+  });
+  dropdown.addEventListener('click', function(e){
+    var opt = e.target.closest('.tagfield__opt'); if(!opt) return;
+    if(opt.dataset.create){ createTag(tagInput.value.trim(), 'default'); addTag(opt.dataset.create); }
+    else { addTag(opt.dataset.slug); }
+    tagInput.value=''; tagInput.focus(); showDropdown();
+  });
+  document.addEventListener('click', function(e){ if(!tagfield.contains(e.target)) dropdown.classList.remove('open'); });
+
+  function createTag(name, cls){
+    var slug = slugify(name); if(!slug) return;
+    var custom = loadCustom();
+    if(!DEFAULT_TAGS[slug]){ custom[slug] = { label: name, cls: cls||'default' }; saveCustom(custom); }
+    renderPool();
+  }
+
+  /* ============ AVAILABLE TAGS POOL + NEW TAG ============ */
+  function renderPool(){
+    var reg = registry(); var pool = $('tagPool');
+    pool.innerHTML = Object.keys(reg).map(function(slug){
+      var used = selected.indexOf(slug)>-1;
+      return '<span class="lib-tag lib-tag--'+(reg[slug].cls||'default')+(used?' is-used':'')+'" data-slug="'+slug+'">'+escapeHtml(reg[slug].label)+'</span>';
+    }).join('');
+  }
+  $('tagPool').addEventListener('click', function(e){
+    var chip = e.target.closest('[data-slug]'); if(chip) addTag(chip.dataset.slug);
+  });
+  $('createTagBtn').addEventListener('click', function(){
+    var name = $('newTagName').value.trim(); if(!name) return;
+    createTag(name, $('newTagColor').value);
+    addTag(slugify(name));
+    $('newTagName').value='';
+  });
+
+  /* ============ PRODUCT MODEL + PREVIEW ============ */
+  function gather(){
+    var free = $('p-free').checked;
+    return {
+      id: editingId || ('p'+Date.now()),
+      title: $('p-title').value.trim() || 'Título del producto',
+      category: $('p-cat').value,
+      desc: $('p-desc').value.trim() || 'Descripción del producto…',
+      price: $('p-price').value ? parseFloat($('p-price').value).toFixed(2) : '0.00',
+      free: free,
+      tags: selected.slice(),
+      color: $('p-color').value,
+      icon: $('p-icon').value,
+      coverSub: $('p-coversub').value.trim() || 'Guía PDF',
+      coverTitle: $('p-covertitle').value.trim() || ($('p-title').value.trim() || 'Producto')
+    };
+  }
+  function cardHTML(p){
+    var tags = p.tags.map(badgeHTML).join('');
+    var priceHtml = p.free
+      ? '<span class="book-card__price book-card__price--free">Gratis</span>'
+      : '<span class="book-card__price">€'+p.price+'</span>';
+    var cta = p.free ? 'Descargar' : 'Ver libro';
+    return ''
+    + '<a href="producto.html" class="book-card" data-tags="'+p.tags.join(' ')+'">'
+    +   '<div class="book-card__cover-wrap book-card__cover-wrap--'+p.color+'">'
+    +     '<div class="book-card__cover">'
+    +       '<div class="book-card__cover-sub">'+escapeHtml(p.coverSub)+'</div>'
+    +       '<div class="book-card__cover-title">'+escapeHtml(p.coverTitle).replace(/\n/g,'<br>')+'</div>'
+    +       '<div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+p.icon+'"/></svg></div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="book-card__body">'
+    +     (tags ? '<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>' : '')
+    +     '<span class="book-card__category">'+escapeHtml(p.category)+'</span>'
+    +     '<h3 class="book-card__title">'+escapeHtml(p.title)+'</h3>'
+    +     '<p class="book-card__desc">'+escapeHtml(p.desc)+'</p>'
+    +     '<div class="book-card__footer">'+priceHtml+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div>'
+    +   '</div>'
+    + '</a>';
+  }
+  function renderPreview(){
+    var p = gather();
+    $('previewMount').innerHTML = cardHTML(p);
+    $('exportOut').value = cardHTML(p);
+  }
+  // live updates
+  ['p-title','p-cat','p-desc','p-price','p-color','p-icon','p-coversub','p-covertitle'].forEach(function(id){
+    $(id).addEventListener('input', function(){ if(id==='p-title' && !$('p-covertitle').value){} renderPreview(); });
+    $(id).addEventListener('change', renderPreview);
+  });
+  $('p-free').addEventListener('change', function(){
+    if($('p-free').checked) addTag('free'); else removeTag('free');
+    renderPreview();
+  });
+
+  /* ============ SAVE / LIST / EDIT / DELETE ============ */
+  function loadProducts(){ try { return JSON.parse(localStorage.getItem('logramo_products')||'[]'); } catch(e){ return []; } }
+  function saveProducts(arr){ localStorage.setItem('logramo_products', JSON.stringify(arr)); }
+  function renderSaved(){
+    var arr = loadProducts(); var list = $('savedList');
+    if(!arr.length){ list.innerHTML = '<p style="color:var(--c-text-muted);font-size:.88rem">Aún no has guardado productos.</p>'; return; }
+    list.innerHTML = arr.map(function(p){
+      return '<div class="saved-item">'
+        + '<div class="saved-item__info"><div class="saved-item__title">'+escapeHtml(p.title)+'</div>'
+        + '<div class="saved-item__meta">'+escapeHtml(p.category)+' · '+(p.free?'Gratis':'€'+p.price)+' · '+(p.tags.length?p.tags.join(', '):'sin etiquetas')+'</div></div>'
+        + '<button type="button" class="icon-btn" data-edit="'+p.id+'">Editar</button>'
+        + '<button type="button" class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button>'
+        + '</div>';
+    }).join('');
+  }
+  $('savedList').addEventListener('click', function(e){
+    var ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
+    if(ed){ editProduct(ed.dataset.edit); }
+    if(del){ var arr = loadProducts().filter(function(p){return p.id!==del.dataset.del;}); saveProducts(arr); renderSaved(); }
+  });
+  function editProduct(id){
+    var p = loadProducts().filter(function(x){return x.id===id;})[0]; if(!p) return;
+    editingId = p.id;
+    $('p-title').value=p.title; $('p-cat').value=p.category; $('p-desc').value=p.desc;
+    $('p-price').value=p.free?'':p.price; $('p-free').checked=!!p.free;
+    $('p-color').value=p.color; $('p-icon').value=p.icon; $('p-coversub').value=p.coverSub; $('p-covertitle').value=p.coverTitle;
+    selected = (p.tags||[]).slice();
+    $('editorTitle').textContent='Editar producto';
+    renderChips();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  $('saveBtn').addEventListener('click', function(){
+    var p = gather();
+    if(!$('p-title').value.trim()){ alert('Ponle un título al producto.'); return; }
+    var arr = loadProducts();
+    var idx = arr.findIndex(function(x){return x.id===p.id;});
+    if(idx>-1) arr[idx]=p; else arr.push(p);
+    saveProducts(arr); renderSaved(); resetForm();
+  });
+  function resetForm(){
+    editingId=null; selected=[];
+    $('p-title').value=''; $('p-cat').value='Cachorros'; $('p-desc').value='';
+    $('p-price').value=''; $('p-free').checked=false;
+    $('p-color').value='sky'; $('p-icon').value='i-paw'; $('p-coversub').value='Guía PDF'; $('p-covertitle').value='';
+    $('editorTitle').textContent='Añadir producto';
+    renderChips();
+  }
+  $('resetBtn').addEventListener('click', resetForm);
+
+  /* ============ EXPORT ============ */
+  function copy(text, btn){
+    navigator.clipboard.writeText(text).then(function(){
+      var old = btn.textContent; btn.textContent='¡Copiado!';
+      setTimeout(function(){ btn.textContent=old; }, 1400);
+    });
+  }
+  $('copyHtmlBtn').addEventListener('click', function(){ $('exportOut').value=cardHTML(gather()); copy($('exportOut').value, this); });
+  $('copyJsonBtn').addEventListener('click', function(){ var j=JSON.stringify(loadProducts(),null,2); $('exportOut').value=j; copy(j, this); });
+
+  /* ============ INIT ============ */
+  renderChips();
+  renderSaved();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
