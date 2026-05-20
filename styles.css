@@ -2231,6 +2231,7 @@ h6 { font-size: .9rem; }
   .videos__inner { padding: 56px 28px; }
   .reviews-grid { grid-template-columns: 1fr; }
   .freebie__inner, .product-soft__inner, .product-hero__inner, .about-hero__inner { grid-template-columns: 1fr; gap: 48px; }
+  .product-hero__inner .product-cover { order: -1; }
   .freebie, .mission, .newsletter-section, .stats-block, .product-soft, .problem-solution, .bonuses-section, .story-section { padding: 56px 28px; }
   .modules-grid, .for-grid, .bonuses-grid, .values-grid, .team-grid, .library-grid { grid-template-columns: 1fr; }
   .problem-solution__grid { grid-template-columns: 1fr; gap: 32px; }
