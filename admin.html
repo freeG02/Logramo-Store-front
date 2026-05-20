@@ -50,8 +50,8 @@
     /* ---- Reusable tag badges (also used on the site) ---- */
     .lib-tags { display:flex; flex-wrap:wrap; gap:6px; }
     .lib-tag { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-display); font-weight:800; font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; padding:3px 9px; border-radius:var(--radius-full); border:var(--bw-1) solid var(--c-ink); }
-    .lib-tag--free        { background:var(--c-forest);     color:var(--c-cream); }
-    .lib-tag--hot         { background:var(--c-terracotta); color:var(--c-cream); }
+    .lib-tag--gratis      { background:var(--c-forest);     color:var(--c-cream); }
+    .lib-tag--caliente    { background:var(--c-terracotta); color:var(--c-cream); }
     .lib-tag--nuevo       { background:var(--c-sky);        color:var(--c-ink); }
     .lib-tag--popular     { background:var(--c-golden);     color:var(--c-ink); }
     .lib-tag--recomendado { background:var(--c-lavender);   color:var(--c-ink); }
@@ -124,7 +124,7 @@
         </div>
 
         <div class="field">
-          <label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade la etiqueta “Free” y muestra “Gratis”)</label>
+          <label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade la etiqueta “Gratis” y muestra el precio como “Gratis”)</label>
         </div>
 
         <div class="field">
@@ -137,7 +137,7 @@
           <label>Etiquetas</label>
           <div class="tagfield" id="tagfield">
             <!-- chips + input injected -->
-            <input type="text" class="tagfield__input" id="tagInput" placeholder="Escribe y pulsa Enter… (Free, Hot, Nuevo…)" autocomplete="off" />
+            <input type="text" class="tagfield__input" id="tagInput" placeholder="Escribe y pulsa Enter… (Gratis, Caliente, Nuevo…)" autocomplete="off" />
             <div class="tagfield__dropdown" id="tagDropdown"></div>
           </div>
         </div>
@@ -148,8 +148,8 @@
           <div class="newtag">
             <input type="text" id="newTagName" placeholder="Crear nueva etiqueta…" />
             <select id="newTagColor">
-              <option value="free">Verde (Free)</option>
-              <option value="hot">Naranja (Hot)</option>
+              <option value="gratis">Verde (Gratis)</option>
+              <option value="caliente">Naranja (Caliente)</option>
               <option value="nuevo">Azul (Nuevo)</option>
               <option value="popular">Dorado (Popular)</option>
               <option value="recomendado">Lila (Recomendado)</option>
@@ -249,8 +249,8 @@
 (function(){
   /* ============ TAG REGISTRY ============ */
   var DEFAULT_TAGS = {
-    free:        { label:'Free',        cls:'free' },
-    hot:         { label:'Hot',         cls:'hot' },
+    gratis:      { label:'Gratis',      cls:'gratis' },
+    caliente:    { label:'Caliente',    cls:'caliente' },
     nuevo:       { label:'Nuevo',       cls:'nuevo' },
     popular:     { label:'Popular',     cls:'popular' },
     recomendado: { label:'Recomendado', cls:'recomendado' }
@@ -410,7 +410,7 @@
     $(id).addEventListener('change', renderPreview);
   });
   $('p-free').addEventListener('change', function(){
-    if($('p-free').checked) addTag('free'); else removeTag('free');
+    if($('p-free').checked) addTag('gratis'); else removeTag('gratis');
     renderPreview();
   });
 
