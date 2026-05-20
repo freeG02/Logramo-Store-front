@@ -2577,6 +2577,16 @@ h1, h2, h3, h4,
   [data-stack-mobile] > *:last-child {
     margin-bottom: 0;
   }
+  /* When a library filter is active, show results as a normal stacked list
+     (no sticky pinning / big 22vh gaps that assume all cards are visible) */
+  body.lib-filtering [data-stack-mobile] > * {
+    position: static !important;
+    margin-bottom: 24px !important;
+    transform: none !important;
+  }
+  body.lib-filtering [data-stack-mobile] > *:last-child {
+    margin-bottom: 0 !important;
+  }
 }
 
 /* Horizontal track on mobile = full bleed */

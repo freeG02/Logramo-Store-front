@@ -573,6 +573,9 @@
 
   function apply(filter){
     placeDestacados(filter);
+    // While filtering, drop the mobile sticky-stack spacing (the big 22vh
+    // gaps only make sense when every card in a section is shown).
+    document.body.classList.toggle('lib-filtering', filter !== 'todos');
     var anyVisible = false;
     cards.forEach(function(card){
       var show = filter === 'todos' || card._kw.indexOf(filter) > -1;
