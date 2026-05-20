@@ -609,7 +609,7 @@ h6 { font-size: .9rem; }
   display: flex; align-items: center;
   width: max-content;
   white-space: nowrap;
-  animation: marquee 8s linear infinite;
+  animation: marquee 14s linear infinite;
 }
 .marquee-track > span { flex: 0 0 auto; }
 .marquee-track > span {
@@ -1263,6 +1263,14 @@ h6 { font-size: .9rem; }
   line-height: 1.2;
 }
 .for-card__desc { font-size: .88rem; color: var(--c-text-muted); line-height: 1.55; }
+
+/* Multi-color process cards (Cómo trabajamos) */
+.for-grid--multi .for-card:nth-child(1) { background: var(--c-peach); }
+.for-grid--multi .for-card:nth-child(2) { background: var(--c-sage); }
+.for-grid--multi .for-card:nth-child(3) { background: var(--c-sky); }
+.for-grid--multi .for-card:nth-child(1) .for-card__icon { background: var(--c-terracotta); color: var(--c-cream); }
+.for-grid--multi .for-card:nth-child(2) .for-card__icon { background: var(--c-forest); color: var(--c-cream); }
+.for-grid--multi .for-card:nth-child(3) .for-card__icon { background: var(--c-golden); color: var(--c-ink); }
 
 /* BONUSES */
 .bonuses-section {
