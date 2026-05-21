@@ -9,16 +9,11 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
-    .admin-bar { display:flex; align-items:center; gap:14px; padding:18px 28px; background:var(--c-cream); border-bottom:var(--bw-1) solid var(--c-ink); position:sticky; top:0; z-index:50; }
-    .admin-bar__logo svg { height:24px; width:auto; }
-    .admin-bar__logo svg path { fill: var(--c-ink); }
-    .admin-bar__title { font-family:var(--font-display); font-weight:800; font-size:.78rem; text-transform:uppercase; letter-spacing:.1em; color:var(--c-text-muted); }
-    .admin-wrap { max-width:1180px; margin:0 auto; padding:36px 28px 100px; }
-    .admin-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:start; }
-    @media(max-width:900px){ .admin-grid { grid-template-columns:1fr; } }
+    [hidden]{ display:none !important; }
+    .muted { color:var(--c-text-muted); font-size:.88rem; }
 
     /* ---- Login ---- */
-    .login-screen { min-height:80vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; }
+    .login-screen { min-height:90vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; }
     .login-card { width:100%; max-width:380px; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); padding:36px; text-align:center; }
     .login-card .login-logo svg { height:30px; width:auto; margin-bottom:18px; }
     .login-card .login-logo svg path { fill:var(--c-ink); }
@@ -27,79 +22,85 @@
     .login-card input { width:100%; box-sizing:border-box; padding:13px 14px; margin-bottom:12px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; font-family:var(--font-body); font-size:.95rem; }
     .login-error { color:var(--c-burgundy); font-weight:700; font-size:.85rem; min-height:1.2em; margin-top:12px; margin-bottom:0; }
 
-    .panel { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); padding:28px; }
-    .panel + .panel { margin-top:28px; }
-    .panel h2 { font-family:var(--font-display); font-weight:900; font-size:1.3rem; text-transform:uppercase; letter-spacing:-.02em; margin-bottom:6px; }
-    .panel__hint { color:var(--c-text-muted); font-size:.88rem; margin-bottom:22px; }
-    .banner { padding:12px 16px; border-radius:12px; border:var(--bw-1) solid var(--c-ink); background:var(--c-golden); font-size:.85rem; font-weight:600; margin-bottom:18px; }
+    /* ---- App shell ---- */
+    .shell { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .side { background:var(--c-ink); color:var(--c-cream); padding:22px 16px; display:flex; flex-direction:column; gap:6px; position:sticky; top:0; height:100vh; }
+    .side__logo { padding:6px 10px 18px; }
+    .side__logo svg { height:24px; width:auto; }
+    .side__logo svg path { fill:var(--c-cream); }
+    .side__link { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(254,250,232,.7); border:none; background:none; text-align:left; width:100%; transition:background .15s,color .15s; }
+    .side__link .icon { width:18px; height:18px; }
+    .side__link:hover { color:var(--c-cream); background:rgba(255,255,255,.06); }
+    .side__link.active { color:var(--c-ink); background:var(--c-golden); }
+    .side__foot { margin-top:auto; }
+    .side__user { font-size:.72rem; color:rgba(254,250,232,.5); padding:8px 12px; word-break:break-all; }
+    .main { padding:32px 36px 100px; max-width:1180px; }
+    @media(max-width:820px){ .shell { grid-template-columns:1fr; } .side { position:static; height:auto; flex-direction:row; flex-wrap:wrap; } .side__logo{ width:100%; } .side__foot{ margin:0; } .main{ padding:24px 18px 80px; } }
 
-    .field { margin-bottom:18px; }
+    .page-head { margin-bottom:24px; }
+    .page-head h1 { font-family:var(--font-display); font-weight:900; font-size:1.8rem; text-transform:uppercase; letter-spacing:-.02em; }
+    .page-head p { color:var(--c-text-muted); margin-top:4px; }
+
+    .panel { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); padding:26px; }
+    .panel + .panel { margin-top:24px; }
+    .panel h2 { font-family:var(--font-display); font-weight:900; font-size:1.15rem; text-transform:uppercase; margin-bottom:6px; }
+    .panel__hint { color:var(--c-text-muted); font-size:.86rem; margin-bottom:20px; }
+    .grid2 { display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:start; }
+    @media(max-width:900px){ .grid2 { grid-template-columns:1fr; } }
+
+    .subtabs { display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+    .subtab { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:var(--radius-full); padding:9px 18px; font-family:var(--font-display); font-weight:700; font-size:.74rem; text-transform:uppercase; cursor:pointer; }
+    .subtab.active { background:var(--c-ink); color:var(--c-cream); }
+
+    .field { margin-bottom:16px; }
     .field > label { display:block; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
-    .field input[type=text], .field input[type=number], .field textarea, .field select {
-      width:100%; box-sizing:border-box; padding:12px 14px;
-      border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream);
-      font-family:var(--font-body); font-size:.95rem; color:var(--c-ink);
-    }
-    .field textarea { resize:vertical; min-height:70px; }
+    .field input[type=text], .field input[type=number], .field input[type=password], .field textarea, .field select {
+      width:100%; box-sizing:border-box; padding:12px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); font-family:var(--font-body); font-size:.95rem; color:var(--c-ink); }
+    .field textarea { resize:vertical; min-height:64px; }
     .field input:focus, .field textarea:focus, .field select:focus { outline:none; box-shadow:var(--shadow-xs); }
     .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .check { display:flex; align-items:center; gap:10px; font-family:var(--font-body); font-weight:600; font-size:.92rem; }
     .check input { width:20px; height:20px; }
 
-    /* ---- Tag input component ---- */
+    /* tag field */
     .tagfield { border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); padding:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; position:relative; }
     .tagfield__chip { display:inline-flex; align-items:center; gap:6px; padding:5px 6px 5px 11px; border-radius:var(--radius-full); border:var(--bw-1) solid var(--c-ink); font-family:var(--font-display); font-weight:800; font-size:.62rem; text-transform:uppercase; letter-spacing:.06em; }
     .tagfield__chip button { background:rgba(0,0,0,.18); color:inherit; border:none; border-radius:50%; width:16px; height:16px; cursor:pointer; font-size:.7rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
-    .tagfield__chip button:hover { background:rgba(0,0,0,.4); }
     .tagfield__input { flex:1; min-width:120px; border:none; outline:none; background:transparent; font-family:var(--font-body); font-size:.92rem; padding:6px 4px; }
     .tagfield__dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:12px; box-shadow:var(--shadow-md); z-index:20; max-height:220px; overflow:auto; display:none; }
     .tagfield__dropdown.open { display:block; }
     .tagfield__opt { display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer; font-family:var(--font-body); font-size:.9rem; }
-    .tagfield__opt:hover, .tagfield__opt.active { background:var(--c-cream-alt); }
+    .tagfield__opt:hover { background:var(--c-cream-alt); }
     .tagfield__opt--create { font-weight:700; color:var(--c-terracotta); }
 
-    /* ---- Reusable tag badges (also used on the site) ---- */
     .lib-tags { display:flex; flex-wrap:wrap; gap:6px; }
     .lib-tag { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-display); font-weight:800; font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; padding:3px 9px; border-radius:var(--radius-full); border:var(--bw-1) solid var(--c-ink); }
-    .lib-tag--gratis      { background:var(--c-forest);     color:var(--c-cream); }
-    .lib-tag--caliente    { background:var(--c-terracotta); color:var(--c-cream); }
-    .lib-tag--nuevo       { background:var(--c-sky);        color:var(--c-ink); }
-    .lib-tag--popular     { background:var(--c-golden);     color:var(--c-ink); }
-    .lib-tag--recomendado { background:var(--c-lavender);   color:var(--c-ink); }
-    .lib-tag--default     { background:var(--c-pink);       color:var(--c-ink); }
-
-    .tagpool { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
-    .tagpool .lib-tag { cursor:pointer; }
-    .tagpool .lib-tag.is-used { opacity:.4; }
+    .lib-tag--gratis{background:var(--c-forest);color:var(--c-cream)} .lib-tag--caliente{background:var(--c-terracotta);color:var(--c-cream)} .lib-tag--nuevo{background:var(--c-sky);color:var(--c-ink)} .lib-tag--popular{background:var(--c-golden);color:var(--c-ink)} .lib-tag--recomendado{background:var(--c-lavender);color:var(--c-ink)} .lib-tag--default{background:var(--c-pink);color:var(--c-ink)}
+    .tagpool { display:flex; flex-wrap:wrap; gap:8px; } .tagpool .lib-tag{cursor:pointer} .tagpool .lib-tag.is-used{opacity:.4}
     .newtag { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
-    .newtag input { flex:1; min-width:120px; padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
-    .newtag select { padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
+    .newtag input{ flex:1; min-width:120px; padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; } .newtag select{ padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
 
     .preview-mount { display:flex; justify-content:center; }
-    .preview-mount .book-card { max-width:320px; width:100%; }
-    .preview-mount .book-card:hover { transform:none; }
+    .preview-mount .book-card, .preview-mount .article-card { max-width:320px; width:100%; }
 
     .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; align-items:center; }
-    .saved-list { display:grid; gap:12px; }
-    .saved-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); }
-    .saved-item__info { flex:1; min-width:0; }
-    .saved-item__title { font-weight:700; font-size:.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .saved-item__meta { font-size:.76rem; color:var(--c-text-muted); }
-    .icon-btn { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:10px; padding:7px 12px; font-family:var(--font-display); font-weight:700; font-size:.7rem; text-transform:uppercase; cursor:pointer; }
-    .icon-btn:hover { background:var(--c-golden); }
-    .icon-btn--danger:hover { background:var(--c-burgundy); color:var(--c-cream); }
-    .muted { color:var(--c-text-muted); font-size:.88rem; }
-    [hidden] { display:none !important; }
+    .icon-btn { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:10px; padding:8px 13px; font-family:var(--font-display); font-weight:700; font-size:.7rem; text-transform:uppercase; cursor:pointer; }
+    .icon-btn:hover { background:var(--c-golden); } .icon-btn--danger:hover { background:var(--c-burgundy); color:var(--c-cream); }
+    .list { display:grid; gap:10px; }
+    .list-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); }
+    .list-item__info { flex:1; min-width:0; } .list-item__title { font-weight:700; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .list-item__meta { font-size:.74rem; color:var(--c-text-muted); }
+
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+    @media(max-width:760px){ .stats{ grid-template-columns:1fr 1fr; } }
+    .stat-card { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); box-shadow:var(--shadow-xs); padding:20px; }
+    .stat-card__num { font-family:var(--font-display); font-weight:900; font-size:2rem; line-height:1; color:var(--c-terracotta); }
+    .stat-card__label { font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-text-muted); margin-top:8px; font-weight:700; }
+    table.tbl { width:100%; border-collapse:collapse; font-size:.86rem; }
+    table.tbl th, table.tbl td { text-align:left; padding:10px 12px; border-bottom:1px solid rgba(30,40,32,.12); }
+    table.tbl th { font-family:var(--font-display); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-text-muted); }
   </style>
 </head>
 <body data-page="admin">
-
-<header class="admin-bar">
-  <a href="index.html" class="admin-bar__logo" aria-label="Logramo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></a>
-  <span class="admin-bar__title">Panel</span>
-  <span id="whoami" class="muted" style="margin-left:auto"></span>
-  <button class="icon-btn" id="logoutBtn" hidden>Salir</button>
-</header>
 
 <!-- ============ LOGIN ============ -->
 <div class="login-screen" id="loginScreen">
@@ -114,381 +115,264 @@
   </form>
 </div>
 
-<!-- ============ DASHBOARD ============ -->
-<div class="admin-wrap" id="dashboard" hidden>
-  <div id="dbBanner"></div>
-  <div class="admin-grid">
-
-    <!-- EDITOR -->
-    <div>
-      <div class="panel">
-        <h2 id="editorTitle">Añadir producto</h2>
-        <p class="panel__hint">Rellena los datos, elige las etiquetas y mira la vista previa en tiempo real.</p>
-
-        <div class="field">
-          <label for="p-title">Título</label>
-          <input type="text" id="p-title" placeholder="Ej. Sueño tranquilo: cómo dormir toda la noche" />
-        </div>
-
-        <div class="row2">
-          <div class="field">
-            <label for="p-cat">Categoría</label>
-            <select id="p-cat">
-              <option value="Cachorros">Cachorros</option>
-              <option value="Educación">Educación</option>
-              <option value="Salud">Salud</option>
-              <option value="Conducta">Conducta</option>
-              <option value="Alimentación">Alimentación</option>
-              <option value="Paseos">Paseos</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="p-price">Precio (€)</label>
-            <input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade la etiqueta “Gratis” y muestra el precio como “Gratis”)</label>
-        </div>
-
-        <div class="field">
-          <label for="p-desc">Descripción</label>
-          <textarea id="p-desc" placeholder="Una línea honesta y cercana sobre el libro…"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Etiquetas</label>
-          <div class="tagfield" id="tagfield">
-            <input type="text" class="tagfield__input" id="tagInput" placeholder="Escribe y pulsa Enter… (Gratis, Caliente, Nuevo…)" autocomplete="off" />
-            <div class="tagfield__dropdown" id="tagDropdown"></div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Etiquetas disponibles (toca para añadir)</label>
-          <div class="tagpool" id="tagPool"></div>
-          <div class="newtag">
-            <input type="text" id="newTagName" placeholder="Crear nueva etiqueta…" />
-            <select id="newTagColor">
-              <option value="gratis">Verde (Gratis)</option>
-              <option value="caliente">Naranja (Caliente)</option>
-              <option value="nuevo">Azul (Nuevo)</option>
-              <option value="popular">Dorado (Popular)</option>
-              <option value="recomendado">Lila (Recomendado)</option>
-              <option value="default">Rosa</option>
-            </select>
-            <button type="button" class="icon-btn" id="createTagBtn">Crear</button>
-          </div>
-        </div>
-
-        <details class="field" style="margin-top:4px">
-          <summary style="cursor:pointer;font-family:var(--font-display);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em">Ajustes de portada (opcional)</summary>
-          <div style="margin-top:14px">
-            <div class="row2">
-              <div class="field">
-                <label for="p-color">Color de portada</label>
-                <select id="p-color">
-                  <option value="sky">Cielo</option>
-                  <option value="peach">Melocotón</option>
-                  <option value="sage">Salvia</option>
-                  <option value="golden">Dorado</option>
-                  <option value="lavender">Lavanda</option>
-                  <option value="pink">Rosa</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="p-icon">Icono</label>
-                <select id="p-icon">
-                  <option value="i-paw">Huella</option>
-                  <option value="i-book">Libro</option>
-                  <option value="i-clock">Reloj</option>
-                  <option value="i-shield">Escudo</option>
-                  <option value="i-target">Diana</option>
-                  <option value="i-heart">Corazón</option>
-                  <option value="i-bell">Campana</option>
-                  <option value="i-bone">Hueso</option>
-                  <option value="i-leaf">Hoja</option>
-                  <option value="i-flame">Llama</option>
-                  <option value="i-check-circle">Check</option>
-                </select>
-              </div>
-            </div>
-            <div class="row2">
-              <div class="field">
-                <label for="p-coversub">Subtítulo de portada</label>
-                <input type="text" id="p-coversub" placeholder="Guía PDF" value="Guía PDF" />
-              </div>
-              <div class="field">
-                <label for="p-covertitle">Título de portada (Enter para 2 líneas)</label>
-                <textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <div class="actions">
-          <button type="button" class="btn btn--primary" id="saveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar producto</button>
-          <button type="button" class="icon-btn" id="resetBtn">Limpiar</button>
-          <span class="muted" id="saveStatus"></span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Productos publicados</h2>
-        <p class="panel__hint">Guardados en la base de datos. Aparecen al instante en la web.</p>
-        <div class="saved-list" id="savedList"></div>
-      </div>
+<!-- ============ APP ============ -->
+<div class="shell" id="shell" hidden>
+  <nav class="side">
+    <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
+    <button class="side__link active" data-view="contenido"><svg class="icon"><use href="#i-book"/></svg> Contenido</button>
+    <button class="side__link" data-view="trafico"><svg class="icon"><use href="#i-target"/></svg> Tráfico</button>
+    <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Ventas</button>
+    <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Suscriptores</button>
+    <button class="side__link" data-view="ajustes"><svg class="icon"><use href="#i-user"/></svg> Ajustes</button>
+    <div class="side__foot">
+      <div class="side__user" id="whoami"></div>
+      <button class="side__link" id="logoutBtn"><svg class="icon"><use href="#i-arrow-left"/></svg> Salir</button>
     </div>
+  </nav>
 
-    <!-- LIVE PREVIEW -->
-    <div>
-      <div class="panel" style="position:sticky;top:96px">
-        <h2>Vista previa</h2>
-        <p class="panel__hint">Así se verá la tarjeta en la biblioteca.</p>
-        <div class="preview-mount" id="previewMount"></div>
+  <main class="main">
+
+    <!-- ===== CONTENIDO ===== -->
+    <section data-page-view="contenido">
+      <div class="page-head"><h1>Contenido</h1><p>Gestiona los productos de la biblioteca y los artículos del blog.</p></div>
+      <div class="subtabs">
+        <button class="subtab active" data-sub="prod">Productos</button>
+        <button class="subtab" data-sub="art">Artículos</button>
       </div>
-    </div>
 
-  </div>
+      <!-- PRODUCTS -->
+      <div data-sub-view="prod">
+        <div class="grid2">
+          <div>
+            <div class="panel">
+              <h2 id="pEditorTitle">Añadir producto</h2>
+              <p class="panel__hint">Rellena los datos y mira la vista previa.</p>
+              <div class="field"><label for="p-title">Título</label><input type="text" id="p-title" placeholder="Ej. Sueño tranquilo" /></div>
+              <div class="row2">
+                <div class="field"><label for="p-cat">Categoría</label>
+                  <select id="p-cat"><option>Cachorros</option><option>Educación</option><option>Salud</option><option>Conducta</option><option>Alimentación</option><option>Paseos</option></select>
+                </div>
+                <div class="field"><label for="p-price">Precio (€)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
+              </div>
+              <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade “Gratis”)</label></div>
+              <div class="field"><label for="p-desc">Descripción</label><textarea id="p-desc" placeholder="Una línea cercana sobre el libro…"></textarea></div>
+              <div class="field"><label>Etiquetas</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Escribe y Enter… (Gratis, Caliente…)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
+              <div class="field"><label>Etiquetas disponibles</label><div class="tagpool" id="pTagPool"></div>
+                <div class="newtag"><input type="text" id="newTagName" placeholder="Crear nueva etiqueta…" /><select id="newTagColor"><option value="gratis">Verde (Gratis)</option><option value="caliente">Naranja (Caliente)</option><option value="nuevo">Azul (Nuevo)</option><option value="popular">Dorado (Popular)</option><option value="recomendado">Lila (Recomendado)</option><option value="default">Rosa</option></select><button type="button" class="icon-btn" id="createTagBtn">Crear</button></div>
+              </div>
+              <details class="field"><summary style="cursor:pointer;font-family:var(--font-display);font-weight:800;font-size:.72rem;text-transform:uppercase">Portada (opcional)</summary>
+                <div style="margin-top:12px"><div class="row2">
+                  <div class="field"><label for="p-color">Color</label><select id="p-color"><option value="sky">Cielo</option><option value="peach">Melocotón</option><option value="sage">Salvia</option><option value="golden">Dorado</option><option value="lavender">Lavanda</option><option value="pink">Rosa</option></select></div>
+                  <div class="field"><label for="p-icon">Icono</label><select id="p-icon"><option value="i-paw">Huella</option><option value="i-book">Libro</option><option value="i-clock">Reloj</option><option value="i-shield">Escudo</option><option value="i-target">Diana</option><option value="i-heart">Corazón</option><option value="i-bell">Campana</option><option value="i-bone">Hueso</option><option value="i-leaf">Hoja</option><option value="i-flame">Llama</option></select></div>
+                </div><div class="row2">
+                  <div class="field"><label for="p-coversub">Subtítulo</label><input type="text" id="p-coversub" value="Guía PDF" /></div>
+                  <div class="field"><label for="p-covertitle">Título portada</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
+                </div></div>
+              </details>
+              <div class="actions"><button type="button" class="btn btn--primary" id="pSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar</button><button type="button" class="icon-btn" id="pResetBtn">Limpiar</button><span class="muted" id="pSaveStatus"></span></div>
+            </div>
+            <div class="panel"><h2>Productos publicados</h2><div class="list" id="pList"></div></div>
+          </div>
+          <div><div class="panel" style="position:sticky;top:24px"><h2>Vista previa</h2><div class="preview-mount" id="pPreview"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ARTICLES -->
+      <div data-sub-view="art" hidden>
+        <div class="grid2">
+          <div>
+            <div class="panel">
+              <h2 id="aEditorTitle">Añadir artículo</h2>
+              <p class="panel__hint">Crea entradas del blog con sus etiquetas.</p>
+              <div class="field"><label for="a-title">Título</label><input type="text" id="a-title" placeholder="Ej. Las 5 palabras que tu perro debe aprender" /></div>
+              <div class="row2">
+                <div class="field"><label for="a-cat">Categoría</label><select id="a-cat"><option>Cachorros</option><option>Educación</option><option>Conducta</option><option>Salud</option><option>Alimentación</option><option>Historias</option></select></div>
+                <div class="field"><label for="a-read">Lectura (min)</label><input type="number" id="a-read" min="1" value="5" /></div>
+              </div>
+              <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Caliente 🔥 (artículo en tendencia)</label></div>
+              <div class="field"><label for="a-excerpt">Extracto</label><textarea id="a-excerpt" placeholder="Una frase que enganche…"></textarea></div>
+              <div class="field"><label for="a-img">URL de imagen (opcional)</label><input type="text" id="a-img" placeholder="https://…" /></div>
+              <div class="field"><label>Etiquetas</label><div class="tagfield" id="aTagfield"><input type="text" class="tagfield__input" id="aTagInput" placeholder="Escribe y Enter…" autocomplete="off" /><div class="tagfield__dropdown" id="aTagDropdown"></div></div></div>
+              <div class="actions"><button type="button" class="btn btn--primary" id="aSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar</button><button type="button" class="icon-btn" id="aResetBtn">Limpiar</button><span class="muted" id="aSaveStatus"></span></div>
+            </div>
+            <div class="panel"><h2>Artículos publicados</h2><div class="list" id="aList"></div></div>
+          </div>
+          <div><div class="panel" style="position:sticky;top:24px"><h2>Vista previa</h2><div class="preview-mount" id="aPreview"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TRÁFICO ===== -->
+    <section data-page-view="trafico" hidden>
+      <div class="page-head"><h1>Tráfico</h1><p>Visitas a la web (se registran automáticamente en cada página).</p></div>
+      <div class="stats" id="trafStats"></div>
+      <div class="panel"><h2>Páginas más vistas</h2><div id="trafTop"><p class="muted">Cargando…</p></div></div>
+    </section>
+
+    <!-- ===== VENTAS ===== -->
+    <section data-page-view="ventas" hidden>
+      <div class="page-head"><h1>Ventas</h1><p>Pedidos e ingresos.</p></div>
+      <div class="panel" id="stripeBanner" style="background:var(--c-golden);margin-bottom:24px"><strong>Cobros aún no conectados.</strong> La tienda funciona en modo demo. Para cobrar de verdad conectamos <em>Stripe</em> (cuenta gratis) y los pedidos aparecerán aquí automáticamente.</div>
+      <div class="stats" id="salesStats"></div>
+      <div class="panel"><h2>Pedidos</h2><div id="ordersBox"><p class="muted">Cargando…</p></div></div>
+    </section>
+
+    <!-- ===== SUSCRIPTORES ===== -->
+    <section data-page-view="emails" hidden>
+      <div class="page-head"><h1>Suscriptores</h1><p>Cada vez que alguien se apunta a la newsletter en la web, aparece aquí.</p></div>
+      <div class="stats" id="subStats"></div>
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0">Lista de correos</h2><button class="icon-btn" id="exportCsvBtn">Exportar CSV</button></div>
+        <div id="subBox"><p class="muted">Cargando…</p></div>
+        <p class="panel__hint" style="margin-top:18px">Para <strong>enviar</strong> campañas a esta lista conectamos <em>Resend</em> (gratis hasta cierto volumen) — lo activamos cuando quieras.</p>
+      </div>
+    </section>
+
+    <!-- ===== AJUSTES ===== -->
+    <section data-page-view="ajustes" hidden>
+      <div class="page-head"><h1>Ajustes</h1><p>Tu cuenta de administrador.</p></div>
+      <div class="panel" style="max-width:460px">
+        <div class="field"><label>Correo</label><input type="text" id="setEmail" disabled /></div>
+        <div class="field"><label for="setPass">Nueva contraseña</label><input type="password" id="setPass" placeholder="Mínimo 6 caracteres" /></div>
+        <div class="actions"><button type="button" class="btn btn--primary" id="changePassBtn">Cambiar contraseña</button><span class="muted" id="passStatus"></span></div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
 <div id="partial-nav" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="partials.js"></script>
-
 <script>
 (function(){
-  /* ============ SUPABASE ============ */
-  var SUPABASE_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
-  var SUPABASE_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
+  var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
+  var SUPABASE_KEY='sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  var $ = function(id){ return document.getElementById(id); };
-
-  /* ============ TAGS ============ */
-  var DEFAULT_TAGS = {
-    gratis:      { label:'Gratis',      color:'gratis' },
-    caliente:    { label:'Caliente',    color:'caliente' },
-    nuevo:       { label:'Nuevo',       color:'nuevo' },
-    popular:     { label:'Popular',     color:'popular' },
-    recomendado: { label:'Recomendado', color:'recomendado' }
-  };
-  var REG = Object.assign({}, DEFAULT_TAGS); // slug -> {label,color}
-
+  var $=function(id){return document.getElementById(id);};
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function slugify(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function tagInfo(slug){ return REG[slug] || { label:slug, color:'default' }; }
-  function badgeHTML(slug){ var t=tagInfo(slug); return '<span class="lib-tag lib-tag--'+(t.color||'default')+'">'+escapeHtml(t.label)+'</span>'; }
 
-  async function loadTags(){
-    try {
-      var res = await sb.from('tags').select('*');
-      if(res.error) throw res.error;
-      REG = Object.assign({}, DEFAULT_TAGS);
-      (res.data||[]).forEach(function(t){ REG[t.slug] = { label:t.label, color:t.color||'default' }; });
-    } catch(e){ /* keep defaults if table missing */ }
-    renderPool(); renderChips();
-  }
-  async function createTag(name, color){
-    var slug = slugify(name); if(!slug) return slug;
-    REG[slug] = { label:name, color:color||'default' };
-    try { await sb.from('tags').upsert({ slug:slug, label:name, color:color||'default' }, { onConflict:'slug' }); } catch(e){}
-    renderPool();
-    return slug;
-  }
+  /* ===== TAGS ===== */
+  var DEFAULT_TAGS={gratis:{label:'Gratis',color:'gratis'},caliente:{label:'Caliente',color:'caliente'},nuevo:{label:'Nuevo',color:'nuevo'},popular:{label:'Popular',color:'popular'},recomendado:{label:'Recomendado',color:'recomendado'}};
+  var REG=Object.assign({},DEFAULT_TAGS);
+  function tagInfo(s){ return REG[s]||{label:s,color:'default'}; }
+  function badge(s){ var t=tagInfo(s); return '<span class="lib-tag lib-tag--'+(t.color||'default')+'">'+esc(t.label)+'</span>'; }
+  async function loadTags(){ try{ var r=await sb.from('tags').select('*'); if(!r.error){ REG=Object.assign({},DEFAULT_TAGS); (r.data||[]).forEach(function(t){REG[t.slug]={label:t.label,color:t.color||'default'};}); } }catch(e){} pField.pool(); aField.pool(); }
+  async function createTag(name,color){ var slug=slugify(name); if(!slug) return slug; REG[slug]={label:name,color:color||'default'}; try{ await sb.from('tags').upsert({slug:slug,label:name,color:color||'default'},{onConflict:'slug'}); }catch(e){} pField.pool(); aField.pool(); return slug; }
 
-  /* ============ STATE ============ */
-  var selected = [];
-  var editingId = null;
-  var PRODUCTS = [];
-
-  /* ============ TAG FIELD ============ */
-  var tagInput = $('tagInput'), dropdown = $('tagDropdown'), tagfield = $('tagfield');
-  function renderChips(){
-    [].slice.call(tagfield.querySelectorAll('.tagfield__chip')).forEach(function(c){ c.remove(); });
-    selected.forEach(function(slug){
-      var t = tagInfo(slug);
-      var chip = document.createElement('span');
-      chip.className = 'tagfield__chip lib-tag--'+(t.color||'default');
-      chip.innerHTML = escapeHtml(t.label) + ' <button type="button" aria-label="Quitar" data-slug="'+slug+'">✕</button>';
-      tagfield.insertBefore(chip, tagInput);
-    });
-    renderPool(); renderPreview();
-  }
-  function addTag(slug){ if(slug && selected.indexOf(slug)===-1){ selected.push(slug); renderChips(); } }
-  function removeTag(slug){ selected = selected.filter(function(s){ return s!==slug; }); renderChips(); }
-  tagfield.addEventListener('click', function(e){
-    var btn = e.target.closest('.tagfield__chip button');
-    if(btn){ removeTag(btn.dataset.slug); return; }
-    tagInput.focus();
-  });
-  function showDropdown(){
-    var q = slugify(tagInput.value);
-    var items = Object.keys(REG)
-      .filter(function(slug){ return selected.indexOf(slug)===-1; })
-      .filter(function(slug){ return !q || slug.indexOf(q)>-1 || slugify(REG[slug].label).indexOf(q)>-1; });
-    var html = items.map(function(slug){ return '<div class="tagfield__opt" data-slug="'+slug+'">'+badgeHTML(slug)+'<span>'+escapeHtml(REG[slug].label)+'</span></div>'; }).join('');
-    if(q && !REG[q]){ html += '<div class="tagfield__opt tagfield__opt--create" data-create="1">＋ Crear etiqueta “'+escapeHtml(tagInput.value.trim())+'”</div>'; }
-    dropdown.innerHTML = html; dropdown.classList.toggle('open', html.length>0);
-  }
-  tagInput.addEventListener('focus', showDropdown);
-  tagInput.addEventListener('input', showDropdown);
-  tagInput.addEventListener('keydown', async function(e){
-    if(e.key==='Enter'){
-      e.preventDefault();
-      var raw = tagInput.value.trim(); var q = slugify(raw); if(!q) return;
-      if(!REG[q]){ await createTag(raw,'default'); }
-      addTag(q); tagInput.value=''; showDropdown();
-    } else if(e.key==='Backspace' && !tagInput.value && selected.length){ removeTag(selected[selected.length-1]); }
-  });
-  dropdown.addEventListener('click', async function(e){
-    var opt = e.target.closest('.tagfield__opt'); if(!opt) return;
-    if(opt.dataset.create){ var slug = await createTag(tagInput.value.trim(),'default'); addTag(slug); }
-    else { addTag(opt.dataset.slug); }
-    tagInput.value=''; tagInput.focus(); showDropdown();
-  });
-  document.addEventListener('click', function(e){ if(!tagfield.contains(e.target)) dropdown.classList.remove('open'); });
-
-  function renderPool(){
-    $('tagPool').innerHTML = Object.keys(REG).map(function(slug){
-      var used = selected.indexOf(slug)>-1;
-      return '<span class="lib-tag lib-tag--'+(REG[slug].color||'default')+(used?' is-used':'')+'" data-slug="'+slug+'">'+escapeHtml(REG[slug].label)+'</span>';
-    }).join('');
-  }
-  $('tagPool').addEventListener('click', function(e){ var chip=e.target.closest('[data-slug]'); if(chip) addTag(chip.dataset.slug); });
-  $('createTagBtn').addEventListener('click', async function(){ var name=$('newTagName').value.trim(); if(!name) return; var slug=await createTag(name,$('newTagColor').value); addTag(slug); $('newTagName').value=''; });
-
-  /* ============ PRODUCT MODEL + PREVIEW ============ */
-  function gather(){
-    var free = $('p-free').checked;
-    return {
-      id: editingId || null,
-      title: $('p-title').value.trim(),
-      category: $('p-cat').value,
-      description: $('p-desc').value.trim(),
-      price: $('p-price').value ? parseFloat($('p-price').value) : 0,
-      is_free: free,
-      tags: selected.slice(),
-      cover_color: $('p-color').value,
-      cover_icon: $('p-icon').value,
-      cover_sub: $('p-coversub').value.trim() || 'Guía PDF',
-      cover_title: $('p-covertitle').value.trim() || ($('p-title').value.trim() || 'Producto')
-    };
-  }
-  function cardHTML(p){
-    var tags = (p.tags||[]).map(badgeHTML).join('');
-    var priceHtml = p.is_free ? '<span class="book-card__price book-card__price--free">Gratis</span>' : '<span class="book-card__price">€'+Number(p.price||0).toFixed(2)+'</span>';
-    var cta = p.is_free ? 'Descargar' : 'Ver libro';
-    return ''
-    + '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'">'
-    +   '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'
-    +     '<div class="book-card__cover">'
-    +       '<div class="book-card__cover-sub">'+escapeHtml(p.cover_sub||'Guía PDF')+'</div>'
-    +       '<div class="book-card__cover-title">'+escapeHtml(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div>'
-    +       '<div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div>'
-    +     '</div>'
-    +   '</div>'
-    +   '<div class="book-card__body">'
-    +     (tags ? '<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>' : '')
-    +     '<span class="book-card__category">'+escapeHtml(p.category||'')+'</span>'
-    +     '<h3 class="book-card__title">'+escapeHtml(p.title||'Título del producto')+'</h3>'
-    +     '<p class="book-card__desc">'+escapeHtml(p.description||'Descripción…')+'</p>'
-    +     '<div class="book-card__footer">'+priceHtml+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div>'
-    +   '</div>'
-    + '</a>';
-  }
-  function renderPreview(){ $('previewMount').innerHTML = cardHTML(gather()); }
-  ['p-title','p-cat','p-desc','p-price','p-color','p-icon','p-coversub','p-covertitle'].forEach(function(id){
-    $(id).addEventListener('input', renderPreview); $(id).addEventListener('change', renderPreview);
-  });
-  $('p-free').addEventListener('change', function(){ if($('p-free').checked) addTag('gratis'); else removeTag('gratis'); renderPreview(); });
-
-  /* ============ PRODUCTS CRUD (Supabase) ============ */
-  async function loadProducts(){
-    var list = $('savedList');
-    try {
-      var res = await sb.from('products').select('*').order('created_at',{ascending:false});
-      if(res.error) throw res.error;
-      PRODUCTS = res.data || [];
-      if(!PRODUCTS.length){ list.innerHTML = '<p class="muted">Aún no hay productos. Crea el primero arriba.</p>'; return; }
-      list.innerHTML = PRODUCTS.map(function(p){
-        return '<div class="saved-item"><div class="saved-item__info"><div class="saved-item__title">'+escapeHtml(p.title)+'</div>'
-          + '<div class="saved-item__meta">'+escapeHtml(p.category||'')+' · '+(p.is_free?'Gratis':'€'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div>'
-          + '<button type="button" class="icon-btn" data-edit="'+p.id+'">Editar</button>'
-          + '<button type="button" class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';
-      }).join('');
-    } catch(e){
-      list.innerHTML = '<p class="muted">No se pudo cargar la tabla de productos todavía. ¿Has corrido el SQL de configuración? ('+escapeHtml(e.message||'')+')</p>';
+  /* ===== Reusable tag field ===== */
+  function makeTagField(fieldId, inputId, dropId, poolId, onChange){
+    var field=$(fieldId), input=$(inputId), drop=$(dropId), pool=poolId?$(poolId):null;
+    var selected=[];
+    function chips(){
+      [].slice.call(field.querySelectorAll('.tagfield__chip')).forEach(function(c){c.remove();});
+      selected.forEach(function(slug){ var t=tagInfo(slug); var chip=document.createElement('span'); chip.className='tagfield__chip lib-tag--'+(t.color||'default'); chip.innerHTML=esc(t.label)+' <button type="button" data-slug="'+slug+'">✕</button>'; field.insertBefore(chip,input); });
+      renderPool(); if(onChange) onChange();
     }
+    function add(s){ if(s&&selected.indexOf(s)===-1){ selected.push(s); chips(); } }
+    function remove(s){ selected=selected.filter(function(x){return x!==s;}); chips(); }
+    function renderPool(){ if(!pool) return; pool.innerHTML=Object.keys(REG).map(function(slug){ var u=selected.indexOf(slug)>-1; return '<span class="lib-tag lib-tag--'+(REG[slug].color||'default')+(u?' is-used':'')+'" data-slug="'+slug+'">'+esc(REG[slug].label)+'</span>'; }).join(''); }
+    function showDrop(){ var q=slugify(input.value); var items=Object.keys(REG).filter(function(s){return selected.indexOf(s)===-1;}).filter(function(s){return !q||s.indexOf(q)>-1||slugify(REG[s].label).indexOf(q)>-1;}); var html=items.map(function(s){return '<div class="tagfield__opt" data-slug="'+s+'">'+badge(s)+'<span>'+esc(REG[s].label)+'</span></div>';}).join(''); if(q&&!REG[q]){ html+='<div class="tagfield__opt tagfield__opt--create" data-create="1">＋ Crear “'+esc(input.value.trim())+'”</div>'; } drop.innerHTML=html; drop.classList.toggle('open',html.length>0); }
+    field.addEventListener('click',function(e){ var b=e.target.closest('.tagfield__chip button'); if(b){remove(b.dataset.slug);return;} input.focus(); });
+    input.addEventListener('focus',showDrop); input.addEventListener('input',showDrop);
+    input.addEventListener('keydown',async function(e){ if(e.key==='Enter'){ e.preventDefault(); var raw=input.value.trim(),q=slugify(raw); if(!q)return; if(!REG[q]) await createTag(raw,'default'); add(q); input.value=''; showDrop(); } else if(e.key==='Backspace'&&!input.value&&selected.length){ remove(selected[selected.length-1]); } });
+    drop.addEventListener('click',async function(e){ var o=e.target.closest('.tagfield__opt'); if(!o)return; if(o.dataset.create){ var s=await createTag(input.value.trim(),'default'); add(s); } else add(o.dataset.slug); input.value=''; input.focus(); showDrop(); });
+    if(pool) pool.addEventListener('click',function(e){ var c=e.target.closest('[data-slug]'); if(c) add(c.dataset.slug); });
+    document.addEventListener('click',function(e){ if(!field.contains(e.target)) drop.classList.remove('open'); });
+    return { get:function(){return selected.slice();}, set:function(a){selected=(a||[]).slice();chips();}, add:add, remove:remove, pool:renderPool, chips:chips };
   }
-  $('savedList').addEventListener('click', async function(e){
-    var ed=e.target.closest('[data-edit]'), del=e.target.closest('[data-del]');
-    if(ed){ editProduct(ed.dataset.edit); }
-    if(del){ if(!confirm('¿Borrar este producto?')) return; var r=await sb.from('products').delete().eq('id', del.dataset.del); if(r.error){ alert('Error al borrar: '+r.error.message); } loadProducts(); }
-  });
-  function editProduct(id){
-    var p = PRODUCTS.filter(function(x){return String(x.id)===String(id);})[0]; if(!p) return;
-    editingId = p.id;
-    $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||'';
-    $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free;
-    $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||'';
-    selected=(p.tags||[]).slice(); $('editorTitle').textContent='Editar producto'; renderChips();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  $('saveBtn').addEventListener('click', async function(){
-    var p = gather();
-    if(!p.title){ alert('Ponle un título al producto.'); return; }
-    $('saveStatus').textContent='Guardando…';
-    var row = { title:p.title, category:p.category, description:p.description, price:p.price, is_free:p.is_free, tags:p.tags, cover_color:p.cover_color, cover_icon:p.cover_icon, cover_sub:p.cover_sub, cover_title:p.cover_title };
-    var r;
-    if(editingId){ r = await sb.from('products').update(row).eq('id', editingId); }
-    else { r = await sb.from('products').insert(row); }
-    if(r.error){ $('saveStatus').textContent=''; alert('Error al guardar: '+r.error.message); return; }
-    $('saveStatus').textContent='✓ Guardado'; setTimeout(function(){ $('saveStatus').textContent=''; }, 1800);
-    resetForm(); loadProducts();
-  });
-  function resetForm(){
-    editingId=null; selected=[];
-    $('p-title').value=''; $('p-cat').value='Cachorros'; $('p-desc').value='';
-    $('p-price').value=''; $('p-free').checked=false;
-    $('p-color').value='sky'; $('p-icon').value='i-paw'; $('p-coversub').value='Guía PDF'; $('p-covertitle').value='';
-    $('editorTitle').textContent='Añadir producto'; renderChips();
-  }
-  $('resetBtn').addEventListener('click', resetForm);
 
-  /* ============ AUTH ============ */
-  async function showDashboard(session){
-    $('loginScreen').hidden = true;
-    $('dashboard').hidden = false;
-    $('logoutBtn').hidden = false;
-    $('whoami').textContent = session && session.user ? session.user.email : '';
-    await loadTags();
-    await loadProducts();
-    renderPreview();
-  }
-  function showLogin(){
-    $('dashboard').hidden = true;
-    $('logoutBtn').hidden = true;
-    $('whoami').textContent = '';
-    $('loginScreen').hidden = false;
-  }
-  $('loginForm').addEventListener('submit', async function(e){
-    e.preventDefault();
-    $('loginError').textContent=''; $('loginBtn').textContent='Entrando…';
-    var r = await sb.auth.signInWithPassword({ email:$('loginEmail').value.trim(), password:$('loginPass').value });
-    $('loginBtn').textContent='Entrar';
-    if(r.error){ $('loginError').textContent = r.error.message==='Invalid login credentials' ? 'Correo o contraseña incorrectos.' : r.error.message; return; }
-    showDashboard(r.data.session);
-  });
-  $('logoutBtn').addEventListener('click', async function(){ await sb.auth.signOut(); showLogin(); });
+  /* ===== PRODUCTS ===== */
+  var pField, aField, editingP=null, editingA=null, PRODUCTS=[], ARTICLES=[];
+  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto' }; }
+  function pCard(p){ var tags=(p.tags||[]).map(badge).join(''); var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">€'+Number(p.price||0).toFixed(2)+'</span>'; return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
+  function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
+  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Gratis':'€'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay productos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('pEditorTitle').textContent='Editar producto'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este producto?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Ponle un título.');return;} $('pSaveStatus').textContent='Guardando…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Guardado'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
+  function pReset(){ editingP=null; pField.set([]); $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value=''; $('pEditorTitle').textContent='Añadir producto'; pPreview(); }
+  $('pResetBtn').addEventListener('click',pReset);
+  $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
+  ['p-title','p-cat','p-desc','p-price','p-color','p-icon','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
+  $('createTagBtn').addEventListener('click',async function(){ var n=$('newTagName').value.trim(); if(!n)return; var s=await createTag(n,$('newTagColor').value); pField.add(s); $('newTagName').value=''; });
 
-  /* ============ INIT ============ */
-  (async function init(){
-    renderPool(); renderChips();
-    var s = await sb.auth.getSession();
-    if(s.data && s.data.session){ showDashboard(s.data.session); } else { showLogin(); }
-  })();
+  /* ===== ARTICLES ===== */
+  function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, tags:aField.get() }; }
+  function aCard(a){ var catColors={Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'}; var tag='<span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'; var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">🔥 Caliente</span>':''; var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>'; return '<a href="blog-post.html" class="article-card" data-cat="'+slugify(a.category)+(a.hot?' caliente':'')+'"><div class="article-card__img-wrap">'+tag+hot+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'Título del artículo')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'Extracto…')+'</p><div class="article-card__meta"><span><svg class="icon icon--xs"><use href="#i-clock"/></svg> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
+  function aPreview(){ $('aPreview').innerHTML=aCard(aGather()); }
+  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+a.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay artículos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
+  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-hot').checked=!!a.hot; aField.set(a.tags||[]); $('aEditorTitle').textContent='Editar artículo'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este artículo?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
+  $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Ponle un título.');return;} $('aSaveStatus').textContent='Guardando…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Guardado'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
+  function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-hot').checked=false; $('aEditorTitle').textContent='Añadir artículo'; aPreview(); }
+  $('aResetBtn').addEventListener('click',aReset);
+  $('a-hot').addEventListener('change',function(){ if($('a-hot').checked) aField.add('caliente'); else aField.remove('caliente'); aPreview(); });
+  ['a-title','a-cat','a-excerpt','a-read','a-img'].forEach(function(id){ $(id).addEventListener('input',aPreview); $(id).addEventListener('change',aPreview); });
+
+  /* ===== TRÁFICO ===== */
+  async function loadTrafico(){
+    try{
+      var r=await sb.from('pageviews').select('path,created_at'); if(r.error)throw r.error;
+      var rows=r.data||[]; var now=Date.now(), day=864e5;
+      var total=rows.length, last7=rows.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length, today=rows.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length;
+      var byPath={}; rows.forEach(function(x){byPath[x.path]=(byPath[x.path]||0)+1;});
+      var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
+      $('trafStats').innerHTML=stat(total,'Visitas totales')+stat(last7,'Últimos 7 días')+stat(today,'Hoy')+stat(Object.keys(byPath).length,'Páginas distintas');
+      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(t.p)+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas. Navega por la web y vuelve aquí.</p>';
+    }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Falta la tabla de tráfico. Corre el SQL extra que te pasé. ('+esc(e.message||'')+')</p>'; }
+  }
+  function stat(n,l){ return '<div class="stat-card"><div class="stat-card__num">'+n+'</div><div class="stat-card__label">'+l+'</div></div>'; }
+
+  /* ===== VENTAS ===== */
+  async function loadVentas(){
+    try{
+      var r=await sb.from('orders').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error;
+      var rows=r.data||[]; var rev=rows.reduce(function(s,o){return s+Number(o.total||0);},0);
+      $('salesStats').innerHTML=stat(rows.length,'Pedidos')+stat('€'+rev.toFixed(2),'Ingresos')+stat(rows.filter(function(o){return o.status==='paid';}).length,'Pagados')+stat(rows.filter(function(o){return o.status==='pending';}).length,'Pendientes');
+      $('ordersBox').innerHTML=rows.length?'<table class="tbl"><tr><th>Fecha</th><th>Email</th><th>Total</th><th>Estado</th></tr>'+rows.map(function(o){return '<tr><td>'+new Date(o.created_at).toLocaleDateString('es-ES')+'</td><td>'+esc(o.email||'')+'</td><td>€'+Number(o.total||0).toFixed(2)+'</td><td>'+esc(o.status||'')+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay pedidos. Aparecerán aquí en cuanto conectemos Stripe.</p>';
+    }catch(e){ $('salesStats').innerHTML=''; $('ordersBox').innerHTML='<p class="muted">Falta la tabla de pedidos. Corre el SQL extra. ('+esc(e.message||'')+')</p>'; }
+  }
+
+  /* ===== SUSCRIPTORES ===== */
+  var SUBS=[];
+  async function loadSubs(){
+    try{
+      var r=await sb.from('subscribers').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error;
+      SUBS=r.data||[]; var now=Date.now(), day=864e5;
+      $('subStats').innerHTML=stat(SUBS.length,'Suscriptores')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'Esta semana')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length,'Hoy');
+      $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Correo</th><th>Origen</th><th>Fecha</th></tr>'+SUBS.map(function(s){return '<tr><td>'+esc(s.email)+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('es-ES')+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay suscriptores. Cuando alguien se apunte en la web, aparecerá aquí.</p>';
+    }catch(e){ $('subStats').innerHTML=''; $('subBox').innerHTML='<p class="muted">Falta la tabla de suscriptores. Corre el SQL extra. ('+esc(e.message||'')+')</p>'; }
+  }
+  $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,origen,fecha\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+(s.source||'')+'","'+s.created_at+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='suscriptores-logramo.csv'; a.click(); });
+
+  /* ===== AJUSTES ===== */
+  $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('Mínimo 6 caracteres.');return;} $('passStatus').textContent='Guardando…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Cambiada'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
+
+  /* ===== NAV ===== */
+  var loaders={ trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
+  document.querySelectorAll('.side__link[data-view]').forEach(function(btn){ btn.addEventListener('click',function(){
+    var v=btn.dataset.view;
+    document.querySelectorAll('.side__link[data-view]').forEach(function(b){b.classList.toggle('active',b===btn);});
+    document.querySelectorAll('[data-page-view]').forEach(function(s){s.hidden=s.dataset.pageView!==v;});
+    if(loaders[v]) loaders[v]();
+  }); });
+  document.querySelectorAll('.subtab').forEach(function(t){ t.addEventListener('click',function(){ document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('active',x===t);}); document.querySelectorAll('[data-sub-view]').forEach(function(s){s.hidden=s.dataset.subView!==t.dataset.sub;}); }); });
+
+  /* ===== AUTH ===== */
+  async function enter(session){
+    $('loginScreen').hidden=true; $('shell').hidden=false;
+    $('whoami').textContent=session&&session.user?session.user.email:'';
+    $('setEmail').value=session&&session.user?session.user.email:'';
+    await loadTags(); pPreview(); aPreview(); await pLoad(); await aLoad();
+  }
+  function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
+  $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Entrando…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Entrar'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Correo o contraseña incorrectos.':r.error.message; return; } enter(r.data.session); });
+  $('logoutBtn').addEventListener('click',async function(){ await sb.auth.signOut(); leave(); });
+
+  /* ===== INIT ===== */
+  pField=makeTagField('pTagfield','pTagInput','pTagDropdown','pTagPool',pPreview);
+  aField=makeTagField('aTagfield','aTagInput','aTagDropdown',null,aPreview);
+  (async function(){ var s=await sb.auth.getSession(); if(s.data&&s.data.session) enter(s.data.session); else leave(); })();
 })();
 </script>
 </body>

@@ -2,6 +2,30 @@
    LOGRAMO — v3 SCRIPT
    ============================================================ */
 
+/* ============ SUPABASE (lightweight REST — no SDK needed here) ============ */
+var LOGRAMO_SB_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
+var LOGRAMO_SB_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
+function sbInsert(table, row) {
+  try {
+    return fetch(LOGRAMO_SB_URL + '/rest/v1/' + table, {
+      method: 'POST',
+      headers: {
+        'apikey': LOGRAMO_SB_KEY,
+        'Authorization': 'Bearer ' + LOGRAMO_SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(row)
+    }).catch(function () {});
+  } catch (e) {}
+}
+function trackSubscriber(email, source) {
+  if (email && /\S+@\S+\.\S+/.test(email)) sbInsert('subscribers', { email: email.trim(), source: source || '' });
+}
+function trackPageview() {
+  sbInsert('pageviews', { path: location.pathname || '/', referrer: document.referrer || '' });
+}
+
 /* Scroll Reveal */
 const reveals = document.querySelectorAll('[data-reveal], [data-stagger]');
 if ('IntersectionObserver' in window && reveals.length) {
@@ -100,15 +124,17 @@ function closeAllPopups() {
 }
 
 /* Form handlers — generic, all popups */
-function handlePopupForm(e, popupId, msg) {
+function emailFromForm(form) { var i = form && form.querySelector('input[type="email"]'); return i ? i.value : ''; }
+function handlePopupForm(e, popupId, msg, source) {
   e.preventDefault();
+  trackSubscriber(emailFromForm(e.target), source || 'popup');
   closePopup(popupId);
   showToast(msg || '¡Listo! Revisa tu correo');
   e.target.reset();
 }
-function handleFreebie(e) { handlePopupForm(e, 'popup-freebie', '¡Guía enviada! Revisa tu correo'); }
-function handleNewsletter(e) { handlePopupForm(e, 'popup-newsletter', '¡Suscripción confirmada!'); }
-function handleSimpleNewsletter(e) { e.preventDefault(); e.target.reset(); showToast('¡Suscripción confirmada! Bienvenido'); }
+function handleFreebie(e) { handlePopupForm(e, 'popup-freebie', '¡Guía enviada! Revisa tu correo', 'freebie'); }
+function handleNewsletter(e) { handlePopupForm(e, 'popup-newsletter', '¡Suscripción confirmada!', 'newsletter-popup'); }
+function handleSimpleNewsletter(e) { e.preventDefault(); trackSubscriber(emailFromForm(e.target), 'newsletter'); e.target.reset(); showToast('¡Suscripción confirmada! Bienvenido'); }
 
 /* Auto-trigger subscribe popup on blog after delay */
 function maybeAutoSubscribe() {
@@ -382,4 +408,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initComments();
   initShare();
   maybeAutoSubscribe();
+  trackPageview();
 });
