@@ -98,6 +98,39 @@
     table.tbl { width:100%; border-collapse:collapse; font-size:.86rem; }
     table.tbl th, table.tbl td { text-align:left; padding:10px 12px; border-bottom:1px solid rgba(30,40,32,.12); }
     table.tbl th { font-family:var(--font-display); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-text-muted); }
+
+    /* topbar + bell */
+    .topbar { display:flex; align-items:center; gap:16px; margin-bottom:26px; }
+    .topbar__greet h1 { font-family:var(--font-display); font-weight:900; font-size:1.5rem; text-transform:uppercase; letter-spacing:-.02em; }
+    .topbar__greet p { color:var(--c-text-muted); font-size:.86rem; margin-top:2px; }
+    .topbar__right { margin-left:auto; display:flex; align-items:center; gap:12px; }
+    .bell { position:relative; }
+    .bell__btn { position:relative; width:44px; height:44px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-xs); }
+    .bell__btn:hover { background:var(--c-golden); }
+    .bell__btn .icon { width:20px; height:20px; }
+    .bell__dot { position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; padding:0 4px; background:var(--c-terracotta); color:var(--c-cream); border:2px solid var(--c-cream); border-radius:9px; font-size:.62rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+    .bell__panel { position:absolute; top:54px; right:0; width:300px; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:16px; box-shadow:var(--shadow-md); z-index:60; overflow:hidden; }
+    .bell__head { padding:14px 16px; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid rgba(30,40,32,.12); }
+    .bell__item { padding:13px 16px; font-size:.85rem; border-bottom:1px solid rgba(30,40,32,.08); }
+
+    /* overview cards */
+    .cards3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+    @media(max-width:760px){ .cards3 { grid-template-columns:1fr; } }
+    .ov-card { border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); padding:22px; box-shadow:var(--shadow-xs); }
+    .ov-card--1 { background:var(--c-sky); } .ov-card--2 { background:#E3F0DA; } .ov-card--3 { background:var(--c-peach); }
+    .ov-card__num { font-family:var(--font-display); font-weight:900; font-size:2.1rem; line-height:1; color:var(--c-ink); }
+    .ov-card__label { font-size:.78rem; color:var(--c-ink); opacity:.7; margin-top:8px; font-weight:600; }
+    .ov-card__delta { font-size:.74rem; font-weight:800; margin-top:12px; }
+    .ov-up { color:var(--c-forest); } .ov-down { color:var(--c-burgundy); }
+    .ov-grid { display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start; }
+    @media(max-width:980px){ .ov-grid { grid-template-columns:1fr; } }
+    .chart-box { position:relative; height:300px; }
+    .chart-box--sm { height:230px; }
+    .mini-row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid rgba(30,40,32,.08); }
+    .mini-row:last-child { border-bottom:none; }
+    .mini-row__name { flex:1; font-weight:700; font-size:.85rem; } .mini-row__sub { font-size:.73rem; color:var(--c-text-muted); font-weight:500; }
+    .mini-row__val { font-family:var(--font-display); font-weight:800; font-size:.9rem; }
+    .flag { font-size:1.2rem; line-height:1; }
   </style>
 </head>
 <body data-page="admin">
@@ -119,7 +152,8 @@
 <div class="shell" id="shell" hidden>
   <nav class="side">
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-    <button class="side__link active" data-view="contenido"><svg class="icon"><use href="#i-book"/></svg> Contenido</button>
+    <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Inicio</button>
+    <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-book"/></svg> Contenido</button>
     <button class="side__link" data-view="trafico"><svg class="icon"><use href="#i-target"/></svg> Tráfico</button>
     <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Ventas</button>
     <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Suscriptores</button>
@@ -132,8 +166,41 @@
 
   <main class="main">
 
+    <!-- ===== TOPBAR (bell) ===== -->
+    <div class="topbar">
+      <div class="topbar__greet"><h1 id="greetTitle">¡Hola de nuevo! 🐾</h1><p>Esto es lo que está pasando en Logramo hoy</p></div>
+      <div class="topbar__right">
+        <div class="bell" id="bellWrap">
+          <button class="bell__btn" id="bellBtn" aria-label="Notificaciones"><svg class="icon"><use href="#i-bell"/></svg><span class="bell__dot" id="bellDot" hidden>0</span></button>
+          <div class="bell__panel" id="bellPanel" hidden>
+            <div class="bell__head">Notificaciones</div>
+            <div id="bellList"><p class="muted" style="padding:14px 16px;margin:0">Sin notificaciones nuevas. Te avisaremos aquí cuando entre una venta.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INICIO ===== -->
+    <section data-page-view="inicio">
+      <div class="cards3">
+        <div class="ov-card ov-card--1"><div class="ov-card__num" id="ovVisitas">—</div><div class="ov-card__label">Visitas totales</div><div class="ov-card__delta ov-up" id="ovVisitasD">+18% este mes</div></div>
+        <div class="ov-card ov-card--2"><div class="ov-card__num" id="ovIngresos">—</div><div class="ov-card__label">Ingresos</div><div class="ov-card__delta ov-up" id="ovIngresosD">+24% este mes</div></div>
+        <div class="ov-card ov-card--3"><div class="ov-card__num" id="ovVentas">—</div><div class="ov-card__label">Ventas</div><div class="ov-card__delta ov-down" id="ovVentasD">-6% este mes</div></div>
+      </div>
+      <div class="ov-grid">
+        <div>
+          <div class="panel"><h2>Ingresos y visitas</h2><p class="panel__hint">Demo · se conectará a datos reales al activar Stripe.</p><div class="chart-box"><canvas id="earningsChart"></canvas></div></div>
+          <div class="panel"><h2>Productos más vendidos</h2><div id="topProducts"><p class="muted">Cargando…</p></div></div>
+        </div>
+        <div>
+          <div class="panel"><h2>Mejores clientes</h2><div id="topCustomers"></div></div>
+          <div class="panel"><h2>Pedidos recientes</h2><div id="recentOrders"></div></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== CONTENIDO ===== -->
-    <section data-page-view="contenido">
+    <section data-page-view="contenido" hidden>
       <div class="page-head"><h1>Contenido</h1><p>Gestiona los productos de la biblioteca y los artículos del blog.</p></div>
       <div class="subtabs">
         <button class="subtab active" data-sub="prod">Productos</button>
@@ -204,8 +271,13 @@
 
     <!-- ===== TRÁFICO ===== -->
     <section data-page-view="trafico" hidden>
-      <div class="page-head"><h1>Tráfico</h1><p>Visitas a la web (se registran automáticamente en cada página).</p></div>
+      <div class="page-head"><h1>Tráfico</h1><p>Visitas a la web (se registran automáticamente) y ventas por país.</p></div>
       <div class="stats" id="trafStats"></div>
+      <div class="panel"><h2>Visitas por mes</h2><div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
+      <div class="ov-grid" style="margin-top:24px">
+        <div class="panel"><h2>Países por tráfico</h2><p class="panel__hint" id="trafCountryHint">Se llena a medida que la gente visita la web.</p><div id="trafCountries"></div></div>
+        <div class="panel"><h2>Países por ventas</h2><p class="panel__hint">Demo · datos reales al activar Stripe.</p><div id="salesCountries"></div></div>
+      </div>
       <div class="panel"><h2>Páginas más vistas</h2><div id="trafTop"><p class="muted">Cargando…</p></div></div>
     </section>
 
@@ -248,6 +320,7 @@
 
 <div id="partial-nav" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="partials.js"></script>
 <script>
 (function(){
@@ -314,19 +387,56 @@
   $('a-hot').addEventListener('change',function(){ if($('a-hot').checked) aField.add('caliente'); else aField.remove('caliente'); aPreview(); });
   ['a-title','a-cat','a-excerpt','a-read','a-img'].forEach(function(id){ $(id).addEventListener('input',aPreview); $(id).addEventListener('change',aPreview); });
 
+  function stat(n,l){ return '<div class="stat-card"><div class="stat-card__num">'+n+'</div><div class="stat-card__label">'+l+'</div></div>'; }
+
+  /* ===== CHARTS + INICIO ===== */
+  var COL={terra:'#C55932',forest:'#3C4824',golden:'#E0B73C',sky:'#7FB0E8',burgundy:'#C65768'};
+  function lineChart(id,labels,datasets){ var el=$(id); if(!el||!window.Chart) return; if(el._chart) el._chart.destroy();
+    el._chart=new Chart(el,{ type:'line', data:{labels:labels,datasets:datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:true,position:'top',labels:{usePointStyle:true,boxWidth:8,font:{family:'Inter',weight:'700',size:11}}} }, scales:{ y:{beginAtZero:true,grid:{color:'rgba(30,40,32,.08)'},ticks:{font:{family:'Inter'}}}, x:{grid:{display:false},ticks:{font:{family:'Inter'}}} }, elements:{ line:{tension:.4,borderWidth:3}, point:{radius:0,hoverRadius:5} } } }); }
+  function dset(label,data,color){ return {label:label,data:data,borderColor:color,backgroundColor:color+'22',pointBackgroundColor:color,fill:false}; }
+  var MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var DEMO_PRODUCTS=[{name:'Cría un perro feliz',cat:'Educación',sales:842},{name:'Sueño tranquilo',cat:'Cachorros',sales:531},{name:'Ladridos bajo control',cat:'Conducta',sales:418},{name:'Los 5 comandos esenciales',cat:'Educación',sales:390},{name:'Ansiedad por separación',cat:'Conducta',sales:286}];
+  var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 compras',val:'€284'},{name:'Javier G.',sub:'9 compras',val:'€213'},{name:'Ana S.',sub:'7 compras',val:'€168'},{name:'Carlos R.',sub:'5 compras',val:'€119'}];
+  var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Hoy',val:'€29.99'},{name:'Sueño tranquilo',sub:'Ayer',val:'€14.99'},{name:'Ladridos bajo control',sub:'Hace 2 días',val:'€19.99'},{name:'Ansiedad por separación',sub:'Hace 3 días',val:'€22.99'}];
+  var DEMO_SALES_COUNTRIES=[{flag:'🇪🇸',name:'España',val:'€1.24K'},{flag:'🇲🇽',name:'México',val:'€0.98K'},{flag:'🇦🇷',name:'Argentina',val:'€0.74K'},{flag:'🇨🇴',name:'Colombia',val:'€0.61K'},{flag:'🇨🇱',name:'Chile',val:'€0.43K'}];
+  function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?'<span class="flag">'+x.flag+'</span>':'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
+
+  async function loadInicio(){
+    var visitas='12,4K';
+    try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visitas=pv.count.toLocaleString('es-ES'); }catch(e){}
+    $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='€4,28K'; $('ovVentas').textContent='312';
+    lineChart('earningsChart',MONTHS,[ dset('Ingresos (×€100)',[42,55,61,70,95,140,120,98,110,130,150,168],COL.terra), dset('Visitas (×100)',[60,72,80,76,90,110,130,120,115,125,140,155],COL.forest) ]);
+    $('topProducts').innerHTML='<table class="tbl"><tr><th>Producto</th><th>Categoría</th><th>Ventas</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
+    $('topCustomers').innerHTML=miniRows(DEMO_CUSTOMERS);
+    $('recentOrders').innerHTML=miniRows(DEMO_ORDERS);
+  }
+
   /* ===== TRÁFICO ===== */
   async function loadTrafico(){
     try{
-      var r=await sb.from('pageviews').select('path,created_at'); if(r.error)throw r.error;
+      var r=await sb.from('pageviews').select('*'); if(r.error)throw r.error;
       var rows=r.data||[]; var now=Date.now(), day=864e5;
       var total=rows.length, last7=rows.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length, today=rows.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length;
-      var byPath={}; rows.forEach(function(x){byPath[x.path]=(byPath[x.path]||0)+1;});
+      var byPath={},byCountry={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; if(x.country) byCountry[x.country]=(byCountry[x.country]||0)+1; });
       var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
       $('trafStats').innerHTML=stat(total,'Visitas totales')+stat(last7,'Últimos 7 días')+stat(today,'Hoy')+stat(Object.keys(byPath).length,'Páginas distintas');
-      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(t.p)+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas. Navega por la web y vuelve aquí.</p>';
-    }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Falta la tabla de tráfico. Corre el SQL extra que te pasé. ('+esc(e.message||'')+')</p>'; }
+      lineChart('trafChart',MONTHS,[ dset('Visitas',[30,45,52,60,72,88,80,95,102,110,120,134],COL.sky) ]);
+      var cty=Object.keys(byCountry).map(function(c){return {name:c,val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
+      $('trafCountries').innerHTML=cty.length?miniRows(cty):'<p class="muted">Aún sin datos de país (la captura ya está activa — se llenará con las visitas).</p>';
+      $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
+      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(t.p)+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas.</p>';
+    }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Falta la tabla de tráfico. ('+esc(e.message||'')+')</p>'; }
   }
-  function stat(n,l){ return '<div class="stat-card"><div class="stat-card__num">'+n+'</div><div class="stat-card__label">'+l+'</div></div>'; }
+
+  /* ===== NOTIFICATION BELL ===== */
+  var bellInit=false, bellCount=0;
+  function initBell(){
+    if(bellInit) return; bellInit=true;
+    var btn=$('bellBtn'),panel=$('bellPanel'),dot=$('bellDot'),list=$('bellList');
+    btn.addEventListener('click',function(e){ e.stopPropagation(); panel.hidden=!panel.hidden; if(!panel.hidden){ bellCount=0; dot.hidden=true; } });
+    document.addEventListener('click',function(e){ if(!$('bellWrap').contains(e.target)) panel.hidden=true; });
+    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>Nueva venta</strong> · €'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
+  }
 
   /* ===== VENTAS ===== */
   async function loadVentas(){
@@ -387,7 +497,7 @@
   });
 
   /* ===== NAV ===== */
-  var loaders={ trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
+  var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
   document.querySelectorAll('.side__link[data-view]').forEach(function(btn){ btn.addEventListener('click',function(){
     var v=btn.dataset.view;
     document.querySelectorAll('.side__link[data-view]').forEach(function(b){b.classList.toggle('active',b===btn);});
@@ -401,7 +511,8 @@
     $('loginScreen').hidden=true; $('shell').hidden=false;
     $('whoami').textContent=session&&session.user?session.user.email:'';
     $('setEmail').value=session&&session.user?session.user.email:'';
-    await loadTags(); pPreview(); aPreview(); await pLoad(); await aLoad();
+    initBell();
+    await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Entrando…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Entrar'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Correo o contraseña incorrectos.':r.error.message; return; } enter(r.data.session); });

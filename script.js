@@ -23,7 +23,13 @@ function trackSubscriber(email, source) {
   if (email && /\S+@\S+\.\S+/.test(email)) sbInsert('subscribers', { email: email.trim(), source: source || '' });
 }
 function trackPageview() {
-  sbInsert('pageviews', { path: location.pathname || '/', referrer: document.referrer || '' });
+  var base = { path: location.pathname || '/', referrer: document.referrer || '' };
+  fetch('https://ipapi.co/json/').then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (geo) {
+    var country = (geo && geo.country_name) || '';
+    var p = sbInsert('pageviews', { path: base.path, referrer: base.referrer, country: country });
+    // If the 'country' column doesn't exist yet, fall back to a plain pageview
+    if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('pageviews', base); }).catch(function () {});
+  });
 }
 
 /* Scroll Reveal */
