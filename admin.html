@@ -406,7 +406,21 @@
   /* ===== CHARTS + INICIO ===== */
   var COL={terra:'#C55932',forest:'#3C4824',golden:'#E0B73C',sky:'#7FB0E8',burgundy:'#C65768'};
   function lineChart(id,labels,datasets){ var el=$(id); if(!el||!window.Chart) return; if(el._chart) el._chart.destroy();
-    el._chart=new Chart(el,{ type:'line', data:{labels:labels,datasets:datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:true,position:'top',labels:{usePointStyle:true,boxWidth:8,font:{family:'Inter',weight:'700',size:11}}} }, scales:{ y:{beginAtZero:true,grid:{color:'rgba(30,40,32,.08)'},ticks:{font:{family:'Inter'}}}, x:{grid:{display:false},ticks:{font:{family:'Inter'}}} }, elements:{ line:{tension:.4,borderWidth:3}, point:{radius:0,hoverRadius:5} } } }); }
+    el._chart=new Chart(el,{ type:'line', data:{labels:labels,datasets:datasets}, options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      hover:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:true, position:'top', labels:{ usePointStyle:true, boxWidth:8, font:{family:'Inter',weight:'700',size:11} } },
+        tooltip:{ enabled:true, mode:'index', intersect:false,
+          backgroundColor:'#111A17', titleColor:'#FEFAE8', bodyColor:'#FEFAE8', borderColor:'#111A17', borderWidth:2,
+          padding:12, cornerRadius:12, usePointStyle:true,
+          titleFont:{family:'Inter',weight:'800',size:12}, bodyFont:{family:'Inter',weight:'600',size:12},
+          callbacks:{ label:function(ctx){ return '  '+ctx.dataset.label+': '+ctx.parsed.y; } } }
+      },
+      scales:{ y:{ beginAtZero:true, grid:{color:'rgba(30,40,32,.08)'}, ticks:{font:{family:'Inter'}} }, x:{ grid:{display:false}, ticks:{font:{family:'Inter'}} } },
+      elements:{ line:{tension:.4,borderWidth:3}, point:{radius:0,hoverRadius:6,hitRadius:20} }
+    } }); }
   function dset(label,data,color){ return {label:label,data:data,borderColor:color,backgroundColor:color+'22',pointBackgroundColor:color,fill:false}; }
   var MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
