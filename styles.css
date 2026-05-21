@@ -8,10 +8,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap');
 
-/* New Montreal — cover subtitle font (local files, user-provided) */
-@font-face { font-family:'NewMontreal'; src:url('fonts/NewMontreal-Regular.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap; }
-@font-face { font-family:'NewMontreal'; src:url('fonts/NewMontreal-Medium.otf') format('opentype'); font-weight:500; font-style:normal; font-display:swap; }
-
 /* ---------- Helvetica Neue (local files) ---------- */
 @font-face {
   font-family: 'HelveticaNeue';
@@ -2645,7 +2641,7 @@ h1, h2, h3, h4,
   overflow-wrap: anywhere; word-break: break-word; hyphens: auto;
 }
 .book-card__cover-sub, .fc-cover-sub, .featured-book__cover-tag, .fc-card__cover-tag, .product-cover__sub {
-  font-family: 'NewMontreal', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  font-family: 'HelveticaCond', 'Helvetica Neue Condensed', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
 /* keep long product names inside their boxes */
 .book-card__title, .featured-book__title, .fc-card__title, .product-hero__title {
