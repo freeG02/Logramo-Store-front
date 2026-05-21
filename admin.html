@@ -136,6 +136,24 @@
     .mini-row__name { flex:1; font-weight:700; font-size:.85rem; } .mini-row__sub { font-size:.73rem; color:var(--c-text-muted); font-weight:500; }
     .mini-row__val { font-family:var(--font-display); font-weight:800; font-size:.9rem; }
     .flag { font-size:1.2rem; line-height:1; }
+
+    /* cover editor */
+    .editor-sub { font-family:var(--font-display); font-weight:900; font-size:.95rem; text-transform:uppercase; letter-spacing:-.01em; margin:22px 0 14px; padding-top:18px; border-top:2px dashed rgba(30,40,32,.18); }
+    .seg { display:inline-flex; gap:2px; background:var(--c-cream-alt); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-full); padding:3px; }
+    .seg button { border:none; background:none; padding:8px 14px; border-radius:var(--radius-full); font-family:var(--font-display); font-weight:700; font-size:.68rem; text-transform:uppercase; cursor:pointer; color:var(--c-text-muted); }
+    .seg button.active { background:var(--c-ink); color:var(--c-cream); }
+    .swatches { display:flex; gap:8px; flex-wrap:wrap; }
+    .swatch { width:36px; height:36px; border-radius:10px; border:var(--bw-1) solid var(--c-ink); cursor:pointer; box-shadow:var(--shadow-xs); padding:0; }
+    .swatch.active { outline:3px solid var(--c-ink); outline-offset:2px; }
+    .iconpick { display:flex; gap:8px; flex-wrap:wrap; }
+    .iconpick button { width:42px; height:42px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; background:var(--c-cream); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .iconpick button .icon { width:20px; height:20px; color:var(--c-terracotta); }
+    .iconpick button.active { background:var(--c-golden); }
+    .thumbs { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .thumb { position:relative; width:66px; height:66px; border-radius:10px; border:var(--bw-1) solid var(--c-ink); overflow:hidden; background:var(--c-cream-alt); }
+    .thumb img { width:100%; height:100%; object-fit:cover; }
+    .thumb button { position:absolute; top:-7px; right:-7px; width:20px; height:20px; border-radius:50%; background:var(--c-burgundy); color:#fff; border:2px solid var(--c-cream); cursor:pointer; font-size:.7rem; line-height:1; padding:0; }
+    input[type=file] { font-family:var(--font-body); font-size:.85rem; }
   </style>
 </head>
 <body data-page="admin">
@@ -234,16 +252,27 @@
               <div class="field"><label>Etiquetas disponibles</label><div class="tagpool" id="pTagPool"></div>
                 <div class="newtag"><input type="text" id="newTagName" placeholder="Crear nueva etiqueta…" /><select id="newTagColor"><option value="gratis">Verde (Gratis)</option><option value="caliente">Naranja (Caliente)</option><option value="nuevo">Azul (Nuevo)</option><option value="popular">Dorado (Popular)</option><option value="recomendado">Lila (Recomendado)</option><option value="default">Rosa</option></select><button type="button" class="icon-btn" id="createTagBtn">Crear</button></div>
               </div>
-              <details class="field"><summary style="cursor:pointer;font-family:var(--font-display);font-weight:800;font-size:.72rem;text-transform:uppercase">Portada (opcional)</summary>
-                <div style="margin-top:12px"><div class="row2">
-                  <div class="field"><label for="p-color">Color</label><select id="p-color"><option value="sky">Cielo</option><option value="peach">Melocotón</option><option value="sage">Salvia</option><option value="golden">Dorado</option><option value="lavender">Lavanda</option><option value="pink">Rosa</option></select></div>
-                  <div class="field"><label for="p-icon">Icono</label><select id="p-icon"><option value="i-paw">Huella</option><option value="i-book">Libro</option><option value="i-clock">Reloj</option><option value="i-shield">Escudo</option><option value="i-target">Diana</option><option value="i-heart">Corazón</option><option value="i-bell">Campana</option><option value="i-bone">Hueso</option><option value="i-leaf">Hoja</option><option value="i-flame">Llama</option></select></div>
-                </div><div class="row2">
-                  <div class="field"><label for="p-coversub">Subtítulo</label><input type="text" id="p-coversub" value="Guía PDF" /></div>
-                  <div class="field"><label for="p-covertitle">Título portada</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
-                </div></div>
-              </details>
-              <div class="actions"><button type="button" class="btn btn--primary" id="pSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar</button><button type="button" class="icon-btn" id="pResetBtn">Limpiar</button><span class="muted" id="pSaveStatus"></span></div>
+              <h3 class="editor-sub">Portada</h3>
+              <div class="field"><label>Tipo de portada</label>
+                <div class="seg" id="p-covermode"><button type="button" data-mode="design" class="active">Diseño con nombre</button><button type="button" data-mode="image">Imagen propia</button></div>
+              </div>
+              <div id="coverDesign">
+                <div class="field"><label for="p-coversub">Subtítulo (texto pequeño)</label><input type="text" id="p-coversub" value="Guía PDF" /></div>
+                <div class="field"><label for="p-covertitle">Título de portada (Enter = 2 líneas)</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
+                <div class="field"><label>Color de fondo</label><div class="swatches" id="p-colorSwatches"></div></div>
+                <div class="field"><label>Icono</label><div class="iconpick" id="p-iconPick"></div></div>
+              </div>
+              <div id="coverImageBox" hidden>
+                <div class="field"><label>Imagen de portada</label><input type="file" accept="image/*" id="p-cover-file" /><div id="p-cover-thumb" class="thumbs"></div></div>
+              </div>
+              <div class="field"><label>Imágenes adicionales (galería — vistas del interior)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
+              <div class="field"><label>Archivo PDF (descarga del producto)</label><input type="file" accept="application/pdf" id="p-pdf-file" /><div id="p-pdf-info" class="muted" style="margin-top:8px"></div></div>
+              <input type="hidden" id="p-color" value="sky" />
+              <input type="hidden" id="p-icon" value="i-paw" />
+              <input type="hidden" id="p-cover-image" value="" />
+              <input type="hidden" id="p-pdf-url" value="" />
+              <div class="field" style="margin-top:8px"><label class="check"><input type="checkbox" id="p-published" checked /> Publicado (visible en la web)</label></div>
+              <div class="actions"><button type="button" class="btn btn--primary" id="pSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Publicar</button><button type="button" class="icon-btn" id="pResetBtn">Limpiar</button><span class="muted" id="pSaveStatus"></span></div>
             </div>
             <div class="panel"><h2>Productos publicados</h2><div class="list" id="pList"></div></div>
           </div>
@@ -376,17 +405,58 @@
   }
 
   /* ===== PRODUCTS ===== */
-  var pField, aField, editingP=null, editingA=null, PRODUCTS=[], ARTICLES=[];
-  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto' }; }
-  function pCard(p){ var tags=(p.tags||[]).map(badge).join(''); var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>'; return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
+  var pField, aField, editingP=null, editingA=null, PRODUCTS=[], ARTICLES=[], pGallery=[];
+
+  // storage upload -> returns public URL
+  async function uploadFile(file, prefix){
+    var ext=(file.name.split('.').pop()||'bin').toLowerCase();
+    var path=prefix+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
+    var up=await sb.storage.from('media').upload(path, file, { upsert:false, contentType:file.type||undefined });
+    if(up.error) throw up.error;
+    return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+  }
+  // color swatches + icon picker
+  var COVER_COLORS=['sky','peach','sage','golden','lavender','pink'];
+  var COVER_ICONS=['i-paw','i-book','i-clock','i-shield','i-target','i-heart','i-bell','i-bone','i-leaf','i-flame','i-check-circle'];
+  function renderSwatches(){
+    $('p-colorSwatches').innerHTML=COVER_COLORS.map(function(c){ return '<button type="button" class="swatch'+($('p-color').value===c?' active':'')+'" data-color="'+c+'" style="background:var(--c-'+c+')"></button>'; }).join('');
+    $('p-iconPick').innerHTML=COVER_ICONS.map(function(ic){ return '<button type="button" class="'+($('p-icon').value===ic?'active':'')+'" data-icon="'+ic+'"><svg class="icon"><use href="#'+ic+'"/></svg></button>'; }).join('');
+  }
+  $('p-colorSwatches').addEventListener('click',function(e){ var b=e.target.closest('[data-color]'); if(!b)return; $('p-color').value=b.dataset.color; renderSwatches(); pPreview(); });
+  $('p-iconPick').addEventListener('click',function(e){ var b=e.target.closest('[data-icon]'); if(!b)return; $('p-icon').value=b.dataset.icon; renderSwatches(); pPreview(); });
+  // cover mode (design vs image)
+  $('p-covermode').addEventListener('click',function(e){ var b=e.target.closest('[data-mode]'); if(!b)return; $('p-covermode').querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); var img=b.dataset.mode==='image'; $('coverImageBox').hidden=!img; $('coverDesign').hidden=img; pPreview(); });
+  function coverMode(){ var a=$('p-covermode').querySelector('button.active'); return a?a.dataset.mode:'design'; }
+  function setCoverMode(m){ $('p-covermode').querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x.dataset.mode===m);}); var img=m==='image'; $('coverImageBox').hidden=!img; $('coverDesign').hidden=img; }
+  // cover image upload
+  $('p-cover-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Subiendo imagen…'; try{ var url=await uploadFile(f,'covers'); $('p-cover-image').value=url; renderCoverThumb(); pPreview(); $('pSaveStatus').textContent='✓ Imagen subida'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Error al subir: '+(err.message||err)); } e.target.value=''; });
+  function renderCoverThumb(){ var u=$('p-cover-image').value; $('p-cover-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="p-cover-rm">✕</button></div>':''; }
+  $('p-cover-thumb').addEventListener('click',function(e){ if(e.target.id==='p-cover-rm'){ $('p-cover-image').value=''; renderCoverThumb(); pPreview(); } });
+  // gallery upload (multiple)
+  $('p-gallery-file').addEventListener('change',async function(e){ var files=Array.prototype.slice.call(e.target.files); if(!files.length)return; $('pSaveStatus').textContent='Subiendo imágenes…'; try{ for(var i=0;i<files.length;i++){ var url=await uploadFile(files[i],'gallery'); pGallery.push(url); } renderGallery(); $('pSaveStatus').textContent='✓ Subidas'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Error al subir: '+(err.message||err)); } e.target.value=''; });
+  function renderGallery(){ $('p-gallery-thumbs').innerHTML=pGallery.map(function(u,i){ return '<div class="thumb"><img src="'+esc(u)+'"><button type="button" data-gi="'+i+'">✕</button></div>'; }).join(''); }
+  $('p-gallery-thumbs').addEventListener('click',function(e){ var b=e.target.closest('[data-gi]'); if(!b)return; pGallery.splice(parseInt(b.dataset.gi),1); renderGallery(); });
+  // pdf upload
+  $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Subiendo PDF…'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='✓ PDF subido'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Error al subir: '+(err.message||err)); } e.target.value=''; });
+  function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'📄 <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF subido</a> · <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Quitar</button>':'Ningún PDF subido todavía.'; }
+  $('p-pdf-info').addEventListener('click',function(e){ if(e.target.id==='p-pdf-rm'){ $('p-pdf-url').value=''; renderPdf(); } });
+  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, published:$('p-published').checked }; }
+  function pCard(p){
+    var tags=(p.tags||[]).map(badge).join('');
+    var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
+    var coverInner=p.cover_image
+      ? '<img class="book-card__cover-img" src="'+esc(p.cover_image)+'" alt="">'
+      : '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div>';
+    return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
+  }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
   async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Gratis':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay productos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
-  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('pEditorTitle').textContent='Editar producto'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este producto?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Editar producto'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este producto?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Ponle un título.');return;} $('pSaveStatus').textContent='Guardando…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Guardado'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
-  function pReset(){ editingP=null; pField.set([]); $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value=''; $('pEditorTitle').textContent='Añadir producto'; pPreview(); }
+  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true; setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Añadir producto'; pPreview(); }
   $('pResetBtn').addEventListener('click',pReset);
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
-  ['p-title','p-cat','p-desc','p-price','p-color','p-icon','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
+  ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
   $('createTagBtn').addEventListener('click',async function(){ var n=$('newTagName').value.trim(); if(!n)return; var s=await createTag(n,$('newTagColor').value); pField.add(s); $('newTagName').value=''; });
 
   /* ===== ARTICLES ===== */
@@ -581,6 +651,7 @@
   /* ===== INIT ===== */
   pField=makeTagField('pTagfield','pTagInput','pTagDropdown','pTagPool',pPreview);
   aField=makeTagField('aTagfield','aTagInput','aTagDropdown',null,aPreview);
+  renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf();
   (async function(){ var s=await sb.auth.getSession(); if(s.data&&s.data.session) enter(s.data.session); else leave(); })();
 })();
 </script>
