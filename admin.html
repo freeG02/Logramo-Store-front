@@ -27,7 +27,7 @@
     .side { background:var(--c-ink); color:var(--c-cream); padding:22px 16px; display:flex; flex-direction:column; gap:6px; position:sticky; top:0; height:100vh; }
     .side__logo { padding:6px 10px 18px; }
     .side__logo svg { height:24px; width:auto; }
-    .side__logo svg path { fill:var(--c-cream); }
+    .side__logo svg, .side__logo svg path { fill:var(--c-golden); }
     .side__link { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(254,250,232,.7); border:none; background:none; text-align:left; width:100%; transition:background .15s,color .15s; }
     .side__link .icon { width:18px; height:18px; }
     .side__link:hover { color:var(--c-cream); background:rgba(255,255,255,.06); }
@@ -52,7 +52,7 @@
     .subtab { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:var(--radius-full); padding:9px 18px; font-family:var(--font-display); font-weight:700; font-size:.74rem; text-transform:uppercase; cursor:pointer; }
     .subtab.active { background:var(--c-ink); color:var(--c-cream); }
 
-    .field { margin-bottom:16px; }
+    .field { margin-bottom:12px; }
     .field > label { display:block; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
     .field input[type=text], .field input[type=number], .field input[type=password], .field textarea, .field select {
       width:100%; box-sizing:border-box; padding:12px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); font-family:var(--font-body); font-size:.95rem; color:var(--c-ink); }
@@ -153,7 +153,11 @@
     .thumb { position:relative; width:66px; height:66px; border-radius:10px; border:var(--bw-1) solid var(--c-ink); overflow:hidden; background:var(--c-cream-alt); }
     .thumb img { width:100%; height:100%; object-fit:cover; }
     .thumb button { position:absolute; top:-7px; right:-7px; width:20px; height:20px; border-radius:50%; background:var(--c-burgundy); color:#fff; border:2px solid var(--c-cream); cursor:pointer; font-size:.7rem; line-height:1; padding:0; }
-    input[type=file] { font-family:var(--font-body); font-size:.85rem; }
+    input[type=file] { font-family:var(--font-body); font-size:.82rem; color:var(--c-text-muted); }
+    input[type=file]::file-selector-button { font-family:var(--font-display); font-weight:700; font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; padding:8px 14px; margin-right:12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; background:var(--c-golden); color:var(--c-ink); cursor:pointer; box-shadow:var(--shadow-xs); }
+    input[type=file]::file-selector-button:hover { background:var(--c-ink); color:var(--c-cream); }
+    .panel--list { background:var(--c-cream-alt); }
+    .panel--list .list-item { background:var(--c-cream); }
   </style>
 </head>
 <body data-page="admin">
@@ -162,11 +166,11 @@
 <div class="login-screen" id="loginScreen">
   <form class="login-card" id="loginForm">
     <div class="login-logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-    <h1>Panel de administración</h1>
-    <p>Inicia sesión para gestionar la web.</p>
-    <input type="email" id="loginEmail" placeholder="Correo" required autocomplete="username" />
-    <input type="password" id="loginPass" placeholder="Contraseña" required autocomplete="current-password" />
-    <button class="btn btn--primary btn--lg full-w" type="submit" id="loginBtn">Entrar</button>
+    <h1>Admin panel</h1>
+    <p>Log in to manage your site.</p>
+    <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
+    <input type="password" id="loginPass" placeholder="Password" required autocomplete="current-password" />
+    <button class="btn btn--primary btn--lg full-w" type="submit" id="loginBtn">Log in</button>
     <p class="login-error" id="loginError"></p>
   </form>
 </div>
@@ -175,15 +179,15 @@
 <div class="shell" id="shell" hidden>
   <nav class="side">
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-    <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Inicio</button>
-    <button class="side__link" data-view="trafico"><svg class="icon"><use href="#i-target"/></svg> Tráfico</button>
-    <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Ventas</button>
-    <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-book"/></svg> Contenido</button>
-    <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Suscriptores</button>
-    <button class="side__link" data-view="ajustes"><svg class="icon"><use href="#i-user"/></svg> Ajustes</button>
+    <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Home</button>
+    <button class="side__link" data-view="trafico"><svg class="icon"><use href="#i-target"/></svg> Traffic</button>
+    <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Sales</button>
+    <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-image"/></svg> Content</button>
+    <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Subscribers</button>
+    <button class="side__link" data-view="ajustes"><svg class="icon"><use href="#i-user"/></svg> Settings</button>
     <div class="side__foot">
       <div class="side__user" id="whoami"></div>
-      <button class="side__link" id="logoutBtn"><svg class="icon"><use href="#i-arrow-left"/></svg> Salir</button>
+      <button class="side__link" id="logoutBtn"><svg class="icon"><use href="#i-arrow-left"/></svg> Log out</button>
     </div>
   </nav>
 
@@ -191,13 +195,13 @@
 
     <!-- ===== TOPBAR (bell) ===== -->
     <div class="topbar">
-      <div class="topbar__greet"><h1 id="greetTitle">¡Hola de nuevo! 🐾</h1><p>Esto es lo que está pasando en Logramo hoy</p></div>
+      <div class="topbar__greet"><h1 id="greetTitle">Welcome back! 🐾</h1><p>Here's what's happening at Logramo today</p></div>
       <div class="topbar__right">
         <div class="bell" id="bellWrap">
           <button class="bell__btn" id="bellBtn" aria-label="Notificaciones"><svg class="icon"><use href="#i-bell"/></svg><span class="bell__dot" id="bellDot" hidden>0</span></button>
           <div class="bell__panel" id="bellPanel" hidden>
-            <div class="bell__head">Notificaciones</div>
-            <div id="bellList"><p class="muted" style="padding:14px 16px;margin:0">Sin notificaciones nuevas. Te avisaremos aquí cuando entre una venta.</p></div>
+            <div class="bell__head">Notifications</div>
+            <div id="bellList"><p class="muted" style="padding:14px 16px;margin:0">No new notifications. We'll alert you here when a sale comes in.</p></div>
           </div>
         </div>
       </div>
@@ -206,30 +210,30 @@
     <!-- ===== INICIO ===== -->
     <section data-page-view="inicio">
       <div class="cards3">
-        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">—</div><div class="ov-card__label">Visitas totales →</div><div class="ov-card__delta ov-up" id="ovVisitasD">+18% este mes</div></div>
-        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">—</div><div class="ov-card__label">Ingresos →</div><div class="ov-card__delta ov-up" id="ovIngresosD">+24% este mes</div></div>
-        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">—</div><div class="ov-card__label">Ventas →</div><div class="ov-card__delta ov-down" id="ovVentasD">-6% este mes</div></div>
+        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">—</div><div class="ov-card__label">Total visits →</div><div class="ov-card__delta ov-up" id="ovVisitasD">+18% this month</div></div>
+        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">—</div><div class="ov-card__label">Revenue →</div><div class="ov-card__delta ov-up" id="ovIngresosD">+24% this month</div></div>
+        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">—</div><div class="ov-card__label">Sales →</div><div class="ov-card__delta ov-down" id="ovVentasD">-6% this month</div></div>
       </div>
       <div class="ov-grid">
         <div>
-          <div class="panel"><h2>Ingresos y visitas</h2><p class="panel__hint">Demo · se conectará a datos reales al activar Stripe.</p>
-            <div class="tf-tabs" data-tf-for="earnings"><button data-tf="hora">Hora</button><button data-tf="dia" class="active">Día</button><button data-tf="semana">Semana</button><button data-tf="mes">Mes</button><button data-tf="ano">Año</button></div>
+          <div class="panel"><h2>Revenue & visits</h2><p class="panel__hint">Demo · connects to real data once Stripe is enabled.</p>
+            <div class="tf-tabs" data-tf-for="earnings"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
             <div class="chart-box"><canvas id="earningsChart"></canvas></div></div>
-          <div class="panel"><h2>Productos más vendidos</h2><div id="topProducts"><p class="muted">Cargando…</p></div></div>
+          <div class="panel"><h2>Top selling products</h2><div id="topProducts"><p class="muted">Loading…</p></div></div>
         </div>
         <div>
-          <div class="panel"><h2>Mejores clientes</h2><div id="topCustomers"></div></div>
-          <div class="panel"><h2>Pedidos recientes</h2><div id="recentOrders"></div></div>
+          <div class="panel"><h2>Top customers</h2><div id="topCustomers"></div></div>
+          <div class="panel"><h2>Recent orders</h2><div id="recentOrders"></div></div>
         </div>
       </div>
     </section>
 
     <!-- ===== CONTENIDO ===== -->
     <section data-page-view="contenido" hidden>
-      <div class="page-head"><h1>Contenido</h1><p>Gestiona los productos de la biblioteca y los artículos del blog.</p></div>
+      <div class="page-head"><h1>Content</h1><p>Manage your library products and blog articles.</p></div>
       <div class="subtabs">
-        <button class="subtab active" data-sub="prod">Productos</button>
-        <button class="subtab" data-sub="art">Artículos</button>
+        <button class="subtab active" data-sub="prod">Products</button>
+        <button class="subtab" data-sub="art">Articles</button>
       </div>
 
       <!-- PRODUCTS -->
@@ -237,46 +241,50 @@
         <div class="grid2">
           <div>
             <div class="panel">
-              <h2 id="pEditorTitle">Añadir producto</h2>
-              <p class="panel__hint">Rellena los datos y mira la vista previa.</p>
-              <div class="field"><label for="p-title">Título</label><input type="text" id="p-title" placeholder="Ej. Sueño tranquilo" /></div>
+              <h2 id="pEditorTitle">Add product</h2>
+              <p class="panel__hint">Fill in the details and watch the preview.</p>
+              <div class="field"><label for="p-title">Title</label><input type="text" id="p-title" placeholder="e.g. Sueño tranquilo" /></div>
               <div class="row2">
-                <div class="field"><label for="p-cat">Categoría</label>
+                <div class="field"><label for="p-cat">Category</label>
                   <select id="p-cat"><option>Cachorros</option><option>Educación</option><option>Salud</option><option>Conducta</option><option>Alimentación</option><option>Paseos</option></select>
                 </div>
-                <div class="field"><label for="p-price">Precio ($)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
+                <div class="field"><label for="p-price">Price ($)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
               </div>
-              <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade “Gratis”)</label></div>
-              <div class="field"><label for="p-desc">Descripción</label><textarea id="p-desc" placeholder="Una línea cercana sobre el libro…"></textarea></div>
-              <div class="field"><label>Etiquetas</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Escribe y Enter… (Gratis, Caliente…)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
-              <div class="field"><label>Etiquetas disponibles</label><div class="tagpool" id="pTagPool"></div>
-                <div class="newtag"><input type="text" id="newTagName" placeholder="Crear nueva etiqueta…" /><select id="newTagColor"><option value="gratis">Verde (Gratis)</option><option value="caliente">Naranja (Caliente)</option><option value="nuevo">Azul (Nuevo)</option><option value="popular">Dorado (Popular)</option><option value="recomendado">Lila (Recomendado)</option><option value="default">Rosa</option></select><button type="button" class="icon-btn" id="createTagBtn">Crear</button></div>
+              <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Free (adds the “Gratis” tag)</label></div>
+              <div class="field"><label for="p-desc">Description</label><textarea id="p-desc" placeholder="A warm one-liner about the book…"></textarea></div>
+              <div class="field"><label>Tags</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Type and press Enter… (Gratis, Caliente…)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
+              <div class="field"><label>Available tags</label><div class="tagpool" id="pTagPool"></div>
+                <div class="newtag"><input type="text" id="newTagName" placeholder="Create a new tag…" /><select id="newTagColor"><option value="gratis">Green</option><option value="caliente">Orange</option><option value="nuevo">Blue</option><option value="popular">Gold</option><option value="recomendado">Lilac</option><option value="default">Pink</option></select><button type="button" class="icon-btn" id="createTagBtn">Create</button></div>
               </div>
-              <h3 class="editor-sub">Portada</h3>
-              <div class="field"><label>Tipo de portada</label>
-                <div class="seg" id="p-covermode"><button type="button" data-mode="design" class="active">Diseño con nombre</button><button type="button" data-mode="image">Imagen propia</button></div>
+              <h3 class="editor-sub">Cover</h3>
+              <div class="field"><label>Cover type</label>
+                <div class="seg" id="p-covermode"><button type="button" data-mode="design" class="active">Name design</button><button type="button" data-mode="image">Own image</button></div>
               </div>
               <div id="coverDesign">
-                <div class="field"><label for="p-coversub">Subtítulo (texto pequeño)</label><input type="text" id="p-coversub" value="Guía PDF" /></div>
-                <div class="field"><label for="p-covertitle">Título de portada (Enter = 2 líneas)</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
-                <div class="field"><label>Color de fondo</label><div class="swatches" id="p-colorSwatches"></div></div>
-                <div class="field"><label>Icono</label><div class="iconpick" id="p-iconPick"></div></div>
+                <div class="field"><label for="p-coversub">Subtitle (small text)</label><input type="text" id="p-coversub" value="Guía PDF" /></div>
+                <div class="field"><label for="p-covertitle">Cover title (Enter = 2 lines)</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
+                <div class="row2">
+                  <div class="field"><label>Background color</label><div class="swatches" id="p-colorSwatches"></div></div>
+                  <div class="field"><label>Icon</label><div class="iconpick" id="p-iconPick"></div></div>
+                </div>
               </div>
               <div id="coverImageBox" hidden>
-                <div class="field"><label>Imagen de portada</label><input type="file" accept="image/*" id="p-cover-file" /><div id="p-cover-thumb" class="thumbs"></div></div>
+                <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="p-cover-file" /><div id="p-cover-thumb" class="thumbs"></div></div>
               </div>
-              <div class="field"><label>Imágenes adicionales (galería — vistas del interior)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
-              <div class="field"><label>Archivo PDF (descarga del producto)</label><input type="file" accept="application/pdf" id="p-pdf-file" /><div id="p-pdf-info" class="muted" style="margin-top:8px"></div></div>
+              <div class="field"><label>Extra images (gallery — inside views)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
+              <div class="field"><label>PDF file (product download)</label><input type="file" accept="application/pdf" id="p-pdf-file" /><div id="p-pdf-info" class="muted" style="margin-top:8px"></div></div>
               <input type="hidden" id="p-color" value="sky" />
               <input type="hidden" id="p-icon" value="i-paw" />
               <input type="hidden" id="p-cover-image" value="" />
               <input type="hidden" id="p-pdf-url" value="" />
-              <div class="field" style="margin-top:8px"><label class="check"><input type="checkbox" id="p-published" checked /> Publicado (visible en la web)</label></div>
-              <div class="actions"><button type="button" class="btn btn--primary" id="pSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Publicar</button><button type="button" class="icon-btn" id="pResetBtn">Limpiar</button><span class="muted" id="pSaveStatus"></span></div>
+              <div class="field" style="margin-top:8px"><label class="check"><input type="checkbox" id="p-published" checked /> Published (visible on the site)</label></div>
+              <div class="actions"><button type="button" class="btn btn--primary" id="pSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Publish</button><button type="button" class="icon-btn" id="pResetBtn">Clear</button><span class="muted" id="pSaveStatus"></span></div>
             </div>
-            <div class="panel"><h2>Productos publicados</h2><div class="list" id="pList"></div></div>
           </div>
-          <div><div class="panel" style="position:sticky;top:24px"><h2>Vista previa</h2><div class="preview-mount" id="pPreview"></div></div></div>
+          <div>
+            <div class="panel" style="position:sticky;top:24px"><h2>Preview</h2><div class="preview-mount" id="pPreview"></div></div>
+            <div class="panel panel--list"><h2>Published products</h2><div class="list" id="pList"></div></div>
+          </div>
         </div>
       </div>
 
@@ -285,76 +293,79 @@
         <div class="grid2">
           <div>
             <div class="panel">
-              <h2 id="aEditorTitle">Añadir artículo</h2>
-              <p class="panel__hint">Crea entradas del blog con sus etiquetas.</p>
-              <div class="field"><label for="a-title">Título</label><input type="text" id="a-title" placeholder="Ej. Las 5 palabras que tu perro debe aprender" /></div>
+              <h2 id="aEditorTitle">Add article</h2>
+              <p class="panel__hint">Create blog posts with their tags.</p>
+              <div class="field"><label for="a-title">Title</label><input type="text" id="a-title" placeholder="e.g. Las 5 palabras que tu perro debe aprender" /></div>
               <div class="row2">
-                <div class="field"><label for="a-cat">Categoría</label><select id="a-cat"><option>Cachorros</option><option>Educación</option><option>Conducta</option><option>Salud</option><option>Alimentación</option><option>Historias</option></select></div>
-                <div class="field"><label for="a-read">Lectura (min)</label><input type="number" id="a-read" min="1" value="5" /></div>
+                <div class="field"><label for="a-cat">Category</label><select id="a-cat"><option>Cachorros</option><option>Educación</option><option>Conducta</option><option>Salud</option><option>Alimentación</option><option>Historias</option></select></div>
+                <div class="field"><label for="a-read">Read time (min)</label><input type="number" id="a-read" min="1" value="5" /></div>
               </div>
-              <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Caliente 🔥 (artículo en tendencia)</label></div>
-              <div class="field"><label for="a-excerpt">Extracto</label><textarea id="a-excerpt" placeholder="Una frase que enganche…"></textarea></div>
-              <div class="field"><label for="a-img">URL de imagen (opcional)</label><input type="text" id="a-img" placeholder="https://…" /></div>
-              <div class="field"><label>Etiquetas</label><div class="tagfield" id="aTagfield"><input type="text" class="tagfield__input" id="aTagInput" placeholder="Escribe y Enter…" autocomplete="off" /><div class="tagfield__dropdown" id="aTagDropdown"></div></div></div>
-              <div class="actions"><button type="button" class="btn btn--primary" id="aSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar</button><button type="button" class="icon-btn" id="aResetBtn">Limpiar</button><span class="muted" id="aSaveStatus"></span></div>
+              <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Hot 🔥 (trending article)</label></div>
+              <div class="field"><label for="a-excerpt">Excerpt</label><textarea id="a-excerpt" placeholder="A hook that grabs attention…"></textarea></div>
+              <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="a-img-file" /><div id="a-img-thumb" class="thumbs"></div></div>
+              <input type="hidden" id="a-img" value="" />
+              <div class="field"><label>Tags</label><div class="tagfield" id="aTagfield"><input type="text" class="tagfield__input" id="aTagInput" placeholder="Type and press Enter…" autocomplete="off" /><div class="tagfield__dropdown" id="aTagDropdown"></div></div></div>
+              <div class="actions"><button type="button" class="btn btn--primary" id="aSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Publish</button><button type="button" class="icon-btn" id="aResetBtn">Clear</button><span class="muted" id="aSaveStatus"></span></div>
             </div>
-            <div class="panel"><h2>Artículos publicados</h2><div class="list" id="aList"></div></div>
           </div>
-          <div><div class="panel" style="position:sticky;top:24px"><h2>Vista previa</h2><div class="preview-mount" id="aPreview"></div></div></div>
+          <div>
+            <div class="panel" style="position:sticky;top:24px"><h2>Preview</h2><div class="preview-mount" id="aPreview"></div></div>
+            <div class="panel panel--list"><h2>Published articles</h2><div class="list" id="aList"></div></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== TRÁFICO ===== -->
+    <!-- ===== TRAFFIC ===== -->
     <section data-page-view="trafico" hidden>
-      <div class="page-head"><h1>Tráfico</h1><p>Visitas a la web (se registran automáticamente) y ventas por país.</p></div>
+      <div class="page-head"><h1>Traffic</h1><p>Site visits (tracked automatically) and sales by country.</p></div>
       <div class="stats" id="trafStats"></div>
-      <div class="panel"><h2>Visitas</h2>
-        <div class="tf-tabs" data-tf-for="traf"><button data-tf="hora">Hora</button><button data-tf="dia" class="active">Día</button><button data-tf="semana">Semana</button><button data-tf="mes">Mes</button><button data-tf="ano">Año</button></div>
+      <div class="panel"><h2>Visits</h2>
+        <div class="tf-tabs" data-tf-for="traf"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
         <div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
-        <div class="panel"><h2>Países por tráfico</h2><p class="panel__hint">Se llena a medida que la gente visita la web.</p><div id="trafCountries"></div></div>
-        <div class="panel"><h2>Páginas más vistas</h2><div id="trafTop"><p class="muted">Cargando…</p></div></div>
+        <div class="panel"><h2>Countries by traffic</h2><p class="panel__hint">Fills up as people visit the site.</p><div id="trafCountries"></div></div>
+        <div class="panel"><h2>Most visited pages</h2><div id="trafTop"><p class="muted">Loading…</p></div></div>
       </div>
     </section>
 
-    <!-- ===== VENTAS ===== -->
+    <!-- ===== SALES ===== -->
     <section data-page-view="ventas" hidden>
-      <div class="page-head"><h1>Ventas</h1><p>Pedidos e ingresos.</p></div>
-      <div class="panel" id="stripeBanner" style="background:var(--c-golden);margin-bottom:24px"><strong>Datos de demostración.</strong> Cuando conectemos <em>Stripe</em> (cuenta gratis), estos números pasarán a ser reales automáticamente.</div>
+      <div class="page-head"><h1>Sales</h1><p>Orders and revenue.</p></div>
+      <div class="panel" id="stripeBanner" style="background:var(--c-golden);margin-bottom:24px"><strong>Demo data.</strong> Once we connect <em>Stripe</em> (free account), these numbers become real automatically.</div>
       <div class="stats" id="salesStats"></div>
-      <div class="panel" style="margin-top:24px"><h2>Ingresos en el tiempo</h2>
-        <div class="tf-tabs" data-tf-for="ventas"><button data-tf="hora">Hora</button><button data-tf="dia" class="active">Día</button><button data-tf="semana">Semana</button><button data-tf="mes">Mes</button><button data-tf="ano">Año</button></div>
+      <div class="panel" style="margin-top:24px"><h2>Revenue over time</h2>
+        <div class="tf-tabs" data-tf-for="ventas"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
         <div class="chart-box chart-box--sm"><canvas id="ventasChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
-        <div class="panel"><h2>Pedidos recientes</h2><div id="ordersBox"><p class="muted">Cargando…</p></div></div>
-        <div class="panel"><h2>Países por ventas</h2><div id="salesCountries"></div></div>
+        <div class="panel"><h2>Recent orders</h2><div id="ordersBox"><p class="muted">Loading…</p></div></div>
+        <div class="panel"><h2>Countries by sales</h2><div id="salesCountries"></div></div>
       </div>
     </section>
 
-    <!-- ===== SUSCRIPTORES ===== -->
+    <!-- ===== SUBSCRIBERS ===== -->
     <section data-page-view="emails" hidden>
-      <div class="page-head"><h1>Suscriptores</h1><p>Cada vez que alguien se apunta a la newsletter en la web, aparece aquí.</p></div>
+      <div class="page-head"><h1>Subscribers</h1><p>Every time someone joins the newsletter on the site, they show up here.</p></div>
       <div class="stats" id="subStats"></div>
       <div class="panel">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0">Lista de correos</h2><button class="icon-btn" id="exportCsvBtn">Exportar CSV</button></div>
-        <div id="subBox"><p class="muted">Cargando…</p></div>
-        <p class="panel__hint" style="margin-top:18px">Para <strong>enviar</strong> campañas a esta lista conectamos <em>Resend</em> (gratis hasta cierto volumen) — lo activamos cuando quieras.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0">Email list</h2><button class="icon-btn" id="exportCsvBtn">Export CSV</button></div>
+        <div id="subBox"><p class="muted">Loading…</p></div>
+        <p class="panel__hint" style="margin-top:18px">To <strong>send</strong> campaigns to this list we connect <em>Resend</em> (free up to a limit) — we'll enable it whenever you want.</p>
       </div>
     </section>
 
-    <!-- ===== AJUSTES ===== -->
+    <!-- ===== SETTINGS ===== -->
     <section data-page-view="ajustes" hidden>
-      <div class="page-head"><h1>Ajustes</h1><p>Tu cuenta de administrador.</p></div>
+      <div class="page-head"><h1>Settings</h1><p>Your admin account.</p></div>
       <div class="panel" style="max-width:460px">
-        <div class="field"><label>Correo</label><input type="text" id="setEmail" disabled /></div>
-        <div class="field"><label for="setPass">Nueva contraseña</label><input type="password" id="setPass" placeholder="Mínimo 6 caracteres" /></div>
-        <div class="actions"><button type="button" class="btn btn--primary" id="changePassBtn">Cambiar contraseña</button><span class="muted" id="passStatus"></span></div>
+        <div class="field"><label>Email</label><input type="text" id="setEmail" disabled /></div>
+        <div class="field"><label for="setPass">New password</label><input type="password" id="setPass" placeholder="At least 6 characters" /></div>
+        <div class="actions"><button type="button" class="btn btn--primary" id="changePassBtn">Change password</button><span class="muted" id="passStatus"></span></div>
       </div>
       <div class="panel" style="max-width:460px;margin-top:24px">
-        <h2>Contenido de ejemplo</h2>
-        <p class="panel__hint">Importa los 12 productos y 6 artículos actuales de la web a la base de datos (una vez). Luego edítalos desde Contenido.</p>
-        <div class="actions"><button type="button" class="btn btn--primary" id="importBtn">Importar contenido de ejemplo</button><span class="muted" id="importStatus"></span></div>
+        <h2>Sample content</h2>
+        <p class="panel__hint">Import the 12 products and 6 articles currently on the site into the database (once). Then edit them from Content.</p>
+        <div class="actions"><button type="button" class="btn btn--primary" id="importBtn">Import sample content</button><span class="muted" id="importStatus"></span></div>
       </div>
     </section>
 
@@ -429,16 +440,16 @@
   function coverMode(){ var a=$('p-covermode').querySelector('button.active'); return a?a.dataset.mode:'design'; }
   function setCoverMode(m){ $('p-covermode').querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x.dataset.mode===m);}); var img=m==='image'; $('coverImageBox').hidden=!img; $('coverDesign').hidden=img; }
   // cover image upload
-  $('p-cover-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Subiendo imagen…'; try{ var url=await uploadFile(f,'covers'); $('p-cover-image').value=url; renderCoverThumb(); pPreview(); $('pSaveStatus').textContent='✓ Imagen subida'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Error al subir: '+(err.message||err)); } e.target.value=''; });
+  $('p-cover-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'covers'); $('p-cover-image').value=url; renderCoverThumb(); pPreview(); $('pSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
   function renderCoverThumb(){ var u=$('p-cover-image').value; $('p-cover-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="p-cover-rm">✕</button></div>':''; }
   $('p-cover-thumb').addEventListener('click',function(e){ if(e.target.id==='p-cover-rm'){ $('p-cover-image').value=''; renderCoverThumb(); pPreview(); } });
   // gallery upload (multiple)
-  $('p-gallery-file').addEventListener('change',async function(e){ var files=Array.prototype.slice.call(e.target.files); if(!files.length)return; $('pSaveStatus').textContent='Subiendo imágenes…'; try{ for(var i=0;i<files.length;i++){ var url=await uploadFile(files[i],'gallery'); pGallery.push(url); } renderGallery(); $('pSaveStatus').textContent='✓ Subidas'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Error al subir: '+(err.message||err)); } e.target.value=''; });
+  $('p-gallery-file').addEventListener('change',async function(e){ var files=Array.prototype.slice.call(e.target.files); if(!files.length)return; $('pSaveStatus').textContent='Uploading images…'; try{ for(var i=0;i<files.length;i++){ var url=await uploadFile(files[i],'gallery'); pGallery.push(url); } renderGallery(); $('pSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
   function renderGallery(){ $('p-gallery-thumbs').innerHTML=pGallery.map(function(u,i){ return '<div class="thumb"><img src="'+esc(u)+'"><button type="button" data-gi="'+i+'">✕</button></div>'; }).join(''); }
   $('p-gallery-thumbs').addEventListener('click',function(e){ var b=e.target.closest('[data-gi]'); if(!b)return; pGallery.splice(parseInt(b.dataset.gi),1); renderGallery(); });
   // pdf upload
-  $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Subiendo PDF…'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='✓ PDF subido'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Error al subir: '+(err.message||err)); } e.target.value=''; });
-  function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'📄 <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF subido</a> · <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Quitar</button>':'Ningún PDF subido todavía.'; }
+  $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading PDF…'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='✓ PDF uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'📄 <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF uploaded</a> · <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Remove</button>':'No PDF uploaded yet.'; }
   $('p-pdf-info').addEventListener('click',function(e){ if(e.target.id==='p-pdf-rm'){ $('p-pdf-url').value=''; renderPdf(); } });
   function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, published:$('p-published').checked }; }
   function pCard(p){
@@ -450,10 +461,10 @@
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
-  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Gratis':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay productos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
-  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Editar producto'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este producto?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
-  $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Ponle un título.');return;} $('pSaveStatus').textContent='Guardando…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Guardado'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
-  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true; setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Añadir producto'; pPreview(); }
+  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
+  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true; setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
   $('pResetBtn').addEventListener('click',pReset);
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
   ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
@@ -463,13 +474,16 @@
   function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, tags:aField.get() }; }
   function aCard(a){ var catColors={Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'}; var tag='<span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'; var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">🔥 Caliente</span>':''; var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>'; return '<a href="blog-post.html" class="article-card" data-cat="'+slugify(a.category)+(a.hot?' caliente':'')+'"><div class="article-card__img-wrap">'+tag+hot+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'Título del artículo')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'Extracto…')+'</p><div class="article-card__meta"><span><svg class="icon icon--xs"><use href="#i-clock"/></svg> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
   function aPreview(){ $('aPreview').innerHTML=aCard(aGather()); }
-  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+a.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay artículos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
-  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-hot').checked=!!a.hot; aField.set(a.tags||[]); $('aEditorTitle').textContent='Editar artículo'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este artículo?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
-  $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Ponle un título.');return;} $('aSaveStatus').textContent='Guardando…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Guardado'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
-  function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-hot').checked=false; $('aEditorTitle').textContent='Añadir artículo'; aPreview(); }
+  $('a-img-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('aSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'articles'); $('a-img').value=url; renderAThumb(); aPreview(); $('aSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('aSaveStatus').textContent='';},1200); }catch(err){ $('aSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  function renderAThumb(){ var u=$('a-img').value; $('a-img-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="a-img-rm">✕</button></div>':''; }
+  $('a-img-thumb').addEventListener('click',function(e){ if(e.target.id==='a-img-rm'){ $('a-img').value=''; renderAThumb(); aPreview(); } });
+  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';}).join(''):'<p class="muted">No articles yet.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-hot').checked=!!a.hot; aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
+  $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Add a title.');return;} $('aSaveStatus').textContent='Saving…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
+  function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-hot').checked=false; renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
   $('aResetBtn').addEventListener('click',aReset);
   $('a-hot').addEventListener('change',function(){ if($('a-hot').checked) aField.add('caliente'); else aField.remove('caliente'); aPreview(); });
-  ['a-title','a-cat','a-excerpt','a-read','a-img'].forEach(function(id){ $(id).addEventListener('input',aPreview); $(id).addEventListener('change',aPreview); });
+  ['a-title','a-cat','a-excerpt','a-read'].forEach(function(id){ $(id).addEventListener('input',aPreview); $(id).addEventListener('change',aPreview); });
 
   function stat(n,l){ return '<div class="stat-card"><div class="stat-card__num">'+n+'</div><div class="stat-card__label">'+l+'</div></div>'; }
 
@@ -504,21 +518,21 @@
   }
   function gen(n,base,amp,seed){ var a=[],s=seed; for(var i=0;i<n;i++){ s=(s*9301+49297)%233280; var r=s/233280; a.push(Math.round(base+(i/n)*amp*0.5+r*amp*0.5)); } return a; }
   var CHARTS={
-    earnings:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('earningsChart',L,[ dset('Visitas (×100)',gen(n,60,100,7),'#3F7FD0'), dset('Ingresos (×$100)',gen(n,40,130,13),'#5E8C3E'), dset('Ventas (×10)',gen(n,20,80,21),'#C55932') ]); },
-    traf:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('trafChart',L,[ dset('Visitas',gen(n,30,120,7),'#3F7FD0') ]); },
-    ventas:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('ventasChart',L,[ dset('Ingresos ($)',gen(n,200,900,33),'#5E8C3E') ]); }
+    earnings:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('earningsChart',L,[ dset('Visits (×100)',gen(n,60,100,7),'#3F7FD0'), dset('Revenue (×$100)',gen(n,40,130,13),'#5E8C3E'), dset('Sales (×10)',gen(n,20,80,21),'#C55932') ]); },
+    traf:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('trafChart',L,[ dset('Visits',gen(n,30,120,7),'#3F7FD0') ]); },
+    ventas:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('ventasChart',L,[ dset('Revenue ($)',gen(n,200,900,33),'#5E8C3E') ]); }
   };
   function activeTf(key){ var b=document.querySelector('.tf-tabs[data-tf-for="'+key+'"] button.active'); return b?b.dataset.tf:'dia'; }
 
   /* ---- friendly page names + country flags ---- */
-  var PAGE_NAMES={'/':'Inicio','/index.html':'Inicio','/biblioteca.html':'Biblioteca','/blog.html':'Blog','/blog-post.html':'Artículo','/producto.html':'Producto','/sobre-nosotros.html':'Nosotros','/cuenta.html':'Mi cuenta','/admin.html':'Panel'};
+  var PAGE_NAMES={'/':'Home','/index.html':'Home','/biblioteca.html':'Library','/blog.html':'Blog','/blog-post.html':'Article','/producto.html':'Product','/sobre-nosotros.html':'About','/cuenta.html':'Account','/admin.html':'Panel'};
   function pageName(p){ return PAGE_NAMES[p] || (p||'').replace(/^\//,'').replace(/\.html$/,'') || p; }
   var COUNTRY_ES={ES:'España',MX:'México',AR:'Argentina',CO:'Colombia',CL:'Chile',PE:'Perú',VE:'Venezuela',EC:'Ecuador',US:'Estados Unidos',GT:'Guatemala',CU:'Cuba',BO:'Bolivia',DO:'Rep. Dominicana',HN:'Honduras',PY:'Paraguay',SV:'El Salvador',NI:'Nicaragua',CR:'Costa Rica',PA:'Panamá',UY:'Uruguay',PR:'Puerto Rico',FR:'Francia',PT:'Portugal',IT:'Italia',DE:'Alemania',GB:'Reino Unido',BR:'Brasil',CA:'Canadá'};
   function countryFlag(v){ if(v&&v.length===2) return v.toUpperCase().replace(/./g,function(c){return String.fromCodePoint(127397+c.charCodeAt(0));}); return '🌐'; }
   function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
   var DEMO_PRODUCTS=[{name:'Cría un perro feliz',cat:'Educación',sales:842},{name:'Sueño tranquilo',cat:'Cachorros',sales:531},{name:'Ladridos bajo control',cat:'Conducta',sales:418},{name:'Los 5 comandos esenciales',cat:'Educación',sales:390},{name:'Ansiedad por separación',cat:'Conducta',sales:286}];
-  var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 compras',val:'$284'},{name:'Javier G.',sub:'9 compras',val:'$213'},{name:'Ana S.',sub:'7 compras',val:'$168'},{name:'Carlos R.',sub:'5 compras',val:'$119'}];
-  var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Hoy',val:'$29.99'},{name:'Sueño tranquilo',sub:'Ayer',val:'$14.99'},{name:'Ladridos bajo control',sub:'Hace 2 días',val:'$19.99'},{name:'Ansiedad por separación',sub:'Hace 3 días',val:'$22.99'}];
+  var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 purchases',val:'$284'},{name:'Javier G.',sub:'9 purchases',val:'$213'},{name:'Ana S.',sub:'7 purchases',val:'$168'},{name:'Carlos R.',sub:'5 purchases',val:'$119'}];
+  var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Today',val:'$29.99'},{name:'Sueño tranquilo',sub:'Yesterday',val:'$14.99'},{name:'Ladridos bajo control',sub:'2 days ago',val:'$19.99'},{name:'Ansiedad por separación',sub:'3 days ago',val:'$22.99'}];
   var DEMO_SALES_COUNTRIES=[{flag:'🇪🇸',name:'España',val:'$1.24K'},{flag:'🇲🇽',name:'México',val:'$0.98K'},{flag:'🇦🇷',name:'Argentina',val:'$0.74K'},{flag:'🇨🇴',name:'Colombia',val:'$0.61K'},{flag:'🇨🇱',name:'Chile',val:'$0.43K'}];
   function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?'<span class="flag">'+x.flag+'</span>':'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
 
@@ -527,7 +541,7 @@
     try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visitas=pv.count.toLocaleString('es-ES'); }catch(e){}
     $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='$4,28K'; $('ovVentas').textContent='312';
     CHARTS.earnings(activeTf('earnings'));
-    $('topProducts').innerHTML='<table class="tbl"><tr><th>Producto</th><th>Categoría</th><th>Ventas</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
+    $('topProducts').innerHTML='<table class="tbl"><tr><th>Product</th><th>Category</th><th>Sales</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
     $('topCustomers').innerHTML=miniRows(DEMO_CUSTOMERS);
     $('recentOrders').innerHTML=miniRows(DEMO_ORDERS);
   }
@@ -540,12 +554,12 @@
       var total=rows.length, last7=rows.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length, today=rows.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length;
       var byPath={},byCountry={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; if(x.country) byCountry[x.country]=(byCountry[x.country]||0)+1; });
       var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
-      $('trafStats').innerHTML=stat(total,'Visitas totales')+stat(last7,'Últimos 7 días')+stat(today,'Hoy')+stat(Object.keys(byPath).length,'Páginas distintas');
+      $('trafStats').innerHTML=stat(total,'Total visits')+stat(last7,'Last 7 days')+stat(today,'Today')+stat(Object.keys(byPath).length,'Distinct pages');
       CHARTS.traf(activeTf('traf'));
       var cty=Object.keys(byCountry).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
-      $('trafCountries').innerHTML=cty.length?miniRows(cty):'<p class="muted">Aún sin datos de país (la captura ya está activa — se llenará con las visitas).</p>';
-      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas.</p>';
-    }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Falta la tabla de tráfico. ('+esc(e.message||'')+')</p>'; }
+      $('trafCountries').innerHTML=cty.length?miniRows(cty):'<p class="muted">No country data yet (capture is active — it fills up with visits).</p>';
+      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Page</th><th>Visits</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">No visits recorded yet.</p>';
+    }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Traffic table missing. ('+esc(e.message||'')+')</p>'; }
   }
 
   /* ===== NOTIFICATION BELL ===== */
@@ -555,22 +569,22 @@
     var btn=$('bellBtn'),panel=$('bellPanel'),dot=$('bellDot'),list=$('bellList');
     btn.addEventListener('click',function(e){ e.stopPropagation(); panel.hidden=!panel.hidden; if(!panel.hidden){ bellCount=0; dot.hidden=true; } });
     document.addEventListener('click',function(e){ if(!$('bellWrap').contains(e.target)) panel.hidden=true; });
-    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>Nueva venta</strong> · $'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
+    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New sale</strong> · $'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
   }
 
   /* ===== VENTAS ===== */
   var DEMO_SALES_ORDERS=[
-    {date:'Hoy',product:'Cría un perro feliz',total:29.99,status:'Pagado'},
-    {date:'Hoy',product:'Sueño tranquilo',total:14.99,status:'Pagado'},
-    {date:'Ayer',product:'Ladridos bajo control',total:19.99,status:'Pagado'},
-    {date:'Ayer',product:'Ansiedad por separación',total:22.99,status:'Pendiente'},
-    {date:'Hace 2 días',product:'Adiestramiento avanzado',total:24.99,status:'Pagado'},
-    {date:'Hace 3 días',product:'Alimentación sana',total:19.99,status:'Pagado'}
+    {date:'Today',product:'Cría un perro feliz',total:29.99,status:'Paid'},
+    {date:'Today',product:'Sueño tranquilo',total:14.99,status:'Paid'},
+    {date:'Yesterday',product:'Ladridos bajo control',total:19.99,status:'Paid'},
+    {date:'Yesterday',product:'Ansiedad por separación',total:22.99,status:'Pending'},
+    {date:'2 days ago',product:'Adiestramiento avanzado',total:24.99,status:'Paid'},
+    {date:'3 days ago',product:'Alimentación sana',total:19.99,status:'Paid'}
   ];
   function loadVentas(){
-    $('salesStats').innerHTML=stat('312','Pedidos')+stat('$4,28K','Ingresos')+stat('298','Pagados')+stat('14','Pendientes');
+    $('salesStats').innerHTML=stat('312','Orders')+stat('$4,28K','Revenue')+stat('298','Paid')+stat('14','Pending');
     CHARTS.ventas(activeTf('ventas'));
-    $('ordersBox').innerHTML='<table class="tbl"><tr><th>Fecha</th><th>Producto</th><th>Total</th><th>Estado</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>$'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
+    $('ordersBox').innerHTML='<table class="tbl"><tr><th>Date</th><th>Product</th><th>Total</th><th>Status</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>$'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
     $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
   }
 
@@ -580,14 +594,14 @@
     try{
       var r=await sb.from('subscribers').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error;
       SUBS=r.data||[]; var now=Date.now(), day=864e5;
-      $('subStats').innerHTML=stat(SUBS.length,'Suscriptores')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'Esta semana')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length,'Hoy');
-      $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Correo</th><th>Origen</th><th>Fecha</th></tr>'+SUBS.map(function(s){return '<tr><td>'+esc(s.email)+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('es-ES')+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay suscriptores. Cuando alguien se apunte en la web, aparecerá aquí.</p>';
-    }catch(e){ $('subStats').innerHTML=''; $('subBox').innerHTML='<p class="muted">Falta la tabla de suscriptores. Corre el SQL extra. ('+esc(e.message||'')+')</p>'; }
+      $('subStats').innerHTML=stat(SUBS.length,'Subscribers')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length,'Today');
+      $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Email</th><th>Source</th><th>Date</th></tr>'+SUBS.map(function(s){return '<tr><td>'+esc(s.email)+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('en-US')+'</td></tr>';}).join('')+'</table>':'<p class="muted">No subscribers yet. When someone signs up on the site, they appear here.</p>';
+    }catch(e){ $('subStats').innerHTML=''; $('subBox').innerHTML='<p class="muted">Subscribers table missing. Run the extra SQL. ('+esc(e.message||'')+')</p>'; }
   }
-  $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,origen,fecha\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+(s.source||'')+'","'+s.created_at+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='suscriptores-logramo.csv'; a.click(); });
+  $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,source,date\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+(s.source||'')+'","'+s.created_at+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='subscribers-logramo.csv'; a.click(); });
 
   /* ===== AJUSTES ===== */
-  $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('Mínimo 6 caracteres.');return;} $('passStatus').textContent='Guardando…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Cambiada'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
+  $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('At least 6 characters.');return;} $('passStatus').textContent='Saving…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Changed'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
 
   /* ===== IMPORT SAMPLE CONTENT ===== */
   var SAMPLE_PRODUCTS=[
@@ -614,12 +628,12 @@
   ];
   $('importBtn').addEventListener('click',async function(){
     var c = await sb.from('products').select('id',{count:'exact',head:true});
-    if((c.count||0)>0 && !confirm('Ya hay productos en la base de datos. ¿Importar los ejemplos igualmente? (puede duplicar)')) return;
-    $('importStatus').textContent='Importando…';
+    if((c.count||0)>0 && !confirm('There are already products in the database. Import the samples anyway? (may duplicate)')) return;
+    $('importStatus').textContent='Importing…';
     var rp = await sb.from('products').insert(SAMPLE_PRODUCTS);
     var ra = await sb.from('articles').insert(SAMPLE_ARTICLES);
     if(rp.error||ra.error){ $('importStatus').textContent=''; alert('Error: '+((rp.error&&rp.error.message)||'')+' '+((ra.error&&ra.error.message)||'')); return; }
-    $('importStatus').textContent='✓ Importado'; pLoad(); aLoad();
+    $('importStatus').textContent='✓ Imported'; pLoad(); aLoad();
   });
 
   /* ===== NAV ===== */
@@ -645,13 +659,13 @@
     await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
-  $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Entrando…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Entrar'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Correo o contraseña incorrectos.':r.error.message; return; } enter(r.data.session); });
+  $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
   $('logoutBtn').addEventListener('click',async function(){ await sb.auth.signOut(); leave(); });
 
   /* ===== INIT ===== */
   pField=makeTagField('pTagfield','pTagInput','pTagDropdown','pTagPool',pPreview);
   aField=makeTagField('aTagfield','aTagInput','aTagDropdown',null,aPreview);
-  renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf();
+  renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); renderAThumb();
   (async function(){ var s=await sb.auth.getSession(); if(s.data&&s.data.session) enter(s.data.session); else leave(); })();
 })();
 </script>

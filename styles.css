@@ -6,7 +6,7 @@
    · ALL CAPS labels, bold geometric system
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ---------- Helvetica Neue (local files) ---------- */
 @font-face {
@@ -2637,7 +2637,7 @@ h1, h2, h3, h4,
    COVER FONTS + OVERFLOW (Playfair title · New Montreal subtitle)
    ============================================================ */
 .book-card__cover-title, .featured-book__cover-title, .fc-card__cover-title, .product-cover__title {
-  font-family: 'Playfair Display', Georgia, serif !important;
+  font-family: 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
   overflow-wrap: anywhere; word-break: break-word; hyphens: auto;
 }
 .book-card__cover-sub, .fc-cover-sub, .featured-book__cover-tag, .fc-card__cover-tag, .product-cover__sub {
