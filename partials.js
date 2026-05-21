@@ -162,7 +162,7 @@ const CART_HTML = `
   </div>
   <div class="cart-sidebar__items" id="cartItems"></div>
   <div class="cart-sidebar__footer">
-    <div class="cart-total"><span>Total</span><span id="cartTotal">€0.00</span></div>
+    <div class="cart-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
     <button class="btn btn--primary btn--lg full-w" onclick="checkout()">Ir al pago <svg class="icon"><use href="#i-arrow-right"/></svg></button>
   </div>
 </div>`;

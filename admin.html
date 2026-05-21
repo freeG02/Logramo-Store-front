@@ -226,7 +226,7 @@
                 <div class="field"><label for="p-cat">Categoría</label>
                   <select id="p-cat"><option>Cachorros</option><option>Educación</option><option>Salud</option><option>Conducta</option><option>Alimentación</option><option>Paseos</option></select>
                 </div>
-                <div class="field"><label for="p-price">Precio (€)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
+                <div class="field"><label for="p-price">Precio ($)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
               </div>
               <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Es gratis (añade “Gratis”)</label></div>
               <div class="field"><label for="p-desc">Descripción</label><textarea id="p-desc" placeholder="Una línea cercana sobre el libro…"></textarea></div>
@@ -378,9 +378,9 @@
   /* ===== PRODUCTS ===== */
   var pField, aField, editingP=null, editingA=null, PRODUCTS=[], ARTICLES=[];
   function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto' }; }
-  function pCard(p){ var tags=(p.tags||[]).map(badge).join(''); var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">€'+Number(p.price||0).toFixed(2)+'</span>'; return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
+  function pCard(p){ var tags=(p.tags||[]).map(badge).join(''); var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>'; return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
-  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Gratis':'€'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay productos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
+  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Gratis':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Editar</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';}).join(''):'<p class="muted">Aún no hay productos.</p>'; }catch(e){ box.innerHTML='<p class="muted">No se pudo cargar ('+esc(e.message||'')+').</p>'; } }
   $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('pEditorTitle').textContent='Editar producto'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('¿Borrar este producto?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Ponle un título.');return;} $('pSaveStatus').textContent='Guardando…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Guardado'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
   function pReset(){ editingP=null; pField.set([]); $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value=''; $('pEditorTitle').textContent='Añadir producto'; pPreview(); }
@@ -408,35 +408,37 @@
   function lineChart(id,labels,datasets){ var el=$(id); if(!el||!window.Chart) return; if(el._chart) el._chart.destroy();
     el._chart=new Chart(el,{ type:'line', data:{labels:labels,datasets:datasets}, options:{
       responsive:true, maintainAspectRatio:false,
-      interaction:{ mode:'index', intersect:false },
-      hover:{ mode:'index', intersect:false },
+      interaction:{ mode:'nearest', intersect:false, axis:'xy' },
+      hover:{ mode:'nearest', intersect:false, axis:'xy' },
       plugins:{
         legend:{ display:true, position:'top', labels:{ usePointStyle:true, boxWidth:8, font:{family:'Inter',weight:'700',size:11} } },
-        tooltip:{ enabled:true, mode:'index', intersect:false,
+        tooltip:{ enabled:true, mode:'nearest', intersect:false, axis:'xy',
           backgroundColor:'#111A17', titleColor:'#FEFAE8', bodyColor:'#FEFAE8', borderColor:'#111A17', borderWidth:2,
           padding:12, cornerRadius:12, usePointStyle:true,
-          titleFont:{family:'Inter',weight:'800',size:12}, bodyFont:{family:'Inter',weight:'600',size:12},
+          titleFont:{family:'Inter',weight:'800',size:12}, bodyFont:{family:'Inter',weight:'700',size:13},
           callbacks:{ label:function(ctx){ return '  '+ctx.dataset.label+': '+ctx.parsed.y; } } }
       },
-      scales:{ y:{ beginAtZero:true, grid:{color:'rgba(30,40,32,.08)'}, ticks:{font:{family:'Inter'}} }, x:{ grid:{display:false}, ticks:{font:{family:'Inter'}} } },
-      elements:{ line:{tension:.4,borderWidth:3}, point:{radius:0,hoverRadius:6,hitRadius:20} }
+      scales:{ y:{ beginAtZero:true, grid:{color:'rgba(30,40,32,.08)'}, ticks:{font:{family:'Inter'}} }, x:{ grid:{display:false}, ticks:{font:{family:'Inter'},autoSkip:true,maxTicksLimit:12} } },
+      elements:{ line:{tension:.4,borderWidth:3}, point:{radius:0,hoverRadius:6,hitRadius:24} }
     } }); }
-  function dset(label,data,color){ return {label:label,data:data,borderColor:color,backgroundColor:color+'22',pointBackgroundColor:color,fill:false}; }
+  function dset(label,data,color){ return {label:label,data:data,borderColor:color,backgroundColor:color+'24',pointBackgroundColor:color,fill:true}; }
   var MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
   /* ---- timeframe engine (Hora/Día/Semana/Mes/Año) ---- */
-  function tfLabels(tf){
-    if(tf==='hora'){ var a=[]; for(var i=0;i<24;i++) a.push(i+'h'); return a; }
-    if(tf==='dia') return ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-    if(tf==='semana') return ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'];
-    if(tf==='ano') return ['2021','2022','2023','2024','2025'];
-    return MONTHS; // mes
+  function tfConfig(tf){
+    function mk(n,fn,every){ var a=[]; for(var i=0;i<n;i++) a.push(i%every===0?String(fn(i)):''); return a; }
+    if(tf==='hora') return { n:12, labels: mk(12,function(i){return (i*5)+'m';},2) };       // last hour, 5-min steps
+    if(tf==='dia')  return { n:24, labels: mk(24,function(i){return i+'h';},3) };            // today by hour
+    if(tf==='semana') return { n:7, labels:['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'] };    // week by day
+    if(tf==='mes')  return { n:30, labels: mk(30,function(i){return 'D'+(i+1);},5) };         // month by day
+    if(tf==='ano')  return { n:48, labels: mk(48,function(i){return MONTHS[Math.min(11,Math.floor(i/4))];},4) }; // year, weekly detail labelled by month
+    return { n:12, labels: mk(12,function(i){return i;},2) };
   }
   function gen(n,base,amp,seed){ var a=[],s=seed; for(var i=0;i<n;i++){ s=(s*9301+49297)%233280; var r=s/233280; a.push(Math.round(base+(i/n)*amp*0.5+r*amp*0.5)); } return a; }
   var CHARTS={
-    earnings:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('earningsChart',L,[ dset('Visitas (×100)',gen(n,60,100,7),'#3F7FD0'), dset('Ingresos (×€100)',gen(n,40,130,13),'#5E8C3E'), dset('Ventas (×10)',gen(n,20,80,21),'#C55932') ]); },
-    traf:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('trafChart',L,[ dset('Visitas',gen(n,30,120,7),'#3F7FD0') ]); },
-    ventas:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('ventasChart',L,[ dset('Ingresos (€)',gen(n,200,900,33),'#5E8C3E') ]); }
+    earnings:function(tf){ var c=tfConfig(tf),n=c.n; lineChart('earningsChart',c.labels,[ dset('Visitas (×100)',gen(n,60,100,7),'#3F7FD0'), dset('Ingresos (×$100)',gen(n,40,130,13),'#5E8C3E'), dset('Ventas (×10)',gen(n,20,80,21),'#C55932') ]); },
+    traf:function(tf){ var c=tfConfig(tf),n=c.n; lineChart('trafChart',c.labels,[ dset('Visitas',gen(n,30,120,7),'#3F7FD0') ]); },
+    ventas:function(tf){ var c=tfConfig(tf),n=c.n; lineChart('ventasChart',c.labels,[ dset('Ingresos ($)',gen(n,200,900,33),'#5E8C3E') ]); }
   };
   function activeTf(key){ var b=document.querySelector('.tf-tabs[data-tf-for="'+key+'"] button.active'); return b?b.dataset.tf:'dia'; }
 
@@ -447,15 +449,15 @@
   function countryFlag(v){ if(v&&v.length===2) return v.toUpperCase().replace(/./g,function(c){return String.fromCodePoint(127397+c.charCodeAt(0));}); return '🌐'; }
   function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
   var DEMO_PRODUCTS=[{name:'Cría un perro feliz',cat:'Educación',sales:842},{name:'Sueño tranquilo',cat:'Cachorros',sales:531},{name:'Ladridos bajo control',cat:'Conducta',sales:418},{name:'Los 5 comandos esenciales',cat:'Educación',sales:390},{name:'Ansiedad por separación',cat:'Conducta',sales:286}];
-  var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 compras',val:'€284'},{name:'Javier G.',sub:'9 compras',val:'€213'},{name:'Ana S.',sub:'7 compras',val:'€168'},{name:'Carlos R.',sub:'5 compras',val:'€119'}];
-  var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Hoy',val:'€29.99'},{name:'Sueño tranquilo',sub:'Ayer',val:'€14.99'},{name:'Ladridos bajo control',sub:'Hace 2 días',val:'€19.99'},{name:'Ansiedad por separación',sub:'Hace 3 días',val:'€22.99'}];
-  var DEMO_SALES_COUNTRIES=[{flag:'🇪🇸',name:'España',val:'€1.24K'},{flag:'🇲🇽',name:'México',val:'€0.98K'},{flag:'🇦🇷',name:'Argentina',val:'€0.74K'},{flag:'🇨🇴',name:'Colombia',val:'€0.61K'},{flag:'🇨🇱',name:'Chile',val:'€0.43K'}];
+  var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 compras',val:'$284'},{name:'Javier G.',sub:'9 compras',val:'$213'},{name:'Ana S.',sub:'7 compras',val:'$168'},{name:'Carlos R.',sub:'5 compras',val:'$119'}];
+  var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Hoy',val:'$29.99'},{name:'Sueño tranquilo',sub:'Ayer',val:'$14.99'},{name:'Ladridos bajo control',sub:'Hace 2 días',val:'$19.99'},{name:'Ansiedad por separación',sub:'Hace 3 días',val:'$22.99'}];
+  var DEMO_SALES_COUNTRIES=[{flag:'🇪🇸',name:'España',val:'$1.24K'},{flag:'🇲🇽',name:'México',val:'$0.98K'},{flag:'🇦🇷',name:'Argentina',val:'$0.74K'},{flag:'🇨🇴',name:'Colombia',val:'$0.61K'},{flag:'🇨🇱',name:'Chile',val:'$0.43K'}];
   function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?'<span class="flag">'+x.flag+'</span>':'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
 
   async function loadInicio(){
     var visitas='12,4K';
     try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visitas=pv.count.toLocaleString('es-ES'); }catch(e){}
-    $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='€4,28K'; $('ovVentas').textContent='312';
+    $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='$4,28K'; $('ovVentas').textContent='312';
     CHARTS.earnings(activeTf('earnings'));
     $('topProducts').innerHTML='<table class="tbl"><tr><th>Producto</th><th>Categoría</th><th>Ventas</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
     $('topCustomers').innerHTML=miniRows(DEMO_CUSTOMERS);
@@ -485,7 +487,7 @@
     var btn=$('bellBtn'),panel=$('bellPanel'),dot=$('bellDot'),list=$('bellList');
     btn.addEventListener('click',function(e){ e.stopPropagation(); panel.hidden=!panel.hidden; if(!panel.hidden){ bellCount=0; dot.hidden=true; } });
     document.addEventListener('click',function(e){ if(!$('bellWrap').contains(e.target)) panel.hidden=true; });
-    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>Nueva venta</strong> · €'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
+    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>Nueva venta</strong> · $'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
   }
 
   /* ===== VENTAS ===== */
@@ -498,9 +500,9 @@
     {date:'Hace 3 días',product:'Alimentación sana',total:19.99,status:'Pagado'}
   ];
   function loadVentas(){
-    $('salesStats').innerHTML=stat('312','Pedidos')+stat('€4,28K','Ingresos')+stat('298','Pagados')+stat('14','Pendientes');
+    $('salesStats').innerHTML=stat('312','Pedidos')+stat('$4,28K','Ingresos')+stat('298','Pagados')+stat('14','Pendientes');
     CHARTS.ventas(activeTf('ventas'));
-    $('ordersBox').innerHTML='<table class="tbl"><tr><th>Fecha</th><th>Producto</th><th>Total</th><th>Estado</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>€'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
+    $('ordersBox').innerHTML='<table class="tbl"><tr><th>Fecha</th><th>Producto</th><th>Total</th><th>Estado</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>$'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
     $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
   }
 

@@ -175,7 +175,7 @@ function renderCart() {
   const total = cartItems.reduce((s, i) => s + i.price * (i.qty || 1), 0);
   const count = cartItems.reduce((s, i) => s + (i.qty || 1), 0);
   if (countEl) { countEl.textContent = count; countEl.classList.toggle('visible', count > 0); }
-  if (totalEl) totalEl.textContent = `€${total.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
   if (cartItems.length === 0) {
     container.innerHTML = `<div class="cart-empty"><svg class="icon icon--xl"><use href="#i-cart"/></svg><p>Tu carrito está vacío</p><a href="biblioteca.html" class="btn btn--primary btn--sm" onclick="closeCart()">Ver biblioteca</a></div>`;
     return;
@@ -184,7 +184,7 @@ function renderCart() {
     <div class="cart-item">
       <div style="flex:1">
         <div class="cart-item__name">${item.name}</div>
-        <div class="cart-item__price">€${(item.price * (item.qty || 1)).toFixed(2)}</div>
+        <div class="cart-item__price">$${(item.price * (item.qty || 1)).toFixed(2)}</div>
       </div>
       <button class="cart-item__remove" onclick="removeFromCart('${item.id}')" aria-label="Eliminar"><svg class="icon icon--sm"><use href="#i-close"/></svg></button>
     </div>`).join('');
