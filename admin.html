@@ -236,6 +236,11 @@
         <div class="field"><label for="setPass">Nueva contraseña</label><input type="password" id="setPass" placeholder="Mínimo 6 caracteres" /></div>
         <div class="actions"><button type="button" class="btn btn--primary" id="changePassBtn">Cambiar contraseña</button><span class="muted" id="passStatus"></span></div>
       </div>
+      <div class="panel" style="max-width:460px;margin-top:24px">
+        <h2>Contenido de ejemplo</h2>
+        <p class="panel__hint">Importa los 12 productos y 6 artículos actuales de la web a la base de datos (una vez). Luego edítalos desde Contenido.</p>
+        <div class="actions"><button type="button" class="btn btn--primary" id="importBtn">Importar contenido de ejemplo</button><span class="muted" id="importStatus"></span></div>
+      </div>
     </section>
 
   </main>
@@ -347,6 +352,39 @@
 
   /* ===== AJUSTES ===== */
   $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('Mínimo 6 caracteres.');return;} $('passStatus').textContent='Guardando…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Cambiada'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
+
+  /* ===== IMPORT SAMPLE CONTENT ===== */
+  var SAMPLE_PRODUCTS=[
+    {title:'Los primeros 30 días con tu perro',category:'Cachorros',description:'Todo lo que ojalá alguien te hubiera contado antes del primer día.',price:0,is_free:true,tags:['gratis'],cover_color:'sky',cover_icon:'i-paw',cover_sub:'Guía PDF',cover_title:'Los Primeros\n30 Días'},
+    {title:'Sueño tranquilo: cómo dormir toda la noche',category:'Cachorros',description:'El método paso a paso para que tu cachorro deje de llorar de noche. Y tú puedas dormir por fin.',price:14.99,is_free:false,tags:[],cover_color:'peach',cover_icon:'i-clock',cover_sub:'Libro Digital',cover_title:'Sueño\nTranquilo'},
+    {title:'Manual de salud para cachorros',category:'Salud',description:'Vacunas, desparasitación y salud básica — sin que te entre el pánico leyéndolo.',price:19.99,is_free:false,tags:[],cover_color:'sage',cover_icon:'i-shield',cover_sub:'Guía Práctica',cover_title:'Salud del\nCachorro'},
+    {title:'Cría un perro feliz: guía completa',category:'Educación',description:'12 semanas de plan estructurado para nuevos dueños.',price:29.99,is_free:false,tags:['recomendado'],cover_color:'golden',cover_icon:'i-paw',cover_sub:'Libro Estrella',cover_title:'Cría un\nPerro Feliz'},
+    {title:'Adiestramiento avanzado en casa',category:'Educación',description:'Trucos, comandos avanzados y técnicas de obediencia.',price:24.99,is_free:false,tags:[],cover_color:'lavender',cover_icon:'i-target',cover_sub:'Libro Digital',cover_title:'Adiestramiento\nAvanzado'},
+    {title:'Los 5 comandos esenciales',category:'Educación',description:'Las palabras que tu perro debe aprender primero.',price:0,is_free:true,tags:['gratis'],cover_color:'pink',cover_icon:'i-check-circle',cover_sub:'Mini Guía',cover_title:'5 Comandos\nBásicos'},
+    {title:'Alimentación sana para tu perro',category:'Alimentación',description:'Qué comer, cuándo, cuánto y qué evitar absolutamente.',price:19.99,is_free:false,tags:[],cover_color:'sky',cover_icon:'i-bone',cover_sub:'Manual',cover_title:'Alimentación\nSana'},
+    {title:'Primeros auxilios caninos',category:'Salud',description:'Qué hacer en emergencias antes de llegar al veterinario.',price:16.99,is_free:false,tags:[],cover_color:'sage',cover_icon:'i-heart',cover_sub:'Guía Práctica',cover_title:'Primeros\nAuxilios'},
+    {title:'Ejercicio diario por raza y edad',category:'Salud',description:'Plan de actividad física adaptado a tu perro.',price:12.99,is_free:false,tags:[],cover_color:'peach',cover_icon:'i-flame',cover_sub:'Mini Libro',cover_title:'Ejercicio\nDiario'},
+    {title:'Ladridos bajo control',category:'Conducta',description:'Identifica el tipo de ladrido y soluciónalo de raíz.',price:19.99,is_free:false,tags:['popular'],cover_color:'lavender',cover_icon:'i-bell',cover_sub:'Libro Digital',cover_title:'Ladridos\nBajo Control'},
+    {title:'Ansiedad por separación: el método',category:'Conducta',description:'Plan paso a paso para que se quede solo sin sufrir — ni él ni tú.',price:22.99,is_free:false,tags:['nuevo'],cover_color:'pink',cover_icon:'i-heart',cover_sub:'Manual',cover_title:'Ansiedad por\nSeparación'},
+    {title:'Paseos sin tirones',category:'Paseos',description:'Camina con tu perro sin que parezca que él te lleva a ti. Técnica real, resultados reales.',price:14.99,is_free:false,tags:[],cover_color:'golden',cover_icon:'i-leaf',cover_sub:'Guía Express',cover_title:'Paseos\nSin Drama'}
+  ];
+  var SAMPLE_ARTICLES=[
+    {title:'Las 5 palabras que tu perro debe aprender primero',category:'Educación',excerpt:'No, "siéntate" no es la más importante. Te contamos cuál es y por qué el orden importa.',read_time:5,image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop',hot:true,tags:['caliente']},
+    {title:'¿Tu cachorro llora toda la noche? Esto pasa',category:'Cachorros',excerpt:'Spoiler: no te odia. Te explicamos la razón real y cómo ayudarle (y dormir tú también).',read_time:4,image_url:'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&q=80&fit=crop',hot:true,tags:['caliente']},
+    {title:'Por qué ladra a otros perros en el paseo',category:'Conducta',excerpt:'Si tu paseo se convierte en concierto, este artículo es para ti. Tiene solución, de verdad.',read_time:6,image_url:'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop',hot:false,tags:[]},
+    {title:'Vacunas básicas: qué necesitas y cuándo',category:'Salud',excerpt:'Sin dramatismos ni terminología rara. El calendario básico explicado como te lo explicaría un amigo.',read_time:5,image_url:'https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600&q=80&fit=crop',hot:false,tags:[]},
+    {title:'Caminar sin tirar de la correa: técnica real',category:'Educación',excerpt:'La técnica real para que camines tú a él, y no él a ti 😅',read_time:7,image_url:'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80&fit=crop',hot:false,tags:[]},
+    {title:'Lo que nadie te dice sobre adoptar un perro adulto',category:'Historias',excerpt:'Historia real, sin filtros. Lo bonito, lo difícil y lo que nadie te cuenta antes de firmar.',read_time:8,image_url:'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=600&q=80&fit=crop',hot:false,tags:[]}
+  ];
+  $('importBtn').addEventListener('click',async function(){
+    var c = await sb.from('products').select('id',{count:'exact',head:true});
+    if((c.count||0)>0 && !confirm('Ya hay productos en la base de datos. ¿Importar los ejemplos igualmente? (puede duplicar)')) return;
+    $('importStatus').textContent='Importando…';
+    var rp = await sb.from('products').insert(SAMPLE_PRODUCTS);
+    var ra = await sb.from('articles').insert(SAMPLE_ARTICLES);
+    if(rp.error||ra.error){ $('importStatus').textContent=''; alert('Error: '+((rp.error&&rp.error.message)||'')+' '+((ra.error&&ra.error.message)||'')); return; }
+    $('importStatus').textContent='✓ Importado'; pLoad(); aLoad();
+  });
 
   /* ===== NAV ===== */
   var loaders={ trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
