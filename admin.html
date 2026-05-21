@@ -93,8 +93,9 @@
     .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
     @media(max-width:760px){ .stats{ grid-template-columns:1fr 1fr; } }
     .stat-card { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); box-shadow:var(--shadow-xs); padding:20px; }
-    .stat-card__num { font-family:var(--font-display); font-weight:900; font-size:2rem; line-height:1; color:var(--c-terracotta); }
-    .stat-card__label { font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-text-muted); margin-top:8px; font-weight:700; }
+    .stats .stat-card:nth-child(1){ background:var(--c-sky); } .stats .stat-card:nth-child(2){ background:#BFE0AE; } .stats .stat-card:nth-child(3){ background:var(--c-peach); } .stats .stat-card:nth-child(4){ background:var(--c-golden); }
+    .stat-card__num { font-family:var(--font-display); font-weight:900; font-size:2rem; line-height:1; color:var(--c-ink); }
+    .stat-card__label { font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-ink); opacity:.72; margin-top:8px; font-weight:700; }
     table.tbl { width:100%; border-collapse:collapse; font-size:.86rem; }
     table.tbl th, table.tbl td { text-align:left; padding:10px 12px; border-bottom:1px solid rgba(30,40,32,.12); }
     table.tbl th { font-family:var(--font-display); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-text-muted); }
@@ -116,8 +117,9 @@
     /* overview cards */
     .cards3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
     @media(max-width:760px){ .cards3 { grid-template-columns:1fr; } }
-    .ov-card { border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); padding:22px; box-shadow:var(--shadow-xs); }
-    .ov-card--1 { background:var(--c-sky); } .ov-card--2 { background:#E3F0DA; } .ov-card--3 { background:var(--c-peach); }
+    .ov-card { border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); padding:22px; box-shadow:var(--shadow-xs); cursor:pointer; transition:transform .15s var(--ease-back), box-shadow .15s var(--ease-back); }
+    .ov-card:hover { transform:translate(-3px,-3px); box-shadow:var(--shadow-sm); }
+    .ov-card--1 { background:var(--c-sky); } .ov-card--2 { background:#BFE0AE; } .ov-card--3 { background:var(--c-peach); }
     .ov-card__num { font-family:var(--font-display); font-weight:900; font-size:2.1rem; line-height:1; color:var(--c-ink); }
     .ov-card__label { font-size:.78rem; color:var(--c-ink); opacity:.7; margin-top:8px; font-weight:600; }
     .ov-card__delta { font-size:.74rem; font-weight:800; margin-top:12px; }
@@ -153,9 +155,9 @@
   <nav class="side">
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
     <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Inicio</button>
-    <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-book"/></svg> Contenido</button>
     <button class="side__link" data-view="trafico"><svg class="icon"><use href="#i-target"/></svg> Tráfico</button>
     <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Ventas</button>
+    <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-book"/></svg> Contenido</button>
     <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Suscriptores</button>
     <button class="side__link" data-view="ajustes"><svg class="icon"><use href="#i-user"/></svg> Ajustes</button>
     <div class="side__foot">
@@ -183,9 +185,9 @@
     <!-- ===== INICIO ===== -->
     <section data-page-view="inicio">
       <div class="cards3">
-        <div class="ov-card ov-card--1"><div class="ov-card__num" id="ovVisitas">—</div><div class="ov-card__label">Visitas totales</div><div class="ov-card__delta ov-up" id="ovVisitasD">+18% este mes</div></div>
-        <div class="ov-card ov-card--2"><div class="ov-card__num" id="ovIngresos">—</div><div class="ov-card__label">Ingresos</div><div class="ov-card__delta ov-up" id="ovIngresosD">+24% este mes</div></div>
-        <div class="ov-card ov-card--3"><div class="ov-card__num" id="ovVentas">—</div><div class="ov-card__label">Ventas</div><div class="ov-card__delta ov-down" id="ovVentasD">-6% este mes</div></div>
+        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">—</div><div class="ov-card__label">Visitas totales →</div><div class="ov-card__delta ov-up" id="ovVisitasD">+18% este mes</div></div>
+        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">—</div><div class="ov-card__label">Ingresos →</div><div class="ov-card__delta ov-up" id="ovIngresosD">+24% este mes</div></div>
+        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">—</div><div class="ov-card__label">Ventas →</div><div class="ov-card__delta ov-down" id="ovVentasD">-6% este mes</div></div>
       </div>
       <div class="ov-grid">
         <div>
@@ -275,18 +277,20 @@
       <div class="stats" id="trafStats"></div>
       <div class="panel"><h2>Visitas por mes</h2><div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
-        <div class="panel"><h2>Países por tráfico</h2><p class="panel__hint" id="trafCountryHint">Se llena a medida que la gente visita la web.</p><div id="trafCountries"></div></div>
-        <div class="panel"><h2>Países por ventas</h2><p class="panel__hint">Demo · datos reales al activar Stripe.</p><div id="salesCountries"></div></div>
+        <div class="panel"><h2>Países por tráfico</h2><p class="panel__hint">Se llena a medida que la gente visita la web.</p><div id="trafCountries"></div></div>
+        <div class="panel"><h2>Páginas más vistas</h2><div id="trafTop"><p class="muted">Cargando…</p></div></div>
       </div>
-      <div class="panel"><h2>Páginas más vistas</h2><div id="trafTop"><p class="muted">Cargando…</p></div></div>
     </section>
 
     <!-- ===== VENTAS ===== -->
     <section data-page-view="ventas" hidden>
       <div class="page-head"><h1>Ventas</h1><p>Pedidos e ingresos.</p></div>
-      <div class="panel" id="stripeBanner" style="background:var(--c-golden);margin-bottom:24px"><strong>Cobros aún no conectados.</strong> La tienda funciona en modo demo. Para cobrar de verdad conectamos <em>Stripe</em> (cuenta gratis) y los pedidos aparecerán aquí automáticamente.</div>
+      <div class="panel" id="stripeBanner" style="background:var(--c-golden);margin-bottom:24px"><strong>Datos de demostración.</strong> Cuando conectemos <em>Stripe</em> (cuenta gratis), estos números pasarán a ser reales automáticamente.</div>
       <div class="stats" id="salesStats"></div>
-      <div class="panel"><h2>Pedidos</h2><div id="ordersBox"><p class="muted">Cargando…</p></div></div>
+      <div class="ov-grid" style="margin-top:24px">
+        <div class="panel"><h2>Pedidos recientes</h2><div id="ordersBox"><p class="muted">Cargando…</p></div></div>
+        <div class="panel"><h2>Países por ventas</h2><div id="salesCountries"></div></div>
+      </div>
     </section>
 
     <!-- ===== SUSCRIPTORES ===== -->
@@ -405,7 +409,11 @@
     var visitas='12,4K';
     try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visitas=pv.count.toLocaleString('es-ES'); }catch(e){}
     $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='€4,28K'; $('ovVentas').textContent='312';
-    lineChart('earningsChart',MONTHS,[ dset('Ingresos (×€100)',[42,55,61,70,95,140,120,98,110,130,150,168],COL.terra), dset('Visitas (×100)',[60,72,80,76,90,110,130,120,115,125,140,155],COL.forest) ]);
+    lineChart('earningsChart',MONTHS,[
+      dset('Visitas (×100)',[60,72,80,76,90,110,130,120,115,125,140,155],'#3F7FD0'),
+      dset('Ingresos (×€100)',[42,55,61,70,95,140,120,98,110,130,150,168],'#5E8C3E'),
+      dset('Ventas (×10)',[20,28,33,40,52,70,64,55,60,72,84,95],'#C55932')
+    ]);
     $('topProducts').innerHTML='<table class="tbl"><tr><th>Producto</th><th>Categoría</th><th>Ventas</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
     $('topCustomers').innerHTML=miniRows(DEMO_CUSTOMERS);
     $('recentOrders').innerHTML=miniRows(DEMO_ORDERS);
@@ -423,7 +431,6 @@
       lineChart('trafChart',MONTHS,[ dset('Visitas',[30,45,52,60,72,88,80,95,102,110,120,134],COL.sky) ]);
       var cty=Object.keys(byCountry).map(function(c){return {name:c,val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
       $('trafCountries').innerHTML=cty.length?miniRows(cty):'<p class="muted">Aún sin datos de país (la captura ya está activa — se llenará con las visitas).</p>';
-      $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
       $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(t.p)+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas.</p>';
     }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Falta la tabla de tráfico. ('+esc(e.message||'')+')</p>'; }
   }
@@ -439,13 +446,18 @@
   }
 
   /* ===== VENTAS ===== */
-  async function loadVentas(){
-    try{
-      var r=await sb.from('orders').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error;
-      var rows=r.data||[]; var rev=rows.reduce(function(s,o){return s+Number(o.total||0);},0);
-      $('salesStats').innerHTML=stat(rows.length,'Pedidos')+stat('€'+rev.toFixed(2),'Ingresos')+stat(rows.filter(function(o){return o.status==='paid';}).length,'Pagados')+stat(rows.filter(function(o){return o.status==='pending';}).length,'Pendientes');
-      $('ordersBox').innerHTML=rows.length?'<table class="tbl"><tr><th>Fecha</th><th>Email</th><th>Total</th><th>Estado</th></tr>'+rows.map(function(o){return '<tr><td>'+new Date(o.created_at).toLocaleDateString('es-ES')+'</td><td>'+esc(o.email||'')+'</td><td>€'+Number(o.total||0).toFixed(2)+'</td><td>'+esc(o.status||'')+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay pedidos. Aparecerán aquí en cuanto conectemos Stripe.</p>';
-    }catch(e){ $('salesStats').innerHTML=''; $('ordersBox').innerHTML='<p class="muted">Falta la tabla de pedidos. Corre el SQL extra. ('+esc(e.message||'')+')</p>'; }
+  var DEMO_SALES_ORDERS=[
+    {date:'Hoy',product:'Cría un perro feliz',total:29.99,status:'Pagado'},
+    {date:'Hoy',product:'Sueño tranquilo',total:14.99,status:'Pagado'},
+    {date:'Ayer',product:'Ladridos bajo control',total:19.99,status:'Pagado'},
+    {date:'Ayer',product:'Ansiedad por separación',total:22.99,status:'Pendiente'},
+    {date:'Hace 2 días',product:'Adiestramiento avanzado',total:24.99,status:'Pagado'},
+    {date:'Hace 3 días',product:'Alimentación sana',total:19.99,status:'Pagado'}
+  ];
+  function loadVentas(){
+    $('salesStats').innerHTML=stat('312','Pedidos')+stat('€4,28K','Ingresos')+stat('298','Pagados')+stat('14','Pendientes');
+    $('ordersBox').innerHTML='<table class="tbl"><tr><th>Fecha</th><th>Producto</th><th>Total</th><th>Estado</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>€'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
+    $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
   }
 
   /* ===== SUSCRIPTORES ===== */
@@ -505,6 +517,8 @@
     if(loaders[v]) loaders[v]();
   }); });
   document.querySelectorAll('.subtab').forEach(function(t){ t.addEventListener('click',function(){ document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('active',x===t);}); document.querySelectorAll('[data-sub-view]').forEach(function(s){s.hidden=s.dataset.subView!==t.dataset.sub;}); }); });
+  // Overview cards jump to their panel
+  document.querySelectorAll('.ov-card[data-goto]').forEach(function(c){ c.addEventListener('click',function(){ var l=document.querySelector('.side__link[data-view="'+c.dataset.goto+'"]'); if(l) l.click(); }); });
 
   /* ===== AUTH ===== */
   async function enter(session){
