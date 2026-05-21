@@ -17,10 +17,21 @@
     .admin-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:start; }
     @media(max-width:900px){ .admin-grid { grid-template-columns:1fr; } }
 
+    /* ---- Login ---- */
+    .login-screen { min-height:80vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; }
+    .login-card { width:100%; max-width:380px; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); padding:36px; text-align:center; }
+    .login-card .login-logo svg { height:30px; width:auto; margin-bottom:18px; }
+    .login-card .login-logo svg path { fill:var(--c-ink); }
+    .login-card h1 { font-family:var(--font-display); font-weight:900; font-size:1.4rem; text-transform:uppercase; margin-bottom:6px; }
+    .login-card p { color:var(--c-text-muted); font-size:.9rem; margin-bottom:22px; }
+    .login-card input { width:100%; box-sizing:border-box; padding:13px 14px; margin-bottom:12px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; font-family:var(--font-body); font-size:.95rem; }
+    .login-error { color:var(--c-burgundy); font-weight:700; font-size:.85rem; min-height:1.2em; margin-top:12px; margin-bottom:0; }
+
     .panel { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); padding:28px; }
     .panel + .panel { margin-top:28px; }
     .panel h2 { font-family:var(--font-display); font-weight:900; font-size:1.3rem; text-transform:uppercase; letter-spacing:-.02em; margin-bottom:6px; }
     .panel__hint { color:var(--c-text-muted); font-size:.88rem; margin-bottom:22px; }
+    .banner { padding:12px 16px; border-radius:12px; border:var(--bw-1) solid var(--c-ink); background:var(--c-golden); font-size:.85rem; font-weight:600; margin-bottom:18px; }
 
     .field { margin-bottom:18px; }
     .field > label { display:block; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
@@ -57,7 +68,6 @@
     .lib-tag--recomendado { background:var(--c-lavender);   color:var(--c-ink); }
     .lib-tag--default     { background:var(--c-pink);       color:var(--c-ink); }
 
-    /* available tags manager */
     .tagpool { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
     .tagpool .lib-tag { cursor:pointer; }
     .tagpool .lib-tag.is-used { opacity:.4; }
@@ -65,12 +75,11 @@
     .newtag input { flex:1; min-width:120px; padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
     .newtag select { padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:10px; }
 
-    /* preview */
     .preview-mount { display:flex; justify-content:center; }
     .preview-mount .book-card { max-width:320px; width:100%; }
     .preview-mount .book-card:hover { transform:none; }
 
-    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; align-items:center; }
     .saved-list { display:grid; gap:12px; }
     .saved-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); }
     .saved-item__info { flex:1; min-width:0; }
@@ -79,22 +88,38 @@
     .icon-btn { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:10px; padding:7px 12px; font-family:var(--font-display); font-weight:700; font-size:.7rem; text-transform:uppercase; cursor:pointer; }
     .icon-btn:hover { background:var(--c-golden); }
     .icon-btn--danger:hover { background:var(--c-burgundy); color:var(--c-cream); }
-    .export-area textarea { width:100%; box-sizing:border-box; min-height:120px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.78rem; border:var(--bw-1) solid var(--c-ink); border-radius:12px; padding:14px; background:#fff; }
-    .export-tabs { display:flex; gap:8px; margin-bottom:12px; }
+    .muted { color:var(--c-text-muted); font-size:.88rem; }
+    [hidden] { display:none !important; }
   </style>
 </head>
 <body data-page="admin">
 
 <header class="admin-bar">
   <a href="index.html" class="admin-bar__logo" aria-label="Logramo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></a>
-  <span class="admin-bar__title">Panel · Productos</span>
-  <span style="margin-left:auto;font-size:.75rem;color:var(--c-text-muted)">Borrador local · nada se publica hasta exportar</span>
+  <span class="admin-bar__title">Panel</span>
+  <span id="whoami" class="muted" style="margin-left:auto"></span>
+  <button class="icon-btn" id="logoutBtn" hidden>Salir</button>
 </header>
 
-<div class="admin-wrap">
+<!-- ============ LOGIN ============ -->
+<div class="login-screen" id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <div class="login-logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
+    <h1>Panel de administración</h1>
+    <p>Inicia sesión para gestionar la web.</p>
+    <input type="email" id="loginEmail" placeholder="Correo" required autocomplete="username" />
+    <input type="password" id="loginPass" placeholder="Contraseña" required autocomplete="current-password" />
+    <button class="btn btn--primary btn--lg full-w" type="submit" id="loginBtn">Entrar</button>
+    <p class="login-error" id="loginError"></p>
+  </form>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="admin-wrap" id="dashboard" hidden>
+  <div id="dbBanner"></div>
   <div class="admin-grid">
 
-    <!-- ============ EDITOR ============ -->
+    <!-- EDITOR -->
     <div>
       <div class="panel">
         <h2 id="editorTitle">Añadir producto</h2>
@@ -132,11 +157,9 @@
           <textarea id="p-desc" placeholder="Una línea honesta y cercana sobre el libro…"></textarea>
         </div>
 
-        <!-- TAGS -->
         <div class="field">
           <label>Etiquetas</label>
           <div class="tagfield" id="tagfield">
-            <!-- chips + input injected -->
             <input type="text" class="tagfield__input" id="tagInput" placeholder="Escribe y pulsa Enter… (Gratis, Caliente, Nuevo…)" autocomplete="off" />
             <div class="tagfield__dropdown" id="tagDropdown"></div>
           </div>
@@ -197,7 +220,7 @@
                 <input type="text" id="p-coversub" placeholder="Guía PDF" value="Guía PDF" />
               </div>
               <div class="field">
-                <label for="p-covertitle">Título de portada (usa Enter para 2 líneas)</label>
+                <label for="p-covertitle">Título de portada (Enter para 2 líneas)</label>
                 <textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea>
               </div>
             </div>
@@ -207,29 +230,18 @@
         <div class="actions">
           <button type="button" class="btn btn--primary" id="saveBtn"><svg class="icon"><use href="#i-check"/></svg> Guardar producto</button>
           <button type="button" class="icon-btn" id="resetBtn">Limpiar</button>
+          <span class="muted" id="saveStatus"></span>
         </div>
       </div>
 
-      <!-- SAVED -->
       <div class="panel">
-        <h2>Productos guardados</h2>
-        <p class="panel__hint">Se guardan en este navegador. Edita, borra o expórtalos abajo.</p>
+        <h2>Productos publicados</h2>
+        <p class="panel__hint">Guardados en la base de datos. Aparecen al instante en la web.</p>
         <div class="saved-list" id="savedList"></div>
-      </div>
-
-      <!-- EXPORT -->
-      <div class="panel export-area">
-        <h2>Exportar</h2>
-        <p class="panel__hint">Copia el código del producto actual para pegarlo en la biblioteca, o exporta todo en JSON.</p>
-        <div class="export-tabs">
-          <button type="button" class="icon-btn" id="copyHtmlBtn">Copiar HTML del producto</button>
-          <button type="button" class="icon-btn" id="copyJsonBtn">Copiar JSON (todos)</button>
-        </div>
-        <textarea id="exportOut" readonly placeholder="Aquí aparecerá el código…"></textarea>
       </div>
     </div>
 
-    <!-- ============ LIVE PREVIEW ============ -->
+    <!-- LIVE PREVIEW -->
     <div>
       <div class="panel" style="position:sticky;top:96px">
         <h2>Vista previa</h2>
@@ -241,242 +253,242 @@
   </div>
 </div>
 
-<!-- icon sprite + logo -->
 <div id="partial-nav" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="partials.js"></script>
 
 <script>
 (function(){
-  /* ============ TAG REGISTRY ============ */
-  var DEFAULT_TAGS = {
-    gratis:      { label:'Gratis',      cls:'gratis' },
-    caliente:    { label:'Caliente',    cls:'caliente' },
-    nuevo:       { label:'Nuevo',       cls:'nuevo' },
-    popular:     { label:'Popular',     cls:'popular' },
-    recomendado: { label:'Recomendado', cls:'recomendado' }
-  };
-  function loadCustom(){ try { return JSON.parse(localStorage.getItem('logramo_tags')||'{}'); } catch(e){ return {}; } }
-  function saveCustom(c){ localStorage.setItem('logramo_tags', JSON.stringify(c)); }
-  function registry(){ return Object.assign({}, DEFAULT_TAGS, loadCustom()); }
-  function slugify(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function tagInfo(slug){ var r=registry(); return r[slug] || { label: slug, cls:'default' }; }
-  function badgeHTML(slug){ var t=tagInfo(slug); return '<span class="lib-tag lib-tag--'+(t.cls||'default')+'">'+escapeHtml(t.label)+'</span>'; }
-
-  /* ============ STATE ============ */
-  var selected = [];          // array of tag slugs on the current product
-  var editingId = null;       // id of product being edited, or null
+  /* ============ SUPABASE ============ */
+  var SUPABASE_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var $ = function(id){ return document.getElementById(id); };
 
+  /* ============ TAGS ============ */
+  var DEFAULT_TAGS = {
+    gratis:      { label:'Gratis',      color:'gratis' },
+    caliente:    { label:'Caliente',    color:'caliente' },
+    nuevo:       { label:'Nuevo',       color:'nuevo' },
+    popular:     { label:'Popular',     color:'popular' },
+    recomendado: { label:'Recomendado', color:'recomendado' }
+  };
+  var REG = Object.assign({}, DEFAULT_TAGS); // slug -> {label,color}
+
+  function slugify(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function tagInfo(slug){ return REG[slug] || { label:slug, color:'default' }; }
+  function badgeHTML(slug){ var t=tagInfo(slug); return '<span class="lib-tag lib-tag--'+(t.color||'default')+'">'+escapeHtml(t.label)+'</span>'; }
+
+  async function loadTags(){
+    try {
+      var res = await sb.from('tags').select('*');
+      if(res.error) throw res.error;
+      REG = Object.assign({}, DEFAULT_TAGS);
+      (res.data||[]).forEach(function(t){ REG[t.slug] = { label:t.label, color:t.color||'default' }; });
+    } catch(e){ /* keep defaults if table missing */ }
+    renderPool(); renderChips();
+  }
+  async function createTag(name, color){
+    var slug = slugify(name); if(!slug) return slug;
+    REG[slug] = { label:name, color:color||'default' };
+    try { await sb.from('tags').upsert({ slug:slug, label:name, color:color||'default' }, { onConflict:'slug' }); } catch(e){}
+    renderPool();
+    return slug;
+  }
+
+  /* ============ STATE ============ */
+  var selected = [];
+  var editingId = null;
+  var PRODUCTS = [];
+
   /* ============ TAG FIELD ============ */
   var tagInput = $('tagInput'), dropdown = $('tagDropdown'), tagfield = $('tagfield');
-
   function renderChips(){
-    // remove existing chips (keep input + dropdown)
     [].slice.call(tagfield.querySelectorAll('.tagfield__chip')).forEach(function(c){ c.remove(); });
     selected.forEach(function(slug){
       var t = tagInfo(slug);
       var chip = document.createElement('span');
-      chip.className = 'tagfield__chip lib-tag--'+(t.cls||'default');
+      chip.className = 'tagfield__chip lib-tag--'+(t.color||'default');
       chip.innerHTML = escapeHtml(t.label) + ' <button type="button" aria-label="Quitar" data-slug="'+slug+'">✕</button>';
       tagfield.insertBefore(chip, tagInput);
     });
-    renderPool();
-    renderPreview();
+    renderPool(); renderPreview();
   }
   function addTag(slug){ if(slug && selected.indexOf(slug)===-1){ selected.push(slug); renderChips(); } }
   function removeTag(slug){ selected = selected.filter(function(s){ return s!==slug; }); renderChips(); }
-
   tagfield.addEventListener('click', function(e){
     var btn = e.target.closest('.tagfield__chip button');
     if(btn){ removeTag(btn.dataset.slug); return; }
     tagInput.focus();
   });
-
   function showDropdown(){
     var q = slugify(tagInput.value);
-    var reg = registry();
-    var items = Object.keys(reg)
+    var items = Object.keys(REG)
       .filter(function(slug){ return selected.indexOf(slug)===-1; })
-      .filter(function(slug){ return !q || slug.indexOf(q)>-1 || slugify(reg[slug].label).indexOf(q)>-1; });
-    var html = items.map(function(slug){
-      return '<div class="tagfield__opt" data-slug="'+slug+'">'+badgeHTML(slug)+'<span>'+escapeHtml(reg[slug].label)+'</span></div>';
-    }).join('');
-    // offer to create if typed text isn't an existing tag
-    if(q && !reg[q]){
-      html += '<div class="tagfield__opt tagfield__opt--create" data-create="'+q+'">＋ Crear etiqueta “'+escapeHtml(tagInput.value.trim())+'”</div>';
-    }
-    dropdown.innerHTML = html;
-    dropdown.classList.toggle('open', html.length>0);
+      .filter(function(slug){ return !q || slug.indexOf(q)>-1 || slugify(REG[slug].label).indexOf(q)>-1; });
+    var html = items.map(function(slug){ return '<div class="tagfield__opt" data-slug="'+slug+'">'+badgeHTML(slug)+'<span>'+escapeHtml(REG[slug].label)+'</span></div>'; }).join('');
+    if(q && !REG[q]){ html += '<div class="tagfield__opt tagfield__opt--create" data-create="1">＋ Crear etiqueta “'+escapeHtml(tagInput.value.trim())+'”</div>'; }
+    dropdown.innerHTML = html; dropdown.classList.toggle('open', html.length>0);
   }
   tagInput.addEventListener('focus', showDropdown);
   tagInput.addEventListener('input', showDropdown);
-  tagInput.addEventListener('keydown', function(e){
+  tagInput.addEventListener('keydown', async function(e){
     if(e.key==='Enter'){
       e.preventDefault();
-      var q = slugify(tagInput.value);
-      if(!q) return;
-      var reg = registry();
-      if(!reg[q]){ createTag(tagInput.value.trim(), 'default'); }
-      addTag(q);
-      tagInput.value=''; showDropdown();
-    } else if(e.key==='Backspace' && !tagInput.value && selected.length){
-      removeTag(selected[selected.length-1]);
-    }
+      var raw = tagInput.value.trim(); var q = slugify(raw); if(!q) return;
+      if(!REG[q]){ await createTag(raw,'default'); }
+      addTag(q); tagInput.value=''; showDropdown();
+    } else if(e.key==='Backspace' && !tagInput.value && selected.length){ removeTag(selected[selected.length-1]); }
   });
-  dropdown.addEventListener('click', function(e){
+  dropdown.addEventListener('click', async function(e){
     var opt = e.target.closest('.tagfield__opt'); if(!opt) return;
-    if(opt.dataset.create){ createTag(tagInput.value.trim(), 'default'); addTag(opt.dataset.create); }
+    if(opt.dataset.create){ var slug = await createTag(tagInput.value.trim(),'default'); addTag(slug); }
     else { addTag(opt.dataset.slug); }
     tagInput.value=''; tagInput.focus(); showDropdown();
   });
   document.addEventListener('click', function(e){ if(!tagfield.contains(e.target)) dropdown.classList.remove('open'); });
 
-  function createTag(name, cls){
-    var slug = slugify(name); if(!slug) return;
-    var custom = loadCustom();
-    if(!DEFAULT_TAGS[slug]){ custom[slug] = { label: name, cls: cls||'default' }; saveCustom(custom); }
-    renderPool();
-  }
-
-  /* ============ AVAILABLE TAGS POOL + NEW TAG ============ */
   function renderPool(){
-    var reg = registry(); var pool = $('tagPool');
-    pool.innerHTML = Object.keys(reg).map(function(slug){
+    $('tagPool').innerHTML = Object.keys(REG).map(function(slug){
       var used = selected.indexOf(slug)>-1;
-      return '<span class="lib-tag lib-tag--'+(reg[slug].cls||'default')+(used?' is-used':'')+'" data-slug="'+slug+'">'+escapeHtml(reg[slug].label)+'</span>';
+      return '<span class="lib-tag lib-tag--'+(REG[slug].color||'default')+(used?' is-used':'')+'" data-slug="'+slug+'">'+escapeHtml(REG[slug].label)+'</span>';
     }).join('');
   }
-  $('tagPool').addEventListener('click', function(e){
-    var chip = e.target.closest('[data-slug]'); if(chip) addTag(chip.dataset.slug);
-  });
-  $('createTagBtn').addEventListener('click', function(){
-    var name = $('newTagName').value.trim(); if(!name) return;
-    createTag(name, $('newTagColor').value);
-    addTag(slugify(name));
-    $('newTagName').value='';
-  });
+  $('tagPool').addEventListener('click', function(e){ var chip=e.target.closest('[data-slug]'); if(chip) addTag(chip.dataset.slug); });
+  $('createTagBtn').addEventListener('click', async function(){ var name=$('newTagName').value.trim(); if(!name) return; var slug=await createTag(name,$('newTagColor').value); addTag(slug); $('newTagName').value=''; });
 
   /* ============ PRODUCT MODEL + PREVIEW ============ */
   function gather(){
     var free = $('p-free').checked;
     return {
-      id: editingId || ('p'+Date.now()),
-      title: $('p-title').value.trim() || 'Título del producto',
+      id: editingId || null,
+      title: $('p-title').value.trim(),
       category: $('p-cat').value,
-      desc: $('p-desc').value.trim() || 'Descripción del producto…',
-      price: $('p-price').value ? parseFloat($('p-price').value).toFixed(2) : '0.00',
-      free: free,
+      description: $('p-desc').value.trim(),
+      price: $('p-price').value ? parseFloat($('p-price').value) : 0,
+      is_free: free,
       tags: selected.slice(),
-      color: $('p-color').value,
-      icon: $('p-icon').value,
-      coverSub: $('p-coversub').value.trim() || 'Guía PDF',
-      coverTitle: $('p-covertitle').value.trim() || ($('p-title').value.trim() || 'Producto')
+      cover_color: $('p-color').value,
+      cover_icon: $('p-icon').value,
+      cover_sub: $('p-coversub').value.trim() || 'Guía PDF',
+      cover_title: $('p-covertitle').value.trim() || ($('p-title').value.trim() || 'Producto')
     };
   }
   function cardHTML(p){
-    var tags = p.tags.map(badgeHTML).join('');
-    var priceHtml = p.free
-      ? '<span class="book-card__price book-card__price--free">Gratis</span>'
-      : '<span class="book-card__price">€'+p.price+'</span>';
-    var cta = p.free ? 'Descargar' : 'Ver libro';
+    var tags = (p.tags||[]).map(badgeHTML).join('');
+    var priceHtml = p.is_free ? '<span class="book-card__price book-card__price--free">Gratis</span>' : '<span class="book-card__price">€'+Number(p.price||0).toFixed(2)+'</span>';
+    var cta = p.is_free ? 'Descargar' : 'Ver libro';
     return ''
-    + '<a href="producto.html" class="book-card" data-tags="'+p.tags.join(' ')+'">'
-    +   '<div class="book-card__cover-wrap book-card__cover-wrap--'+p.color+'">'
+    + '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'">'
+    +   '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'
     +     '<div class="book-card__cover">'
-    +       '<div class="book-card__cover-sub">'+escapeHtml(p.coverSub)+'</div>'
-    +       '<div class="book-card__cover-title">'+escapeHtml(p.coverTitle).replace(/\n/g,'<br>')+'</div>'
-    +       '<div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+p.icon+'"/></svg></div>'
+    +       '<div class="book-card__cover-sub">'+escapeHtml(p.cover_sub||'Guía PDF')+'</div>'
+    +       '<div class="book-card__cover-title">'+escapeHtml(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div>'
+    +       '<div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div>'
     +     '</div>'
     +   '</div>'
     +   '<div class="book-card__body">'
     +     (tags ? '<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>' : '')
-    +     '<span class="book-card__category">'+escapeHtml(p.category)+'</span>'
-    +     '<h3 class="book-card__title">'+escapeHtml(p.title)+'</h3>'
-    +     '<p class="book-card__desc">'+escapeHtml(p.desc)+'</p>'
+    +     '<span class="book-card__category">'+escapeHtml(p.category||'')+'</span>'
+    +     '<h3 class="book-card__title">'+escapeHtml(p.title||'Título del producto')+'</h3>'
+    +     '<p class="book-card__desc">'+escapeHtml(p.description||'Descripción…')+'</p>'
     +     '<div class="book-card__footer">'+priceHtml+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div>'
     +   '</div>'
     + '</a>';
   }
-  function renderPreview(){
-    var p = gather();
-    $('previewMount').innerHTML = cardHTML(p);
-    $('exportOut').value = cardHTML(p);
-  }
-  // live updates
+  function renderPreview(){ $('previewMount').innerHTML = cardHTML(gather()); }
   ['p-title','p-cat','p-desc','p-price','p-color','p-icon','p-coversub','p-covertitle'].forEach(function(id){
-    $(id).addEventListener('input', function(){ if(id==='p-title' && !$('p-covertitle').value){} renderPreview(); });
-    $(id).addEventListener('change', renderPreview);
+    $(id).addEventListener('input', renderPreview); $(id).addEventListener('change', renderPreview);
   });
-  $('p-free').addEventListener('change', function(){
-    if($('p-free').checked) addTag('gratis'); else removeTag('gratis');
-    renderPreview();
-  });
+  $('p-free').addEventListener('change', function(){ if($('p-free').checked) addTag('gratis'); else removeTag('gratis'); renderPreview(); });
 
-  /* ============ SAVE / LIST / EDIT / DELETE ============ */
-  function loadProducts(){ try { return JSON.parse(localStorage.getItem('logramo_products')||'[]'); } catch(e){ return []; } }
-  function saveProducts(arr){ localStorage.setItem('logramo_products', JSON.stringify(arr)); }
-  function renderSaved(){
-    var arr = loadProducts(); var list = $('savedList');
-    if(!arr.length){ list.innerHTML = '<p style="color:var(--c-text-muted);font-size:.88rem">Aún no has guardado productos.</p>'; return; }
-    list.innerHTML = arr.map(function(p){
-      return '<div class="saved-item">'
-        + '<div class="saved-item__info"><div class="saved-item__title">'+escapeHtml(p.title)+'</div>'
-        + '<div class="saved-item__meta">'+escapeHtml(p.category)+' · '+(p.free?'Gratis':'€'+p.price)+' · '+(p.tags.length?p.tags.join(', '):'sin etiquetas')+'</div></div>'
-        + '<button type="button" class="icon-btn" data-edit="'+p.id+'">Editar</button>'
-        + '<button type="button" class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button>'
-        + '</div>';
-    }).join('');
+  /* ============ PRODUCTS CRUD (Supabase) ============ */
+  async function loadProducts(){
+    var list = $('savedList');
+    try {
+      var res = await sb.from('products').select('*').order('created_at',{ascending:false});
+      if(res.error) throw res.error;
+      PRODUCTS = res.data || [];
+      if(!PRODUCTS.length){ list.innerHTML = '<p class="muted">Aún no hay productos. Crea el primero arriba.</p>'; return; }
+      list.innerHTML = PRODUCTS.map(function(p){
+        return '<div class="saved-item"><div class="saved-item__info"><div class="saved-item__title">'+escapeHtml(p.title)+'</div>'
+          + '<div class="saved-item__meta">'+escapeHtml(p.category||'')+' · '+(p.is_free?'Gratis':'€'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'sin etiquetas')+'</div></div>'
+          + '<button type="button" class="icon-btn" data-edit="'+p.id+'">Editar</button>'
+          + '<button type="button" class="icon-btn icon-btn--danger" data-del="'+p.id+'">Borrar</button></div>';
+      }).join('');
+    } catch(e){
+      list.innerHTML = '<p class="muted">No se pudo cargar la tabla de productos todavía. ¿Has corrido el SQL de configuración? ('+escapeHtml(e.message||'')+')</p>';
+    }
   }
-  $('savedList').addEventListener('click', function(e){
-    var ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
+  $('savedList').addEventListener('click', async function(e){
+    var ed=e.target.closest('[data-edit]'), del=e.target.closest('[data-del]');
     if(ed){ editProduct(ed.dataset.edit); }
-    if(del){ var arr = loadProducts().filter(function(p){return p.id!==del.dataset.del;}); saveProducts(arr); renderSaved(); }
+    if(del){ if(!confirm('¿Borrar este producto?')) return; var r=await sb.from('products').delete().eq('id', del.dataset.del); if(r.error){ alert('Error al borrar: '+r.error.message); } loadProducts(); }
   });
   function editProduct(id){
-    var p = loadProducts().filter(function(x){return x.id===id;})[0]; if(!p) return;
+    var p = PRODUCTS.filter(function(x){return String(x.id)===String(id);})[0]; if(!p) return;
     editingId = p.id;
-    $('p-title').value=p.title; $('p-cat').value=p.category; $('p-desc').value=p.desc;
-    $('p-price').value=p.free?'':p.price; $('p-free').checked=!!p.free;
-    $('p-color').value=p.color; $('p-icon').value=p.icon; $('p-coversub').value=p.coverSub; $('p-covertitle').value=p.coverTitle;
-    selected = (p.tags||[]).slice();
-    $('editorTitle').textContent='Editar producto';
-    renderChips();
+    $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||'';
+    $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free;
+    $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||'';
+    selected=(p.tags||[]).slice(); $('editorTitle').textContent='Editar producto'; renderChips();
     window.scrollTo({top:0,behavior:'smooth'});
   }
-  $('saveBtn').addEventListener('click', function(){
+  $('saveBtn').addEventListener('click', async function(){
     var p = gather();
-    if(!$('p-title').value.trim()){ alert('Ponle un título al producto.'); return; }
-    var arr = loadProducts();
-    var idx = arr.findIndex(function(x){return x.id===p.id;});
-    if(idx>-1) arr[idx]=p; else arr.push(p);
-    saveProducts(arr); renderSaved(); resetForm();
+    if(!p.title){ alert('Ponle un título al producto.'); return; }
+    $('saveStatus').textContent='Guardando…';
+    var row = { title:p.title, category:p.category, description:p.description, price:p.price, is_free:p.is_free, tags:p.tags, cover_color:p.cover_color, cover_icon:p.cover_icon, cover_sub:p.cover_sub, cover_title:p.cover_title };
+    var r;
+    if(editingId){ r = await sb.from('products').update(row).eq('id', editingId); }
+    else { r = await sb.from('products').insert(row); }
+    if(r.error){ $('saveStatus').textContent=''; alert('Error al guardar: '+r.error.message); return; }
+    $('saveStatus').textContent='✓ Guardado'; setTimeout(function(){ $('saveStatus').textContent=''; }, 1800);
+    resetForm(); loadProducts();
   });
   function resetForm(){
     editingId=null; selected=[];
     $('p-title').value=''; $('p-cat').value='Cachorros'; $('p-desc').value='';
     $('p-price').value=''; $('p-free').checked=false;
     $('p-color').value='sky'; $('p-icon').value='i-paw'; $('p-coversub').value='Guía PDF'; $('p-covertitle').value='';
-    $('editorTitle').textContent='Añadir producto';
-    renderChips();
+    $('editorTitle').textContent='Añadir producto'; renderChips();
   }
   $('resetBtn').addEventListener('click', resetForm);
 
-  /* ============ EXPORT ============ */
-  function copy(text, btn){
-    navigator.clipboard.writeText(text).then(function(){
-      var old = btn.textContent; btn.textContent='¡Copiado!';
-      setTimeout(function(){ btn.textContent=old; }, 1400);
-    });
+  /* ============ AUTH ============ */
+  async function showDashboard(session){
+    $('loginScreen').hidden = true;
+    $('dashboard').hidden = false;
+    $('logoutBtn').hidden = false;
+    $('whoami').textContent = session && session.user ? session.user.email : '';
+    await loadTags();
+    await loadProducts();
+    renderPreview();
   }
-  $('copyHtmlBtn').addEventListener('click', function(){ $('exportOut').value=cardHTML(gather()); copy($('exportOut').value, this); });
-  $('copyJsonBtn').addEventListener('click', function(){ var j=JSON.stringify(loadProducts(),null,2); $('exportOut').value=j; copy(j, this); });
+  function showLogin(){
+    $('dashboard').hidden = true;
+    $('logoutBtn').hidden = true;
+    $('whoami').textContent = '';
+    $('loginScreen').hidden = false;
+  }
+  $('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    $('loginError').textContent=''; $('loginBtn').textContent='Entrando…';
+    var r = await sb.auth.signInWithPassword({ email:$('loginEmail').value.trim(), password:$('loginPass').value });
+    $('loginBtn').textContent='Entrar';
+    if(r.error){ $('loginError').textContent = r.error.message==='Invalid login credentials' ? 'Correo o contraseña incorrectos.' : r.error.message; return; }
+    showDashboard(r.data.session);
+  });
+  $('logoutBtn').addEventListener('click', async function(){ await sb.auth.signOut(); showLogin(); });
 
   /* ============ INIT ============ */
-  renderChips();
-  renderSaved();
-  renderPreview();
+  (async function init(){
+    renderPool(); renderChips();
+    var s = await sb.auth.getSession();
+    if(s.data && s.data.session){ showDashboard(s.data.session); } else { showLogin(); }
+  })();
 })();
 </script>
 </body>
