@@ -128,6 +128,9 @@
     @media(max-width:980px){ .ov-grid { grid-template-columns:1fr; } }
     .chart-box { position:relative; height:300px; }
     .chart-box--sm { height:230px; }
+    .tf-tabs { display:inline-flex; gap:2px; background:var(--c-cream-alt); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-full); padding:3px; margin-bottom:16px; flex-wrap:wrap; }
+    .tf-tabs button { border:none; background:none; padding:6px 13px; border-radius:var(--radius-full); font-family:var(--font-display); font-weight:700; font-size:.66rem; text-transform:uppercase; letter-spacing:.04em; cursor:pointer; color:var(--c-text-muted); }
+    .tf-tabs button.active { background:var(--c-ink); color:var(--c-cream); }
     .mini-row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid rgba(30,40,32,.08); }
     .mini-row:last-child { border-bottom:none; }
     .mini-row__name { flex:1; font-weight:700; font-size:.85rem; } .mini-row__sub { font-size:.73rem; color:var(--c-text-muted); font-weight:500; }
@@ -191,7 +194,9 @@
       </div>
       <div class="ov-grid">
         <div>
-          <div class="panel"><h2>Ingresos y visitas</h2><p class="panel__hint">Demo · se conectará a datos reales al activar Stripe.</p><div class="chart-box"><canvas id="earningsChart"></canvas></div></div>
+          <div class="panel"><h2>Ingresos y visitas</h2><p class="panel__hint">Demo · se conectará a datos reales al activar Stripe.</p>
+            <div class="tf-tabs" data-tf-for="earnings"><button data-tf="hora">Hora</button><button data-tf="dia" class="active">Día</button><button data-tf="semana">Semana</button><button data-tf="mes">Mes</button><button data-tf="ano">Año</button></div>
+            <div class="chart-box"><canvas id="earningsChart"></canvas></div></div>
           <div class="panel"><h2>Productos más vendidos</h2><div id="topProducts"><p class="muted">Cargando…</p></div></div>
         </div>
         <div>
@@ -275,7 +280,9 @@
     <section data-page-view="trafico" hidden>
       <div class="page-head"><h1>Tráfico</h1><p>Visitas a la web (se registran automáticamente) y ventas por país.</p></div>
       <div class="stats" id="trafStats"></div>
-      <div class="panel"><h2>Visitas por mes</h2><div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
+      <div class="panel"><h2>Visitas</h2>
+        <div class="tf-tabs" data-tf-for="traf"><button data-tf="hora">Hora</button><button data-tf="dia" class="active">Día</button><button data-tf="semana">Semana</button><button data-tf="mes">Mes</button><button data-tf="ano">Año</button></div>
+        <div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
         <div class="panel"><h2>Países por tráfico</h2><p class="panel__hint">Se llena a medida que la gente visita la web.</p><div id="trafCountries"></div></div>
         <div class="panel"><h2>Páginas más vistas</h2><div id="trafTop"><p class="muted">Cargando…</p></div></div>
@@ -287,6 +294,9 @@
       <div class="page-head"><h1>Ventas</h1><p>Pedidos e ingresos.</p></div>
       <div class="panel" id="stripeBanner" style="background:var(--c-golden);margin-bottom:24px"><strong>Datos de demostración.</strong> Cuando conectemos <em>Stripe</em> (cuenta gratis), estos números pasarán a ser reales automáticamente.</div>
       <div class="stats" id="salesStats"></div>
+      <div class="panel" style="margin-top:24px"><h2>Ingresos en el tiempo</h2>
+        <div class="tf-tabs" data-tf-for="ventas"><button data-tf="hora">Hora</button><button data-tf="dia" class="active">Día</button><button data-tf="semana">Semana</button><button data-tf="mes">Mes</button><button data-tf="ano">Año</button></div>
+        <div class="chart-box chart-box--sm"><canvas id="ventasChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
         <div class="panel"><h2>Pedidos recientes</h2><div id="ordersBox"><p class="muted">Cargando…</p></div></div>
         <div class="panel"><h2>Países por ventas</h2><div id="salesCountries"></div></div>
@@ -399,6 +409,29 @@
     el._chart=new Chart(el,{ type:'line', data:{labels:labels,datasets:datasets}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:true,position:'top',labels:{usePointStyle:true,boxWidth:8,font:{family:'Inter',weight:'700',size:11}}} }, scales:{ y:{beginAtZero:true,grid:{color:'rgba(30,40,32,.08)'},ticks:{font:{family:'Inter'}}}, x:{grid:{display:false},ticks:{font:{family:'Inter'}}} }, elements:{ line:{tension:.4,borderWidth:3}, point:{radius:0,hoverRadius:5} } } }); }
   function dset(label,data,color){ return {label:label,data:data,borderColor:color,backgroundColor:color+'22',pointBackgroundColor:color,fill:false}; }
   var MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  /* ---- timeframe engine (Hora/Día/Semana/Mes/Año) ---- */
+  function tfLabels(tf){
+    if(tf==='hora'){ var a=[]; for(var i=0;i<24;i++) a.push(i+'h'); return a; }
+    if(tf==='dia') return ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+    if(tf==='semana') return ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'];
+    if(tf==='ano') return ['2021','2022','2023','2024','2025'];
+    return MONTHS; // mes
+  }
+  function gen(n,base,amp,seed){ var a=[],s=seed; for(var i=0;i<n;i++){ s=(s*9301+49297)%233280; var r=s/233280; a.push(Math.round(base+(i/n)*amp*0.5+r*amp*0.5)); } return a; }
+  var CHARTS={
+    earnings:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('earningsChart',L,[ dset('Visitas (×100)',gen(n,60,100,7),'#3F7FD0'), dset('Ingresos (×€100)',gen(n,40,130,13),'#5E8C3E'), dset('Ventas (×10)',gen(n,20,80,21),'#C55932') ]); },
+    traf:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('trafChart',L,[ dset('Visitas',gen(n,30,120,7),'#3F7FD0') ]); },
+    ventas:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('ventasChart',L,[ dset('Ingresos (€)',gen(n,200,900,33),'#5E8C3E') ]); }
+  };
+  function activeTf(key){ var b=document.querySelector('.tf-tabs[data-tf-for="'+key+'"] button.active'); return b?b.dataset.tf:'dia'; }
+
+  /* ---- friendly page names + country flags ---- */
+  var PAGE_NAMES={'/':'Inicio','/index.html':'Inicio','/biblioteca.html':'Biblioteca','/blog.html':'Blog','/blog-post.html':'Artículo','/producto.html':'Producto','/sobre-nosotros.html':'Nosotros','/cuenta.html':'Mi cuenta','/admin.html':'Panel'};
+  function pageName(p){ return PAGE_NAMES[p] || (p||'').replace(/^\//,'').replace(/\.html$/,'') || p; }
+  var COUNTRY_ES={ES:'España',MX:'México',AR:'Argentina',CO:'Colombia',CL:'Chile',PE:'Perú',VE:'Venezuela',EC:'Ecuador',US:'Estados Unidos',GT:'Guatemala',CU:'Cuba',BO:'Bolivia',DO:'Rep. Dominicana',HN:'Honduras',PY:'Paraguay',SV:'El Salvador',NI:'Nicaragua',CR:'Costa Rica',PA:'Panamá',UY:'Uruguay',PR:'Puerto Rico',FR:'Francia',PT:'Portugal',IT:'Italia',DE:'Alemania',GB:'Reino Unido',BR:'Brasil',CA:'Canadá'};
+  function countryFlag(v){ if(v&&v.length===2) return v.toUpperCase().replace(/./g,function(c){return String.fromCodePoint(127397+c.charCodeAt(0));}); return '🌐'; }
+  function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
   var DEMO_PRODUCTS=[{name:'Cría un perro feliz',cat:'Educación',sales:842},{name:'Sueño tranquilo',cat:'Cachorros',sales:531},{name:'Ladridos bajo control',cat:'Conducta',sales:418},{name:'Los 5 comandos esenciales',cat:'Educación',sales:390},{name:'Ansiedad por separación',cat:'Conducta',sales:286}];
   var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 compras',val:'€284'},{name:'Javier G.',sub:'9 compras',val:'€213'},{name:'Ana S.',sub:'7 compras',val:'€168'},{name:'Carlos R.',sub:'5 compras',val:'€119'}];
   var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Hoy',val:'€29.99'},{name:'Sueño tranquilo',sub:'Ayer',val:'€14.99'},{name:'Ladridos bajo control',sub:'Hace 2 días',val:'€19.99'},{name:'Ansiedad por separación',sub:'Hace 3 días',val:'€22.99'}];
@@ -409,11 +442,7 @@
     var visitas='12,4K';
     try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visitas=pv.count.toLocaleString('es-ES'); }catch(e){}
     $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='€4,28K'; $('ovVentas').textContent='312';
-    lineChart('earningsChart',MONTHS,[
-      dset('Visitas (×100)',[60,72,80,76,90,110,130,120,115,125,140,155],'#3F7FD0'),
-      dset('Ingresos (×€100)',[42,55,61,70,95,140,120,98,110,130,150,168],'#5E8C3E'),
-      dset('Ventas (×10)',[20,28,33,40,52,70,64,55,60,72,84,95],'#C55932')
-    ]);
+    CHARTS.earnings(activeTf('earnings'));
     $('topProducts').innerHTML='<table class="tbl"><tr><th>Producto</th><th>Categoría</th><th>Ventas</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
     $('topCustomers').innerHTML=miniRows(DEMO_CUSTOMERS);
     $('recentOrders').innerHTML=miniRows(DEMO_ORDERS);
@@ -428,10 +457,10 @@
       var byPath={},byCountry={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; if(x.country) byCountry[x.country]=(byCountry[x.country]||0)+1; });
       var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
       $('trafStats').innerHTML=stat(total,'Visitas totales')+stat(last7,'Últimos 7 días')+stat(today,'Hoy')+stat(Object.keys(byPath).length,'Páginas distintas');
-      lineChart('trafChart',MONTHS,[ dset('Visitas',[30,45,52,60,72,88,80,95,102,110,120,134],COL.sky) ]);
-      var cty=Object.keys(byCountry).map(function(c){return {name:c,val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
+      CHARTS.traf(activeTf('traf'));
+      var cty=Object.keys(byCountry).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
       $('trafCountries').innerHTML=cty.length?miniRows(cty):'<p class="muted">Aún sin datos de país (la captura ya está activa — se llenará con las visitas).</p>';
-      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(t.p)+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas.</p>';
+      $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Página</th><th>Visitas</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">Aún no hay visitas registradas.</p>';
     }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Falta la tabla de tráfico. ('+esc(e.message||'')+')</p>'; }
   }
 
@@ -456,6 +485,7 @@
   ];
   function loadVentas(){
     $('salesStats').innerHTML=stat('312','Pedidos')+stat('€4,28K','Ingresos')+stat('298','Pagados')+stat('14','Pendientes');
+    CHARTS.ventas(activeTf('ventas'));
     $('ordersBox').innerHTML='<table class="tbl"><tr><th>Fecha</th><th>Producto</th><th>Total</th><th>Estado</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>€'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
     $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
   }
@@ -519,6 +549,8 @@
   document.querySelectorAll('.subtab').forEach(function(t){ t.addEventListener('click',function(){ document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('active',x===t);}); document.querySelectorAll('[data-sub-view]').forEach(function(s){s.hidden=s.dataset.subView!==t.dataset.sub;}); }); });
   // Overview cards jump to their panel
   document.querySelectorAll('.ov-card[data-goto]').forEach(function(c){ c.addEventListener('click',function(){ var l=document.querySelector('.side__link[data-view="'+c.dataset.goto+'"]'); if(l) l.click(); }); });
+  // Timeframe selectors on each graph card
+  document.querySelectorAll('.tf-tabs').forEach(function(tabs){ tabs.addEventListener('click',function(e){ var b=e.target.closest('button[data-tf]'); if(!b) return; tabs.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); var key=tabs.dataset.tfFor; if(CHARTS[key]) CHARTS[key](b.dataset.tf); }); });
 
   /* ===== AUTH ===== */
   async function enter(session){
