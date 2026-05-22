@@ -69,6 +69,7 @@
   .fc-price { font-family:var(--font-display); font-weight:900; font-size:2.4rem; letter-spacing:-.03em; line-height:1; }
   .fc-price-old { text-decoration:line-through; opacity:.55; }
   .fc-cta-row { display:flex; gap:12px; flex-wrap:wrap; }
+  .fc-cover-img { width:100%; height:100%; max-height:380px; object-fit:cover; border:var(--bw-2) solid var(--c-ink); border-radius:var(--radius-md); box-shadow:var(--shadow-lg); }
   .fc-cover-icon { display:flex; justify-content:center; margin:20px 0; }
   .fc-cover-sub { font-family:var(--font-display); font-weight:700; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; opacity:.65; }
 
@@ -127,91 +128,27 @@
 
     <!-- Carousel -->
     <div class="fc-wrapper" id="featuredCarousel" data-reveal>
-      <div class="fc-track" id="fcTrack">
-
-        <!-- SLIDE 1 — Cría un perro feliz (theme 1) -->
-        <article class="fc-card fc-card--1">
-          <!-- LEFT: product details -->
-          <div class="fc-card__details">
-            <span class="tag fc-badge">+800 dueños lo tienen</span>
-            <h2 class="fc-card__title">Cría un perro feliz: guía completa para nuevos dueños</h2>
-            <p class="fc-card__desc">Si llevas semanas improvisando y buscando en Google a deshoras, esto es para ti. 12 semanas de plan claro, paso a paso, sin tecnicismos y sin teoría aburrida.</p>
-            <div class="fc-price-row">
-              <span class="fc-price">$29.99</span>
-              <span class="fc-price-old">$49.99</span>
-              <span class="tag fc-discount">40% off</span>
-            </div>
-            <div class="fc-cta-row">
-              <a href="producto.html" class="btn btn--lg fc-btn-primary">Ver detalles <svg class="icon"><use href="#i-arrow-right"/></svg></a>
-              <button class="btn btn--lg fc-btn-secondary" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar</button>
-            </div>
-          </div>
-          <!-- RIGHT: product cover -->
-          <div class="fc-card__cover-wrap">
-            <a href="producto.html" class="fc-card__cover">
-              <div class="fc-card__cover-tag">Logramo Editorial</div>
-              <div class="fc-card__cover-title">Cría un<br>Perro Feliz</div>
-              <div class="fc-cover-icon"><svg width="56" height="56"><use href="#i-paw"/></svg></div>
-              <div class="fc-cover-sub">Guía Completa · 12 semanas</div>
-            </a>
-          </div>
-        </article>
-
-        <!-- SLIDE 2 — Sueño Tranquilo (theme 2 — same structure, different colors) -->
-        <article class="fc-card fc-card--2">
-          <!-- LEFT: product details -->
-          <div class="fc-card__details">
-            <span class="tag fc-badge">Más reseñas 5 ⭐</span>
-            <h2 class="fc-card__title">Sueño tranquilo: cómo hacer que tu cachorro duerma de noche</h2>
-            <p class="fc-card__desc">¿Llevas días sin dormir porque tu cachorro llora toda la noche? No eres el único. Este método paso a paso te da las noches de vuelta — en menos de dos semanas.</p>
-            <div class="fc-price-row">
-              <span class="fc-price">$14.99</span>
-              <span class="fc-price-old">$24.99</span>
-              <span class="tag fc-discount">40% off</span>
-            </div>
-            <div class="fc-cta-row">
-              <a href="producto.html" class="btn btn--lg fc-btn-primary">Ver detalles <svg class="icon"><use href="#i-arrow-right"/></svg></a>
-              <button class="btn btn--lg fc-btn-secondary" data-add-to-cart data-id="sueno-tranquilo" data-name="Sueño Tranquilo" data-price="14.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar</button>
-            </div>
-          </div>
-          <!-- RIGHT: product cover -->
-          <div class="fc-card__cover-wrap">
-            <a href="producto.html" class="fc-card__cover">
-              <div class="fc-card__cover-tag">Logramo Editorial</div>
-              <div class="fc-card__cover-title">Sueño<br>Tranquilo</div>
-              <div class="fc-cover-icon"><svg width="56" height="56"><use href="#i-clock"/></svg></div>
-              <div class="fc-cover-sub">Método nocturno · PDF</div>
-            </a>
-          </div>
-        </article>
-
-      </div><!-- /fc-track -->
+      <div class="fc-track" id="fcTrack"></div><!-- slides rendered from the database -->
     </div><!-- /fc-wrapper -->
 
     <!-- Dots -->
-    <div class="fc-dots">
-      <button class="fc-dot active" data-fc="0" aria-label="Producto 1"></button>
-      <button class="fc-dot" data-fc="1" aria-label="Producto 2"></button>
-    </div>
+    <div class="fc-dots" id="fcDots"></div>
   </div>
 </section>
 
 <script>
-(function(){
+/* Featured carousel — initialised after the slides are rendered from the DB */
+window.initFcCarousel = function(){
   var track=document.getElementById('fcTrack');
   var wrapper=document.getElementById('featuredCarousel');
-  var dots=document.querySelectorAll('.fc-dot');
+  var dots=document.querySelectorAll('#fcDots .fc-dot');
   var slides=document.querySelectorAll('.fc-card');
+  if(!track || !slides.length) return;
   var current=0, autoTimer, isDragging=false, dragStart=0, dragDelta=0;
-  function goTo(i){
-    current=(i+slides.length)%slides.length;
-    track.style.transform='translateX(-'+current*100+'%)';
-    dots.forEach(function(d,n){d.classList.toggle('active',n===current);});
-  }
-  function startAuto(){ stopAuto(); autoTimer=setInterval(function(){goTo(current+1);},9000); }
+  function goTo(i){ current=(i+slides.length)%slides.length; track.style.transform='translateX(-'+current*100+'%)'; dots.forEach(function(d,n){d.classList.toggle('active',n===current);}); }
+  function startAuto(){ stopAuto(); if(slides.length>1) autoTimer=setInterval(function(){goTo(current+1);},9000); }
   function stopAuto(){ clearInterval(autoTimer); }
   dots.forEach(function(d){d.addEventListener('click',function(){stopAuto();goTo(parseInt(d.dataset.fc));startAuto();});});
-  // drag / swipe
   function onDragStart(x){isDragging=true;dragStart=x;dragDelta=0;stopAuto();}
   function onDragMove(x){if(!isDragging)return;dragDelta=x-dragStart;}
   function onDragEnd(){if(!isDragging)return;isDragging=false;if(Math.abs(dragDelta)>55){goTo(dragDelta<0?current+1:current-1);}dragDelta=0;startAuto();}
@@ -224,7 +161,7 @@
   wrapper.addEventListener('mouseenter',stopAuto);
   wrapper.addEventListener('mouseleave',function(){if(!isDragging)startAuto();});
   goTo(0);startAuto();
-})();
+};
 </script>
 
 <!-- ============ PRODUCTS (live from database) ============ -->
@@ -293,6 +230,36 @@
       +'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'')+'</h3><p class="book-card__desc">'+esc(p.description||'')+'</p>'
       +'<div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
+  function fcCover(p){
+    if(p.cover_image) return '<div class="fc-card__cover-wrap"><img class="fc-cover-img" src="'+esc(p.cover_image)+'" alt=""></div>';
+    return '<div class="fc-card__cover-wrap"><div class="fc-card__cover"><div class="fc-card__cover-tag">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="fc-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div class="fc-cover-icon"><svg width="40" height="40"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div>';
+  }
+  function fcSlide(p,theme){
+    var tags=cardTags(p);
+    var price=p.is_free?'Gratis':'$'+Number(p.price||0).toFixed(2);
+    var cta=p.is_free?'Descargar gratis':'Comprar ahora';
+    var href='producto.html?id='+encodeURIComponent(p.id);
+    return '<div class="fc-card fc-card--'+theme+'">'
+      +'<div class="fc-card__details">'
+        +(tags.length?'<div class="fc-badge"><span class="lib-tag lib-tag--'+(tagInfo(tags[0]).color||'default')+'">'+esc(tagInfo(tags[0]).label)+'</span></div>':'')
+        +'<span class="book-card__category" style="color:var(--c-cream);opacity:.7">'+esc(p.category||'')+'</span>'
+        +'<h3 class="fc-card__title">'+esc(p.title||'')+'</h3>'
+        +'<p class="fc-card__desc">'+esc(p.description||'')+'</p>'
+        +'<div class="fc-price-row"><span class="fc-price">'+price+'</span></div>'
+        +'<div class="fc-cta-row"><a href="'+href+'" class="btn fc-btn-primary btn--lg">'+cta+' <svg class="icon"><use href="#i-arrow-right"/></svg></a></div>'
+      +'</div>'
+      +fcCover(p)
+    +'</div>';
+  }
+  function renderFeatured(products){
+    var featured=products.filter(function(p){return p.featured;}).slice(0,2);
+    var fcTrack=document.getElementById('fcTrack'), fcDots=document.getElementById('fcDots');
+    if(!featured.length){ if(destacados) destacados.style.display='none'; return; }
+    if(destacados) destacados.style.display='';
+    if(fcTrack) fcTrack.innerHTML=featured.map(function(p,i){return fcSlide(p,i+1);}).join('');
+    if(fcDots) fcDots.innerHTML=featured.map(function(p,i){return '<button class="fc-dot'+(i===0?' active':'')+'" data-fc="'+i+'"></button>';}).join('');
+    if(window.initFcCarousel) window.initFcCarousel();
+  }
   function render(products){
     if(!products.length){ mount.innerHTML='<p class="muted" style="text-align:center;padding:50px;color:var(--c-text-muted)">Aún no hay libros publicados.</p>'; return; }
     var byCat={}; products.forEach(function(p){var c=p.category||'Otros';(byCat[c]=byCat[c]||[]).push(p);});
@@ -330,6 +297,7 @@
     var products=[];
     try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(!r.error)products=(r.data||[]).filter(function(p){return p.published!==false;}); }catch(e){}
     render(products);
+    renderFeatured(products);
     var initial=new URLSearchParams(location.search).get('filter');
     if(initial&&row&&row.querySelector('[data-filter="'+initial+'"]')) setFilter(initial,true); else applyFilters();
   })();

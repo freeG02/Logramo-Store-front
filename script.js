@@ -71,6 +71,18 @@ if (counters.length && 'IntersectionObserver' in window) {
   counters.forEach(el => cio.observe(el));
 }
 
+/* Hero image crossfade loop */
+(function () {
+  var heroImgs = document.querySelectorAll('.hero__img-wrap .hero__img');
+  if (heroImgs.length < 2) return;
+  var i = 0;
+  setInterval(function () {
+    heroImgs[i].classList.remove('is-active');
+    i = (i + 1) % heroImgs.length;
+    heroImgs[i].classList.add('is-active');
+  }, 4500);
+})();
+
 /* Hero Parallax */
 const heroImg = document.querySelector('.hero__img-wrap img');
 if (heroImg && window.matchMedia('(min-width: 880px)').matches) {

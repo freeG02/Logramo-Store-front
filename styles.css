@@ -569,6 +569,8 @@ h6 { font-size: .9rem; }
   background: var(--c-tan);
 }
 .hero__img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease-out); }
+.hero__img-wrap .hero__img { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s var(--ease-out), transform 1.4s var(--ease-out); }
+.hero__img-wrap .hero__img.is-active { opacity: 1; }
 .hero__sticker {
   position: absolute;
   background: var(--c-cream);
