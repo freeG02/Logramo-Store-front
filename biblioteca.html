@@ -23,6 +23,10 @@
 
 <!-- ============ FILTERS ============ -->
 <div class="container">
+  <form class="blog-search" onsubmit="event.preventDefault()" data-reveal style="margin-bottom:20px">
+    <input type="search" id="libSearch" placeholder="Buscar libros — ej. 'cachorro', 'gratis'" aria-label="Buscar">
+    <button type="submit"><svg class="icon icon--sm"><use href="#i-search"/></svg> Buscar</button>
+  </form>
   <div class="filter-row" data-reveal data-library-filter style="justify-content:center;flex-wrap:wrap">
     <button class="filter-btn active" data-filter="todos">Todos</button>
     <!-- Tags -->
@@ -223,280 +227,10 @@
 })();
 </script>
 
-<!-- ============ CATEGORY: CACHORROS ============ -->
-<section style="padding: 40px 0">
-  <div class="container">
-    <div class="library-section">
-      <div class="library-section__head" data-reveal>
-        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-paw"/></svg> Cachorros</h2>
-        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
-      </div>
-      <div class="library-grid" data-stagger data-stack-mobile>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--sky">
-            <span class="book-card__free-badge">Gratis</span>
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Guía PDF</div>
-              <div class="book-card__cover-title">Los Primeros<br>30 Días</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-paw"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Cachorros</span>
-            <h3 class="book-card__title">Los primeros 30 días con tu perro</h3>
-            <p class="book-card__desc">Todo lo que ojalá alguien te hubiera contado antes del primer día.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price book-card__price--free">Gratis</span>
-              <span class="book-card__cta">Descargar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--peach">
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Libro Digital</div>
-              <div class="book-card__cover-title">Sueño<br>Tranquilo</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-clock"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Cachorros</span>
-            <h3 class="book-card__title">Sueño tranquilo: cómo dormir toda la noche</h3>
-            <p class="book-card__desc">El método paso a paso para que tu cachorro deje de llorar de noche. Y tú puedas dormir por fin.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$14.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--sage">
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Guía Práctica</div>
-              <div class="book-card__cover-title">Salud del<br>Cachorro</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-shield"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Salud</span>
-            <h3 class="book-card__title">Manual de salud para cachorros</h3>
-            <p class="book-card__desc">Vacunas, desparasitación y salud básica — sin que te entre el pánico leyéndolo.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$19.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CATEGORY: EDUCACIÓN ============ -->
-<section style="padding: 40px 0">
-  <div class="container">
-    <div class="library-section">
-      <div class="library-section__head" data-reveal>
-        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-target"/></svg> Educación</h2>
-        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
-      </div>
-      <div class="library-grid" data-stagger data-stack-mobile>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--golden">
-            <span class="book-card__badge book-card__badge--bestseller">Best Seller</span>
-            <div class="book-card__cover book-card__cover--forest">
-              <div class="book-card__cover-sub">Libro Estrella</div>
-              <div class="book-card__cover-title">Cría un<br>Perro Feliz</div>
-              <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-paw"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Educación</span>
-            <h3 class="book-card__title">Cría un perro feliz: guía completa</h3>
-            <p class="book-card__desc">12 semanas de plan estructurado para nuevos dueños.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$29.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--lavender">
-            <div class="book-card__cover book-card__cover--terra">
-              <div class="book-card__cover-sub">Libro Digital</div>
-              <div class="book-card__cover-title">Adiestramiento<br>Avanzado</div>
-              <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-target"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Educación</span>
-            <h3 class="book-card__title">Adiestramiento avanzado en casa</h3>
-            <p class="book-card__desc">Trucos, comandos avanzados y técnicas de obediencia.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$24.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--pink">
-            <span class="book-card__free-badge">Gratis</span>
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Mini Guía</div>
-              <div class="book-card__cover-title">5 Comandos<br>Básicos</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-check-circle"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Educación</span>
-            <h3 class="book-card__title">Los 5 comandos esenciales</h3>
-            <p class="book-card__desc">Las palabras que tu perro debe aprender primero.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price book-card__price--free">Gratis</span>
-              <span class="book-card__cta">Descargar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CATEGORY: SALUD ============ -->
-<section style="padding: 40px 0">
-  <div class="container">
-    <div class="library-section">
-      <div class="library-section__head" data-reveal>
-        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-shield"/></svg> Salud &amp; Bienestar</h2>
-        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
-      </div>
-      <div class="library-grid" data-stagger data-h-drag>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--sky">
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Manual</div>
-              <div class="book-card__cover-title">Alimentación<br>Sana</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-bone"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Alimentación</span>
-            <h3 class="book-card__title">Alimentación sana para tu perro</h3>
-            <p class="book-card__desc">Qué comer, cuándo, cuánto y qué evitar absolutamente.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$19.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--sage">
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Guía Práctica</div>
-              <div class="book-card__cover-title">Primeros<br>Auxilios</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-heart"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Salud</span>
-            <h3 class="book-card__title">Primeros auxilios caninos</h3>
-            <p class="book-card__desc">Qué hacer en emergencias antes de llegar al veterinario.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$16.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--peach">
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Mini Libro</div>
-              <div class="book-card__cover-title">Ejercicio<br>Diario</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-flame"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Salud</span>
-            <h3 class="book-card__title">Ejercicio diario por raza y edad</h3>
-            <p class="book-card__desc">Plan de actividad física adaptado a tu perro.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$12.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CATEGORY: CONDUCTA ============ -->
+<!-- ============ PRODUCTS (live from database) ============ -->
 <section style="padding: 40px 0 var(--section-py)">
   <div class="container">
-    <div class="library-section">
-      <div class="library-section__head" data-reveal>
-        <h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#i-flame"/></svg> Conducta</h2>
-        <a href="#" class="btn btn--cream btn--sm">Ver todos <svg class="icon icon--sm"><use href="#i-arrow-right"/></svg></a>
-      </div>
-      <div class="library-grid" data-stagger data-stack-mobile>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--lavender">
-            <span class="book-card__badge book-card__badge--popular">Popular</span>
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Libro Digital</div>
-              <div class="book-card__cover-title">Ladridos<br>Bajo Control</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-bell"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Conducta</span>
-            <h3 class="book-card__title">Ladridos bajo control</h3>
-            <p class="book-card__desc">Identifica el tipo de ladrido y soluciónalo de raíz.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$19.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--pink">
-            <span class="book-card__badge book-card__badge--new">Nuevo</span>
-            <div class="book-card__cover book-card__cover--forest">
-              <div class="book-card__cover-sub">Manual</div>
-              <div class="book-card__cover-title">Ansiedad por<br>Separación</div>
-              <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-heart"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Conducta</span>
-            <h3 class="book-card__title">Ansiedad por separación: el método</h3>
-            <p class="book-card__desc">Plan paso a paso para que se quede solo sin sufrir — ni él ni tú.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$22.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-        <a href="producto.html" class="book-card">
-          <div class="book-card__cover-wrap book-card__cover-wrap--golden">
-            <div class="book-card__cover">
-              <div class="book-card__cover-sub">Guía Express</div>
-              <div class="book-card__cover-title">Paseos<br>Sin Drama</div>
-              <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-leaf"/></svg></div>
-            </div>
-          </div>
-          <div class="book-card__body">
-            <span class="book-card__category">Paseos</span>
-            <h3 class="book-card__title">Paseos sin tirones</h3>
-            <p class="book-card__desc">Camina con tu perro sin que parezca que él te lleva a ti. Técnica real, resultados reales.</p>
-            <div class="book-card__footer">
-              <span class="book-card__price">$14.99</span>
-              <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
+    <div id="libDynamic"><p class="muted" style="text-align:center;padding:50px 20px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">Cargando libros…</p></div>
   </div>
 </section>
 
@@ -521,93 +255,84 @@
 <script src="partials.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=2"></script>
 <script src="animations.js"></script>
 <script>
-/* ============ BIBLIOTECA FILTER ============
-   Each book card's filter keywords are derived automatically from its
-   visible category label (.book-card__category) and its badges, so adding
-   a product (with a category + badge) makes it filterable with no extra work.
-*/
+/* ============ BIBLIOTECA — live products from Supabase ============ */
 (function(){
-  var row = document.querySelector('[data-library-filter]');
-  if(!row) return;
-  var buttons = row.querySelectorAll('.filter-btn');
-  var cards = Array.prototype.slice.call(document.querySelectorAll('.book-card'));
-  var emptyMsg = document.getElementById('libraryEmpty');
-
-  function slug(s){
-    return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
+  var mount=document.getElementById('libDynamic');
+  var row=document.querySelector('[data-library-filter]');
+  var buttons=row?row.querySelectorAll('.filter-btn'):[];
+  var emptyMsg=document.getElementById('libraryEmpty');
+  var searchInput=document.getElementById('libSearch');
+  var destacados=document.getElementById('destacados');
+  var newsletter=document.querySelector('.newsletter-section');
+  var REG={gratis:{label:'Gratis',color:'gratis'},caliente:{label:'Caliente',color:'caliente'},nuevo:{label:'Nuevo',color:'nuevo'},popular:{label:'Popular',color:'popular'},recomendado:{label:'Recomendado',color:'recomendado'}};
+  var activeFilter='todos', query='';
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+  function tagInfo(s){return REG[s]||{label:s,color:'default'};}
+  function badge(s){var t=tagInfo(s);return '<span class="lib-tag lib-tag--'+(t.color||'default')+'">'+esc(t.label)+'</span>';}
+  var CAT_ICON={'Cachorros':'i-paw','Educación':'i-target','Salud':'i-shield','Conducta':'i-flame','Alimentación':'i-bone','Paseos':'i-leaf'};
+  var CAT_ORDER=['Cachorros','Educación','Salud','Conducta','Alimentación','Paseos'];
+  function isNew(p){return p.created_at && (Date.now()-new Date(p.created_at).getTime())<30*864e5;}
+  function cardTags(p){var t=(p.tags||[]).slice(); if(isNew(p)&&t.indexOf('nuevo')===-1)t.unshift('nuevo'); return t;}
+  function cover(p){
+    if(p.cover_image) return '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><img class="book-card__cover-img" src="'+esc(p.cover_image)+'" alt=""></div>';
+    return '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div>';
   }
-  // Build the keyword set for a card: its category + each badge it carries
-  function keywords(card){
-    var kws = [];
-    var cat = card.querySelector('.book-card__category');
-    if(cat) kws.push(slug(cat.textContent));
-    if(card.querySelector('.book-card__free-badge')) kws.push('gratis');
-    if(card.querySelector('.book-card__badge--bestseller')) kws.push('bestseller');
-    if(card.querySelector('.book-card__badge--popular')) kws.push('popular');
-    if(card.querySelector('.book-card__badge--new')) kws.push('nuevo');
-    if(card.querySelector('.book-card__badge--offer')) kws.push('oferta');
-    return kws;
+  function card(p){
+    var tags=cardTags(p);
+    var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
+    var cta=p.is_free?'Descargar':'Ver libro';
+    return '<a href="producto.html?id='+encodeURIComponent(p.id)+'" class="book-card" data-tags="'+tags.join(' ')+'" data-cat="'+slug(p.category)+'" data-title="'+esc((p.title||'').toLowerCase())+'" data-desc="'+esc((p.description||'').toLowerCase())+'">'
+      +cover(p)
+      +'<div class="book-card__body">'+(tags.length?'<div class="lib-tags">'+tags.map(badge).join('')+'</div>':'')
+      +'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'')+'</h3><p class="book-card__desc">'+esc(p.description||'')+'</p>'
+      +'<div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
-  // Cache keywords on each card
-  cards.forEach(function(c){ c._kw = keywords(c); });
-
-  // Destacados (featured carousel) moves to the bottom while filtering,
-  // and back to the top when "Todos" is selected.
-  var destacados = document.getElementById('destacados');
-  var firstCatSection = (document.querySelector('.library-section') || {}).closest
-    ? document.querySelector('.library-section').closest('section') : null;
-  var newsletter = document.querySelector('.newsletter-section');
-  function placeDestacados(filter){
-    if(!destacados) return;
-    if(filter === 'todos'){
-      if(firstCatSection && destacados.nextElementSibling !== firstCatSection){
-        firstCatSection.parentNode.insertBefore(destacados, firstCatSection);
-      }
-    } else if(newsletter && destacados.nextElementSibling !== newsletter){
-      newsletter.parentNode.insertBefore(destacados, newsletter);
+  function render(products){
+    if(!products.length){ mount.innerHTML='<p class="muted" style="text-align:center;padding:50px;color:var(--c-text-muted)">Aún no hay libros publicados.</p>'; return; }
+    var byCat={}; products.forEach(function(p){var c=p.category||'Otros';(byCat[c]=byCat[c]||[]).push(p);});
+    var cats=CAT_ORDER.filter(function(c){return byCat[c];}).concat(Object.keys(byCat).filter(function(c){return CAT_ORDER.indexOf(c)===-1;}));
+    mount.innerHTML=cats.map(function(c){
+      return '<div class="library-section" style="margin-bottom:56px"><div class="library-section__head"><h2><svg class="icon icon--lg" style="color:var(--c-terracotta);vertical-align:middle"><use href="#'+(CAT_ICON[c]||'i-paw')+'"/></svg> '+esc(c)+'</h2></div><div class="library-grid">'+byCat[c].map(card).join('')+'</div></div>';
+    }).join('');
+  }
+  function applyFilters(){
+    var anyVisible=false;
+    document.querySelectorAll('#libDynamic .book-card').forEach(function(cd){
+      var kws=[cd.getAttribute('data-cat')].concat((cd.getAttribute('data-tags')||'').split(' '));
+      var mf=activeFilter==='todos'||kws.indexOf(activeFilter)>-1;
+      var ms=!query||(cd.getAttribute('data-title')||'').indexOf(query)>-1||(cd.getAttribute('data-desc')||'').indexOf(query)>-1;
+      var show=mf&&ms; cd.style.display=show?'':'none'; if(show)anyVisible=true;
+    });
+    document.querySelectorAll('#libDynamic .library-section').forEach(function(sec){
+      var vis=Array.prototype.some.call(sec.querySelectorAll('.book-card'),function(c){return c.style.display!=='none';});
+      sec.style.display=vis?'':'none';
+    });
+    var filtering=activeFilter!=='todos'||!!query;
+    document.body.classList.toggle('lib-filtering', filtering);
+    var prodSection=mount.closest('section');
+    if(destacados&&prodSection){
+      if(!filtering){ if(destacados.nextElementSibling!==prodSection) prodSection.parentNode.insertBefore(destacados,prodSection); }
+      else if(newsletter&&destacados.nextElementSibling!==newsletter){ newsletter.parentNode.insertBefore(destacados,newsletter); }
     }
+    if(emptyMsg) emptyMsg.style.display=anyVisible?'none':'block';
   }
-
-  function apply(filter){
-    placeDestacados(filter);
-    // While filtering, drop the mobile sticky-stack spacing (the big 22vh
-    // gaps only make sense when every card in a section is shown).
-    document.body.classList.toggle('lib-filtering', filter !== 'todos');
-    var anyVisible = false;
-    cards.forEach(function(card){
-      var show = filter === 'todos' || card._kw.indexOf(filter) > -1;
-      card.style.display = show ? '' : 'none';
-      if(show) anyVisible = true;
-    });
-    // Hide category sections that have no visible cards
-    document.querySelectorAll('.library-section').forEach(function(sec){
-      var visible = Array.prototype.some.call(sec.querySelectorAll('.book-card'), function(c){ return c.style.display !== 'none'; });
-      var outer = sec.closest('section');
-      if(outer) outer.style.display = visible ? '' : 'none';
-    });
-    if(emptyMsg) emptyMsg.style.display = anyVisible ? 'none' : 'block';
-  }
-
-  function select(filter, scroll){
-    var target = row.querySelector('[data-filter="'+filter+'"]') || row.querySelector('[data-filter="todos"]');
-    buttons.forEach(function(b){ b.classList.remove('active'); });
-    target.classList.add('active');
-    apply(target.getAttribute('data-filter'));
-    if(scroll) row.scrollIntoView({ behavior:'smooth', block:'center' });
-  }
-
-  buttons.forEach(function(btn){
-    btn.addEventListener('click', function(){ select(btn.getAttribute('data-filter'), false); });
-  });
-
-  // Deep link: ?filter=<tag|category> (e.g. from the homepage "Guía gratis" CTA)
-  var initial = new URLSearchParams(location.search).get('filter');
-  if(initial && row.querySelector('[data-filter="'+initial+'"]')){
-    select(initial, true);
-  }
+  function setFilter(f,scroll){ activeFilter=f; buttons.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-filter')===f);}); applyFilters(); if(scroll&&row)row.scrollIntoView({behavior:'smooth',block:'center'}); }
+  buttons.forEach(function(b){ b.addEventListener('click',function(){ setFilter(b.getAttribute('data-filter'),false); }); });
+  if(searchInput) searchInput.addEventListener('input',function(){ query=(searchInput.value||'').trim().toLowerCase(); applyFilters(); });
+  (async function(){
+    try{ var t=await sb.from('tags').select('*'); if(!t.error)(t.data||[]).forEach(function(x){REG[x.slug]={label:x.label,color:x.color||'default'};}); }catch(e){}
+    var products=[];
+    try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(!r.error)products=(r.data||[]).filter(function(p){return p.published!==false;}); }catch(e){}
+    render(products);
+    var initial=new URLSearchParams(location.search).get('filter');
+    if(initial&&row&&row.querySelector('[data-filter="'+initial+'"]')) setFilter(initial,true); else applyFilters();
+  })();
 })();
 </script>
 </body>
