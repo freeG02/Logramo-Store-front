@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Logramo — Guías reales para criar un perro feliz. Llegamos muy pronto." />
+  <meta name="robots" content="noindex" />
+  <title>Logramo — Llegamos pronto</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <style>
+    body { background: var(--c-cream-alt); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
+    .cs-card {
+      width: 100%; max-width: 560px;
+      background: var(--c-cream);
+      border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-lg);
+      box-shadow: 10px 10px 0 var(--c-ink);
+      padding: 40px 32px;
+      text-align: center;
+      position: relative;
+    }
+    .cs-logo { display: flex; justify-content: center; margin-bottom: 22px; color: var(--c-terracotta); }
+    .cs-logo svg { height: 32px; width: auto; color: inherit; }
+    .cs-logo svg path { fill: currentColor; }
+    .cs-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--c-golden); color: var(--c-ink);
+      border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-full);
+      padding: 6px 14px;
+      font-family: var(--font-display); font-weight: 800;
+      font-size: .7rem; text-transform: uppercase; letter-spacing: .12em;
+      margin-bottom: 18px;
+    }
+    .cs-title {
+      font-family: var(--font-display); font-weight: 900;
+      font-size: clamp(1.9rem, 5.4vw, 2.7rem);
+      line-height: 1.02; letter-spacing: -.03em;
+      text-transform: uppercase;
+      color: var(--c-ink);
+      margin: 0 0 14px;
+    }
+    .cs-title em { font-style: normal; color: var(--c-terracotta); }
+    .cs-desc {
+      color: var(--c-text-muted); line-height: 1.55;
+      font-size: 1.02rem;
+      max-width: 440px; margin: 0 auto 26px;
+    }
+    .cs-form { display: flex; gap: 8px; max-width: 440px; margin: 0 auto; flex-wrap: wrap; }
+    .cs-form__input {
+      flex: 1 1 240px; min-width: 0;
+      padding: 14px 18px;
+      border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-md);
+      background: var(--c-cream-alt);
+      font-family: var(--font-body); font-size: 1rem; color: var(--c-ink);
+      outline: none;
+      box-shadow: 3px 3px 0 var(--c-ink);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .cs-form__input:focus { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--c-terracotta); }
+    .cs-form__btn {
+      padding: 14px 22px;
+      border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-md);
+      background: var(--c-terracotta); color: var(--c-cream);
+      font-family: var(--font-display); font-weight: 900;
+      font-size: .8rem; text-transform: uppercase; letter-spacing: .08em;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 var(--c-ink);
+      transition: transform .15s, box-shadow .15s;
+      white-space: nowrap;
+    }
+    .cs-form__btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--c-ink); }
+    .cs-form__btn:disabled { opacity: .6; cursor: default; }
+    .cs-note { margin-top: 14px; font-size: .78rem; color: var(--c-text-muted); }
+    .cs-status { margin-top: 14px; font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .76rem; min-height: 1em; }
+    .cs-status.ok { color: var(--c-forest); }
+    .cs-status.err { color: var(--c-terracotta); }
+    .cs-foot {
+      margin-top: 28px; padding-top: 22px;
+      border-top: 1px dashed rgba(17,26,23,.18);
+      font-size: .76rem; color: var(--c-text-muted);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .cs-foot svg { color: var(--c-terracotta); }
+    .cs-paws { position: absolute; opacity: .12; }
+    .cs-paws--tl { top: -16px; left: -16px; transform: rotate(-15deg); }
+    .cs-paws--br { bottom: -16px; right: -16px; transform: rotate(20deg); }
+    .cs-paws svg { width: 90px; height: 90px; color: var(--c-terracotta); }
+    @media (max-width: 520px) {
+      .cs-card { padding: 32px 22px; box-shadow: 6px 6px 0 var(--c-ink); }
+      .cs-paws svg { width: 60px; height: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="partial-nav" style="display:none"></div>
+
+<section class="cs-card" role="region" aria-label="Próximamente">
+  <div class="cs-paws cs-paws--tl"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></div>
+  <div class="cs-paws cs-paws--br"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></div>
+
+  <div class="cs-logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
+  <span class="cs-eyebrow"><svg class="icon icon--xs"><use href="#i-paw"/></svg> Próximamente</span>
+  <h1 class="cs-title">Estamos preparando<br>algo <em>muy bonito.</em></h1>
+  <p class="cs-desc">Guías reales y honestas para criar un perro feliz — sin tecnicismos y sin teoría aburrida. Déjanos tu correo y te avisamos en cuanto abramos.</p>
+
+  <form class="cs-form" id="csForm" novalidate>
+    <input type="email" id="csEmail" class="cs-form__input" placeholder="tu@correo.com" required autocomplete="email" />
+    <button type="submit" class="cs-form__btn" id="csBtn">Avísame</button>
+  </form>
+  <p class="cs-status" id="csStatus" aria-live="polite"></p>
+  <p class="cs-note">Sin spam · solo un email cuando lancemos</p>
+
+  <div class="cs-foot">
+    Hecho con
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-label="amor"><path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z"/></svg>
+    para perros y los humanos que los adoran
+  </div>
+</section>
+
+<script src="partials.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  // partials.js injects the global SVG sprite into <body> (#logo-logramo, #i-paw, etc.).
+  // We also keep a hidden partial-nav placeholder so partials doesn't blow up.
+  var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
+  var form=document.getElementById('csForm'), input=document.getElementById('csEmail'), btn=document.getElementById('csBtn'), status=document.getElementById('csStatus');
+  function setStatus(msg, kind){ status.className='cs-status '+(kind||''); status.textContent=msg||''; }
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var email=(input.value||'').trim();
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ setStatus('Revisa el correo, por favor.', 'err'); return; }
+    btn.disabled=true; setStatus('Enviando…');
+    try{
+      var r=await sb.from('subscribers').insert({ email:email, source:'coming-soon' });
+      if(r.error){
+        // duplicate email is fine — treat as success
+        if(/duplicate|unique/i.test(r.error.message)){ setStatus('¡Ya estás en la lista! Te avisamos pronto.', 'ok'); }
+        else { setStatus('Hubo un problema. Intenta de nuevo.', 'err'); btn.disabled=false; return; }
+      } else {
+        setStatus('¡Listo! Te avisamos en cuanto lancemos.', 'ok');
+      }
+      input.value='';
+    }catch(err){ setStatus('Hubo un problema. Intenta de nuevo.', 'err'); }
+    setTimeout(function(){ btn.disabled=false; }, 1200);
+  });
+})();
+</script>
+</body>
+</html>

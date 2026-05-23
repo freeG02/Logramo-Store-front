@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="¡Gracias por tu compra! Descarga tu guía aquí." />
+  <title>¡Gracias! — Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <style>
+    .gracias-section { min-height: calc(100vh - 80px); display:flex; align-items:center; justify-content:center; padding:32px 0; }
+    @media(max-width:560px){ .gracias-section { min-height: calc(100vh - 64px); padding:24px 0; } }
+  </style>
+</head>
+<body data-page="biblioteca">
+
+<div id="partial-nav"></div>
+
+<section class="gracias-section">
+  <div class="container" style="max-width:580px;text-align:center">
+    <div style="display:flex;justify-content:center;margin-bottom:18px">
+      <div style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:var(--c-golden);border:var(--bw-2) solid var(--c-ink);border-radius:var(--radius-md);box-shadow:var(--shadow-md)">
+        <svg width="36" height="36" style="color:var(--c-ink)"><use href="#i-check"/></svg>
+      </div>
+    </div>
+    <span class="eyebrow">Compra confirmada</span>
+    <h1 style="margin:10px 0 14px;font-size:clamp(1.7rem,3.6vw,2.3rem);line-height:1.05">¡Gracias por confiar en Logramo!</h1>
+    <p id="gMsg" style="margin:0 auto 22px;color:var(--c-text-muted);font-size:1.02rem;line-height:1.45;max-width:460px">Preparando tu descarga…</p>
+    <div id="gActions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"></div>
+    <p style="margin-top:20px;font-size:.82rem;color:var(--c-text-muted)">¿Problemas con la descarga? Escríbenos y te lo enviamos al correo.</p>
+  </div>
+</section>
+
+<div id="partial-footer"></div>
+<div id="partial-cart"></div>
+<div id="partial-chat"></div>
+<div id="partial-popups"></div>
+
+<script src="partials.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="script.js?v=2"></script>
+<script>
+(function(){
+  var sb=window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  async function downloadPdf(url, filename){
+    if(!url) return;
+    var nameGuess=(filename||'logramo.pdf').replace(/[^a-z0-9\-_. áéíóúñÁÉÍÓÚÑ]/gi,'').trim()||'logramo.pdf';
+    if(!/\.pdf$/i.test(nameGuess)) nameGuess+='.pdf';
+    try{
+      var res=await fetch(url, { mode:'cors' });
+      if(!res.ok) throw new Error('fetch failed');
+      var blob=await res.blob();
+      var blobUrl=URL.createObjectURL(blob);
+      var a=document.createElement('a'); a.href=blobUrl; a.download=nameGuess; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){URL.revokeObjectURL(blobUrl);},2000);
+    }catch(e){
+      // Fallback if CORS blocks the fetch: still force download via anchor
+      var a=document.createElement('a'); a.href=url; a.download=nameGuess; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove();
+    }
+  }
+
+  /* Confetti celebration on successful purchase */
+  function celebrate(){
+    if(!window.confetti) return;
+    var brand=['#F6D055','#C55932','#ADCBEF','#3C4824','#FFCDB8','#FEFAE8'];
+    // First big burst from the center
+    confetti({ particleCount:140, spread:90, startVelocity:55, origin:{x:.5,y:.45}, colors:brand, scalar:1.1 });
+    // Side cannons after a beat
+    setTimeout(function(){ confetti({ particleCount:80, angle:60, spread:75, origin:{x:0,y:.7}, colors:brand }); confetti({ particleCount:80, angle:120, spread:75, origin:{x:1,y:.7}, colors:brand }); }, 280);
+    // Gentle finale
+    setTimeout(function(){ confetti({ particleCount:60, spread:120, startVelocity:35, origin:{x:.5,y:.3}, colors:brand, gravity:.6, scalar:.9 }); }, 700);
+  }
+
+  (async function(){
+    var id=new URLSearchParams(location.search).get('id');
+    var msg=document.getElementById('gMsg'), act=document.getElementById('gActions');
+    // Fire confetti for everyone who lands here after paying
+    celebrate();
+    if(!id){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; return; }
+    var r; try{ r=await sb.from('products').select('title,pdf_url').eq('id',id).single(); }catch(e){}
+    if(!r || r.error || !r.data){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; return; }
+    var p=r.data;
+    if(p.pdf_url){
+      msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está lista. La descarga empieza automáticamente.';
+      act.innerHTML='<button class="btn btn--primary" id="gDl"><svg class="icon"><use href="#i-pdf"/></svg> Descargar de nuevo</button><a href="biblioteca.html" class="btn btn--cream">Seguir explorando</a>';
+      document.getElementById('gDl').addEventListener('click',function(){ downloadPdf(p.pdf_url, p.title); });
+      setTimeout(function(){ downloadPdf(p.pdf_url, p.title); }, 800);
+    } else {
+      msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está confirmada. Recibirás un email con el archivo en breve. <br><small style="opacity:.7">(El vendedor aún no ha subido el PDF — ¡pronto disponible!)</small>';
+      act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Seguir explorando</a>';
+    }
+  })();
+})();
+</script>
+</body>
+</html>

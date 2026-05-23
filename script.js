@@ -100,12 +100,45 @@ if (mainNav) {
   }, { passive: true });
 }
 
+/* Mobile collapse for any .blog-search bar — tap to expand, tap outside to collapse */
+(function(){
+  function isMobile(){ return window.matchMedia('(max-width: 640px)').matches; }
+  document.querySelectorAll('.blog-search').forEach(function(form){
+    form.addEventListener('click', function(e){
+      if(!isMobile()) return;
+      if(form.classList.contains('is-open')) return;
+      e.preventDefault();
+      form.classList.add('is-open');
+      var inp = form.querySelector('input'); if(inp) setTimeout(function(){ inp.focus(); }, 240);
+    });
+    var inp = form.querySelector('input');
+    if(inp) inp.addEventListener('blur', function(){
+      if(!isMobile()) return;
+      // small delay so a click on an inner button still works
+      setTimeout(function(){ if(!inp.value.trim()) form.classList.remove('is-open'); }, 120);
+    });
+  });
+  document.addEventListener('click', function(e){
+    if(!isMobile()) return;
+    document.querySelectorAll('.blog-search.is-open').forEach(function(form){
+      if(!form.contains(e.target) && !form.querySelector('input').value.trim()) form.classList.remove('is-open');
+    });
+  });
+})();
+
 /* Mobile menu */
 const menuBtn = document.getElementById('menuBtn');
 const menuClose = document.getElementById('menuClose');
 const mobileNav = document.getElementById('mobileNav');
-function openMenu() { mobileNav?.classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeMenu() { mobileNav?.classList.remove('open'); document.body.style.overflow = ''; }
+/* Keep body scroll locked only while something is actually open */
+function syncScrollLock() {
+  const anyOpen = document.querySelector('.popup-overlay.open')
+    || document.getElementById('cartSidebar')?.classList.contains('open')
+    || document.getElementById('mobileNav')?.classList.contains('open');
+  document.body.style.overflow = anyOpen ? 'hidden' : '';
+}
+function openMenu() { mobileNav?.classList.add('open'); syncScrollLock(); }
+function closeMenu() { mobileNav?.classList.remove('open'); syncScrollLock(); }
 menuBtn?.addEventListener('click', openMenu);
 menuClose?.addEventListener('click', closeMenu);
 mobileNav?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
@@ -122,23 +155,23 @@ document.querySelectorAll('[data-popup]').forEach(btn => {
   });
 });
 document.querySelectorAll('.popup-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+  overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.classList.remove('open'); syncScrollLock(); } });
   overlay.querySelectorAll('[data-close-popup], .popup__close').forEach(b => {
-    b.addEventListener('click', () => overlay.classList.remove('open'));
+    b.addEventListener('click', () => { overlay.classList.remove('open'); syncScrollLock(); });
   });
 });
 function openPopup(id) {
   const p = document.getElementById(id);
-  if (p) { p.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  if (p) { p.classList.add('open'); syncScrollLock(); }
 }
 function closePopup(id) {
   const p = document.getElementById(id);
   if (p) p.classList.remove('open');
-  document.body.style.overflow = '';
+  syncScrollLock();
 }
 function closeAllPopups() {
   document.querySelectorAll('.popup-overlay.open').forEach(p => p.classList.remove('open'));
-  document.body.style.overflow = '';
+  syncScrollLock();
 }
 
 /* Form handlers — generic, all popups */
@@ -204,12 +237,12 @@ function renderCart() {
 function openCart() {
   document.getElementById('cartSidebar')?.classList.add('open');
   document.getElementById('cartOverlay')?.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  syncScrollLock();
 }
 function closeCart() {
   document.getElementById('cartSidebar')?.classList.remove('open');
   document.getElementById('cartOverlay')?.classList.remove('open');
-  document.body.style.overflow = '';
+  syncScrollLock();
 }
 function checkout() {
   if (cartItems.length === 0) return;
@@ -275,10 +308,18 @@ function chatOption(text) {
 }
 
 /* Video modal */
+function ytEmbedId(url) {
+  const m = String(url || '').match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
 function openVideo(card) {
+  const yt = ytEmbedId(card && card.dataset ? card.dataset.youtube : '');
+  const inner = yt
+    ? `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&rel=0" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;display:block"></iframe>`
+    : `<p style="color:#fff;text-align:center;padding:32px;font-family:var(--font-display);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem;opacity:.7">Video embed listo para conectar</p>`;
   const overlay = document.createElement('div');
   overlay.style.cssText = `position:fixed;inset:0;background:rgba(30,40,32,.85);backdrop-filter:blur(8px);z-index:400;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s ease`;
-  overlay.innerHTML = `<div style="position:relative;width:90%;max-width:880px"><button class="video-modal__close" type="button" style="position:absolute;top:-52px;right:0;background:var(--c-cream);border:2px solid var(--c-ink);color:var(--c-ink);font-family:var(--font-display);font-weight:700;cursor:pointer;padding:10px 18px;border-radius:9999px;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;box-shadow:4px 4px 0 var(--c-ink)">Cerrar</button><div style="background:#111;border:2px solid var(--c-ink);border-radius:24px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;box-shadow:8px 8px 0 var(--c-ink)"><p style="color:#fff;text-align:center;padding:32px;font-family:var(--font-display);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem;opacity:.7">Video embed listo para conectar</p></div></div>`;
+  overlay.innerHTML = `<div style="position:relative;width:90%;max-width:880px"><button class="video-modal__close" type="button" style="position:absolute;top:-52px;right:0;background:var(--c-cream);border:2px solid var(--c-ink);color:var(--c-ink);font-family:var(--font-display);font-weight:700;cursor:pointer;padding:10px 18px;border-radius:9999px;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;box-shadow:4px 4px 0 var(--c-ink)">Cerrar</button><div style="background:#111;border:2px solid var(--c-ink);border-radius:24px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;box-shadow:8px 8px 0 var(--c-ink)">${inner}</div></div>`;
   const closeOverlay = () => { overlay.remove(); document.removeEventListener('keydown', onKey); };
   const onKey = e => { if (e.key === 'Escape') closeOverlay(); };
   overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });

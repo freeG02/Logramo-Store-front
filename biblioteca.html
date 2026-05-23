@@ -212,21 +212,27 @@ window.initFcCarousel = function(){
   function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   function tagInfo(s){return REG[s]||{label:s,color:'default'};}
   function badge(s){var t=tagInfo(s);return '<span class="lib-tag lib-tag--'+(t.color||'default')+'">'+esc(t.label)+'</span>';}
+  var TAG_PRIORITY=['bestseller','caliente','nuevo','popular','recomendado','gratis'];
+  function topTag(tags){for(var i=0;i<TAG_PRIORITY.length;i++){if(tags.indexOf(TAG_PRIORITY[i])>-1)return TAG_PRIORITY[i];}return tags[0]||null;}
+  function topBadge(s){var t=tagInfo(s);return '<span class="book-card__top-tag lib-tag lib-tag--'+(t.color||'default')+'">'+esc(t.label)+'</span>';}
   var CAT_ICON={'Cachorros':'i-paw','Educación':'i-target','Salud':'i-shield','Conducta':'i-flame','Alimentación':'i-bone','Paseos':'i-leaf'};
   var CAT_ORDER=['Cachorros','Educación','Salud','Conducta','Alimentación','Paseos'];
   function isNew(p){return p.created_at && (Date.now()-new Date(p.created_at).getTime())<30*864e5;}
   function cardTags(p){var t=(p.tags||[]).slice(); if(isNew(p)&&t.indexOf('nuevo')===-1)t.unshift('nuevo'); return t;}
-  function cover(p){
-    if(p.cover_image) return '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><img class="book-card__cover-img" src="'+esc(p.cover_image)+'" alt=""></div>';
-    return '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'"><div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div>';
+  function cover(p,topHtml){
+    topHtml=topHtml||'';
+    if(p.cover_image) return '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+topHtml+'<img class="book-card__cover-img" src="'+esc(p.cover_image)+'" alt=""></div>';
+    return '<div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+topHtml+'<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div></div>';
   }
   function card(p){
     var tags=cardTags(p);
+    var top=topTag(tags);
+    var rest=tags.filter(function(t){return t!==top;});
     var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
     var cta=p.is_free?'Descargar':'Ver libro';
     return '<a href="producto.html?id='+encodeURIComponent(p.id)+'" class="book-card" data-tags="'+tags.join(' ')+'" data-cat="'+slug(p.category)+'" data-title="'+esc((p.title||'').toLowerCase())+'" data-desc="'+esc((p.description||'').toLowerCase())+'">'
-      +cover(p)
-      +'<div class="book-card__body">'+(tags.length?'<div class="lib-tags">'+tags.map(badge).join('')+'</div>':'')
+      +cover(p, top?topBadge(top):'')
+      +'<div class="book-card__body">'+(rest.length?'<div class="lib-tags">'+rest.map(badge).join('')+'</div>':'')
       +'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'')+'</h3><p class="book-card__desc">'+esc(p.description||'')+'</p>'
       +'<div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="12 semanas de plan claro para pasar de 'no sé qué hago' a 'esto funciona'. Sin tecnicismos, sin teoría aburrida. Solo lo que de verdad necesitas." />
-  <title>Cría un Perro Feliz — Logramo</title>
+  <meta name="description" content="Guías digitales para criar un perro feliz, sin tecnicismos y sin teoría aburrida." />
+  <title>Producto — Logramo</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
@@ -17,7 +17,7 @@
   <nav class="breadcrumb">
     <a href="index.html">Inicio</a><span>/</span>
     <a href="biblioteca.html">Biblioteca</a><span>/</span>
-    <span>Cría un perro feliz</span>
+    <span id="bcTitle">Producto</span>
   </nav>
 </div>
 
@@ -26,49 +26,24 @@
   <div class="container">
     <div class="product-hero__inner">
       <div data-reveal>
-        <span class="tag tag--golden" style="margin-bottom:20px"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Más vendido · +800 dueños</span>
-        <h1 class="product-hero__title">
-          De "no sé<br>qué hago" a<br><em>"esto funciona."</em>
-        </h1>
-        <p class="product-hero__desc">Si llevas semanas improvisando y buscando en Google a deshoras… esto es para ti. 12 semanas de plan claro, paso a paso, sin tecnicismos y sin teoría aburrida.</p>
-        <div class="product-hero__price-row">
-          <span class="product-hero__price">$29.99</span>
-          <span class="product-hero__original">$49.99</span>
-          <span class="tag tag--terra"><svg class="icon icon--xs"><use href="#i-flame"/></svg> 40% off</span>
-        </div>
-        <div class="product-hero__ctas">
-          <button class="btn btn--primary btn--lg" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99">
-            <svg class="icon"><use href="#i-cart"/></svg> Comprar ahora
-          </button>
-          <a href="#contenido" class="btn btn--cream btn--lg">Ver contenido</a>
-        </div>
-        <div class="product-hero__trust">
+        <div id="phBadge"></div>
+        <h1 class="product-hero__title" id="phTitle">Cargando…</h1>
+        <p class="product-hero__desc" id="phDesc"></p>
+        <div class="product-hero__price-row" id="phPriceRow"></div>
+        <div class="product-hero__trust" style="margin-bottom:36px">
           <div class="trust-item"><svg class="icon icon--sm"><use href="#i-check-circle"/></svg> Acceso inmediato</div>
           <div class="trust-item"><svg class="icon icon--sm"><use href="#i-shield"/></svg> Garantía 30 días</div>
           <div class="trust-item"><svg class="icon icon--sm"><use href="#i-clock"/></svg> Acceso de por vida</div>
         </div>
+        <div class="product-hero__ctas" id="phCtas"></div>
       </div>
-      <div class="product-cover" data-reveal="scale">
-        <div class="product-cover__book">
-          <div class="product-cover__badge"><svg class="icon icon--xs"><use href="#i-star"/></svg> Guía Digital · PDF</div>
-          <div style="display:flex;justify-content:center;margin-bottom:24px"><svg width="64" height="64" style="color:var(--c-golden)"><use href="#i-paw"/></svg></div>
-          <div class="product-cover__title">Cría un<br>Perro Feliz</div>
-          <p class="product-cover__sub">La guía que ojalá hubieras tenido desde el día uno.</p>
-          <div style="display:flex;gap:6px;justify-content:center;margin-bottom:20px">
-            <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:99px;font-family:var(--font-display);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Móvil</span>
-            <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:99px;font-family:var(--font-display);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Tablet</span>
-            <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:99px;font-family:var(--font-display);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">PC</span>
-          </div>
-          <div class="product-cover__price">$29.99 <span>$49.99</span></div>
-          <div class="product-cover__note">Pago único</div>
-        </div>
-      </div>
+      <div id="productMedia" data-reveal="scale"></div>
     </div>
   </div>
 </section>
 
 <!-- ============ PROBLEM / SOLUTION ============ -->
-<section class="problem-solution" data-reveal>
+<section class="problem-solution" data-reveal id="secProblemSolution" style="display:none">
   <div class="problem-solution__head">
     <span class="eyebrow">¿Te suena esto?</span>
     <h2>Si tienes un perro nuevo, esto te va a sonar mucho</h2>
@@ -76,163 +51,39 @@
   <div class="problem-solution__grid">
     <div class="problems-col">
       <h3>El problema</h3>
-      <div class="problems-list" data-stagger>
-        <div class="problem-item">
-          <div class="problem-item__icon"><svg class="icon"><use href="#i-flame"/></svg></div>
-          <div class="problem-item__text"><strong>No sabes por dónde empezar</strong>Buscas en Google y encuentras 47 artículos que se contradicen entre sí. Clásico.</div>
-        </div>
-        <div class="problem-item">
-          <div class="problem-item__icon"><svg class="icon"><use href="#i-clock"/></svg></div>
-          <div class="problem-item__text"><strong>No duermes porque él no duerme</strong>El cachorro llora toda la noche y tú ya no sabes ni quién eres.</div>
-        </div>
-        <div class="problem-item">
-          <div class="problem-item__icon"><svg class="icon"><use href="#i-bell"/></svg></div>
-          <div class="problem-item__text"><strong>Ladra, muerde y tira de la correa</strong>Cada paseo es una aventura del tipo que no quieres. La gente te mira. Tú no sabes dónde meterte.</div>
-        </div>
-        <div class="problem-item">
-          <div class="problem-item__icon"><svg class="icon"><use href="#i-heart"/></svg></div>
-          <div class="problem-item__text"><strong>Sientes que no lo estás haciendo bien</strong>Y nadie te da información clara sin hacerte sentir mal por preguntar.</div>
-        </div>
-      </div>
+      <div class="problems-list" data-stagger id="psProblems"></div>
     </div>
     <div class="solutions-col">
       <h3>La solución</h3>
-      <div class="solutions-list" data-stagger>
-        <div class="solution-item">
-          <div class="solution-item__icon"><svg class="icon"><use href="#i-target"/></svg></div>
-          <div class="solution-item__text"><strong>Plan semana a semana</strong>Sabes exactamente qué hacer cada semana durante 12 semanas.</div>
-        </div>
-        <div class="solution-item">
-          <div class="solution-item__icon"><svg class="icon"><use href="#i-check-circle"/></svg></div>
-          <div class="solution-item__text"><strong>Rutina nocturna que funciona</strong>Paso a paso para que tu perro aprenda a dormir solo.</div>
-        </div>
-        <div class="solution-item">
-          <div class="solution-item__icon"><svg class="icon"><use href="#i-book"/></svg></div>
-          <div class="solution-item__text"><strong>Técnicas simples con resultados</strong>Refuerzo positivo con ejemplos concretos. Sin teoría.</div>
-        </div>
-        <div class="solution-item">
-          <div class="solution-item__icon"><svg class="icon"><use href="#i-paw"/></svg></div>
-          <div class="solution-item__text"><strong>Sin juicios, con humor</strong>Escrita como un amigo con experiencia te lo contaría.</div>
-        </div>
-      </div>
+      <div class="solutions-list" data-stagger id="psSolutions"></div>
     </div>
   </div>
 </section>
 
 <!-- ============ WHAT'S INSIDE ============ -->
-<section class="modules-section" id="contenido">
+<section class="modules-section" id="contenido" style="display:none">
   <div class="container">
     <div class="modules-section__head" data-reveal>
       <span class="eyebrow">Contenido</span>
-      <h2>¿Qué incluye la guía?</h2>
+      <h2>¿Qué incluye?</h2>
       <p class="lead" style="margin-top:16px">Todo lo que necesitas, en el orden en que lo necesitas. Sin saltar pasos, sin improvisar.</p>
     </div>
-    <div class="modules-grid" data-stagger data-stack-mobile>
-      <div class="module-card module-card--1">
-        <div class="module-card__num">MÓDULO 01</div>
-        <h3 class="module-card__title">Los primeros días en casa</h3>
-        <p class="module-card__desc">Preparación del hogar, primera noche, rutina inicial. Sin sorpresas.</p>
-      </div>
-      <div class="module-card module-card--2">
-        <div class="module-card__num">MÓDULO 02</div>
-        <h3 class="module-card__title">Educación básica desde cero</h3>
-        <p class="module-card__desc">Los 5 comandos esenciales con instrucciones claras y tiempos.</p>
-      </div>
-      <div class="module-card module-card--3">
-        <div class="module-card__num">MÓDULO 03</div>
-        <h3 class="module-card__title">Conducta y problemas comunes</h3>
-        <p class="module-card__desc">Ladridos, mordiscos, ansiedad. Causas y soluciones concretas.</p>
-      </div>
-      <div class="module-card module-card--4">
-        <div class="module-card__num">MÓDULO 04</div>
-        <h3 class="module-card__title">Paseos y socialización</h3>
-        <p class="module-card__desc">Caminar sin tirar, relacionarse con otros perros, calle.</p>
-      </div>
-      <div class="module-card module-card--5">
-        <div class="module-card__num">MÓDULO 05</div>
-        <h3 class="module-card__title">Alimentación y salud básica</h3>
-        <p class="module-card__desc">Qué comer, cuándo, cuánto y qué señales de alerta conocer.</p>
-      </div>
-      <div class="module-card module-card--6">
-        <div class="module-card__num">MÓDULO 06</div>
-        <h3 class="module-card__title">La relación a largo plazo</h3>
-        <p class="module-card__desc">Cómo construir un vínculo sólido. Juego, rutinas, emociones.</p>
-      </div>
-    </div>
+    <div class="modules-grid" data-stagger data-stack-mobile id="modulesGrid"></div>
   </div>
 </section>
 
 <!-- ============ WHO IT'S FOR ============ -->
-<section class="for-section" style="background: var(--c-cream-alt)">
+<section class="for-section" style="background: var(--c-cream-alt);display:none" id="secAudience">
   <div class="container">
     <div style="text-align:center;margin-bottom:56px" data-reveal>
       <span class="eyebrow">¿Para quién es?</span>
       <h2 style="margin-top:8px">Esta guía es para ti si…</h2>
     </div>
-    <div class="for-grid" data-stagger data-stack-mobile>
-      <div class="for-card">
-        <div class="for-card__icon"><svg class="icon icon--lg"><use href="#i-paw"/></svg></div>
-        <h3 class="for-card__title">Acabas de adoptar</h3>
-        <p class="for-card__desc">Y quieres empezar bien desde el día uno, no tres semanas después cuando ya todo es caos.</p>
-      </div>
-      <div class="for-card">
-        <div class="for-card__icon"><svg class="icon icon--lg"><use href="#i-target"/></svg></div>
-        <h3 class="for-card__title">Llevas semanas perdido</h3>
-        <p class="for-card__desc">Sientes que lo estás haciendo mal y necesitas una guía clara de una vez por todas.</p>
-      </div>
-      <div class="for-card">
-        <div class="for-card__icon"><svg class="icon icon--lg"><use href="#i-bell"/></svg></div>
-        <h3 class="for-card__title">Tienes problemas de conducta</h3>
-        <p class="for-card__desc">Ladra, muerde, no obedece. Ya probaste de todo y nada funciona. Tranquilo, hay una forma mejor.</p>
-      </div>
-    </div>
+    <div class="for-grid" data-stagger data-stack-mobile id="audienceGrid"></div>
   </div>
 </section>
 
-<!-- ============ BONUSES ============ -->
-<section class="bonuses-section" data-reveal>
-  <div style="text-align:center;margin-bottom:8px">
-    <span class="eyebrow eyebrow--light">Incluido sin coste extra</span>
-  </div>
-  <h2 style="text-align:center">Los bonos que lo hacen aún mejor</h2>
-  <p style="text-align:center;color:rgba(254,250,232,.7);margin-top:12px">Además de la guía completa, recibes todo esto incluido — sin coste extra, sin trampa.</p>
-  <div class="bonuses-grid" data-stagger>
-    <div class="bonus-card bonus-card--peach">
-      <div class="bonus-card__badge">Bono 01</div>
-      <div class="bonus-card__icon-box"><svg class="icon icon--lg"><use href="#i-bookmark"/></svg></div>
-      <h3 class="bonus-card__title">Plantilla de rutina semanal</h3>
-      <p class="bonus-card__desc">PDF editable para organizar horarios de comida, paseos y descanso.</p>
-      <div class="bonus-card__value"><span style="text-decoration:line-through">$15</span> Incluido gratis</div>
-    </div>
-    <div class="bonus-card bonus-card--golden">
-      <div class="bonus-card__badge">Bono 02</div>
-      <div class="bonus-card__icon-box"><svg class="icon icon--lg"><use href="#i-shield"/></svg></div>
-      <h3 class="bonus-card__title">Checklist veterinario</h3>
-      <p class="bonus-card__desc">Qué preguntar, cuándo ir, señales de alerta y calendario de vacunas.</p>
-      <div class="bonus-card__value"><span style="text-decoration:line-through">$12</span> Incluido gratis</div>
-    </div>
-    <div class="bonus-card bonus-card--sky">
-      <div class="bonus-card__badge">Bono 03</div>
-      <div class="bonus-card__icon-box"><svg class="icon icon--lg"><use href="#i-target"/></svg></div>
-      <h3 class="bonus-card__title">Tracker de progreso 30 días</h3>
-      <p class="bonus-card__desc">Seguimiento día a día. Motivante y satisfactorio de rellenar.</p>
-      <div class="bonus-card__value"><span style="text-decoration:line-through">$10</span> Incluido gratis</div>
-    </div>
-  </div>
-  <div style="text-align:center;margin-top:48px;padding-top:48px;border-top:2px solid rgba(254,250,232,.1)">
-    <div style="font-family:var(--font-display);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(254,250,232,.6);margin-bottom:12px">Valor total del paquete</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
-      <span style="text-decoration:line-through;color:rgba(254,250,232,.5);font-family:var(--font-display);font-weight:700;font-size:1.4rem">$86.97</span>
-      <span style="font-family:var(--font-display);font-weight:900;font-size:3.4rem;color:var(--c-golden);letter-spacing:-.04em;line-height:1">$29.99</span>
-    </div>
-    <div style="margin-top:28px">
-      <button class="btn btn--golden btn--lg" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar ahora</button>
-      <div style="margin-top:14px;font-family:var(--font-display);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(254,250,232,.6)">Pago único · Garantía 30 días</div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ REVIEWS ============ -->
+<!-- ============ REVIEWS (estáticas por ahora) ============ -->
 <section class="reviews">
   <div class="container">
     <div class="reviews__head" data-reveal>
@@ -243,7 +94,7 @@
       <h2 style="margin-bottom:16px">+340 valoraciones reales</h2>
       <p class="reviews__avg"><strong>4.9</strong> de media</p>
     </div>
-    <div class="reviews-grid" data-stagger data-h-drag>
+    <div class="reviews-grid" data-stagger data-h-drag id="prodReviews">
       <div class="review-card review-card--terra">
         <div class="review-card__stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
         <p class="review-card__quote">"Tres semanas sin dormir. En cuatro días siguiendo el plan, silencio. Lloré de alivio."</p>
@@ -281,70 +132,14 @@
 </section>
 
 <!-- ============ RELATED BOOKS ============ -->
-<section class="related-books">
+<section class="related-books" id="secRelated" style="display:none">
   <div class="container">
     <div class="related-books__head" data-reveal>
       <span class="eyebrow">Sigue explorando</span>
       <h2 style="margin-top:8px">Libros relacionados</h2>
       <p class="lead" style="margin-top:12px">Otros libros y guías que podrían interesarte.</p>
     </div>
-    <div class="library-grid" data-stagger data-h-drag>
-      <a href="producto.html" class="book-card">
-        <div class="book-card__cover-wrap book-card__cover-wrap--sky">
-          <span class="book-card__free-badge">Gratis</span>
-          <div class="book-card__cover">
-            <div class="book-card__cover-sub">Guía PDF</div>
-            <div class="book-card__cover-title">Los Primeros<br>30 Días</div>
-            <div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#i-paw"/></svg></div>
-          </div>
-        </div>
-        <div class="book-card__body">
-          <span class="book-card__category">Cachorros</span>
-          <h3 class="book-card__title">Los primeros 30 días con tu perro</h3>
-          <p class="book-card__desc">Todo lo que nadie te cuenta del primer mes.</p>
-          <div class="book-card__footer">
-            <span class="book-card__price book-card__price--free">Gratis</span>
-            <span class="book-card__cta">Descargar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-          </div>
-        </div>
-      </a>
-      <a href="producto.html" class="book-card">
-        <div class="book-card__cover-wrap book-card__cover-wrap--lavender">
-          <div class="book-card__cover book-card__cover--terra">
-            <div class="book-card__cover-sub">Libro</div>
-            <div class="book-card__cover-title">Adiestramiento<br>Avanzado</div>
-            <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-target"/></svg></div>
-          </div>
-        </div>
-        <div class="book-card__body">
-          <span class="book-card__category">Educación</span>
-          <h3 class="book-card__title">Adiestramiento avanzado en casa</h3>
-          <p class="book-card__desc">Trucos y técnicas de obediencia avanzada.</p>
-          <div class="book-card__footer">
-            <span class="book-card__price">$24.99</span>
-            <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-          </div>
-        </div>
-      </a>
-      <a href="producto.html" class="book-card">
-        <div class="book-card__cover-wrap book-card__cover-wrap--pink">
-          <div class="book-card__cover book-card__cover--forest">
-            <div class="book-card__cover-sub">Manual</div>
-            <div class="book-card__cover-title">Ansiedad por<br>Separación</div>
-            <div style="margin-top:6px;color:var(--c-golden)"><svg width="32" height="32"><use href="#i-heart"/></svg></div>
-          </div>
-        </div>
-        <div class="book-card__body">
-          <span class="book-card__category">Conducta</span>
-          <h3 class="book-card__title">Ansiedad por separación: el método</h3>
-          <p class="book-card__desc">Plan paso a paso para que no sufra al quedarse solo.</p>
-          <div class="book-card__footer">
-            <span class="book-card__price">$22.99</span>
-            <span class="book-card__cta">Ver libro <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span>
-          </div>
-        </div>
-      </a>
-    </div>
+    <div class="library-grid" data-stagger data-h-drag id="relatedGrid"></div>
     <div style="text-align:center;margin-top:48px">
       <a href="biblioteca.html" class="btn btn--cream btn--lg">Ver biblioteca completa <svg class="icon"><use href="#i-arrow-right"/></svg></a>
     </div>
@@ -355,11 +150,20 @@
 <div class="product-cta-sticky" id="stickyCta">
   <div class="container product-cta-sticky__inner">
     <div class="product-cta-sticky__info">
-      <h4>Cría un perro feliz</h4>
-      <div class="product-cta-sticky__price">$29.99 <span style="font-size:.85rem;color:var(--c-text-muted);text-decoration:line-through;font-weight:500">$49.99</span></div>
+      <h4 id="stickyTitle">Producto</h4>
+      <div class="product-cta-sticky__price" id="stickyPrice"></div>
     </div>
-    <button class="btn btn--primary btn--lg" data-add-to-cart data-id="cria-perro-feliz" data-name="Cría un perro feliz" data-price="29.99"><svg class="icon"><use href="#i-cart"/></svg> Comprar ahora</button>
+    <button class="btn btn--primary btn--lg js-buy"><svg class="icon"><use href="#i-cart"/></svg> <span class="js-buy-label">Comprar ahora</span></button>
   </div>
+</div>
+
+<!-- Image lightbox -->
+<div class="lightbox" id="imgLightbox" aria-hidden="true">
+  <button type="button" class="lightbox__close" id="lbClose" aria-label="Cerrar">✕</button>
+  <button type="button" class="lightbox__nav lightbox__nav--prev" id="lbPrev" aria-label="Anterior">‹</button>
+  <button type="button" class="lightbox__nav lightbox__nav--next" id="lbNext" aria-label="Siguiente">›</button>
+  <img id="lbImg" alt="">
+  <div class="lightbox__count" id="lbCount"></div>
 </div>
 
 <div id="partial-footer"></div>
@@ -370,7 +174,287 @@
 <script src="partials.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=2"></script>
 <script src="animations.js"></script>
+
+<script>
+/* ============ PRODUCTO — live from Supabase by ?id ============ */
+(function(){
+  var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function asList(v){ if(Array.isArray(v))return v; if(typeof v==='string'){ try{var j=JSON.parse(v); return Array.isArray(j)?j:[];}catch(e){return [];} } return []; }
+  function money(n){ return '$'+Number(n||0).toFixed(2); }
+  var TAG_PRIORITY=['bestseller','caliente','nuevo','popular','recomendado','gratis'];
+  var TAG_LABEL={gratis:'Gratis',caliente:'Caliente',nuevo:'Nuevo',popular:'Popular',recomendado:'Recomendado',bestseller:'Más vendido'};
+  function isNew(p){return p.created_at && (Date.now()-new Date(p.created_at).getTime())<30*864e5;}
+  function allTags(p){ var t=(p.tags||[]).slice(); if(p.is_free&&t.indexOf('gratis')===-1)t.unshift('gratis'); if(isNew(p)&&t.indexOf('nuevo')===-1)t.push('nuevo'); return t; }
+  function topTag(p){ var t=allTags(p); for(var i=0;i<TAG_PRIORITY.length;i++){ if(t.indexOf(TAG_PRIORITY[i])>-1) return TAG_PRIORITY[i]; } return t[0]||null; }
+
+  async function downloadPdf(url, filename){
+    if(!url){alert('Este producto aún no tiene archivo para descargar.');return;}
+    var nameGuess=(filename||'logramo.pdf').replace(/[^a-z0-9\-_. áéíóúñÁÉÍÓÚÑ]/gi,'').trim()||'logramo.pdf';
+    if(!/\.pdf$/i.test(nameGuess)) nameGuess+='.pdf';
+    try{
+      var res=await fetch(url,{mode:'cors'});
+      if(!res.ok) throw new Error('fetch failed');
+      var blob=await res.blob();
+      var blobUrl=URL.createObjectURL(blob);
+      var a=document.createElement('a'); a.href=blobUrl; a.download=nameGuess; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){URL.revokeObjectURL(blobUrl);},2000);
+    }catch(e){
+      var a=document.createElement('a'); a.href=url; a.download=nameGuess; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove();
+    }
+  }
+  function buyAction(p){
+    if(p.is_free){ downloadPdf(p.pdf_url, p.title); return; }
+    var el=document.getElementById('paypal-button-container')||document.getElementById('phCtas');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  /* PayPal: load client_id from site_settings, inject SDK, render Smart Buttons */
+  async function paypalConfig(){
+    var out={client_id:'',env:'sandbox'};
+    try{ var r1=await sb.from('site_settings').select('value').eq('key','paypal_client_id').maybeSingle(); if(r1&&r1.data) out.client_id=r1.data.value||''; }catch(e){}
+    try{ var r2=await sb.from('site_settings').select('value').eq('key','paypal_env').maybeSingle(); if(r2&&r2.data) out.env=r2.data.value||'sandbox'; }catch(e){}
+    return out;
+  }
+  function loadPayPalSDK(client_id){
+    return new Promise(function(resolve,reject){
+      if(window.paypal){ resolve(); return; }
+      var s=document.createElement('script');
+      s.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(client_id)+'&currency=USD&intent=capture&enable-funding=card,paylater&components=buttons';
+      s.onload=resolve; s.onerror=function(){ reject(new Error('sdk load failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  async function renderPayPalButtons(p){
+    var mount=document.getElementById('paypal-button-container'); if(!mount) return;
+    var cfg=await paypalConfig();
+    if(!cfg.client_id){ mount.innerHTML='<p class="muted" style="text-align:center;padding:14px 16px;background:var(--c-cream-alt);border:var(--bw-1) solid var(--c-ink);border-radius:var(--radius-md)">El checkout estará disponible pronto.</p>'; return; }
+    try{ await loadPayPalSDK(cfg.client_id); }catch(e){ mount.innerHTML='<p class="muted">No se pudo cargar PayPal.</p>'; return; }
+    if(!window.paypal||!window.paypal.Buttons){ mount.innerHTML='<p class="muted">PayPal SDK error.</p>'; return; }
+    mount.innerHTML='';
+    var commonHandlers={
+      createOrder:function(data,actions){
+        return actions.order.create({
+          purchase_units:[{ amount:{ value:Number(p.price||0).toFixed(2), currency_code:'USD' }, description:(p.title||'Producto Logramo').slice(0,127) }]
+        });
+      },
+      onApprove:function(data,actions){
+        mount.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
+        return actions.order.capture().then(function(details){
+          window.location.href='gracias.html?id='+encodeURIComponent(p.id)+'&order='+encodeURIComponent(details.id||'');
+        });
+      },
+      onError:function(err){ alert('Error en el pago: '+(err&&err.message?err.message:err)); }
+    };
+    var FUNDING=window.paypal.FUNDING||{};
+    // 1) Debit/Credit card on top
+    if(FUNDING.CARD){
+      window.paypal.Buttons(Object.assign({}, commonHandlers, {
+        fundingSource:FUNDING.CARD,
+        style:{ shape:'rect', color:'black', label:'pay', height:48 }
+      })).render(mount);
+    }
+    // 2) PayPal underneath
+    if(FUNDING.PAYPAL){
+      window.paypal.Buttons(Object.assign({}, commonHandlers, {
+        fundingSource:FUNDING.PAYPAL,
+        style:{ shape:'rect', color:'gold', label:'paypal', height:48 }
+      })).render(mount);
+    }
+  }
+
+  function renderHero(p){
+    document.getElementById('bcTitle').textContent=p.title||'Producto';
+    document.title=(p.title||'Producto')+' — Logramo';
+    var tt=topTag(p);
+    document.getElementById('phBadge').innerHTML = tt ? '<span class="tag tag--golden" style="margin-bottom:20px"><svg class="icon icon--xs"><use href="#i-flame"/></svg> '+esc(TAG_LABEL[tt]||tt)+'</span>' : '';
+    document.getElementById('phTitle').textContent=p.title||'';
+    document.getElementById('phDesc').textContent=p.description||'';
+    var price=p.is_free?'<span class="product-hero__price">Gratis</span>':'<span class="product-hero__price">'+money(p.price)+'</span>';
+    var orig = (!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)) ? '<span class="product-hero__original">'+money(p.original_price)+'</span>' : '';
+    var disc='';
+    if(!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)){ var pct=Math.round((1-Number(p.price)/Number(p.original_price))*100); disc='<span class="tag tag--terra"><svg class="icon icon--xs"><use href="#i-flame"/></svg> '+pct+'% off</span>'; }
+    document.getElementById('phPriceRow').innerHTML=price+orig+disc;
+    var label=p.is_free?'Descargar gratis':'Comprar ahora';
+    var icon=p.is_free?'i-pdf':'i-cart';
+    if(p.is_free){
+      document.getElementById('phCtas').innerHTML='<button class="btn btn--primary btn--lg js-buy"><svg class="icon"><use href="#'+icon+'"/></svg> <span class="js-buy-label">'+label+'</span></button>';
+    } else {
+      document.getElementById('phCtas').innerHTML='<div class="paypal-wrap"><div class="paypal-wrap__head"><svg class="icon icon--sm"><use href="#i-shield"/></svg> <span>Pago seguro · Tarjeta o PayPal</span></div><div id="paypal-button-container"></div></div>';
+    }
+    // sticky
+    document.getElementById('stickyTitle').textContent=p.title||'';
+    document.getElementById('stickyPrice').innerHTML = p.is_free ? 'Gratis' : money(p.price)+(orig?' <span style="font-size:.85rem;color:var(--c-text-muted);text-decoration:line-through;font-weight:500">'+money(p.original_price)+'</span>':'');
+    document.querySelectorAll('.js-buy-label').forEach(function(el){ el.textContent=label; });
+    document.querySelectorAll('.js-buy').forEach(function(b){ b.addEventListener('click',function(){ buyAction(p); }); });
+  }
+
+  /* ===== Image lightbox ===== */
+  var LB_IMGS=[], LB_IDX=0;
+  function lbRender(){
+    var img=document.getElementById('lbImg'); var count=document.getElementById('lbCount');
+    if(!LB_IMGS.length || !img) return;
+    LB_IDX=((LB_IDX%LB_IMGS.length)+LB_IMGS.length)%LB_IMGS.length;
+    img.src=LB_IMGS[LB_IDX]; img.alt='';
+    if(count) count.textContent=(LB_IDX+1)+' / '+LB_IMGS.length;
+    var prev=document.getElementById('lbPrev'), next=document.getElementById('lbNext');
+    if(prev) prev.style.display=LB_IMGS.length>1?'flex':'none';
+    if(next) next.style.display=LB_IMGS.length>1?'flex':'none';
+  }
+  function openLightbox(imgs, idx){
+    LB_IMGS=(imgs||[]).slice(); LB_IDX=idx||0;
+    var box=document.getElementById('imgLightbox'); if(!box) return;
+    lbRender(); box.classList.add('is-open'); box.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeLightbox(){
+    var box=document.getElementById('imgLightbox'); if(!box) return;
+    box.classList.remove('is-open'); box.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  (function setupLightbox(){
+    var box=document.getElementById('imgLightbox'); if(!box) return;
+    document.getElementById('lbClose').addEventListener('click',closeLightbox);
+    document.getElementById('lbPrev').addEventListener('click',function(){LB_IDX--;lbRender();});
+    document.getElementById('lbNext').addEventListener('click',function(){LB_IDX++;lbRender();});
+    box.addEventListener('click',function(e){ if(e.target===box) closeLightbox(); });
+    document.addEventListener('keydown',function(e){
+      if(!box.classList.contains('is-open')) return;
+      if(e.key==='Escape') closeLightbox();
+      else if(e.key==='ArrowLeft'){ LB_IDX--; lbRender(); }
+      else if(e.key==='ArrowRight'){ LB_IDX++; lbRender(); }
+    });
+  })();
+
+  function renderMedia(p){
+    var el=document.getElementById('productMedia');
+    // Remove the reveal hook so the gallery is always visible after JS render
+    el.removeAttribute('data-reveal');
+    el.style.opacity=''; el.style.transform=''; el.style.transition='';
+    var imgs=asList(p.images).filter(Boolean);
+    if(p.cover_image && imgs.indexOf(p.cover_image)===-1) imgs.unshift(p.cover_image);
+    imgs=imgs.slice(0,3); // exactly up to 3
+    if(imgs.length){
+      el.className='product-grid in';
+      function tile(src, idx, big){
+        return '<button type="button" class="product-grid__tile'+(big?' product-grid__tile--main':'')+'" data-idx="'+idx+'"><img src="'+esc(src)+'" alt="'+esc(p.title)+'" loading="lazy"></button>';
+      }
+      var html='';
+      html += tile(imgs[0], 0, true);
+      html += imgs[1] ? tile(imgs[1], 1, false) : '<div class="product-grid__tile product-grid__tile--ghost"></div>';
+      html += imgs[2] ? tile(imgs[2], 2, false) : '<div class="product-grid__tile product-grid__tile--ghost"></div>';
+      el.innerHTML=html;
+      // Wire lightbox open on click
+      el.querySelectorAll('[data-idx]').forEach(function(b){
+        b.addEventListener('click', function(){ openLightbox(imgs, parseInt(b.dataset.idx,10)||0); });
+      });
+    } else {
+      el.className='product-cover in';
+      el.innerHTML='<div class="product-cover__book" style="background:var(--c-'+(p.cover_color||'terracotta')+')">'
+        +'<div class="product-cover__badge"><svg class="icon icon--xs"><use href="#i-star"/></svg> Guía Digital · PDF</div>'
+        +'<div style="display:flex;justify-content:center;margin-bottom:24px"><svg width="64" height="64" style="color:var(--c-golden)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div>'
+        +'<div class="product-cover__title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div>'
+        +'<p class="product-cover__sub">'+esc(p.cover_sub||'Guía digital en PDF.')+'</p>'
+        +'<div class="product-cover__price">'+(p.is_free?'Gratis':money(p.price))+((!p.is_free&&p.original_price&&Number(p.original_price)>Number(p.price))?' <span>'+money(p.original_price)+'</span>':'')+'</div>'
+        +'<div class="product-cover__note">'+(p.is_free?'Descarga gratuita':'Pago único')+'</div>'
+      +'</div>';
+    }
+  }
+
+  function renderProblemsSolutions(p){
+    var probs=asList(p.problems), sols=asList(p.solutions);
+    if(!probs.length && !sols.length) return;
+    document.getElementById('secProblemSolution').style.display='';
+    document.getElementById('psProblems').innerHTML=probs.map(function(it){
+      return '<div class="problem-item"><div class="problem-item__icon"><svg class="icon"><use href="#'+(it.icon||'i-flame')+'"/></svg></div><div class="problem-item__text"><strong>'+esc(it.title)+'</strong>'+esc(it.text)+'</div></div>';
+    }).join('');
+    document.getElementById('psSolutions').innerHTML=sols.map(function(it){
+      return '<div class="solution-item"><div class="solution-item__icon"><svg class="icon"><use href="#'+(it.icon||'i-check-circle')+'"/></svg></div><div class="solution-item__text"><strong>'+esc(it.title)+'</strong>'+esc(it.text)+'</div></div>';
+    }).join('');
+  }
+
+  function renderModules(p){
+    var mods=asList(p.modules);
+    if(!mods.length) return;
+    document.getElementById('contenido').style.display='';
+    document.getElementById('modulesGrid').innerHTML=mods.map(function(m,i){
+      var n=String(i+1); if(n.length<2)n='0'+n;
+      return '<div class="module-card module-card--'+((i%6)+1)+'"><div class="module-card__num">MÓDULO '+n+'</div><h3 class="module-card__title">'+esc(m.title)+'</h3><p class="module-card__desc">'+esc(m.desc||m.description||'')+'</p></div>';
+    }).join('');
+  }
+
+  function renderAudience(p){
+    var aud=asList(p.audience);
+    if(!aud.length) return;
+    document.getElementById('secAudience').style.display='';
+    document.getElementById('audienceGrid').innerHTML=aud.map(function(a){
+      return '<div class="for-card"><div class="for-card__icon"><svg class="icon icon--lg"><use href="#'+(a.icon||'i-paw')+'"/></svg></div><h3 class="for-card__title">'+esc(a.title)+'</h3><p class="for-card__desc">'+esc(a.desc||a.description||'')+'</p></div>';
+    }).join('');
+  }
+
+  function relCard(p){
+    var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">'+money(p.price)+'</span>';
+    var cta=p.is_free?'Descargar':'Ver libro';
+    var coverInner=p.cover_image
+      ? '<img class="book-card__cover-img" src="'+esc(p.cover_image)+'" alt="">'
+      : '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div>';
+    return '<a href="producto.html?id='+encodeURIComponent(p.id)+'" class="book-card"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body"><span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'')+'</h3><p class="book-card__desc">'+esc(p.description||'')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
+  }
+  async function renderRelated(p){
+    try{
+      var r=await sb.from('products').select('*').neq('id',p.id).limit(8);
+      if(r.error||!r.data) return;
+      var others=r.data.filter(function(x){return x.published!==false;});
+      var same=others.filter(function(x){return x.category===p.category;});
+      var pick=same.concat(others.filter(function(x){return same.indexOf(x)===-1;})).slice(0,3);
+      if(!pick.length) return;
+      document.getElementById('secRelated').style.display='';
+      document.getElementById('relatedGrid').innerHTML=pick.map(relCard).join('');
+    }catch(e){}
+  }
+
+  function initials(n){return String(n||'').trim().split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join('').toUpperCase()||'•';}
+  async function renderReviews(){
+    try{
+      var grid=document.getElementById('prodReviews'); if(!grid) return;
+      var r=await sb.from('reviews').select('*').order('sort',{ascending:true});
+      if(r.error||!r.data||!r.data.length) return;
+      var skins=['terra','peach','golden','sky','sage','lavender'];
+      grid.innerHTML=r.data.map(function(rv,i){
+        var n=rv.rating||5, stars=''; for(var s=0;s<n;s++)stars+='<svg class="icon"><use href="#i-star"/></svg>';
+        var av=rv.avatar?'<div class="review-card__avatar"><img src="'+esc(rv.avatar)+'" alt=""></div>':'<div class="review-card__avatar">'+esc(initials(rv.name))+'</div>';
+        return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__stars">'+stars+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div><div class="review-card__loc">'+esc(rv.location)+'</div></div></div></div>';
+      }).join('');
+    }catch(e){}
+  }
+
+  function notFound(msg){
+    document.getElementById('phTitle').textContent='Producto no encontrado';
+    document.getElementById('phDesc').textContent=msg||'No pudimos encontrar este libro. Puede que ya no esté disponible.';
+    document.getElementById('phCtas').innerHTML='<a href="biblioteca.html" class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-arrow-right"/></svg> Ver la biblioteca</a>';
+    document.getElementById('productMedia').style.display='none';
+    var s=document.getElementById('stickyCta'); if(s)s.style.display='none';
+  }
+
+  (async function(){
+    var id=new URLSearchParams(location.search).get('id');
+    if(!id){ notFound('Falta el identificador del producto.'); return; }
+    var r;
+    try{ r=await sb.from('products').select('*').eq('id',id).single(); }catch(e){ notFound(); return; }
+    if(!r || r.error || !r.data || r.data.published===false){ notFound(); return; }
+    var p=r.data;
+    renderHero(p);
+    renderMedia(p);
+    renderProblemsSolutions(p);
+    renderModules(p);
+    renderAudience(p);
+    renderRelated(p);
+    renderReviews();
+    if(!p.is_free) renderPayPalButtons(p);
+  })();
+})();
+</script>
 </body>
 </html>

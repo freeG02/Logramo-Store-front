@@ -35,7 +35,30 @@
     .side__foot { margin-top:auto; }
     .side__user { font-size:.72rem; color:rgba(254,250,232,.5); padding:8px 12px; word-break:break-all; }
     .main { padding:32px 36px 100px; max-width:1180px; }
-    @media(max-width:820px){ .shell { grid-template-columns:1fr; } .side { position:static; height:auto; flex-direction:row; flex-wrap:wrap; } .side__logo{ width:100%; } .side__foot{ margin:0; } .main{ padding:24px 18px 80px; } }
+    .side-toggle { display:none; }
+    .side-backdrop { display:none; }
+    .side-close { display:none; }
+    /* Site-nav (injected from partials) parked at the bottom of the dashboard — full-width, content-height */
+    body.dash #mainNav { position:fixed !important; top:auto !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:80; width:100% !important; height:auto !important; min-height:0 !important; max-height:none !important; margin:0 !important; padding:8px 0 !important; transform:translateY(100%); transition:transform .3s var(--ease-out); background:var(--c-cream); border-top:var(--bw-2) solid var(--c-ink); box-shadow:0 -4px 0 var(--c-ink); border-bottom:0 !important; overflow:visible !important; }
+    body.dash #mainNav.is-revealed { transform:translateY(0); }
+    body.dash #mainNav .nav__inner { min-height:0 !important; padding-top:0 !important; padding-bottom:0 !important; }
+    body.dash #mainNav .nav__logo svg { height:22px; }
+    .site-nav-hint { display:flex; align-items:center; justify-content:center; gap:10px; opacity:0; pointer-events:none; transition:opacity .25s ease; margin-top:40px; padding:18px 16px; border-top:var(--bw-1) dashed var(--c-ink); color:var(--c-text-muted); font-family:var(--font-display); font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; text-align:center; }
+    .site-nav-hint.show { opacity:1; pointer-events:auto; }
+    .site-nav-hint.pulse { color:var(--c-terracotta); }
+    .site-nav-hint .icon { width:18px; height:18px; }
+    @media(max-width:820px){
+      .shell { grid-template-columns:1fr; }
+      .side { position:fixed; top:0; left:0; z-index:60; width:262px; max-width:84vw; height:100vh; flex-direction:column; transform:translateX(-100%); transition:transform .28s ease; }
+      .side.open { transform:translateX(0); box-shadow:10px 0 0 rgba(0,0,0,.12); }
+      .side__foot{ margin-top:auto; }
+      .main{ padding:70px 16px 80px; }
+      .side-toggle { display:flex; flex-direction:column; gap:4px; position:fixed; top:14px; left:14px; z-index:65; width:46px; height:46px; align-items:center; justify-content:center; background:var(--c-ink); border:var(--bw-1) solid var(--c-ink); border-radius:12px; cursor:pointer; box-shadow:3px 3px 0 var(--c-golden); transition:opacity .2s ease; }
+      .side-toggle.is-hidden { opacity:0; pointer-events:none; }
+      .side-toggle span { display:block; width:20px; height:2.5px; background:var(--c-cream); border-radius:2px; }
+      .side-backdrop.open { display:block; position:fixed; inset:0; z-index:55; background:rgba(17,26,23,.5); }
+      .side-close { display:flex; align-items:center; justify-content:center; position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; background:var(--c-cream); color:var(--c-ink); border:var(--bw-1) solid var(--c-cream); font-family:var(--font-display); font-weight:900; font-size:1rem; cursor:pointer; }
+    }
 
     .page-head { margin-bottom:24px; }
     .page-head h1 { font-family:var(--font-display); font-weight:900; font-size:1.8rem; text-transform:uppercase; letter-spacing:-.02em; }
@@ -51,6 +74,31 @@
     .subtabs { display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
     .subtab { border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:var(--radius-full); padding:9px 18px; font-family:var(--font-display); font-weight:700; font-size:.74rem; text-transform:uppercase; cursor:pointer; }
     .subtab.active { background:var(--c-ink); color:var(--c-cream); }
+    .repeater { display:flex; flex-direction:column; gap:10px; width:100%; min-width:0; }
+    .rep-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start; background:var(--c-cream-alt); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); padding:10px; min-width:0; box-sizing:border-box; }
+    .rep-row__main { display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .rep-row select, .rep-row input, .rep-row textarea { width:100%; max-width:100%; box-sizing:border-box; }
+    .rep-row textarea { min-height:54px; resize:vertical; }
+    .rep-icon { width:100%; max-width:180px; }
+    .rep-rm { align-self:center; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:var(--radius-full); width:30px; height:30px; cursor:pointer; font-weight:700; line-height:1; }
+    .rep-rm:hover { background:var(--c-terracotta); color:var(--c-cream); }
+    .rep-add { align-self:flex-start; }
+    .rep-row__actions { display:flex; justify-content:flex-end; margin-top:4px; }
+    .btn-done { border:var(--bw-1) solid var(--c-ink); background:var(--c-golden); color:var(--c-ink); border-radius:var(--radius-full); padding:6px 16px; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; cursor:pointer; box-shadow:2px 2px 0 var(--c-ink); transition:transform .15s, box-shadow .15s; }
+    .btn-done:hover { transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--c-ink); }
+    /* Collapsed tile */
+    .rep-tile { background:var(--c-cream); padding:0; }
+    .rep-tile__btn { flex:1; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; background:transparent; border:0; cursor:pointer; text-align:left; font-family:var(--font-display); font-weight:800; font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; color:var(--c-ink); width:100%; }
+    .rep-tile__btn:hover { background:var(--c-cream-alt); }
+    .rep-tile__hint { flex:1; font-family:var(--font-body); font-weight:500; font-size:.78rem; text-transform:none; letter-spacing:0; color:var(--c-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-left:10px; }
+    .rep-tile__edit { font-size:.66rem; color:var(--c-terracotta); }
+    .rep-tile { display:grid; grid-template-columns:1fr auto; }
+    .hp-list { max-height:320px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-md); padding:8px; background:var(--c-cream-alt); }
+    .hp-item { display:flex; justify-content:space-between; align-items:center; gap:10px; text-align:left; width:100%; cursor:pointer; padding:10px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-sm); background:var(--c-cream); font-family:inherit; }
+    .hp-item:hover { transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--c-ink); }
+    .hp-item.active { background:var(--c-ink); color:var(--c-cream); }
+    .hp-item__title { font-weight:700; }
+    .hp-item__meta { font-size:.72rem; opacity:.7; white-space:nowrap; }
 
     .field { margin-bottom:12px; }
     .field > label { display:block; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
@@ -135,7 +183,7 @@
     .mini-row:last-child { border-bottom:none; }
     .mini-row__name { flex:1; font-weight:700; font-size:.85rem; } .mini-row__sub { font-size:.73rem; color:var(--c-text-muted); font-weight:500; }
     .mini-row__val { font-family:var(--font-display); font-weight:800; font-size:.9rem; }
-    .flag { font-size:1.2rem; line-height:1; }
+    .flag { display:inline-block; width:24px; height:16px; vertical-align:middle; border:1px solid var(--c-ink); border-radius:3px; object-fit:cover; }
 
     /* cover editor */
     .editor-sub { font-family:var(--font-display); font-weight:900; font-size:.95rem; text-transform:uppercase; letter-spacing:-.01em; margin:22px 0 14px; padding-top:18px; border-top:2px dashed rgba(30,40,32,.18); }
@@ -160,7 +208,7 @@
     .panel--list .list-item { background:var(--c-cream); }
   </style>
 </head>
-<body data-page="admin">
+<body data-page="admin" class="dash">
 
 <!-- ============ LOGIN ============ -->
 <div class="login-screen" id="loginScreen">
@@ -177,7 +225,10 @@
 
 <!-- ============ APP ============ -->
 <div class="shell" id="shell" hidden>
-  <nav class="side">
+  <button class="side-toggle" id="sideToggle" aria-label="Open menu" type="button"><span></span><span></span><span></span></button>
+  <div class="side-backdrop" id="sideBackdrop"></div>
+  <nav class="side" id="sideNav">
+    <button type="button" class="side-close" id="sideClose" aria-label="Close menu">✕</button>
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
     <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Home</button>
     <button class="side__link" data-view="trafico"><svg class="icon"><use href="#i-target"/></svg> Traffic</button>
@@ -234,6 +285,9 @@
       <div class="subtabs">
         <button class="subtab active" data-sub="prod">Products</button>
         <button class="subtab" data-sub="art">Articles</button>
+        <button class="subtab" data-sub="vid">Homepage videos</button>
+        <button class="subtab" data-sub="rev">Reviews</button>
+        <button class="subtab" data-sub="home">Highlight</button>
       </div>
 
       <!-- PRODUCTS -->
@@ -251,6 +305,8 @@
                 <div class="field"><label for="p-price">Price ($)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
               </div>
               <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Free (adds the “Gratis” tag)</label></div>
+              <div class="field"><label for="p-original">Original price ($) <span class="muted">— optional strike-through</span></label><input type="number" id="p-original" step="0.01" min="0" placeholder="49.99" /></div>
+              <input type="hidden" id="p-buy-url" value="" />
               <div class="field"><label for="p-desc">Description</label><textarea id="p-desc" placeholder="A warm one-liner about the book…"></textarea></div>
               <div class="field"><label>Tags</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Type and press Enter… (Gratis, Caliente…)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
               <div class="field"><label>Available tags</label><div class="tagpool" id="pTagPool"></div>
@@ -273,6 +329,14 @@
               </div>
               <div class="field"><label>Extra images (gallery — inside views)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
               <div class="field"><label>PDF file (product download)</label><input type="file" accept="application/pdf" id="p-pdf-file" /><div id="p-pdf-info" class="muted" style="margin-top:8px"></div></div>
+
+              <h3 class="editor-sub">Product page</h3>
+              <p class="panel__hint" style="margin-top:-6px">These build the long product page. Leave a section empty to hide it.</p>
+              <div class="field"><label>“El problema” — the pains</label><div class="repeater" id="repProblems"></div></div>
+              <div class="field"><label>“La solución” — how the guide helps</label><div class="repeater" id="repSolutions"></div></div>
+              <div class="field"><label>Contenido — modules</label><div class="repeater" id="repModules"></div></div>
+              <div class="field"><label>“¿Para quién es?” cards</label><div class="repeater" id="repAudience"></div></div>
+
               <input type="hidden" id="p-color" value="sky" />
               <input type="hidden" id="p-icon" value="i-paw" />
               <input type="hidden" id="p-cover-image" value="" />
@@ -283,7 +347,7 @@
             </div>
           </div>
           <div>
-            <div class="panel" style="position:sticky;top:24px"><h2>Preview</h2><div class="preview-mount" id="pPreview"></div></div>
+            <div class="panel"><h2>Preview</h2><div class="preview-mount" id="pPreview"></div></div>
             <div class="panel panel--list"><h2>Published products</h2><div class="list" id="pList"></div></div>
           </div>
         </div>
@@ -310,9 +374,72 @@
             </div>
           </div>
           <div>
-            <div class="panel" style="position:sticky;top:24px"><h2>Preview</h2><div class="preview-mount" id="aPreview"></div></div>
+            <div class="panel"><h2>Preview</h2><div class="preview-mount" id="aPreview"></div></div>
             <div class="panel panel--list"><h2>Published articles</h2><div class="list" id="aList"></div></div>
           </div>
+        </div>
+      </div>
+
+      <!-- HOMEPAGE VIDEOS -->
+      <div data-sub-view="vid" hidden>
+        <div class="grid2">
+          <div>
+            <div class="panel">
+              <h2 id="vEditorTitle">Add video</h2>
+              <p class="panel__hint">The cards in the homepage “Videos reales” section. Paste a YouTube link — the thumbnail is taken from YouTube automatically unless you upload your own.</p>
+              <div class="field"><label for="v-title">Title</label><input type="text" id="v-title" placeholder="e.g. El primer día fue un caos total…" /></div>
+              <div class="field"><label for="v-label">Label (small tag)</label><input type="text" id="v-label" placeholder="e.g. Historia real" /></div>
+              <div class="field"><label for="v-url">YouTube link</label><input type="text" id="v-url" placeholder="https://www.youtube.com/watch?v=…" /></div>
+              <div class="field"><label>Custom thumbnail (optional)</label><input type="file" accept="image/*" id="v-thumb-file" /><div id="v-thumb-info" class="thumbs"></div></div>
+              <input type="hidden" id="v-thumb" value="" />
+              <div class="field"><label for="v-sort">Order (lower = first)</label><input type="number" id="v-sort" value="0" /></div>
+              <div class="actions"><button type="button" class="btn btn--primary" id="vSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Save</button><button type="button" class="icon-btn" id="vResetBtn">Clear</button><span class="muted" id="vSaveStatus"></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="panel panel--list"><h2>Videos</h2><div class="list" id="vList"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div data-sub-view="rev" hidden>
+        <div class="grid2">
+          <div>
+            <div class="panel">
+              <h2 id="rEditorTitle">Add review</h2>
+              <p class="panel__hint">Shown on the homepage and on every product page.</p>
+              <div class="row2">
+                <div class="field"><label for="r-name">Name</label><input type="text" id="r-name" placeholder="e.g. María L." /></div>
+                <div class="field"><label for="r-loc">Location / dog</label><input type="text" id="r-loc" placeholder="e.g. Madrid · Border collie" /></div>
+              </div>
+              <div class="row2">
+                <div class="field"><label for="r-rating">Rating</label><select id="r-rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
+                <div class="field"><label for="r-sort">Order (lower = first)</label><input type="number" id="r-sort" value="0" /></div>
+              </div>
+              <div class="field"><label for="r-quote">Quote</label><textarea id="r-quote" placeholder="What they said…"></textarea></div>
+              <div class="field"><label>Photo (optional — initials shown if empty)</label><input type="file" accept="image/*" id="r-avatar-file" /><div id="r-avatar-info" class="thumbs"></div></div>
+              <input type="hidden" id="r-avatar" value="" />
+              <div class="actions"><button type="button" class="btn btn--primary" id="rSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Save</button><button type="button" class="icon-btn" id="rResetBtn">Clear</button><span class="muted" id="rSaveStatus"></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="panel panel--list"><h2>Reviews</h2><div class="list" id="rList"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOMEPAGE -->
+      <div data-sub-view="home" hidden>
+        <div class="panel" style="max-width:600px">
+          <h2>Highlighted product</h2>
+          <p class="panel__hint">Search and pick which product shows in the big highlight block on the homepage. Choose “Auto” to use your Featured product automatically.</p>
+          <div class="field"><label for="h-search">Search products</label><input type="text" id="h-search" placeholder="Type a product name…" autocomplete="off" /></div>
+          <div id="h-current" class="muted" style="margin-bottom:10px"></div>
+          <div id="h-list" class="hp-list"></div>
+          <input type="hidden" id="h-product" value="" />
+          <div class="actions"><button type="button" class="btn btn--primary" id="hSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Save</button><span class="muted" id="hSaveStatus"></span></div>
+          <p class="panel__hint" style="margin-top:16px">The homepage also shows your 3 latest articles, your Homepage videos, and your reviews — all managed in the tabs above.</p>
         </div>
       </div>
     </section>
@@ -370,6 +497,11 @@
       </div>
     </section>
 
+    <div class="site-nav-hint" id="siteNavHint" aria-hidden="true">
+      <svg class="icon"><use href="#i-arrow-down"/></svg>
+      <span id="siteNavHintLabel">Scroll again to open the site menu</span>
+      <svg class="icon"><use href="#i-arrow-down"/></svg>
+    </div>
   </main>
 </div>
 
@@ -436,6 +568,57 @@
   }
   $('p-colorSwatches').addEventListener('click',function(e){ var b=e.target.closest('[data-color]'); if(!b)return; $('p-color').value=b.dataset.color; renderSwatches(); pPreview(); });
   $('p-iconPick').addEventListener('click',function(e){ var b=e.target.closest('[data-icon]'); if(!b)return; $('p-icon').value=b.dataset.icon; renderSwatches(); pPreview(); });
+
+  /* ===== Repeatable list fields (problems / solutions / modules / audience) ===== */
+  function asArr(v){ if(Array.isArray(v))return v.slice(); if(typeof v==='string'){try{var j=JSON.parse(v);return Array.isArray(j)?j:[];}catch(e){return [];}} return []; }
+  function iconOptions(sel){ return COVER_ICONS.map(function(ic){ return '<option value="'+ic+'"'+(ic===sel?' selected':'')+'>'+ic.replace('i-','')+'</option>'; }).join(''); }
+  function makeRepeater(mountId, opts){
+    var mount=$(mountId), data=[];
+    var SINGULAR=opts.singular||'Item';
+    function editHtml(row){
+      var inner=opts.fields.map(function(f){ var v=row[f.key]||'';
+        if(f.type==='icon') return '<select class="rep-icon" data-k="'+f.key+'">'+iconOptions(v)+'</select>';
+        if(f.type==='textarea') return '<textarea data-k="'+f.key+'" placeholder="'+esc(f.ph||'')+'">'+esc(v)+'</textarea>';
+        return '<input type="text" data-k="'+f.key+'" value="'+esc(v)+'" placeholder="'+esc(f.ph||'')+'">';
+      }).join('');
+      return '<div class="rep-row" data-state="edit"><div class="rep-row__main">'+inner+'<div class="rep-row__actions"><button type="button" class="btn-done">Done</button></div></div><button type="button" class="rep-rm" title="Remove">✕</button></div>';
+    }
+    function tileHtml(row, i){
+      var lbl=esc(SINGULAR)+' '+(i+1);
+      var hint=row.title?'<span class="rep-tile__hint">'+esc(String(row.title).slice(0,40))+'</span>':'';
+      return '<div class="rep-row rep-tile" data-state="tile"><button type="button" class="rep-tile__btn"><span class="rep-tile__num">'+lbl+'</span>'+hint+'<span class="rep-tile__edit">Edit</span></button><button type="button" class="rep-rm" title="Remove">✕</button></div>';
+    }
+    function rowHtml(row,i){ return row._collapsed ? tileHtml(row,i) : editHtml(row); }
+    function render(){ mount.innerHTML=data.map(rowHtml).join('')+'<button type="button" class="icon-btn rep-add">'+esc(opts.addLabel||'+ Add row')+'</button>'; }
+    function sync(){
+      // read DOM back into data preserving order & collapsed state
+      var newData=[]; var rows=mount.querySelectorAll('.rep-row');
+      rows.forEach(function(r,idx){
+        var prev=data[idx]||{};
+        if(r.dataset.state==='tile'){ newData.push(prev); return; }
+        var o={_collapsed:false};
+        r.querySelectorAll('[data-k]').forEach(function(el){ o[el.dataset.k]=el.value; });
+        newData.push(o);
+      });
+      data=newData;
+    }
+    mount.addEventListener('click',function(e){
+      if(e.target.closest('.rep-add')){ sync(); data.push({_collapsed:false}); render(); return; }
+      var rm=e.target.closest('.rep-rm'); if(rm){ sync(); var rows=Array.prototype.slice.call(mount.querySelectorAll('.rep-row')); var idx=rows.indexOf(rm.closest('.rep-row')); if(idx>-1)data.splice(idx,1); render(); return; }
+      var done=e.target.closest('.btn-done'); if(done){ sync(); var rows2=Array.prototype.slice.call(mount.querySelectorAll('.rep-row')); var idx2=rows2.indexOf(done.closest('.rep-row')); if(idx2>-1) data[idx2]._collapsed=true; render(); return; }
+      var tile=e.target.closest('.rep-tile__btn'); if(tile){ sync(); var rows3=Array.prototype.slice.call(mount.querySelectorAll('.rep-row')); var idx3=rows3.indexOf(tile.closest('.rep-row')); if(idx3>-1) data[idx3]._collapsed=false; render(); return; }
+    });
+    render();
+    return {
+      get:function(){ sync(); return data.filter(function(o){ return Object.keys(o).some(function(k){ return k.charAt(0)!=='_' && (o[k]||'').toString().trim(); }); }).map(function(o){ var clean={}; Object.keys(o).forEach(function(k){ if(k.charAt(0)!=='_') clean[k]=o[k]; }); return clean; }); },
+      set:function(arr){ data=asArr(arr).map(function(o){ o._collapsed=true; return o; }); render(); }
+    };
+  }
+  var repProblems=makeRepeater('repProblems',{singular:'Problem',addLabel:'+ Add problem',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'Short title'},{key:'text',type:'textarea',ph:'Description'}]});
+  var repSolutions=makeRepeater('repSolutions',{singular:'Solution',addLabel:'+ Add solution',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'Short title'},{key:'text',type:'textarea',ph:'Description'}]});
+  var repModules=makeRepeater('repModules',{singular:'Module',addLabel:'+ Add module',fields:[{key:'title',type:'text',ph:'Module title'},{key:'desc',type:'textarea',ph:'What it covers'}]});
+  var repAudience=makeRepeater('repAudience',{singular:'Para quién',addLabel:'+ Add card',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'e.g. Acabas de adoptar'},{key:'desc',type:'textarea',ph:'Description'}]});
+
   // cover mode (design vs image)
   $('p-covermode').addEventListener('click',function(e){ var b=e.target.closest('[data-mode]'); if(!b)return; $('p-covermode').querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); var img=b.dataset.mode==='image'; $('coverImageBox').hidden=!img; $('coverDesign').hidden=img; pPreview(); });
   function coverMode(){ var a=$('p-covermode').querySelector('button.active'); return a?a.dataset.mode:'design'; }
@@ -452,7 +635,7 @@
   $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading PDF…'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='✓ PDF uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
   function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'📄 <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF uploaded</a> · <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Remove</button>':'No PDF uploaded yet.'; }
   $('p-pdf-info').addEventListener('click',function(e){ if(e.target.id==='p-pdf-rm'){ $('p-pdf-url').value=''; renderPdf(); } });
-  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, published:$('p-published').checked, featured:$('p-featured').checked }; }
+  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, published:$('p-published').checked, featured:$('p-featured').checked, original_price:($('p-original').value?parseFloat($('p-original').value):null), buy_url:$('p-buy-url').value.trim(), problems:repProblems.get(), solutions:repSolutions.get(), modules:repModules.get(), audience:repAudience.get() }; }
   function pCard(p){
     var tags=(p.tags||[]).map(badge).join('');
     var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
@@ -463,13 +646,54 @@
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
   async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
-  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
-  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true;$('p-featured').checked=false; setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
+  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
   $('pResetBtn').addEventListener('click',pReset);
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
   ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
   $('createTagBtn').addEventListener('click',async function(){ var n=$('newTagName').value.trim(); if(!n)return; var s=await createTag(n,$('newTagColor').value); pField.add(s); $('newTagName').value=''; });
+
+  /* ===== HOMEPAGE VIDEOS ===== */
+  var editingV=null, VIDEOS=[];
+  function ytId(url){ var m=String(url||'').match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
+  function vThumb(v){ if(v.thumbnail) return v.thumbnail; var id=ytId(v.youtube_url); return id?'https://img.youtube.com/vi/'+id+'/hqdefault.jpg':''; }
+  function vGather(){ return { title:$('v-title').value.trim(), label:$('v-label').value.trim(), youtube_url:$('v-url').value.trim(), thumbnail:$('v-thumb').value.trim(), sort:parseInt($('v-sort').value)||0 }; }
+  function renderVThumb(){ var u=$('v-thumb').value; $('v-thumb-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="v-thumb-rm">✕</button></div>':''; }
+  $('v-thumb-info').addEventListener('click',function(e){ if(e.target.id==='v-thumb-rm'){ $('v-thumb').value=''; renderVThumb(); } });
+  $('v-thumb-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('vSaveStatus').textContent='Uploading…'; try{ var url=await uploadFile(f,'videos'); $('v-thumb').value=url; renderVThumb(); $('vSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('vSaveStatus').textContent='';},1200); }catch(err){ $('vSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  async function vLoad(){ var box=$('vList'); try{ var r=await sb.from('videos').select('*').order('sort',{ascending:true}); if(r.error)throw r.error; VIDEOS=r.data||[]; box.innerHTML=VIDEOS.length?VIDEOS.map(function(v){ return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(v.title||'(untitled)')+'</div><div class="list-item__meta">'+(v.label?esc(v.label)+' · ':'')+(ytId(v.youtube_url)?'YouTube ✓':'no link')+' · order '+(v.sort||0)+'</div></div><button class="icon-btn" data-vedit="'+v.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-vdel="'+v.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No videos yet. Add up to 3 for the homepage.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the videos SQL? ('+esc(e.message||'')+')</p>'; } }
+  $('vList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-vedit]'),del=e.target.closest('[data-vdel]'); if(ed){ var v=VIDEOS.filter(function(x){return String(x.id)===String(ed.dataset.vedit);})[0]; if(v){ editingV=v.id; $('v-title').value=v.title||''; $('v-label').value=v.label||''; $('v-url').value=v.youtube_url||''; $('v-thumb').value=v.thumbnail||''; $('v-sort').value=v.sort||0; renderVThumb(); $('vEditorTitle').textContent='Edit video'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this video?'))return; var r=await sb.from('videos').delete().eq('id',del.dataset.vdel); if(r.error)alert('Error: '+r.error.message); vLoad(); } });
+  $('vSaveBtn').addEventListener('click',async function(){ var v=vGather(); if(!v.title||!v.youtube_url){alert('Add a title and a YouTube link.');return;} if(VIDEOS.length>=3 && !editingV){ if(!confirm('The homepage shows 3 videos. Adding more is fine, but only the first 3 (by order) appear. Continue?')) return; } $('vSaveStatus').textContent='Saving…'; var r=editingV?await sb.from('videos').update(v).eq('id',editingV):await sb.from('videos').insert(v); if(r.error){$('vSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('vSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('vSaveStatus').textContent='';},1600); vReset(); vLoad(); });
+  $('vResetBtn').addEventListener('click',vReset);
+  function vReset(){ editingV=null; $('v-title').value='';$('v-label').value='';$('v-url').value='';$('v-thumb').value='';$('v-sort').value='0'; renderVThumb(); $('vEditorTitle').textContent='Add video'; }
+
+  /* ===== REVIEWS ===== */
+  var editingR=null, REVIEWS=[];
+  function rGather(){ return { name:$('r-name').value.trim(), location:$('r-loc').value.trim(), quote:$('r-quote').value.trim(), rating:parseInt($('r-rating').value)||5, avatar:$('r-avatar').value.trim(), sort:parseInt($('r-sort').value)||0 }; }
+  function renderRAvatar(){ var u=$('r-avatar').value; $('r-avatar-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="r-avatar-rm">✕</button></div>':''; }
+  $('r-avatar-info').addEventListener('click',function(e){ if(e.target.id==='r-avatar-rm'){ $('r-avatar').value=''; renderRAvatar(); } });
+  $('r-avatar-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('rSaveStatus').textContent='Uploading…'; try{ var url=await uploadFile(f,'reviews'); $('r-avatar').value=url; renderRAvatar(); $('rSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('rSaveStatus').textContent='';},1200); }catch(err){ $('rSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  async function rLoad(){ var box=$('rList'); try{ var r=await sb.from('reviews').select('*').order('sort',{ascending:true}); if(r.error)throw r.error; REVIEWS=r.data||[]; box.innerHTML=REVIEWS.length?REVIEWS.map(function(rv){ return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(rv.name||'(no name)')+' · '+'★'.repeat(rv.rating||5)+'</div><div class="list-item__meta">'+(rv.location?esc(rv.location)+' · ':'')+esc((rv.quote||'').slice(0,48))+'… · order '+(rv.sort||0)+'</div></div><button class="icon-btn" data-redit="'+rv.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-rdel="'+rv.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No reviews yet. Add a few to show on the site.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the reviews SQL? ('+esc(e.message||'')+')</p>'; } }
+  $('rList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-redit]'),del=e.target.closest('[data-rdel]'); if(ed){ var rv=REVIEWS.filter(function(x){return String(x.id)===String(ed.dataset.redit);})[0]; if(rv){ editingR=rv.id; $('r-name').value=rv.name||''; $('r-loc').value=rv.location||''; $('r-quote').value=rv.quote||''; $('r-rating').value=rv.rating||5; $('r-avatar').value=rv.avatar||''; $('r-sort').value=rv.sort||0; renderRAvatar(); $('rEditorTitle').textContent='Edit review'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this review?'))return; var r=await sb.from('reviews').delete().eq('id',del.dataset.rdel); if(r.error)alert('Error: '+r.error.message); rLoad(); } });
+  $('rSaveBtn').addEventListener('click',async function(){ var rv=rGather(); if(!rv.name||!rv.quote){alert('Add a name and a quote.');return;} $('rSaveStatus').textContent='Saving…'; var r=editingR?await sb.from('reviews').update(rv).eq('id',editingR):await sb.from('reviews').insert(rv); if(r.error){$('rSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('rSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('rSaveStatus').textContent='';},1600); rReset(); rLoad(); });
+  $('rResetBtn').addEventListener('click',rReset);
+  function rReset(){ editingR=null; $('r-name').value='';$('r-loc').value='';$('r-quote').value='';$('r-rating').value='5';$('r-avatar').value='';$('r-sort').value='0'; renderRAvatar(); $('rEditorTitle').textContent='Add review'; }
+
+  /* ===== HOMEPAGE (highlight picker — searchable) ===== */
+  function hCurrentLabel(){ var id=$('h-product').value; if(!id){ $('h-current').textContent='Selected: Auto (Featured / newest)'; return; } var p=(PRODUCTS||[]).filter(function(x){return String(x.id)===String(id);})[0]; $('h-current').textContent='Selected: '+(p?p.title:'(unknown product)'); }
+  function hRender(){
+    var q=($('h-search').value||'').trim().toLowerCase();
+    var sel=$('h-product').value;
+    var items=[{id:'',title:'Auto (Featured / newest)',meta:'Recommended'}].concat((PRODUCTS||[]).filter(function(p){return p.published!==false;}).map(function(p){ return {id:String(p.id),title:p.title||'(untitled)',meta:(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))}; }));
+    var filtered=items.filter(function(it){ return !q || it.title.toLowerCase().indexOf(q)>-1 || (it.meta||'').toLowerCase().indexOf(q)>-1; });
+    $('h-list').innerHTML=filtered.length?filtered.map(function(it){ return '<button type="button" class="hp-item'+(String(it.id)===String(sel)?' active':'')+'" data-hp="'+esc(it.id)+'"><span class="hp-item__title">'+esc(it.title)+'</span><span class="hp-item__meta">'+esc(it.meta||'')+'</span></button>'; }).join(''):'<p class="muted" style="padding:10px">No products match “'+esc(q)+'”.</p>';
+    hCurrentLabel();
+  }
+  async function hLoad(){ if(!$('h-list')) return; try{ var st=await sb.from('site_settings').select('value').eq('key','highlight_product_id').maybeSingle(); $('h-product').value=(st&&st.data)?(st.data.value||''):''; }catch(e){ $('h-product').value=''; } hRender(); }
+  $('h-search').addEventListener('input',hRender);
+  $('h-list').addEventListener('click',function(e){ var b=e.target.closest('[data-hp]'); if(!b)return; $('h-product').value=b.dataset.hp; hRender(); });
+  $('hSaveBtn').addEventListener('click',async function(){ var v=$('h-product').value; $('hSaveStatus').textContent='Saving…'; var r=await sb.from('site_settings').upsert({key:'highlight_product_id',value:v,updated_at:new Date().toISOString()},{onConflict:'key'}); if(r.error){$('hSaveStatus').textContent='';alert('Error: '+r.error.message+(/site_settings|relation/.test(r.error.message)?'\n\nDid you run the site_settings SQL?':''));return;} $('hSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('hSaveStatus').textContent='';},1600); });
 
   /* ===== ARTICLES ===== */
   function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, tags:aField.get() }; }
@@ -529,13 +753,13 @@
   var PAGE_NAMES={'/':'Home','/index.html':'Home','/biblioteca.html':'Library','/blog.html':'Blog','/blog-post.html':'Article','/producto.html':'Product','/sobre-nosotros.html':'About','/cuenta.html':'Account','/admin.html':'Panel'};
   function pageName(p){ return PAGE_NAMES[p] || (p||'').replace(/^\//,'').replace(/\.html$/,'') || p; }
   var COUNTRY_ES={ES:'España',MX:'México',AR:'Argentina',CO:'Colombia',CL:'Chile',PE:'Perú',VE:'Venezuela',EC:'Ecuador',US:'Estados Unidos',GT:'Guatemala',CU:'Cuba',BO:'Bolivia',DO:'Rep. Dominicana',HN:'Honduras',PY:'Paraguay',SV:'El Salvador',NI:'Nicaragua',CR:'Costa Rica',PA:'Panamá',UY:'Uruguay',PR:'Puerto Rico',FR:'Francia',PT:'Portugal',IT:'Italia',DE:'Alemania',GB:'Reino Unido',BR:'Brasil',CA:'Canadá'};
-  function countryFlag(v){ if(v&&v.length===2) return v.toUpperCase().replace(/./g,function(c){return String.fromCodePoint(127397+c.charCodeAt(0));}); return '🌐'; }
+  function countryFlag(v){ if(v&&v.length===2) return '<img class="flag" src="https://flagcdn.com/40x30/'+v.toLowerCase()+'.png" alt="" loading="lazy">'; return '<span class="flag" style="display:inline-flex;align-items:center;justify-content:center;font-size:.9rem">🌐</span>'; }
   function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
   var DEMO_PRODUCTS=[{name:'Cría un perro feliz',cat:'Educación',sales:842},{name:'Sueño tranquilo',cat:'Cachorros',sales:531},{name:'Ladridos bajo control',cat:'Conducta',sales:418},{name:'Los 5 comandos esenciales',cat:'Educación',sales:390},{name:'Ansiedad por separación',cat:'Conducta',sales:286}];
   var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 purchases',val:'$284'},{name:'Javier G.',sub:'9 purchases',val:'$213'},{name:'Ana S.',sub:'7 purchases',val:'$168'},{name:'Carlos R.',sub:'5 purchases',val:'$119'}];
   var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Today',val:'$29.99'},{name:'Sueño tranquilo',sub:'Yesterday',val:'$14.99'},{name:'Ladridos bajo control',sub:'2 days ago',val:'$19.99'},{name:'Ansiedad por separación',sub:'3 days ago',val:'$22.99'}];
-  var DEMO_SALES_COUNTRIES=[{flag:'🇪🇸',name:'España',val:'$1.24K'},{flag:'🇲🇽',name:'México',val:'$0.98K'},{flag:'🇦🇷',name:'Argentina',val:'$0.74K'},{flag:'🇨🇴',name:'Colombia',val:'$0.61K'},{flag:'🇨🇱',name:'Chile',val:'$0.43K'}];
-  function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?'<span class="flag">'+x.flag+'</span>':'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
+  var DEMO_SALES_COUNTRIES=[{flag:countryFlag('ES'),name:'España',val:'$1.24K'},{flag:countryFlag('MX'),name:'México',val:'$0.98K'},{flag:countryFlag('AR'),name:'Argentina',val:'$0.74K'},{flag:countryFlag('CO'),name:'Colombia',val:'$0.61K'},{flag:countryFlag('CL'),name:'Chile',val:'$0.43K'}];
+  function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?x.flag:'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
 
   async function loadInicio(){
     var visitas='12,4K';
@@ -637,6 +861,61 @@
     $('importStatus').textContent='✓ Imported'; pLoad(); aLoad();
   });
 
+  /* ===== MOBILE DRAWER ===== */
+  function setDrawer(open){ var s=$('sideNav'), b=$('sideBackdrop'), t=$('sideToggle'); if(!s)return; s.classList.toggle('open',open); if(b)b.classList.toggle('open',open); if(t)t.classList.toggle('is-hidden',open); }
+  $('sideToggle')&&$('sideToggle').addEventListener('click',function(){ $('sideNav').classList.contains('open')?setDrawer(false):setDrawer(true); });
+  $('sideBackdrop')&&$('sideBackdrop').addEventListener('click',function(){ setDrawer(false); });
+  $('sideClose')&&$('sideClose').addEventListener('click',function(){ setDrawer(false); });
+
+  /* ===== SITE NAV — parked at the bottom; a 2nd scroll-down at the page bottom reveals it ===== */
+  (function(){
+    var hint=document.getElementById('siteNavHint');
+    var hintLabel=document.getElementById('siteNavHintLabel');
+    var attempts=0, lastAttemptTs=0, lastFireTs=0;
+    function nav(){ return document.getElementById('mainNav'); }
+    function atBottom(){ return (window.scrollY||0) + window.innerHeight >= document.documentElement.scrollHeight - 6; }
+    function setHint(state){
+      if(!hint) return;
+      if(state==='hidden'){ hint.classList.remove('show','pulse'); if(hintLabel) hintLabel.textContent='Scroll again to open the site menu'; }
+      else if(state==='show'){ hint.classList.add('show'); hint.classList.remove('pulse'); if(hintLabel) hintLabel.textContent='Scroll once more to open the site menu'; }
+      else if(state==='primed'){ hint.classList.add('show','pulse'); if(hintLabel) hintLabel.textContent='Scroll again now ↓'; }
+    }
+    function attempt(){
+      if(!atBottom()) return;
+      var now=Date.now();
+      // Debounce: ignore events from the SAME scroll motion (wheel fires many times per spin)
+      if(now-lastFireTs<400){ lastFireTs=now; return; }
+      lastFireTs=now;
+      if(now-lastAttemptTs>2500){ attempts=0; } // reset after idle
+      attempts++; lastAttemptTs=now;
+      if(attempts===1){ setHint('primed'); }
+      else if(attempts>=2){ var n=nav(); if(n){ n.classList.add('is-revealed'); } setHint('hidden'); attempts=0; }
+    }
+    // Show / hide the hint as the user gets close to the bottom
+    window.addEventListener('scroll',function(){
+      var n=nav();
+      var docH=document.documentElement.scrollHeight, vh=window.innerHeight, y=window.scrollY||0;
+      var nearBottom = (y + vh) >= (docH - 60);
+      if(nearBottom){ if(!hint?.classList.contains('pulse')) setHint('show'); }
+      else { setHint('hidden'); attempts=0; if(n) n.classList.remove('is-revealed'); }
+    }, {passive:true});
+    // Detect a "scroll-down attempt" while already at the bottom (wheel + touch)
+    window.addEventListener('wheel',function(e){ if(e.deltaY>4) attempt(); }, {passive:true});
+    var touchY=null;
+    window.addEventListener('touchstart',function(e){ touchY=e.touches[0].clientY; }, {passive:true});
+    window.addEventListener('touchend',function(e){
+      if(touchY==null) return;
+      var endY=(e.changedTouches[0]||{}).clientY||touchY;
+      if(touchY - endY > 30) attempt(); // upward swipe = scroll-down gesture
+      touchY=null;
+    }, {passive:true});
+    // Tap anywhere outside the nav while it's open to hide it
+    document.addEventListener('click',function(e){
+      var n=nav(); if(!n || !n.classList.contains('is-revealed')) return;
+      if(!n.contains(e.target)) n.classList.remove('is-revealed');
+    });
+  })();
+
   /* ===== NAV ===== */
   var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
   document.querySelectorAll('.side__link[data-view]').forEach(function(btn){ btn.addEventListener('click',function(){
@@ -644,6 +923,7 @@
     document.querySelectorAll('.side__link[data-view]').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[data-page-view]').forEach(function(s){s.hidden=s.dataset.pageView!==v;});
     if(loaders[v]) loaders[v]();
+    setDrawer(false);
   }); });
   document.querySelectorAll('.subtab').forEach(function(t){ t.addEventListener('click',function(){ document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('active',x===t);}); document.querySelectorAll('[data-sub-view]').forEach(function(s){s.hidden=s.dataset.subView!==t.dataset.sub;}); }); });
   // Overview cards jump to their panel
@@ -657,7 +937,7 @@
     $('whoami').textContent=session&&session.user?session.user.email:'';
     $('setEmail').value=session&&session.user?session.user.email:'';
     initBell();
-    await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad();
+    await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); hLoad();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
@@ -666,7 +946,7 @@
   /* ===== INIT ===== */
   pField=makeTagField('pTagfield','pTagInput','pTagDropdown','pTagPool',pPreview);
   aField=makeTagField('aTagfield','aTagInput','aTagDropdown',null,aPreview);
-  renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); renderAThumb();
+  renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); renderAThumb(); renderVThumb(); renderRAvatar();
   (async function(){ var s=await sb.auth.getSession(); if(s.data&&s.data.session) enter(s.data.session); else leave(); })();
 })();
 </script>
