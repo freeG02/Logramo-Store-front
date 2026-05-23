@@ -184,7 +184,7 @@
   var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function asList(v){ if(Array.isArray(v))return v; if(typeof v==='string'){ try{var j=JSON.parse(v); return Array.isArray(j)?j:[];}catch(e){return [];} } return []; }
-  function money(n){ return '$'+Number(n||0).toFixed(2); }
+  function money(n){ return window.LogramoCurrency ? LogramoCurrency.format(n) : '$'+Number(n||0).toFixed(2); }
   var TAG_PRIORITY=['bestseller','caliente','nuevo','popular','recomendado','gratis'];
   var TAG_LABEL={gratis:'Gratis',caliente:'Caliente',nuevo:'Nuevo',popular:'Popular',recomendado:'Recomendado',bestseller:'Más vendido'};
   function isNew(p){return p.created_at && (Date.now()-new Date(p.created_at).getTime())<30*864e5;}
@@ -222,7 +222,8 @@
     return new Promise(function(resolve,reject){
       if(window.paypal){ resolve(); return; }
       var s=document.createElement('script');
-      s.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(client_id)+'&currency=USD&intent=capture&enable-funding=card,paylater&components=buttons';
+      var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+      s.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(client_id)+'&currency='+encodeURIComponent(ccy)+'&intent=capture&enable-funding=card,paylater&components=buttons';
       s.onload=resolve; s.onerror=function(){ reject(new Error('sdk load failed')); };
       document.head.appendChild(s);
     });
@@ -236,8 +237,10 @@
     mount.innerHTML='';
     var commonHandlers={
       createOrder:function(data,actions){
+        var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+        var amount = (window.LogramoCurrency ? LogramoCurrency.checkoutAmount(p.price) : Number(p.price||0).toFixed(2));
         return actions.order.create({
-          purchase_units:[{ amount:{ value:Number(p.price||0).toFixed(2), currency_code:'USD' }, description:(p.title||'Producto Logramo').slice(0,127) }]
+          purchase_units:[{ amount:{ value:amount, currency_code:ccy }, description:(p.title||'Producto Logramo').slice(0,127) }]
         });
       },
       onApprove:function(data,actions){
@@ -419,7 +422,7 @@
   async function renderReviews(){
     try{
       var grid=document.getElementById('prodReviews'); if(!grid) return;
-      var r=await sb.from('reviews').select('*').order('sort',{ascending:true});
+      var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
       if(r.error||!r.data||!r.data.length) return;
       var skins=['terra','peach','golden','sky','sage','lavender'];
       grid.innerHTML=r.data.map(function(rv,i){
@@ -453,6 +456,11 @@
     renderRelated(p);
     renderReviews();
     if(!p.is_free) renderPayPalButtons(p);
+    /* Re-render prices once currency detection completes */
+    if(window.LogramoCurrency) LogramoCurrency.onReady(function(){
+      renderHero(p);
+      renderRelated(p);
+    });
   })();
 })();
 </script>

@@ -2,21 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <script>
-    /* Production "Coming Soon" gate.
-       On localhost / 127.* we serve the full dev site.
-       On every other host (logramo.com, www.logramo.com, freeg02.github.io, etc.)
-       we redirect to coming-soon.html. Add ?dev=1 to bypass on any host. */
-    (function(){
-      try{
-        var h=window.location.hostname||'';
-        var bypass=/[?&]dev=1\b/.test(window.location.search) || sessionStorage.getItem('logramo_dev')==='1';
-        if(bypass){ sessionStorage.setItem('logramo_dev','1'); return; }
-        var isLocal = h==='localhost' || h==='' || /^127\./.test(h) || /^0\.0\.0\.0/.test(h) || /^192\.168\./.test(h) || /\.local$/.test(h);
-        if(!isLocal){ window.location.replace('coming-soon.html'); }
-      }catch(e){}
-    })();
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Guías reales para dueños primerizos que están sobreviviendo el caos (y amándolo). Sin tecnicismos, sin juicios." />
   <title>Logramo — Cría un perro feliz</title>
@@ -332,7 +317,7 @@
 (function(){
   var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function money(n){return '$'+Number(n||0).toFixed(2);}
+  function money(n){return window.LogramoCurrency ? LogramoCurrency.format(n) : '$'+Number(n||0).toFixed(2);}
   function ytId(url){var m=String(url||'').match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);return m?m[1]:'';}
   function initials(n){return String(n||'').trim().split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join('').toUpperCase()||'•';}
   function reviewCard(rv,i){
@@ -344,7 +329,7 @@
   (async function(){
     try{
       var grid=document.getElementById('homeReviews'); if(!grid) return;
-      var r=await sb.from('reviews').select('*').order('sort',{ascending:true});
+      var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
       if(r.error||!r.data||!r.data.length) return; // keep fallback markup
       grid.innerHTML=r.data.map(reviewCard).join('');
     }catch(e){}
@@ -404,7 +389,7 @@
   (async function(){
     try{
       var grid=document.getElementById('homeBlogGrid'); if(!grid) return;
-      var r=await sb.from('articles').select('*').order('created_at',{ascending:false}).limit(6);
+      var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}).limit(6);
       if(r.error||!r.data||!r.data.length) return; // keep fallback markup
       var skins=['sky','peach','golden'];
       var catColors={Cachorros:'terra',Educación:'solid',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'forest'};
@@ -419,7 +404,7 @@
   (async function(){
     try{
       var grid=document.getElementById('homeVideoGrid'); if(!grid) return;
-      var r=await sb.from('videos').select('*').order('sort',{ascending:true});
+      var r=await sb.from('videos').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
       if(r.error||!r.data||!r.data.length) return; // keep fallback markup
       grid.innerHTML=r.data.slice(0,3).map(function(v){
         var id=ytId(v.youtube_url);

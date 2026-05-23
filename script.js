@@ -2,6 +2,113 @@
    LOGRAMO — v3 SCRIPT
    ============================================================ */
 
+/* ============ GEO CURRENCY ============
+   Detects the visitor country via ipapi.co, maps to a local currency,
+   fetches a live USD→currency rate, and exposes window.LogramoCurrency.
+   Pages call LogramoCurrency.onReady(fn) to re-format prices once detection
+   completes. format(usdPrice) returns the localized string ("€26.50", "MXN $549", "$29.99").
+
+   PayPal-supported currencies get full localized checkout. Unsupported markets
+   (e.g., AR, CL, CO) fall back to USD throughout so display == charge.        */
+window.LogramoCurrency = (function () {
+  var COUNTRY_TO_CCY = {
+    /* Eurozone */
+    ES:'EUR',FR:'EUR',DE:'EUR',IT:'EUR',PT:'EUR',NL:'EUR',BE:'EUR',IE:'EUR',AT:'EUR',FI:'EUR',GR:'EUR',LU:'EUR',SK:'EUR',SI:'EUR',EE:'EUR',LV:'EUR',LT:'EUR',CY:'EUR',MT:'EUR',
+    /* Anglo + others — PayPal supports natively */
+    US:'USD',CA:'CAD',GB:'GBP',AU:'AUD',NZ:'NZD',MX:'MXN',BR:'BRL',CH:'CHF',JP:'JPY',
+    SE:'SEK',DK:'DKK',NO:'NOK',PL:'PLN',CZ:'CZK',HU:'HUF',IL:'ILS',TW:'TWD',TH:'THB',SG:'SGD',HK:'HKD',PH:'PHP'
+    /* Everything else → USD fallback */
+  };
+  var SYMBOLS = { USD:'$', EUR:'€', GBP:'£', MXN:'MX$', BRL:'R$', CAD:'C$', AUD:'A$', NZD:'NZ$', JPY:'¥', CHF:'CHF ', SEK:'kr ', DKK:'kr ', NOK:'kr ', PLN:'zł ', CZK:'Kč ', HUF:'Ft ', ILS:'₪', TWD:'NT$', THB:'฿', SGD:'S$', HKD:'HK$', PHP:'₱' };
+  /* PayPal Smart Buttons supported currencies */
+  var PAYPAL_OK = ['USD','EUR','GBP','AUD','BRL','CAD','CHF','CZK','DKK','HKD','HUF','ILS','JPY','MXN','NOK','NZD','PHP','PLN','SEK','SGD','THB','TWD'];
+  /* Currencies that don't use cents in pricing — keep clean integers */
+  var WHOLE_UNIT_CCY = ['JPY','HUF','TWD','MXN','BRL','PHP'];
+
+  var state = { ccy: 'USD', rate: 1, country: '', ready: false };
+  var subs = [];
+
+  function notify(){ subs.forEach(function(fn){ try{ fn(state); }catch(e){} }); }
+
+  function format(usdAmount, opts) {
+    opts = opts || {};
+    var n = Number(usdAmount || 0) * (state.rate || 1);
+    if (WHOLE_UNIT_CCY.indexOf(state.ccy) > -1) n = Math.round(n);
+    else n = Math.round(n * 100) / 100;
+    var sym = SYMBOLS[state.ccy] || (state.ccy + ' ');
+    var decimals = WHOLE_UNIT_CCY.indexOf(state.ccy) > -1 ? 0 : 2;
+    var formatted = n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    return (opts.bare ? '' : sym) + formatted;
+  }
+
+  function checkoutCurrency() {
+    return PAYPAL_OK.indexOf(state.ccy) > -1 ? state.ccy : 'USD';
+  }
+  function checkoutAmount(usdAmount) {
+    /* If PayPal can charge in local, return the localized amount; else USD original */
+    if (checkoutCurrency() === 'USD') return Number(usdAmount || 0).toFixed(2);
+    var n = Number(usdAmount || 0) * (state.rate || 1);
+    var decimals = WHOLE_UNIT_CCY.indexOf(state.ccy) > -1 ? 0 : 2;
+    return (WHOLE_UNIT_CCY.indexOf(state.ccy) > -1 ? Math.round(n) : Math.round(n * 100) / 100).toFixed(decimals);
+  }
+
+  async function init() {
+    /* Manual override via ?ccy=EUR for testing */
+    try {
+      var url = new URL(window.location.href);
+      var manual = url.searchParams.get('ccy');
+      if (manual) {
+        state.country = url.searchParams.get('country') || '';
+        state.ccy = manual.toUpperCase();
+      }
+    } catch (e) {}
+
+    /* Country lookup (cached for the session) */
+    if (!state.ccy || state.ccy === 'USD') {
+      try {
+        var cached = sessionStorage.getItem('logramo_geo');
+        var geo;
+        if (cached) geo = JSON.parse(cached);
+        else {
+          var r = await fetch('https://ipapi.co/json/');
+          geo = await r.json();
+          sessionStorage.setItem('logramo_geo', JSON.stringify({ country_code: geo.country_code }));
+        }
+        state.country = geo.country_code || '';
+        state.ccy = COUNTRY_TO_CCY[state.country] || 'USD';
+      } catch (e) { state.ccy = 'USD'; }
+    }
+
+    /* Exchange rate (USD → state.ccy), cached for the session */
+    if (state.ccy === 'USD') {
+      state.rate = 1;
+    } else {
+      try {
+        var rk = 'logramo_rate_' + state.ccy;
+        var rc = sessionStorage.getItem(rk);
+        if (rc) state.rate = parseFloat(rc) || 1;
+        else {
+          var rr = await fetch('https://api.frankfurter.app/latest?from=USD&to=' + state.ccy);
+          var rd = await rr.json();
+          state.rate = (rd && rd.rates && rd.rates[state.ccy]) || 1;
+          sessionStorage.setItem(rk, String(state.rate));
+        }
+      } catch (e) { state.rate = 1; }
+    }
+
+    state.ready = true;
+    notify();
+  }
+
+  function onReady(fn) {
+    if (state.ready) { try { fn(state); } catch (e) {} return; }
+    subs.push(fn);
+  }
+
+  init();
+  return { init: init, get: function () { return state; }, format: format, checkoutCurrency: checkoutCurrency, checkoutAmount: checkoutAmount, onReady: onReady };
+})();
+
 /* ============ SUPABASE (lightweight REST — no SDK needed here) ============ */
 var LOGRAMO_SB_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
 var LOGRAMO_SB_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';

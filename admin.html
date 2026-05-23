@@ -137,6 +137,20 @@
     .list { display:grid; gap:10px; }
     .list-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); }
     .list-item__info { flex:1; min-width:0; } .list-item__title { font-weight:700; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .list-item__meta { font-size:.74rem; color:var(--c-text-muted); }
+    .list-item__drag { cursor:grab; user-select:none; display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; color:var(--c-text-muted); font-size:1.1rem; line-height:1; }
+    .list-item__drag:hover { background:var(--c-cream-alt); color:var(--c-ink); }
+    .list-item__pin { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.95rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
+    .list-item__pin.is-pinned { background:var(--c-golden); }
+    .list-item.is-pinned { box-shadow:3px 3px 0 var(--c-golden); border-color:var(--c-ink); }
+    .list-item.sortable-ghost { opacity:.5; }
+    .list-item.sortable-chosen { box-shadow:4px 4px 0 var(--c-terracotta); }
+    /* Repeater rows: drag handle */
+    .rep-row { position:relative; }
+    .rep-row__handle { position:absolute; top:6px; left:50%; transform:translateX(-50%); cursor:grab; color:var(--c-text-muted); width:30px; height:14px; display:flex; align-items:center; justify-content:center; line-height:1; font-size:.8rem; letter-spacing:1px; }
+    .rep-row { padding-top:18px !important; }
+    .rep-row__handle:hover { color:var(--c-ink); }
+    .rep-row.sortable-ghost { opacity:.5; }
+    .rep-row.sortable-chosen { box-shadow:3px 3px 0 var(--c-terracotta); }
 
     .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
     @media(max-width:760px){ .stats{ grid-template-columns:1fr 1fr; } }
@@ -508,6 +522,7 @@
 <div id="partial-nav" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="partials.js"></script>
 <script>
 (function(){
@@ -589,7 +604,36 @@
       return '<div class="rep-row rep-tile" data-state="tile"><button type="button" class="rep-tile__btn"><span class="rep-tile__num">'+lbl+'</span>'+hint+'<span class="rep-tile__edit">Edit</span></button><button type="button" class="rep-rm" title="Remove">✕</button></div>';
     }
     function rowHtml(row,i){ return row._collapsed ? tileHtml(row,i) : editHtml(row); }
-    function render(){ mount.innerHTML=data.map(rowHtml).join('')+'<button type="button" class="icon-btn rep-add">'+esc(opts.addLabel||'+ Add row')+'</button>'; }
+    function render(){
+      mount.innerHTML=data.map(rowHtml).join('')+'<button type="button" class="icon-btn rep-add">'+esc(opts.addLabel||'+ Add row')+'</button>';
+      // Add a small drag handle to each row, and (re)init Sortable
+      mount.querySelectorAll('.rep-row').forEach(function(r){
+        if(!r.querySelector('.rep-row__handle')){
+          var h=document.createElement('span');
+          h.className='rep-row__handle';
+          h.title='Drag to reorder';
+          h.setAttribute('aria-label','Drag');
+          h.textContent='⋮⋮';
+          r.appendChild(h);
+        }
+      });
+      if(window.Sortable){
+        if(mount._sortable){ try{ mount._sortable.destroy(); }catch(e){} }
+        mount._sortable = Sortable.create(mount, {
+          animation:160, handle:'.rep-row__handle', draggable:'.rep-row', ghostClass:'sortable-ghost', chosenClass:'sortable-chosen',
+          onEnd: function(){
+            // Rebuild data array in DOM order
+            var rows=Array.prototype.slice.call(mount.querySelectorAll('.rep-row'));
+            // pull current state (handling open editors) before rearranging
+            sync();
+            var newOrder=rows.map(function(r,i){ return data[Array.prototype.indexOf.call(mount.querySelectorAll('.rep-row'), r)]; });
+            // Simpler/robust: index by previous order. Since sync() ran, data matches DOM at sync time.
+            // After Sortable mutated the DOM, the relationship may be off. Build by reading inputs again.
+            sync();
+          }
+        });
+      }
+    }
     function sync(){
       // read DOM back into data preserving order & collapsed state
       var newData=[]; var rows=mount.querySelectorAll('.rep-row');
@@ -645,7 +689,7 @@
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
-  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item'+(p.pinned?' is-pinned':'')+'" data-id="'+p.id+'">'+dragHandleHtml()+pinBtnHtml(p.pinned,p.id)+'<div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; attachSortableList('pList','products',function(){return PRODUCTS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
   $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
   function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
@@ -653,6 +697,49 @@
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
   ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
   $('createTagBtn').addEventListener('click',async function(){ var n=$('newTagName').value.trim(); if(!n)return; var s=await createTag(n,$('newTagColor').value); pField.add(s); $('newTagName').value=''; });
+
+  /* ===== Drag-reorder + Pin helpers (shared by products/articles/videos/reviews) ===== */
+  function dragHandleHtml(){ return '<span class="list-item__drag" title="Drag to reorder" aria-label="Drag">⋮⋮</span>'; }
+  function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">'+(isPinned?'📌':'☆')+'</button>'; }
+  function applyPinClass(li, pinned){ li.classList.toggle('is-pinned', !!pinned); var b=li.querySelector('.list-item__pin'); if(b){ b.classList.toggle('is-pinned',!!pinned); b.textContent=pinned?'📌':'☆'; b.title=pinned?'Unpin':'Pin (max 3)'; } }
+  function attachSortableList(containerId, table, getRows, afterReorder){
+    var el=document.getElementById(containerId); if(!el || !window.Sortable) return;
+    if(el._sortable){ try{ el._sortable.destroy(); }catch(e){} }
+    el._sortable = Sortable.create(el,{
+      animation:180, handle:'.list-item__drag', ghostClass:'sortable-ghost', chosenClass:'sortable-chosen',
+      onEnd: async function(){
+        var rows=Array.prototype.slice.call(el.querySelectorAll('[data-id]'));
+        // Rebuild sort_order = index (lower = first)
+        for(var i=0;i<rows.length;i++){
+          var id=rows[i].getAttribute('data-id');
+          try{ await sb.from(table).update({sort_order:i}).eq('id',id); }catch(e){}
+        }
+        // Refresh local cached array to match new order if a getter was provided
+        if(typeof getRows==='function'){ var arr=getRows(); if(Array.isArray(arr)){ arr.sort(function(a,b){var ai=rows.findIndex(function(r){return String(r.dataset.id)===String(a.id);}); var bi=rows.findIndex(function(r){return String(r.dataset.id)===String(b.id);}); return ai-bi;}); } }
+        if(typeof afterReorder==='function') afterReorder();
+      }
+    });
+  }
+  function wirePinClicks(containerId, table, getRows){
+    var el=document.getElementById(containerId); if(!el) return;
+    el.addEventListener('click', async function(e){
+      var btn=e.target.closest('[data-pin]'); if(!btn) return;
+      var id=btn.dataset.pin;
+      var rows=typeof getRows==='function'?getRows():[];
+      var row=(rows||[]).filter(function(x){return String(x.id)===String(id);})[0];
+      var currentlyPinned=row&&row.pinned;
+      if(!currentlyPinned){
+        var pinnedCount=(rows||[]).filter(function(x){return x.pinned;}).length;
+        if(pinnedCount>=3){ alert('You can only pin 3 items at a time. Unpin one first.'); return; }
+      }
+      try{
+        var r=await sb.from(table).update({pinned:!currentlyPinned}).eq('id',id);
+        if(r.error){ alert('Error: '+r.error.message); return; }
+        if(row) row.pinned=!currentlyPinned;
+        var li=btn.closest('.list-item'); if(li) applyPinClass(li, !currentlyPinned);
+      }catch(err){ alert('Error: '+err.message); }
+    });
+  }
 
   /* ===== HOMEPAGE VIDEOS ===== */
   var editingV=null, VIDEOS=[];
@@ -662,7 +749,7 @@
   function renderVThumb(){ var u=$('v-thumb').value; $('v-thumb-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="v-thumb-rm">✕</button></div>':''; }
   $('v-thumb-info').addEventListener('click',function(e){ if(e.target.id==='v-thumb-rm'){ $('v-thumb').value=''; renderVThumb(); } });
   $('v-thumb-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('vSaveStatus').textContent='Uploading…'; try{ var url=await uploadFile(f,'videos'); $('v-thumb').value=url; renderVThumb(); $('vSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('vSaveStatus').textContent='';},1200); }catch(err){ $('vSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  async function vLoad(){ var box=$('vList'); try{ var r=await sb.from('videos').select('*').order('sort',{ascending:true}); if(r.error)throw r.error; VIDEOS=r.data||[]; box.innerHTML=VIDEOS.length?VIDEOS.map(function(v){ return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(v.title||'(untitled)')+'</div><div class="list-item__meta">'+(v.label?esc(v.label)+' · ':'')+(ytId(v.youtube_url)?'YouTube ✓':'no link')+' · order '+(v.sort||0)+'</div></div><button class="icon-btn" data-vedit="'+v.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-vdel="'+v.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No videos yet. Add up to 3 for the homepage.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the videos SQL? ('+esc(e.message||'')+')</p>'; } }
+  async function vLoad(){ var box=$('vList'); try{ var r=await sb.from('videos').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; VIDEOS=r.data||[]; box.innerHTML=VIDEOS.length?VIDEOS.map(function(v){ return '<div class="list-item'+(v.pinned?' is-pinned':'')+'" data-id="'+v.id+'">'+dragHandleHtml()+pinBtnHtml(v.pinned,v.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(v.title||'(untitled)')+'</div><div class="list-item__meta">'+(v.label?esc(v.label)+' · ':'')+(ytId(v.youtube_url)?'YouTube ✓':'no link')+'</div></div><button class="icon-btn" data-vedit="'+v.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-vdel="'+v.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No videos yet. Add up to 3 for the homepage.</p>'; attachSortableList('vList','videos',function(){return VIDEOS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the videos SQL? ('+esc(e.message||'')+')</p>'; } }
   $('vList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-vedit]'),del=e.target.closest('[data-vdel]'); if(ed){ var v=VIDEOS.filter(function(x){return String(x.id)===String(ed.dataset.vedit);})[0]; if(v){ editingV=v.id; $('v-title').value=v.title||''; $('v-label').value=v.label||''; $('v-url').value=v.youtube_url||''; $('v-thumb').value=v.thumbnail||''; $('v-sort').value=v.sort||0; renderVThumb(); $('vEditorTitle').textContent='Edit video'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this video?'))return; var r=await sb.from('videos').delete().eq('id',del.dataset.vdel); if(r.error)alert('Error: '+r.error.message); vLoad(); } });
   $('vSaveBtn').addEventListener('click',async function(){ var v=vGather(); if(!v.title||!v.youtube_url){alert('Add a title and a YouTube link.');return;} if(VIDEOS.length>=3 && !editingV){ if(!confirm('The homepage shows 3 videos. Adding more is fine, but only the first 3 (by order) appear. Continue?')) return; } $('vSaveStatus').textContent='Saving…'; var r=editingV?await sb.from('videos').update(v).eq('id',editingV):await sb.from('videos').insert(v); if(r.error){$('vSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('vSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('vSaveStatus').textContent='';},1600); vReset(); vLoad(); });
   $('vResetBtn').addEventListener('click',vReset);
@@ -674,7 +761,7 @@
   function renderRAvatar(){ var u=$('r-avatar').value; $('r-avatar-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="r-avatar-rm">✕</button></div>':''; }
   $('r-avatar-info').addEventListener('click',function(e){ if(e.target.id==='r-avatar-rm'){ $('r-avatar').value=''; renderRAvatar(); } });
   $('r-avatar-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('rSaveStatus').textContent='Uploading…'; try{ var url=await uploadFile(f,'reviews'); $('r-avatar').value=url; renderRAvatar(); $('rSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('rSaveStatus').textContent='';},1200); }catch(err){ $('rSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  async function rLoad(){ var box=$('rList'); try{ var r=await sb.from('reviews').select('*').order('sort',{ascending:true}); if(r.error)throw r.error; REVIEWS=r.data||[]; box.innerHTML=REVIEWS.length?REVIEWS.map(function(rv){ return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(rv.name||'(no name)')+' · '+'★'.repeat(rv.rating||5)+'</div><div class="list-item__meta">'+(rv.location?esc(rv.location)+' · ':'')+esc((rv.quote||'').slice(0,48))+'… · order '+(rv.sort||0)+'</div></div><button class="icon-btn" data-redit="'+rv.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-rdel="'+rv.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No reviews yet. Add a few to show on the site.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the reviews SQL? ('+esc(e.message||'')+')</p>'; } }
+  async function rLoad(){ var box=$('rList'); try{ var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; REVIEWS=r.data||[]; box.innerHTML=REVIEWS.length?REVIEWS.map(function(rv){ return '<div class="list-item'+(rv.pinned?' is-pinned':'')+'" data-id="'+rv.id+'">'+dragHandleHtml()+pinBtnHtml(rv.pinned,rv.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(rv.name||'(no name)')+' · '+'★'.repeat(rv.rating||5)+'</div><div class="list-item__meta">'+(rv.location?esc(rv.location)+' · ':'')+esc((rv.quote||'').slice(0,48))+'…</div></div><button class="icon-btn" data-redit="'+rv.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-rdel="'+rv.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No reviews yet. Add a few to show on the site.</p>'; attachSortableList('rList','reviews',function(){return REVIEWS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the reviews SQL? ('+esc(e.message||'')+')</p>'; } }
   $('rList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-redit]'),del=e.target.closest('[data-rdel]'); if(ed){ var rv=REVIEWS.filter(function(x){return String(x.id)===String(ed.dataset.redit);})[0]; if(rv){ editingR=rv.id; $('r-name').value=rv.name||''; $('r-loc').value=rv.location||''; $('r-quote').value=rv.quote||''; $('r-rating').value=rv.rating||5; $('r-avatar').value=rv.avatar||''; $('r-sort').value=rv.sort||0; renderRAvatar(); $('rEditorTitle').textContent='Edit review'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this review?'))return; var r=await sb.from('reviews').delete().eq('id',del.dataset.rdel); if(r.error)alert('Error: '+r.error.message); rLoad(); } });
   $('rSaveBtn').addEventListener('click',async function(){ var rv=rGather(); if(!rv.name||!rv.quote){alert('Add a name and a quote.');return;} $('rSaveStatus').textContent='Saving…'; var r=editingR?await sb.from('reviews').update(rv).eq('id',editingR):await sb.from('reviews').insert(rv); if(r.error){$('rSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('rSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('rSaveStatus').textContent='';},1600); rReset(); rLoad(); });
   $('rResetBtn').addEventListener('click',rReset);
@@ -702,7 +789,7 @@
   $('a-img-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('aSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'articles'); $('a-img').value=url; renderAThumb(); aPreview(); $('aSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('aSaveStatus').textContent='';},1200); }catch(err){ $('aSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
   function renderAThumb(){ var u=$('a-img').value; $('a-img-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="a-img-rm">✕</button></div>':''; }
   $('a-img-thumb').addEventListener('click',function(e){ if(e.target.id==='a-img-rm'){ $('a-img').value=''; renderAThumb(); aPreview(); } });
-  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){return '<div class="list-item"><div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';}).join(''):'<p class="muted">No articles yet.</p>'; }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){return '<div class="list-item'+(a.pinned?' is-pinned':'')+'" data-id="'+a.id+'">'+dragHandleHtml()+pinBtnHtml(a.pinned,a.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';}).join(''):'<p class="muted">No articles yet.</p>'; attachSortableList('aList','articles',function(){return ARTICLES;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
   $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-hot').checked=!!a.hot; aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
   $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Add a title.');return;} $('aSaveStatus').textContent='Saving…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
   function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-hot').checked=false; renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
@@ -915,6 +1002,12 @@
       if(!n.contains(e.target)) n.classList.remove('is-revealed');
     });
   })();
+
+  /* Wire pin toggles once (containers are static; items injected later) */
+  wirePinClicks('pList','products',function(){return PRODUCTS;});
+  wirePinClicks('aList','articles',function(){return ARTICLES;});
+  wirePinClicks('vList','videos',function(){return VIDEOS;});
+  wirePinClicks('rList','reviews',function(){return REVIEWS;});
 
   /* ===== NAV ===== */
   var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };

@@ -197,7 +197,7 @@
   if(searchInput) searchInput.addEventListener('input',function(){ query=(searchInput.value||'').trim().toLowerCase(); applyFilters(); });
   (async function(){
     var arts=[];
-    try{ var r=await sb.from('articles').select('*').order('created_at',{ascending:false}); if(!r.error)arts=(r.data||[]).filter(function(a){return a.published!==false;}); }catch(e){}
+    try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error)arts=(r.data||[]).filter(function(a){return a.published!==false;}); }catch(e){}
     render(arts); applyFilters();
   })();
 })();

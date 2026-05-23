@@ -228,7 +228,7 @@ window.initFcCarousel = function(){
     var tags=cardTags(p);
     var top=topTag(tags);
     var rest=tags.filter(function(t){return t!==top;});
-    var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
+    var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">'+(window.LogramoCurrency?LogramoCurrency.format(p.price):'$'+Number(p.price||0).toFixed(2))+'</span>';
     var cta=p.is_free?'Descargar':'Ver libro';
     return '<a href="producto.html?id='+encodeURIComponent(p.id)+'" class="book-card" data-tags="'+tags.join(' ')+'" data-cat="'+slug(p.category)+'" data-title="'+esc((p.title||'').toLowerCase())+'" data-desc="'+esc((p.description||'').toLowerCase())+'">'
       +cover(p, top?topBadge(top):'')
@@ -242,7 +242,7 @@ window.initFcCarousel = function(){
   }
   function fcSlide(p,theme){
     var tags=cardTags(p);
-    var price=p.is_free?'Gratis':'$'+Number(p.price||0).toFixed(2);
+    var price=p.is_free?'Gratis':(window.LogramoCurrency?LogramoCurrency.format(p.price):'$'+Number(p.price||0).toFixed(2));
     var cta=p.is_free?'Descargar gratis':'Comprar ahora';
     var href='producto.html?id='+encodeURIComponent(p.id);
     return '<div class="fc-card fc-card--'+theme+'">'
@@ -301,9 +301,10 @@ window.initFcCarousel = function(){
   (async function(){
     try{ var t=await sb.from('tags').select('*'); if(!t.error)(t.data||[]).forEach(function(x){REG[x.slug]={label:x.label,color:x.color||'default'};}); }catch(e){}
     var products=[];
-    try{ var r=await sb.from('products').select('*').order('created_at',{ascending:false}); if(!r.error)products=(r.data||[]).filter(function(p){return p.published!==false;}); }catch(e){}
+    try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error)products=(r.data||[]).filter(function(p){return p.published!==false;}); }catch(e){}
     render(products);
     renderFeatured(products);
+    if(window.LogramoCurrency) LogramoCurrency.onReady(function(){ render(products); renderFeatured(products); applyFilters(); });
     var initial=new URLSearchParams(location.search).get('filter');
     if(initial&&row&&row.querySelector('[data-filter="'+initial+'"]')) setFilter(initial,true); else applyFilters();
   })();
