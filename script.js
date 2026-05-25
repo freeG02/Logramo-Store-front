@@ -170,20 +170,37 @@ window.LogramoCurrency = (function () {
     subs.push(fn);
   }
 
-  /* List of currencies the user can pick (PayPal-supported = full checkout) */
+  /* Currencies the user can pick. PayPal-supported get full local checkout;
+     others display in local and charge in USD with a "charged in USD" note. */
   var OPTIONS = [
-    { code:'AUTO', label:'Auto-detect', flag:'🌐' },
-    { code:'USD',  label:'US Dollar',        flag:'🇺🇸' },
-    { code:'EUR',  label:'Euro',             flag:'🇪🇺' },
-    { code:'GBP',  label:'British Pound',    flag:'🇬🇧' },
-    { code:'MXN',  label:'Mexican Peso',     flag:'🇲🇽' },
-    { code:'BRL',  label:'Brazilian Real',   flag:'🇧🇷' },
-    { code:'CAD',  label:'Canadian Dollar',  flag:'🇨🇦' },
-    { code:'AUD',  label:'Australian Dollar',flag:'🇦🇺' },
-    { code:'CHF',  label:'Swiss Franc',      flag:'🇨🇭' },
-    { code:'JPY',  label:'Japanese Yen',     flag:'🇯🇵' }
+    { code:'AUTO', label:'Auto-detect',         flag:'🌐' },
+    /* Most relevant for our Spanish-language audience first */
+    { code:'USD',  label:'US Dollar',           flag:'🇺🇸' },
+    { code:'EUR',  label:'Euro',                flag:'🇪🇺' },
+    { code:'MXN',  label:'Mexican Peso',        flag:'🇲🇽' },
+    { code:'BRL',  label:'Brazilian Real',      flag:'🇧🇷' },
+    { code:'ARS',  label:'Argentine Peso',      flag:'🇦🇷' },
+    { code:'CLP',  label:'Chilean Peso',        flag:'🇨🇱' },
+    { code:'COP',  label:'Colombian Peso',      flag:'🇨🇴' },
+    { code:'PEN',  label:'Peruvian Sol',        flag:'🇵🇪' },
+    { code:'UYU',  label:'Uruguayan Peso',      flag:'🇺🇾' },
+    { code:'BOB',  label:'Bolivian Boliviano',  flag:'🇧🇴' },
+    { code:'DOP',  label:'Dominican Peso',      flag:'🇩🇴' },
+    { code:'GTQ',  label:'Guatemalan Quetzal',  flag:'🇬🇹' },
+    { code:'CRC',  label:'Costa Rican Colón',   flag:'🇨🇷' },
+    /* Other major markets */
+    { code:'GBP',  label:'British Pound',       flag:'🇬🇧' },
+    { code:'CAD',  label:'Canadian Dollar',     flag:'🇨🇦' },
+    { code:'AUD',  label:'Australian Dollar',   flag:'🇦🇺' },
+    { code:'CHF',  label:'Swiss Franc',         flag:'🇨🇭' },
+    { code:'JPY',  label:'Japanese Yen',        flag:'🇯🇵' },
+    { code:'INR',  label:'Indian Rupee',        flag:'🇮🇳' }
   ];
   function options() { return OPTIONS.slice(); }
+  function flagFor(ccy) {
+    for (var i = 0; i < OPTIONS.length; i++) if (OPTIONS[i].code === ccy) return OPTIONS[i].flag;
+    return '';
+  }
   function countryFlag(code) {
     if (!code || code.length !== 2) return '🌐';
     try { return code.toUpperCase().replace(/./g, function (c) { return String.fromCodePoint(127397 + c.charCodeAt(0)); }); }
@@ -217,7 +234,8 @@ window.LogramoCurrency = (function () {
     onReady: onReady,
     options: options,
     setCurrency: setCurrency,
-    countryFlag: countryFlag
+    countryFlag: countryFlag,
+    flagFor: flagFor
   };
 })();
 
@@ -332,9 +350,15 @@ if (mainNav) {
       try { manualSaved = !!localStorage.getItem('logramo_ccy'); } catch (e) {}
       var flagEl = document.getElementById('ccyChipFlag');
       var codeEl = document.getElementById('ccyChipCode');
-      if (flagEl) flagEl.textContent = manualSaved ? '⚙️' : LogramoCurrency.countryFlag(s.country);
+      /* Prefer the currency's own flag (from OPTIONS) — it's the same flag
+         the user sees in the picker, so the chip stays consistent.
+         Fall back to the detected country flag when there's no OPTIONS entry. */
+      var flag = LogramoCurrency.flagFor(s.ccy) || LogramoCurrency.countryFlag(s.country) || '🌐';
+      if (flagEl) flagEl.textContent = flag;
       if (codeEl) codeEl.textContent = s.ccy || 'USD';
-      chip.title = manualSaved ? 'Currency: ' + s.ccy + ' (manual)' : 'Currency: ' + s.ccy + ' (auto from ' + (s.country || 'browser') + ')';
+      chip.title = manualSaved
+        ? 'Currency: ' + s.ccy + ' (manual)'
+        : 'Currency: ' + s.ccy + ' (auto from ' + (s.country || 'browser') + ')';
     }
 
     function renderPopover() {
