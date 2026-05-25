@@ -53,7 +53,12 @@ window.LogramoCurrency = (function () {
   }
 
   async function init() {
-    /* Manual override via ?ccy=EUR for testing */
+    /* 1) Manual saved preference wins (set via the currency chip) */
+    try {
+      var saved = localStorage.getItem('logramo_ccy');
+      if (saved) state.ccy = saved.toUpperCase();
+    } catch (e) {}
+    /* 2) Manual URL override (for testing): ?ccy=EUR */
     try {
       var url = new URL(window.location.href);
       var manual = url.searchParams.get('ccy');
@@ -105,8 +110,54 @@ window.LogramoCurrency = (function () {
     subs.push(fn);
   }
 
+  /* List of currencies the user can pick (PayPal-supported = full checkout) */
+  var OPTIONS = [
+    { code:'AUTO', label:'Auto-detect', flag:'🌐' },
+    { code:'USD',  label:'US Dollar',        flag:'🇺🇸' },
+    { code:'EUR',  label:'Euro',             flag:'🇪🇺' },
+    { code:'GBP',  label:'British Pound',    flag:'🇬🇧' },
+    { code:'MXN',  label:'Mexican Peso',     flag:'🇲🇽' },
+    { code:'BRL',  label:'Brazilian Real',   flag:'🇧🇷' },
+    { code:'CAD',  label:'Canadian Dollar',  flag:'🇨🇦' },
+    { code:'AUD',  label:'Australian Dollar',flag:'🇦🇺' },
+    { code:'CHF',  label:'Swiss Franc',      flag:'🇨🇭' },
+    { code:'JPY',  label:'Japanese Yen',     flag:'🇯🇵' }
+  ];
+  function options() { return OPTIONS.slice(); }
+  function countryFlag(code) {
+    if (!code || code.length !== 2) return '🌐';
+    try { return code.toUpperCase().replace(/./g, function (c) { return String.fromCodePoint(127397 + c.charCodeAt(0)); }); }
+    catch (e) { return '🌐'; }
+  }
+
+  async function setCurrency(code) {
+    if (code === 'AUTO' || !code) {
+      try { localStorage.removeItem('logramo_ccy'); } catch (e) {}
+    } else {
+      try { localStorage.setItem('logramo_ccy', code.toUpperCase()); } catch (e) {}
+    }
+    /* Clear caches so we re-detect / refetch rate */
+    try { sessionStorage.removeItem('logramo_geo'); } catch (e) {}
+    try {
+      Object.keys(sessionStorage).filter(function (k) { return k.indexOf('logramo_rate_') === 0; })
+        .forEach(function (k) { sessionStorage.removeItem(k); });
+    } catch (e) {}
+    state = { ccy: 'USD', rate: 1, country: '', ready: false };
+    await init();
+  }
+
   init();
-  return { init: init, get: function () { return state; }, format: format, checkoutCurrency: checkoutCurrency, checkoutAmount: checkoutAmount, onReady: onReady };
+  return {
+    init: init,
+    get: function () { return state; },
+    format: format,
+    checkoutCurrency: checkoutCurrency,
+    checkoutAmount: checkoutAmount,
+    onReady: onReady,
+    options: options,
+    setCurrency: setCurrency,
+    countryFlag: countryFlag
+  };
 })();
 
 /* ============ SUPABASE (lightweight REST — no SDK needed here) ============ */
@@ -206,6 +257,70 @@ if (mainNav) {
     mainNav.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 }
+
+/* Currency chip — shows detected country/currency in the navbar, click to switch */
+(function () {
+  function setupCcyChip() {
+    var chip = document.getElementById('ccyChip');
+    var pop = document.getElementById('ccyPopover');
+    if (!chip || !pop || !window.LogramoCurrency) return;
+
+    function refreshChip() {
+      var s = LogramoCurrency.get();
+      var manualSaved = false;
+      try { manualSaved = !!localStorage.getItem('logramo_ccy'); } catch (e) {}
+      var flagEl = document.getElementById('ccyChipFlag');
+      var codeEl = document.getElementById('ccyChipCode');
+      if (flagEl) flagEl.textContent = manualSaved ? '⚙️' : LogramoCurrency.countryFlag(s.country);
+      if (codeEl) codeEl.textContent = s.ccy || 'USD';
+      chip.title = manualSaved ? 'Currency: ' + s.ccy + ' (manual)' : 'Currency: ' + s.ccy + ' (auto from ' + (s.country || 'browser') + ')';
+    }
+
+    function renderPopover() {
+      var saved = '';
+      try { saved = (localStorage.getItem('logramo_ccy') || '').toUpperCase(); } catch (e) {}
+      var current = LogramoCurrency.get().ccy;
+      var opts = LogramoCurrency.options();
+      pop.innerHTML = opts.map(function (o) {
+        var isActive;
+        if (o.code === 'AUTO') isActive = !saved;
+        else isActive = saved === o.code;
+        return '<button type="button" class="ccy-popover__item' + (isActive ? ' is-active' : '') + '" data-ccy="' + o.code + '">'
+          + '<span class="ccy-popover__flag">' + o.flag + '</span>'
+          + '<span>' + o.label + '</span>'
+          + '<span class="ccy-popover__code">' + (o.code === 'AUTO' ? '' : o.code) + '</span>'
+          + '</button>';
+      }).join('');
+    }
+
+    chip.addEventListener('click', function (e) {
+      e.stopPropagation();
+      renderPopover();
+      pop.hidden = !pop.hidden;
+    });
+    document.addEventListener('click', function (e) {
+      if (!pop.hidden && !pop.contains(e.target) && e.target !== chip && !chip.contains(e.target)) pop.hidden = true;
+    });
+    pop.addEventListener('click', async function (e) {
+      var btn = e.target.closest('[data-ccy]');
+      if (!btn) return;
+      pop.hidden = true;
+      await LogramoCurrency.setCurrency(btn.dataset.ccy);
+      refreshChip();
+      /* Force any open page-level re-render hooks to fire by reloading.
+         Cleaner than chasing every render callback across pages. */
+      window.location.reload();
+    });
+
+    /* First render of the chip when LogramoCurrency settles */
+    LogramoCurrency.onReady(refreshChip);
+    refreshChip();
+  }
+
+  /* partials.js inserts the chip after this script loads, so we wait a tick */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(setupCcyChip, 50); });
+  else setTimeout(setupCcyChip, 50);
+})();
 
 /* Mobile collapse for any .blog-search bar — tap to expand, tap outside to collapse */
 (function(){

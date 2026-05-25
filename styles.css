@@ -425,7 +425,47 @@ h6 { font-size: .9rem; }
   color: var(--c-ink);
 }
 
-.nav__actions { display: flex; align-items: center; gap: 10px; }
+.nav__actions { display: flex; align-items: center; gap: 10px; position: relative; }
+
+/* Currency chip + popover */
+.ccy-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 38px; padding: 0 12px;
+  background: var(--c-cream); color: var(--c-ink);
+  border: var(--bw-1) solid var(--c-ink); border-radius: 9999px;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+  cursor: pointer; box-shadow: 2px 2px 0 var(--c-ink);
+  transition: transform .15s, box-shadow .15s;
+}
+.ccy-chip:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--c-ink); }
+.ccy-chip__flag { font-size: 1rem; line-height: 1; }
+.ccy-chip__code { letter-spacing: .08em; }
+.ccy-popover {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: var(--c-cream); border: var(--bw-2) solid var(--c-ink);
+  border-radius: var(--radius-md); box-shadow: 5px 5px 0 var(--c-ink);
+  padding: 6px; z-index: 120;
+  min-width: 220px; max-height: 360px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.ccy-popover[hidden] { display: none; }
+.ccy-popover__item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  background: transparent; border: 0; cursor: pointer;
+  font-family: var(--font-body); font-size: .9rem; color: var(--c-ink);
+  text-align: left; width: 100%;
+}
+.ccy-popover__item:hover { background: var(--c-cream-alt); }
+.ccy-popover__item.is-active { background: var(--c-golden); }
+.ccy-popover__flag { font-size: 1.1rem; line-height: 1; width: 22px; text-align: center; }
+.ccy-popover__code { font-family: var(--font-display); font-weight: 800; font-size: .72rem; letter-spacing: .06em; color: var(--c-text-muted); margin-left: auto; }
+.ccy-popover__item.is-active .ccy-popover__code { color: var(--c-ink); }
+@media (max-width: 760px) {
+  .ccy-chip { height: 34px; padding: 0 10px; }
+  .ccy-chip__code { display: none; }
+}
 .nav__btn {
   position: relative;
   display: flex; align-items: center; justify-content: center;
