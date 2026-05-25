@@ -13,17 +13,40 @@
 window.LogramoCurrency = (function () {
   var COUNTRY_TO_CCY = {
     /* Eurozone */
-    ES:'EUR',FR:'EUR',DE:'EUR',IT:'EUR',PT:'EUR',NL:'EUR',BE:'EUR',IE:'EUR',AT:'EUR',FI:'EUR',GR:'EUR',LU:'EUR',SK:'EUR',SI:'EUR',EE:'EUR',LV:'EUR',LT:'EUR',CY:'EUR',MT:'EUR',
-    /* Anglo + others — PayPal supports natively */
-    US:'USD',CA:'CAD',GB:'GBP',AU:'AUD',NZ:'NZD',MX:'MXN',BR:'BRL',CH:'CHF',JP:'JPY',
-    SE:'SEK',DK:'DKK',NO:'NOK',PL:'PLN',CZ:'CZK',HU:'HUF',IL:'ILS',TW:'TWD',TH:'THB',SG:'SGD',HK:'HKD',PH:'PHP'
+    ES:'EUR',FR:'EUR',DE:'EUR',IT:'EUR',PT:'EUR',NL:'EUR',BE:'EUR',IE:'EUR',AT:'EUR',FI:'EUR',GR:'EUR',LU:'EUR',SK:'EUR',SI:'EUR',EE:'EUR',LV:'EUR',LT:'EUR',CY:'EUR',MT:'EUR',HR:'EUR',
+    /* Anglo + Asia majors — PayPal native */
+    US:'USD',CA:'CAD',GB:'GBP',AU:'AUD',NZ:'NZD',CH:'CHF',JP:'JPY',
+    SE:'SEK',DK:'DKK',NO:'NOK',PL:'PLN',CZ:'CZK',HU:'HUF',IL:'ILS',TW:'TWD',TH:'THB',SG:'SGD',HK:'HKD',PH:'PHP',
+    /* Latin America — full list, even where PayPal can't natively charge.
+       Display in local; checkout falls back to USD where unsupported. */
+    MX:'MXN',BR:'BRL',
+    AR:'ARS',CL:'CLP',CO:'COP',PE:'PEN',UY:'UYU',PY:'PYG',BO:'BOB',
+    EC:'USD',SV:'USD',PA:'USD',PR:'USD', /* fully dollarized */
+    GT:'GTQ',HN:'HNL',NI:'NIO',CR:'CRC',DO:'DOP',CU:'CUP',JM:'JMD',TT:'TTD',
+    VE:'USD', /* VES is highly inflationary — default to USD for stability */
+    /* Other notable markets */
+    IN:'INR',KR:'KRW',TR:'TRY',ZA:'ZAR',RU:'RUB',CN:'CNY',ID:'IDR',MY:'MYR',VN:'VND',
+    SA:'SAR',AE:'AED',EG:'EGP',MA:'MAD',NG:'NGN',KE:'KES',
+    RO:'RON',BG:'BGN',UA:'UAH',IS:'ISK'
     /* Everything else → USD fallback */
   };
-  var SYMBOLS = { USD:'$', EUR:'€', GBP:'£', MXN:'MX$', BRL:'R$', CAD:'C$', AUD:'A$', NZD:'NZ$', JPY:'¥', CHF:'CHF ', SEK:'kr ', DKK:'kr ', NOK:'kr ', PLN:'zł ', CZK:'Kč ', HUF:'Ft ', ILS:'₪', TWD:'NT$', THB:'฿', SGD:'S$', HKD:'HK$', PHP:'₱' };
+  var SYMBOLS = {
+    USD:'$', EUR:'€', GBP:'£',
+    MXN:'MX$', BRL:'R$', CAD:'C$', AUD:'A$', NZD:'NZ$', JPY:'¥',
+    CHF:'CHF ', SEK:'kr ', DKK:'kr ', NOK:'kr ', PLN:'zł ', CZK:'Kč ', HUF:'Ft ',
+    ILS:'₪', TWD:'NT$', THB:'฿', SGD:'S$', HKD:'HK$', PHP:'₱',
+    /* Latin America */
+    ARS:'AR$', CLP:'CL$', COP:'COL$', PEN:'S/', UYU:'$U', PYG:'₲', BOB:'Bs',
+    GTQ:'Q', HNL:'L', NIO:'C$', CRC:'₡', DOP:'RD$', CUP:'$MN', JMD:'J$', TTD:'TT$',
+    /* Other */
+    INR:'₹', KRW:'₩', TRY:'₺', ZAR:'R', RUB:'₽', CNY:'¥', IDR:'Rp', MYR:'RM', VND:'₫',
+    SAR:'﷼', AED:'AED ', EGP:'E£', MAD:'MAD ', NGN:'₦', KES:'KSh ',
+    RON:'lei ', BGN:'лв ', UAH:'₴', ISK:'kr '
+  };
   /* PayPal Smart Buttons supported currencies */
   var PAYPAL_OK = ['USD','EUR','GBP','AUD','BRL','CAD','CHF','CZK','DKK','HKD','HUF','ILS','JPY','MXN','NOK','NZD','PHP','PLN','SEK','SGD','THB','TWD'];
-  /* Currencies that don't use cents in pricing — keep clean integers */
-  var WHOLE_UNIT_CCY = ['JPY','HUF','TWD','MXN','BRL','PHP'];
+  /* Currencies displayed as whole units (no decimals) — most Latam + a few others */
+  var WHOLE_UNIT_CCY = ['JPY','HUF','TWD','MXN','BRL','PHP','ARS','CLP','COP','PYG','VND','IDR','KRW','ISK'];
 
   var state = { ccy: 'USD', rate: 1, country: '', ready: false };
   var subs = [];
@@ -51,6 +74,13 @@ window.LogramoCurrency = (function () {
     var decimals = WHOLE_UNIT_CCY.indexOf(state.ccy) > -1 ? 0 : 2;
     return (WHOLE_UNIT_CCY.indexOf(state.ccy) > -1 ? Math.round(n) : Math.round(n * 100) / 100).toFixed(decimals);
   }
+  /* When display currency != checkout currency (e.g., ARS shown, USD charged),
+     return a buyer-facing note. Otherwise empty string. */
+  function checkoutNote(usdAmount) {
+    var co = checkoutCurrency();
+    if (co === state.ccy) return '';
+    return 'El cobro se realiza en USD ($' + Number(usdAmount || 0).toFixed(2) + ') a través de PayPal.';
+  }
 
   async function init() {
     /* 1) Manual saved preference wins (set via the currency chip) */
@@ -68,37 +98,67 @@ window.LogramoCurrency = (function () {
       }
     } catch (e) {}
 
-    /* Country lookup (cached for the session) */
+    /* Country lookup (cached for the session, with multiple fallbacks) */
     if (!state.ccy || state.ccy === 'USD') {
-      try {
-        var cached = sessionStorage.getItem('logramo_geo');
-        var geo;
-        if (cached) geo = JSON.parse(cached);
-        else {
-          var r = await fetch('https://ipapi.co/json/');
-          geo = await r.json();
-          sessionStorage.setItem('logramo_geo', JSON.stringify({ country_code: geo.country_code }));
+      var cached;
+      try { cached = sessionStorage.getItem('logramo_geo'); } catch (e) {}
+      if (cached) {
+        try { var g = JSON.parse(cached); state.country = g.country_code || ''; } catch (e) {}
+      } else {
+        var sources = [
+          { url: 'https://ipapi.co/json/', key: 'country_code' },
+          { url: 'https://ipwho.is/', key: 'country_code' },
+          { url: 'https://get.geojs.io/v1/ip/country.json', key: 'country' }
+        ];
+        for (var i = 0; i < sources.length; i++) {
+          try {
+            var rr = await fetch(sources[i].url, { cache: 'no-store' });
+            if (!rr.ok) continue;
+            var gg = await rr.json();
+            var code = (gg && gg[sources[i].key]) || '';
+            if (code && code.length === 2) {
+              state.country = code.toUpperCase();
+              try { sessionStorage.setItem('logramo_geo', JSON.stringify({ country_code: state.country })); } catch (e) {}
+              break;
+            }
+          } catch (e) { /* try next */ }
         }
-        state.country = geo.country_code || '';
-        state.ccy = COUNTRY_TO_CCY[state.country] || 'USD';
-      } catch (e) { state.ccy = 'USD'; }
+      }
+      state.ccy = COUNTRY_TO_CCY[state.country] || 'USD';
     }
 
-    /* Exchange rate (USD → state.ccy), cached for the session */
+    /* Exchange rate (USD → state.ccy), cached for the session.
+       open.er-api.com covers ~160 currencies (incl. DOP, ARS, CLP, COP, PEN).
+       frankfurter.app is the fallback. */
     if (state.ccy === 'USD') {
       state.rate = 1;
     } else {
-      try {
-        var rk = 'logramo_rate_' + state.ccy;
-        var rc = sessionStorage.getItem(rk);
-        if (rc) state.rate = parseFloat(rc) || 1;
-        else {
-          var rr = await fetch('https://api.frankfurter.app/latest?from=USD&to=' + state.ccy);
-          var rd = await rr.json();
-          state.rate = (rd && rd.rates && rd.rates[state.ccy]) || 1;
-          sessionStorage.setItem(rk, String(state.rate));
+      var rk = 'logramo_rate_' + state.ccy;
+      var rc = null;
+      try { rc = sessionStorage.getItem(rk); } catch (e) {}
+      if (rc) {
+        state.rate = parseFloat(rc) || 1;
+      } else {
+        var rate = 0;
+        try {
+          var r1 = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+          if (r1.ok) {
+            var d1 = await r1.json();
+            rate = (d1 && d1.rates && d1.rates[state.ccy]) || 0;
+          }
+        } catch (e) {}
+        if (!rate) {
+          try {
+            var r2 = await fetch('https://api.frankfurter.app/latest?from=USD&to=' + state.ccy, { cache: 'no-store' });
+            if (r2.ok) {
+              var d2 = await r2.json();
+              rate = (d2 && d2.rates && d2.rates[state.ccy]) || 0;
+            }
+          } catch (e) {}
         }
-      } catch (e) { state.rate = 1; }
+        state.rate = rate || 1;
+        try { if (rate) sessionStorage.setItem(rk, String(rate)); } catch (e) {}
+      }
     }
 
     state.ready = true;
@@ -153,6 +213,7 @@ window.LogramoCurrency = (function () {
     format: format,
     checkoutCurrency: checkoutCurrency,
     checkoutAmount: checkoutAmount,
+    checkoutNote: checkoutNote,
     onReady: onReady,
     options: options,
     setCurrency: setCurrency,

@@ -285,7 +285,9 @@
     if(p.is_free){
       document.getElementById('phCtas').innerHTML='<button class="btn btn--primary btn--lg js-buy"><svg class="icon"><use href="#'+icon+'"/></svg> <span class="js-buy-label">'+label+'</span></button>';
     } else {
-      document.getElementById('phCtas').innerHTML='<div class="paypal-wrap"><div class="paypal-wrap__head"><svg class="icon icon--sm"><use href="#i-shield"/></svg> <span>Pago seguro · Tarjeta o PayPal</span></div><div id="paypal-button-container"></div></div>';
+      var ppNote = (window.LogramoCurrency && LogramoCurrency.checkoutNote) ? LogramoCurrency.checkoutNote(p.price) : '';
+      var ppNoteHtml = ppNote ? '<p class="paypal-wrap__note">'+esc(ppNote)+'</p>' : '';
+      document.getElementById('phCtas').innerHTML='<div class="paypal-wrap"><div class="paypal-wrap__head"><svg class="icon icon--sm"><use href="#i-shield"/></svg> <span>Pago seguro · Tarjeta o PayPal</span></div><div id="paypal-button-container"></div>'+ppNoteHtml+'</div>';
     }
     // sticky
     document.getElementById('stickyTitle').textContent=p.title||'';

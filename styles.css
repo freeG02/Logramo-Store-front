@@ -1277,6 +1277,7 @@ h6 { font-size: .9rem; }
 }
 .paypal-wrap__head .icon { color: var(--c-terracotta); }
 #paypal-button-container { display: flex; flex-direction: column; gap: 8px; }
+.paypal-wrap__note { margin: 4px 2px 0; font-size: .75rem; color: var(--c-text-muted); text-align: center; line-height: 1.4; }
 
 /* Hero columns: left text/CTA grows, right gallery is narrower & stays pinned to top so it
    doesn't get pushed down when the Pay-with-Card form opens */
