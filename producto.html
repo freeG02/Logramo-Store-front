@@ -448,6 +448,7 @@
     try{ r=await sb.from('products').select('*').eq('id',id).single(); }catch(e){ notFound(); return; }
     if(!r || r.error || !r.data || r.data.published===false){ notFound(); return; }
     var p=r.data;
+    /* Render everything except prices + PayPal first */
     renderHero(p);
     renderMedia(p);
     renderProblemsSolutions(p);
@@ -455,12 +456,16 @@
     renderAudience(p);
     renderRelated(p);
     renderReviews();
-    if(!p.is_free) renderPayPalButtons(p);
-    /* Re-render prices once currency detection completes */
-    if(window.LogramoCurrency) LogramoCurrency.onReady(function(){
+    /* Wait for currency to settle (instant if USD fallback) THEN load PayPal
+       so the SDK has the correct currency and the buttons render into the
+       live DOM mount (not one we're about to replace). */
+    function loadPriceDependent(){
       renderHero(p);
       renderRelated(p);
-    });
+      if(!p.is_free) renderPayPalButtons(p);
+    }
+    if(window.LogramoCurrency) LogramoCurrency.onReady(loadPriceDependent);
+    else loadPriceDependent();
   })();
 })();
 </script>
