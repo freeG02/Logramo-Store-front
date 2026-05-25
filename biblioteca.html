@@ -25,7 +25,7 @@
 <div class="container">
   <form class="blog-search" onsubmit="event.preventDefault()" data-reveal style="margin-bottom:20px">
     <input type="search" id="libSearch" placeholder="Buscar libros — ej. 'cachorro', 'gratis'" aria-label="Buscar">
-    <button type="submit"><svg class="icon icon--sm"><use href="#i-search"/></svg> Buscar</button>
+    <button type="submit" aria-label="Buscar"><svg class="icon icon--sm"><use href="#i-search"/></svg></button>
   </form>
   <div class="filter-row" data-reveal data-library-filter style="justify-content:center;flex-wrap:wrap">
     <button class="filter-btn active" data-filter="todos">Todos</button>
@@ -79,7 +79,7 @@
   .fc-card--1 .fc-price { color:var(--c-golden); }
   .fc-card--1 .fc-card__cover-wrap { background:var(--c-terracotta); }
   .fc-card--1 .fc-cover-icon { color:var(--c-terracotta); }
-  .fc-card--1 .fc-badge { background:var(--c-terracotta); color:var(--c-cream); }
+  .fc-card--1 .fc-badge { background:transparent; color:var(--c-cream); padding:0; }
   .fc-card--1 .fc-discount { background:var(--c-golden); color:var(--c-ink); }
   .fc-card--1 .fc-btn-primary { background:var(--c-golden); color:var(--c-ink); }
   .fc-card--1 .fc-btn-secondary { background:var(--c-cream); color:var(--c-ink); }
@@ -90,7 +90,7 @@
   .fc-card--2 .fc-price { color:var(--c-sky); }
   .fc-card--2 .fc-card__cover-wrap { background:var(--c-sky); }
   .fc-card--2 .fc-cover-icon { color:var(--c-terracotta); }
-  .fc-card--2 .fc-badge { background:var(--c-sky); color:var(--c-ink); }
+  .fc-card--2 .fc-badge { background:transparent; color:var(--c-ink); padding:0; }
   .fc-card--2 .fc-discount { background:var(--c-sky); color:var(--c-ink); }
   .fc-card--2 .fc-btn-primary { background:var(--c-sky); color:var(--c-ink); }
   .fc-card--2 .fc-btn-secondary { background:var(--c-cream); color:var(--c-ink); }
@@ -151,7 +151,9 @@ window.initFcCarousel = function(){
   dots.forEach(function(d){d.addEventListener('click',function(){stopAuto();goTo(parseInt(d.dataset.fc));startAuto();});});
   function onDragStart(x){isDragging=true;dragStart=x;dragDelta=0;stopAuto();}
   function onDragMove(x){if(!isDragging)return;dragDelta=x-dragStart;}
-  function onDragEnd(){if(!isDragging)return;isDragging=false;if(Math.abs(dragDelta)>55){goTo(dragDelta<0?current+1:current-1);}dragDelta=0;startAuto();}
+  function onDragEnd(){if(!isDragging)return;isDragging=false;var moved=Math.abs(dragDelta)>55;if(moved){goTo(dragDelta<0?current+1:current-1);}wrapper._suppressClick=moved;dragDelta=0;startAuto();}
+  /* Suppress card navigation when the user is swiping (not clicking) */
+  wrapper.addEventListener('click',function(e){ if(wrapper._suppressClick){ e.preventDefault(); e.stopPropagation(); wrapper._suppressClick=false; } }, true);
   wrapper.addEventListener('mousedown',function(e){onDragStart(e.clientX);});
   wrapper.addEventListener('touchstart',function(e){onDragStart(e.touches[0].clientX);},{passive:true});
   window.addEventListener('mousemove',function(e){onDragMove(e.clientX);});
@@ -245,17 +247,17 @@ window.initFcCarousel = function(){
     var price=p.is_free?'Gratis':(window.LogramoCurrency?LogramoCurrency.format(p.price):'$'+Number(p.price||0).toFixed(2));
     var cta=p.is_free?'Descargar gratis':'Comprar ahora';
     var href='producto.html?id='+encodeURIComponent(p.id);
-    return '<div class="fc-card fc-card--'+theme+'">'
+    return '<a href="'+href+'" class="fc-card fc-card--'+theme+'" style="text-decoration:none">'
       +'<div class="fc-card__details">'
         +(tags.length?'<div class="fc-badge"><span class="lib-tag lib-tag--'+(tagInfo(tags[0]).color||'default')+'">'+esc(tagInfo(tags[0]).label)+'</span></div>':'')
         +'<span class="book-card__category" style="color:var(--c-cream);opacity:.7">'+esc(p.category||'')+'</span>'
         +'<h3 class="fc-card__title">'+esc(p.title||'')+'</h3>'
         +'<p class="fc-card__desc">'+esc(p.description||'')+'</p>'
         +'<div class="fc-price-row"><span class="fc-price">'+price+'</span></div>'
-        +'<div class="fc-cta-row"><a href="'+href+'" class="btn fc-btn-primary btn--lg">'+cta+' <svg class="icon"><use href="#i-arrow-right"/></svg></a></div>'
+        +'<div class="fc-cta-row"><span class="btn fc-btn-primary btn--lg">'+cta+' <svg class="icon"><use href="#i-arrow-right"/></svg></span></div>'
       +'</div>'
       +fcCover(p)
-    +'</div>';
+    +'</a>';
   }
   function renderFeatured(products){
     var featured=products.filter(function(p){return p.featured;}).slice(0,2);
@@ -304,6 +306,21 @@ window.initFcCarousel = function(){
     try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error)products=(r.data||[]).filter(function(p){return p.published!==false;}); }catch(e){}
     render(products);
     renderFeatured(products);
+    /* Hide filter chips that have zero matching products */
+    (function pruneFilters(){
+      if(!row) return;
+      /* Collect all keywords present across products: categories slugs + tags */
+      var present = {};
+      products.forEach(function(p){
+        if(p.category) present[slug(p.category)] = true;
+        cardTags(p).forEach(function(t){ present[t] = true; });
+      });
+      buttons.forEach(function(b){
+        var f=b.getAttribute('data-filter');
+        if(f==='todos') return; /* always keep "Todos" */
+        if(!present[f]) b.style.display='none';
+      });
+    })();
     if(window.LogramoCurrency) LogramoCurrency.onReady(function(){ render(products); renderFeatured(products); applyFilters(); });
     var initial=new URLSearchParams(location.search).get('filter');
     if(initial&&row&&row.querySelector('[data-filter="'+initial+'"]')) setFilter(initial,true); else applyFilters();

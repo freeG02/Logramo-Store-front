@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Factura · Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <style>
+    /* Page chrome — not part of the printed invoice */
+    body { margin: 0; background: #d6d4c8; padding: 32px 16px 80px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #111A17; }
+    .inv-wrap { max-width: 720px; margin: 0 auto; }
+
+    /* The invoice paper */
+    .invoice {
+      background: #FEFAE8;
+      border: 2px solid #111A17;
+      border-radius: 16px;
+      box-shadow: 10px 10px 0 #111A17;
+      padding: 44px 48px;
+    }
+    .invoice__head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 22px; border-bottom: 2px solid #111A17; }
+    .invoice__head svg { color: #C55932; fill: currentColor; height: 26px; width: auto; }
+    .invoice__head-right { text-align: right; }
+    .invoice__title { font-family: 'Arial Black', 'Helvetica Neue', Arial, sans-serif; font-weight: 900; font-size: 28px; letter-spacing: -.02em; text-transform: uppercase; color: #111A17; line-height: 1; }
+    .invoice__status { display: inline-block; margin-top: 6px; background: #3C4824; color: #FEFAE8; padding: 4px 10px; border-radius: 9999px; font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+
+    .invoice__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 28px 0; border-bottom: 1px solid rgba(17,26,23,.18); }
+    .invoice__label { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #C55932; margin-bottom: 8px; }
+    .invoice__value { font-size: 14px; line-height: 1.5; color: #111A17; }
+    .invoice__value strong { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 16px; letter-spacing: -.005em; display: block; margin-bottom: 2px; }
+
+    .invoice__line { display: grid; grid-template-columns: 1fr auto; gap: 32px; padding: 22px 0; border-bottom: 1px solid rgba(17,26,23,.18); align-items: flex-start; }
+    .invoice__line-title { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 17px; letter-spacing: -.01em; color: #111A17; margin-bottom: 4px; }
+    .invoice__line-sub { font-size: 13px; color: rgba(17,26,23,.6); }
+    .invoice__line-amount { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 17px; color: #111A17; white-space: nowrap; }
+
+    .invoice__total { display: grid; grid-template-columns: 1fr auto; gap: 32px; padding: 18px 0 28px; }
+    .invoice__total-label { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(17,26,23,.6); }
+    .invoice__total-amount { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 28px; letter-spacing: -.02em; color: #C55932; white-space: nowrap; }
+
+    .invoice__pay { background: #F8F3D9; border: 1px solid rgba(17,26,23,.15); border-radius: 12px; padding: 18px 22px; display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 28px; }
+    .invoice__pay-icon { width: 40px; height: 40px; background: #ADCBEF; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 16px; color: #111A17; letter-spacing: -.04em; }
+    .invoice__pay-label { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(17,26,23,.5); margin-bottom: 2px; }
+    .invoice__pay-value { font-size: 13px; word-break: break-all; }
+
+    .invoice__foot { font-size: 11px; color: rgba(17,26,23,.5); line-height: 1.55; text-align: center; padding-top: 22px; border-top: 1px dashed rgba(17,26,23,.2); }
+    .invoice__foot strong { color: #C55932; font-family: 'Arial Black', sans-serif; font-weight: 900; }
+
+    /* Action bar */
+    .actions { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+    .btn-print, .btn-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px;
+      border: 2px solid #111A17; border-radius: 12px;
+      font-family: 'Arial Black', sans-serif; font-weight: 900;
+      font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 4px 4px 0 #111A17;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn-print { background: #F6D055; color: #111A17; }
+    .btn-back  { background: #FEFAE8; color: #111A17; }
+    .btn-print:hover, .btn-back:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #111A17; }
+
+    .invoice__error { padding: 60px 40px; text-align: center; color: rgba(17,26,23,.7); }
+
+    /* PRINT STYLES — hide UI chrome, simplify paper for clean PDF export */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .actions, .invoice__error { display: none !important; }
+      .invoice { box-shadow: none; border: 1px solid #111A17; border-radius: 0; max-width: 100%; padding: 24px 32px; }
+      @page { size: A4; margin: 14mm; }
+    }
+
+    @media (max-width: 560px) {
+      .invoice { padding: 28px 22px; box-shadow: 5px 5px 0 #111A17; }
+      .invoice__cols { grid-template-columns: 1fr; gap: 18px; }
+      .invoice__title { font-size: 22px; }
+      .invoice__total-amount { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="inv-wrap">
+  <div class="invoice" id="inv"></div>
+
+  <div class="actions">
+    <button type="button" class="btn-print" id="printBtn">📄 Imprimir / Guardar PDF</button>
+    <a href="index.html" class="btn-back">← Volver al sitio</a>
+  </div>
+</div>
+
+<!-- partials.js is loaded only to provide the SVG icon sprite (the Logramo logo
+     uses <use href="#logo-logramo"/>). We deliberately omit the partial-nav,
+     partial-footer, partial-cart placeholders so none of those inject. -->
+<script src="partials.js"></script>
+<script>
+(function(){
+  function param(name){ var u = new URL(window.location.href); return u.searchParams.get(name) || ''; }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  var data = {
+    order:    param('order'),
+    email:    param('email'),
+    name:     param('name'),
+    product:  param('product'),
+    amount:   param('amount'),
+    currency: (param('currency') || 'USD').toUpperCase(),
+    date:     param('date')
+  };
+
+  var WHOLE_UNIT_CCY = ['JPY','HUF','TWD','MXN','BRL','PHP','ARS','CLP','COP','PYG','VND','IDR','KRW','ISK'];
+  var SYMBOLS = { USD:'$', EUR:'€', GBP:'£', MXN:'MX$', BRL:'R$', CAD:'C$', AUD:'A$', JPY:'¥', CHF:'CHF ', SEK:'kr ', DKK:'kr ', NOK:'kr ', PLN:'zł ', CZK:'Kč ', HUF:'Ft ', ILS:'₪', DOP:'RD$', ARS:'AR$', CLP:'CL$', COP:'COL$', PEN:'S/', UYU:'$U', PYG:'₲', BOB:'Bs' };
+  function fmtMoney(amt, ccy){
+    var n = Number(amt||0);
+    var decimals = WHOLE_UNIT_CCY.indexOf(ccy) > -1 ? 0 : 2;
+    var formatted = n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    var sym = SYMBOLS[ccy] || '';
+    return sym + formatted + ' ' + ccy;
+  }
+
+  if(!data.order || !data.email){
+    document.getElementById('inv').innerHTML = '<div class="invoice__error"><h2>Factura no encontrada</h2><p>El enlace parece estar incompleto. Si llegaste aquí desde un email, vuelve al email y haz clic en el enlace original.</p></div>';
+    return;
+  }
+
+  var todayId = data.date.replace(/[\/\-\.]/g,'') + '-' + (data.order || '').slice(0,6).toUpperCase();
+  var formattedTotal = fmtMoney(data.amount, data.currency);
+
+  // Logo SVG (terracotta)
+  var logoSvg = '<svg viewBox="0 0 193.55 28.54" xmlns="http://www.w3.org/2000/svg"><use href="#logo-logramo"/></svg>';
+
+  document.getElementById('inv').innerHTML =
+    '<div class="invoice__head">'
+      +'<div class="invoice__head-left">'+ logoSvg +'</div>'
+      +'<div class="invoice__head-right">'
+        +'<div class="invoice__title">Factura</div>'
+        +'<span class="invoice__status">Pagada ✓</span>'
+      +'</div>'
+    +'</div>'
+
+    +'<div class="invoice__cols">'
+      +'<div>'
+        +'<div class="invoice__label">Facturado a</div>'
+        +'<div class="invoice__value">'
+          +(data.name ? '<strong>'+esc(data.name)+'</strong>' : '')
+          + esc(data.email)
+        +'</div>'
+      +'</div>'
+      +'<div>'
+        +'<div class="invoice__label">Detalles</div>'
+        +'<div class="invoice__value">'
+          +'<strong>#'+esc(todayId)+'</strong>'
+          +'Fecha: '+esc(data.date)
+        +'</div>'
+      +'</div>'
+    +'</div>'
+
+    +'<div class="invoice__line">'
+      +'<div>'
+        +'<div class="invoice__line-title">'+esc(data.product)+'</div>'
+        +'<div class="invoice__line-sub">Guía digital · descarga inmediata</div>'
+      +'</div>'
+      +'<div class="invoice__line-amount">'+formattedTotal+'</div>'
+    +'</div>'
+
+    +'<div class="invoice__total">'
+      +'<div class="invoice__total-label">Total pagado</div>'
+      +'<div class="invoice__total-amount">'+formattedTotal+'</div>'
+    +'</div>'
+
+    +'<div class="invoice__pay">'
+      +'<div class="invoice__pay-icon">PP</div>'
+      +'<div>'
+        +'<div class="invoice__pay-label">Método de pago</div>'
+        +'<div class="invoice__pay-value">PayPal · Orden <strong>'+esc(data.order)+'</strong></div>'
+      +'</div>'
+    +'</div>'
+
+    +'<div class="invoice__foot">'
+      +'<strong>Logramo™</strong> · perros felices, dueños imperfectos<br>'
+      +'<a href="https://logramo.com" style="color:inherit">logramo.com</a> · '
+      +'<a href="mailto:ayuda@logramo.com" style="color:inherit">ayuda@logramo.com</a>'
+    +'</div>';
+
+  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+})();
+</script>
+</body>
+</html>

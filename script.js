@@ -407,32 +407,6 @@ if (mainNav) {
   else setTimeout(setupCcyChip, 50);
 })();
 
-/* Mobile collapse for any .blog-search bar — tap to expand, tap outside to collapse */
-(function(){
-  function isMobile(){ return window.matchMedia('(max-width: 640px)').matches; }
-  document.querySelectorAll('.blog-search').forEach(function(form){
-    form.addEventListener('click', function(e){
-      if(!isMobile()) return;
-      if(form.classList.contains('is-open')) return;
-      e.preventDefault();
-      form.classList.add('is-open');
-      var inp = form.querySelector('input'); if(inp) setTimeout(function(){ inp.focus(); }, 240);
-    });
-    var inp = form.querySelector('input');
-    if(inp) inp.addEventListener('blur', function(){
-      if(!isMobile()) return;
-      // small delay so a click on an inner button still works
-      setTimeout(function(){ if(!inp.value.trim()) form.classList.remove('is-open'); }, 120);
-    });
-  });
-  document.addEventListener('click', function(e){
-    if(!isMobile()) return;
-    document.querySelectorAll('.blog-search.is-open').forEach(function(form){
-      if(!form.contains(e.target) && !form.querySelector('input').value.trim()) form.classList.remove('is-open');
-    });
-  });
-})();
-
 /* Mobile menu */
 const menuBtn = document.getElementById('menuBtn');
 const menuClose = document.getElementById('menuClose');

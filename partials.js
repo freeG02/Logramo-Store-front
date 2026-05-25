@@ -74,10 +74,6 @@ const NAV_HTML = `
       <li><a href="sobre-nosotros.html" data-link="sobre">Nosotros</a></li>
     </ul>
     <div class="nav__actions">
-      <button class="ccy-chip" id="ccyChip" aria-label="Cambiar moneda" title="Moneda">
-        <span class="ccy-chip__flag" id="ccyChipFlag">🌐</span>
-        <span class="ccy-chip__code" id="ccyChipCode">…</span>
-      </button>
       <a href="cuenta.html" class="nav__btn" aria-label="Mi cuenta" title="Mi cuenta" data-link="cuenta">
         <svg class="icon"><use href="#i-user"/></svg>
       </a>
@@ -89,7 +85,6 @@ const NAV_HTML = `
         <svg class="icon"><use href="#i-menu"/></svg>
       </button>
     </div>
-    <div class="ccy-popover" id="ccyPopover" hidden></div>
   </div>
 </nav>
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Menú">

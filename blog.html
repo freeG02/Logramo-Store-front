@@ -20,7 +20,7 @@
     <p class="lead" data-reveal>Sin tecnicismos, sin juicios. Solo lo que de verdad te sirve sobre tu perro — escrito como te lo contaría alguien que ya pasó por lo mismo.</p>
     <form class="blog-search" onsubmit="event.preventDefault()" data-reveal>
       <input type="search" id="blogSearch" placeholder="Buscar artículos — ej. 'ladridos', 'cachorro'" aria-label="Buscar">
-      <button type="submit"><svg class="icon icon--sm"><use href="#i-search"/></svg> Buscar</button>
+      <button type="submit" aria-label="Buscar"><svg class="icon icon--sm"><use href="#i-search"/></svg></button>
     </form>
   </div>
 </section>
@@ -198,7 +198,23 @@
   (async function(){
     var arts=[];
     try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error)arts=(r.data||[]).filter(function(a){return a.published!==false;}); }catch(e){}
-    render(arts); applyFilters();
+    render(arts);
+    /* Hide filter chips that have zero matching articles */
+    (function pruneFilters(){
+      if(!row) return;
+      var present = {};
+      arts.forEach(function(a){
+        if(a.category) present[slug(a.category)] = true;
+        if(a.hot) present['caliente'] = true;
+        if(isNew(a)) present['nuevo'] = true;
+      });
+      buttons.forEach(function(b){
+        var f=b.getAttribute('data-filter');
+        if(f==='all') return; /* always keep "Todos" */
+        if(!present[f]) b.style.display='none';
+      });
+    })();
+    applyFilters();
   })();
 })();
 </script>

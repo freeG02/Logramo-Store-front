@@ -408,9 +408,11 @@
       if(r.error||!r.data||!r.data.length) return; // keep fallback markup
       grid.innerHTML=r.data.slice(0,3).map(function(v){
         var id=ytId(v.youtube_url);
-        var thumb=v.thumbnail||(id?'https://img.youtube.com/vi/'+id+'/hqdefault.jpg':'');
+        /* maxresdefault is clean 16:9 (1280x720); mqdefault (16:9, 320x180) is the always-present fallback */
+        var thumb=v.thumbnail||(id?'https://img.youtube.com/vi/'+id+'/maxresdefault.jpg':'');
+        var thumbFallback=id?('https://img.youtube.com/vi/'+id+'/mqdefault.jpg'):'';
         return '<div class="video-card" data-youtube="'+esc(v.youtube_url||'')+'" onclick="openVideo(this)">'
-          +(thumb?'<img class="video-card__thumb" src="'+esc(thumb)+'" alt="" loading="lazy">':'<div class="video-card__thumb" style="background:var(--c-forest)"></div>')
+          +(thumb?'<img class="video-card__thumb" src="'+esc(thumb)+'" alt="" loading="lazy"'+(thumbFallback?' onerror="this.onerror=null;this.src=\''+esc(thumbFallback)+'\'"':'')+'>':'<div class="video-card__thumb" style="background:var(--c-forest)"></div>')
           +'<div class="video-card__play"><svg class="icon icon--md"><use href="#i-play"/></svg></div>'
           +'<div class="video-card__overlay"><div class="video-card__label">'+esc(v.label||'')+'</div><div class="video-card__title">'+esc(v.title||'')+'</div></div>'
         +'</div>';

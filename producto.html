@@ -245,7 +245,25 @@
       },
       onApprove:function(data,actions){
         mount.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
-        return actions.order.capture().then(function(details){
+        return actions.order.capture().then(async function(details){
+          /* Record the purchase so every email flow knows who bought what.
+             Failures here MUST NOT block the buyer from getting their PDF —
+             we still redirect to gracias.html either way. */
+          try{
+            var payer = (details && details.payer) || {};
+            var unit  = (details && details.purchase_units && details.purchase_units[0]) || {};
+            var amt   = (unit && unit.amount) || {};
+            var name  = [(payer.name && payer.name.given_name)||'', (payer.name && payer.name.surname)||''].filter(Boolean).join(' ').trim();
+            await sb.from('purchases').insert({
+              email:           payer.email_address || '',
+              payer_name:      name || null,
+              product_id:      p.id,
+              amount:          Number(amt.value || p.price || 0),
+              currency:        amt.currency_code || 'USD',
+              paypal_order_id: (details && details.id) || (data && data.orderID) || null,
+              status:          'completed'
+            });
+          }catch(e){ /* swallow — buyer still gets the PDF below */ }
           window.location.href='gracias.html?id='+encodeURIComponent(p.id)+'&order='+encodeURIComponent(details.id||'');
         });
       },
@@ -344,7 +362,7 @@
     if(imgs.length){
       el.className='product-grid in';
       function tile(src, idx, big){
-        return '<button type="button" class="product-grid__tile'+(big?' product-grid__tile--main':'')+'" data-idx="'+idx+'"><img src="'+esc(src)+'" alt="'+esc(p.title)+'" loading="lazy"></button>';
+        return '<button type="button" class="product-grid__tile'+(big?' product-grid__tile--main':'')+'" data-idx="'+idx+'"><div class="product-grid__paper"><img src="'+esc(src)+'" alt="'+esc(p.title)+'" loading="lazy"></div></button>';
       }
       var html='';
       html += tile(imgs[0], 0, true);

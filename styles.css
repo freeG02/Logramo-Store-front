@@ -516,8 +516,9 @@ h6 { font-size: .9rem; }
 .mobile-nav__links {
   display: flex; flex-direction: column; gap: 6px; flex: 1;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
+  padding-top: 12px;
 }
 .mobile-nav__links li { width: 100%; text-align: center; }
 .mobile-nav__links a {
@@ -1035,8 +1036,8 @@ h6 { font-size: .9rem; }
   transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
 }
 .video-card:hover { transform: translate(-4px,-4px) rotate(-1deg); box-shadow: var(--shadow-md); }
-.video-card__thumb { width: 100%; height: 100%; object-fit: cover; opacity: .92; transition: opacity var(--transition), transform .9s var(--ease-out); }
-.video-card:hover .video-card__thumb { opacity: .7; transform: scale(1.06); }
+.video-card__thumb { position:absolute; inset:0; width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity var(--transition), transform .9s var(--ease-out); }
+.video-card:hover .video-card__thumb { opacity: .78; transform: scale(1.06); }
 .video-card__overlay {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
@@ -1197,7 +1198,10 @@ h6 { font-size: .9rem; }
 .product-cover__price span { font-size: 1rem; opacity: .55; text-decoration: line-through; font-weight: 500; margin-left: 10px; }
 .product-cover__note { font-family: var(--font-body); font-weight: 700; font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; opacity: .75; margin-top: 8px; }
 
-/* Product image grid — 1 big top + 2 small below (max 3 images) */
+/* Product image grid — 1 big top + 2 small below (max 3 images).
+   Tile = colored background (the "page"). Inside each tile sits a
+   .product-grid__paper element shaped like an A4 sheet that actually
+   contains the image. */
 .product-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1216,14 +1220,28 @@ h6 { font-size: .9rem; }
   transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
 }
 .product-grid__tile:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--c-ink); }
-.product-grid__tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .product-grid__tile--main {
   grid-column: 1 / -1;
   aspect-ratio: 1.15 / 1;
   background: var(--c-sky);
   padding: 24px;
 }
-.product-grid__tile--main img { object-fit: contain; }
+/* Inner "paper" — A4 portrait — holds the image */
+.product-grid__paper {
+  background: var(--c-cream);
+  border: var(--bw-1) solid var(--c-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 3px 3px 0 var(--c-ink);
+  overflow: hidden;
+  aspect-ratio: 1 / 1.414; /* A4 portrait */
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.product-grid__paper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Slightly tighter paper inside the smaller tiles so it doesn't fill all the bg */
+.product-grid__tile:not(.product-grid__tile--main) .product-grid__paper { max-height: 88%; }
 /* alternating soft tints for the two small tiles */
 .product-grid__tile--main + .product-grid__tile { background: var(--c-peach); }
 .product-grid__tile--main + .product-grid__tile + .product-grid__tile { background: var(--c-golden); }
@@ -2243,26 +2261,17 @@ h6 { font-size: .9rem; }
 }
 .blog-search input { flex: 1; padding: 16px 24px; border: none; background: transparent; font-size: 1rem; outline: none; color: var(--c-ink); }
 .blog-search input::placeholder { color: var(--c-text-muted); }
-.blog-search button { padding: 0 28px; background: var(--c-terracotta); color: var(--c-cream); font-family: var(--font-body); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; }
+.blog-search button { padding: 0 18px; background: var(--c-terracotta); color: var(--c-cream); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s; }
 .blog-search button:hover { background: var(--c-terra-dark); }
+.blog-search button .icon { width: 18px; height: 18px; }
 
-/* Mobile — collapse the search bar to an icon; tap to expand */
+/* Mobile — keep the search bar visible as a full bar (no icon-collapse).
+   Slightly smaller padding so it fits comfortably. */
 @media (max-width: 640px) {
-  .blog-search {
-    width: 44px; min-width: 44px; height: 44px; margin: 18px 0 0;
-    padding: 0; overflow: hidden;
-    background: var(--c-cream) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111A17' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat center / 20px 20px;
-    transition: width .28s var(--ease-out), background-color .15s;
-    cursor: pointer;
-  }
-  .blog-search.is-open {
-    width: 100%; min-width: 0; height: auto; cursor: text;
-    background-image: none;
-  }
-  .blog-search input { width: 100%; height: 44px; padding: 0 16px; font-size: .95rem; opacity: 0; pointer-events: none; transition: opacity .18s; }
-  .blog-search.is-open input { opacity: 1; pointer-events: auto; }
-  .blog-search button { display: none; }
-  .blog-search.is-open button { display: inline-flex; }
+  .blog-search { margin: 18px 0 0; }
+  .blog-search input { padding: 12px 18px; font-size: .92rem; }
+  .blog-search button { padding: 0 16px; }
+  .blog-search button .icon { width: 16px; height: 16px; }
 }
 
 .blog-main { padding: var(--section-py) 0; }
