@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260528" />
+  <link rel="stylesheet" href="styles.css?v=20260529" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -142,6 +142,12 @@
     .list-item__pin { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.95rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
     .list-item__pin.is-pinned { background:var(--c-golden); }
     .list-item.is-pinned { box-shadow:3px 3px 0 var(--c-golden); border-color:var(--c-ink); }
+    .list-item.is-unpublished { background:#f3f1e9; opacity:.7; }
+    .list-item.is-unpublished .list-item__title,
+    .list-item.is-unpublished .list-item__meta { color:var(--c-text-muted); }
+    .list-item__pub { font-size:.74rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:6px 12px; border-radius:9999px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); cursor:pointer; min-width:60px; }
+    .list-item__pub.is-hidden { background:var(--c-terracotta); color:var(--c-cream); border-color:var(--c-ink); }
+    .list-item__badge { display:inline-block; margin-left:8px; padding:2px 8px; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); font-size:.62rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }
     .list-item.sortable-ghost { opacity:.5; }
     .list-item.sortable-chosen { box-shadow:4px 4px 0 var(--c-terracotta); }
     /* Repeater rows: drag handle */
@@ -380,6 +386,7 @@
                 <div class="field"><label for="a-read">Read time (min)</label><input type="number" id="a-read" min="1" value="5" /></div>
               </div>
               <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Hot 🔥 (trending article)</label></div>
+              <div class="field"><label class="check"><input type="checkbox" id="a-published" checked /> Published (visible on the site)</label></div>
               <div class="field"><label for="a-excerpt">Excerpt</label><textarea id="a-excerpt" placeholder="A hook that grabs attention…"></textarea></div>
               <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="a-img-file" /><div id="a-img-thumb" class="thumbs"></div></div>
               <input type="hidden" id="a-img" value="" />
@@ -522,7 +529,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260528"></script>
+<script src="partials.js?v=20260529"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -688,7 +695,7 @@
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
-  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){return '<div class="list-item'+(p.pinned?' is-pinned':'')+'" data-id="'+p.id+'">'+dragHandleHtml()+pinBtnHtml(p.pinned,p.id)+'<div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; attachSortableList('pList','products',function(){return PRODUCTS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){var hidden=p.published===false; return '<div class="list-item'+(p.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+'" data-id="'+p.id+'">'+dragHandleHtml()+pinBtnHtml(p.pinned,p.id)+'<div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+(hidden?' <span class="list-item__badge">Hidden</span>':'')+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(p.published,p.id)+'<button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; attachSortableList('pList','products',function(){return PRODUCTS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
   $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
   function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
@@ -700,6 +707,7 @@
   /* ===== Drag-reorder + Pin helpers (shared by products/articles/videos/reviews) ===== */
   function dragHandleHtml(){ return '<span class="list-item__drag" title="Drag to reorder" aria-label="Drag">⋮⋮</span>'; }
   function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">'+(isPinned?'📌':'☆')+'</button>'; }
+  function pubBtnHtml(isPublished, id){ var hidden = isPublished === false; return '<button type="button" class="icon-btn list-item__pub'+(hidden?' is-hidden':'')+'" data-pub="'+id+'" title="'+(hidden?'Show on site':'Hide from site')+'">'+(hidden?'Show':'Hide')+'</button>'; }
   function applyPinClass(li, pinned){ li.classList.toggle('is-pinned', !!pinned); var b=li.querySelector('.list-item__pin'); if(b){ b.classList.toggle('is-pinned',!!pinned); b.textContent=pinned?'📌':'☆'; b.title=pinned?'Unpin':'Pin (max 3)'; } }
   function attachSortableList(containerId, table, getRows, afterReorder){
     var el=document.getElementById(containerId); if(!el || !window.Sortable) return;
@@ -736,6 +744,31 @@
         if(r.error){ alert('Error: '+r.error.message); return; }
         if(row) row.pinned=!currentlyPinned;
         var li=btn.closest('.list-item'); if(li) applyPinClass(li, !currentlyPinned);
+      }catch(err){ alert('Error: '+err.message); }
+    });
+  }
+  function applyPubClass(li, btn, isPublished){
+    var hidden = isPublished === false;
+    li.classList.toggle('is-unpublished', hidden);
+    btn.classList.toggle('is-hidden', hidden);
+    btn.textContent = hidden ? 'Show' : 'Hide';
+    btn.title = hidden ? 'Show on site' : 'Hide from site';
+  }
+  function wirePubClicks(containerId, table, getRows){
+    var el=document.getElementById(containerId); if(!el) return;
+    el.addEventListener('click', async function(e){
+      var btn=e.target.closest('[data-pub]'); if(!btn) return;
+      e.stopPropagation();
+      var id=btn.dataset.pub;
+      var rows=typeof getRows==='function'?getRows():[];
+      var row=(rows||[]).filter(function(x){return String(x.id)===String(id);})[0];
+      var currentlyPublished = row ? row.published !== false : true;
+      var next = !currentlyPublished;
+      try{
+        var r=await sb.from(table).update({published: next}).eq('id',id);
+        if(r.error){ alert('Error: '+r.error.message); return; }
+        if(row) row.published = next;
+        var li=btn.closest('.list-item'); if(li) applyPubClass(li, btn, next);
       }catch(err){ alert('Error: '+err.message); }
     });
   }
@@ -782,16 +815,16 @@
   $('hSaveBtn').addEventListener('click',async function(){ var v=$('h-product').value; $('hSaveStatus').textContent='Saving…'; var r=await sb.from('site_settings').upsert({key:'highlight_product_id',value:v,updated_at:new Date().toISOString()},{onConflict:'key'}); if(r.error){$('hSaveStatus').textContent='';alert('Error: '+r.error.message+(/site_settings|relation/.test(r.error.message)?'\n\nDid you run the site_settings SQL?':''));return;} $('hSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('hSaveStatus').textContent='';},1600); });
 
   /* ===== ARTICLES ===== */
-  function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, tags:aField.get() }; }
+  function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, published:$('a-published').checked, tags:aField.get() }; }
   function aCard(a){ var catColors={Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'}; var tag='<span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'; var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">🔥 Caliente</span>':''; var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>'; return '<a href="blog-post.html" class="article-card" data-cat="'+slugify(a.category)+(a.hot?' caliente':'')+'"><div class="article-card__img-wrap">'+tag+hot+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'Título del artículo')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'Extracto…')+'</p><div class="article-card__meta"><span><svg class="icon icon--xs"><use href="#i-clock"/></svg> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
   function aPreview(){ $('aPreview').innerHTML=aCard(aGather()); }
   $('a-img-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('aSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'articles'); $('a-img').value=url; renderAThumb(); aPreview(); $('aSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('aSaveStatus').textContent='';},1200); }catch(err){ $('aSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
   function renderAThumb(){ var u=$('a-img').value; $('a-img-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="a-img-rm">✕</button></div>':''; }
   $('a-img-thumb').addEventListener('click',function(e){ if(e.target.id==='a-img-rm'){ $('a-img').value=''; renderAThumb(); aPreview(); } });
-  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){return '<div class="list-item'+(a.pinned?' is-pinned':'')+'" data-id="'+a.id+'">'+dragHandleHtml()+pinBtnHtml(a.pinned,a.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div><button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';}).join(''):'<p class="muted">No articles yet.</p>'; attachSortableList('aList','articles',function(){return ARTICLES;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
-  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-hot').checked=!!a.hot; aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
+  async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){var hidden=a.published===false; return '<div class="list-item'+(a.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+'" data-id="'+a.id+'">'+dragHandleHtml()+pinBtnHtml(a.pinned,a.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+(hidden?' <span class="list-item__badge">Hidden</span>':'')+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(a.published,a.id)+'<button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';}).join(''):'<p class="muted">No articles yet.</p>'; attachSortableList('aList','articles',function(){return ARTICLES;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-hot').checked=!!a.hot; $('a-published').checked=a.published!==false; aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
   $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Add a title.');return;} $('aSaveStatus').textContent='Saving…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
-  function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-hot').checked=false; renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
+  function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-hot').checked=false;$('a-published').checked=true; renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
   $('aResetBtn').addEventListener('click',aReset);
   $('a-hot').addEventListener('change',function(){ if($('a-hot').checked) aField.add('caliente'); else aField.remove('caliente'); aPreview(); });
   ['a-title','a-cat','a-excerpt','a-read'].forEach(function(id){ $(id).addEventListener('input',aPreview); $(id).addEventListener('change',aPreview); });
@@ -1122,6 +1155,10 @@
   wirePinClicks('aList','articles',function(){return ARTICLES;});
   wirePinClicks('vList','videos',function(){return VIDEOS;});
   wirePinClicks('rList','reviews',function(){return REVIEWS;});
+
+  /* Wire hide/show (published) toggles for products + articles */
+  wirePubClicks('pList','products',function(){return PRODUCTS;});
+  wirePubClicks('aList','articles',function(){return ARTICLES;});
 
   /* ===== NAV ===== */
   var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
