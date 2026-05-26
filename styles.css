@@ -2055,6 +2055,21 @@ h6 { font-size: .9rem; }
   border-top: var(--bw-1) solid rgba(17,26,23,.12);
   background: var(--c-cream);
 }
+.chat-panel__identity {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 12px;
+  background:var(--c-cream-alt); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-sm);
+  font-size:.82rem; line-height:1.35;
+}
+.chat-panel__identity-text { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chat-panel__identity-text strong { color:var(--c-ink); font-weight:800; }
+.chat-panel__identity-email { color:var(--c-text-muted); font-size:.78rem; }
+.chat-panel__identity-change {
+  border:none; background:none; padding:0;
+  color:var(--c-terracotta); font:inherit; font-size:.74rem; font-weight:800;
+  text-transform:uppercase; letter-spacing:.04em; cursor:pointer; white-space:nowrap;
+}
+.chat-panel__identity-change:hover { text-decoration:underline; }
 .chat-panel__row { display:flex; gap:8px; }
 .chat-panel__row > * { flex:1 1 0; min-width:0; }
 .chat-panel__input, .chat-panel__textarea {

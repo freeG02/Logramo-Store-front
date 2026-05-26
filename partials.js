@@ -187,7 +187,14 @@ const CHAT_HTML = `
     </div>
   </div>
   <form class="chat-panel__form" id="chatForm" novalidate>
-    <div class="chat-panel__row">
+    <div class="chat-panel__identity" id="chatIdentity" hidden>
+      <div class="chat-panel__identity-text">
+        Te escribimos como <strong id="chatIdName">—</strong>
+        <span id="chatIdEmail" class="chat-panel__identity-email"></span>
+      </div>
+      <button type="button" class="chat-panel__identity-change" id="chatIdChange">No soy yo</button>
+    </div>
+    <div class="chat-panel__row" id="chatNameRow">
       <input type="text" id="chatName" class="chat-panel__input" placeholder="Tu nombre" maxlength="60" required>
       <input type="email" id="chatEmail" class="chat-panel__input" placeholder="Tu correo" maxlength="120" required>
     </div>

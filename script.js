@@ -584,8 +584,47 @@ chatToggle?.addEventListener('click', () => {
   const send = document.getElementById('chatSend');
   const nameEl = document.getElementById('chatName');
   const emailEl = document.getElementById('chatEmail');
+  const nameRow = document.getElementById('chatNameRow');
+  const idRow = document.getElementById('chatIdentity');
+  const idName = document.getElementById('chatIdName');
+  const idEmail = document.getElementById('chatIdEmail');
+  const idChange = document.getElementById('chatIdChange');
   const msgEl = document.getElementById('chatMessage');
   const quickWrap = document.getElementById('chatQuick');
+
+  // ---- Identity: prefill from cuenta.html's localStorage user if any ----
+  // Same key the account page uses; also rewritten after a successful send so
+  // even visitors who never signed up get a "remember me" experience.
+  const ID_KEY = 'logramo_user';
+  function readIdentity() {
+    try { return JSON.parse(localStorage.getItem(ID_KEY)) || null; }
+    catch { return null; }
+  }
+  function writeIdentity(u) {
+    try { localStorage.setItem(ID_KEY, JSON.stringify(u)); } catch (_) {}
+  }
+  function applyIdentity(u) {
+    if (u && u.email) {
+      nameEl.value = u.username || u.name || '';
+      emailEl.value = u.email;
+      idName.textContent = u.username || u.name || u.email.split('@')[0];
+      idEmail.textContent = ' · ' + u.email;
+      idRow.hidden = false;
+      nameRow.hidden = true;
+    } else {
+      idRow.hidden = true;
+      nameRow.hidden = false;
+    }
+  }
+  applyIdentity(readIdentity());
+
+  idChange.addEventListener('click', () => {
+    // Let them edit a different name/email for this message without wiping the saved identity yet.
+    idRow.hidden = true;
+    nameRow.hidden = false;
+    nameEl.focus();
+    nameEl.select();
+  });
 
   // Quick-fill buttons drop a starter phrase into the textarea + focus it
   if (quickWrap) {
@@ -645,6 +684,10 @@ chatToggle?.addEventListener('click', () => {
         })
       });
       if (!r.ok) throw new Error('HTTP ' + r.status);
+      // Remember this person for next visit (only updates name/email, leaves
+      // any other fields cuenta.html may have stored intact).
+      const existing = readIdentity() || {};
+      writeIdentity(Object.assign({}, existing, { username: name, name: name, email: email }));
       showSuccessState(name.split(/\s+/)[0]);
     } catch (err) {
       send.disabled = false;
