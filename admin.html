@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260526" />
+  <link rel="stylesheet" href="styles.css?v=20260527" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -275,13 +275,13 @@
     <!-- ===== INICIO ===== -->
     <section data-page-view="inicio">
       <div class="cards3">
-        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">—</div><div class="ov-card__label">Total visits →</div><div class="ov-card__delta ov-up" id="ovVisitasD">+18% this month</div></div>
-        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">—</div><div class="ov-card__label">Revenue →</div><div class="ov-card__delta ov-up" id="ovIngresosD">+24% this month</div></div>
-        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">—</div><div class="ov-card__label">Sales →</div><div class="ov-card__delta ov-down" id="ovVentasD">-6% this month</div></div>
+        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">0</div><div class="ov-card__label">Total visits →</div><div class="ov-card__delta" id="ovVisitasD">—</div></div>
+        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">$0</div><div class="ov-card__label">Revenue →</div><div class="ov-card__delta" id="ovIngresosD">—</div></div>
+        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">0</div><div class="ov-card__label">Sales →</div><div class="ov-card__delta" id="ovVentasD">—</div></div>
       </div>
       <div class="ov-grid">
         <div>
-          <div class="panel"><h2>Revenue & visits</h2><p class="panel__hint">Demo · connects to real data once Stripe is enabled.</p>
+          <div class="panel"><h2>Revenue & visits</h2><p class="panel__hint">Live data from purchases + pageviews. The chart fills in as orders come in.</p>
             <div class="tf-tabs" data-tf-for="earnings"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
             <div class="chart-box"><canvas id="earningsChart"></canvas></div></div>
           <div class="panel"><h2>Top selling products</h2><div id="topProducts"><p class="muted">Loading…</p></div></div>
@@ -523,7 +523,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260526"></script>
+<script src="partials.js?v=20260527"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -828,11 +828,60 @@
     if(tf==='ano') return ['2021','2022','2023','2024','2025'];
     return MONTHS; // mes
   }
-  function gen(n,base,amp,seed){ var a=[],s=seed; for(var i=0;i<n;i++){ s=(s*9301+49297)%233280; var r=s/233280; a.push(Math.round(base+(i/n)*amp*0.5+r*amp*0.5)); } return a; }
+  /* ---- bucket helpers: turn a list of {created_at, amount?} rows into per-label buckets ---- */
+  function bucketIndex(tf, d){
+    if(tf==='hora') return d.getHours();
+    if(tf==='dia'){ var w=d.getDay(); return w===0?6:(w-1); /* Mon..Sun → 0..6 */ }
+    if(tf==='semana'){ var now=new Date(); var diffDays=Math.floor((now-d)/864e5); var weeksAgo=Math.floor(diffDays/7); var idx=7-weeksAgo; return (idx>=0&&idx<8)?idx:-1; }
+    if(tf==='ano'){ var yr=d.getFullYear(); var base=(new Date()).getFullYear()-4; var idx=yr-base; return (idx>=0&&idx<5)?idx:-1; }
+    return d.getMonth(); // mes
+  }
+  function inRange(tf, d){
+    var now=new Date();
+    if(tf==='hora') return (now-d) < 24*3600*1000 && d.toDateString()===now.toDateString();
+    if(tf==='dia') return (now-d) < 7*864e5;
+    if(tf==='semana') return (now-d) < 8*7*864e5;
+    if(tf==='ano') return (now.getFullYear()-d.getFullYear()) <= 4;
+    return d.getFullYear()===now.getFullYear(); // mes = this year
+  }
+  function zeros(n){ var a=[]; for(var i=0;i<n;i++) a.push(0); return a; }
+  function bucketSum(tf, rows, valueFn){
+    var n=tfLabels(tf).length; var out=zeros(n);
+    (rows||[]).forEach(function(r){
+      var d=new Date(r.created_at); if(!inRange(tf,d)) return;
+      var i=bucketIndex(tf,d); if(i<0||i>=n) return;
+      out[i] += valueFn ? Number(valueFn(r)||0) : 1;
+    });
+    return out;
+  }
+
+  /* Charts now pull real data from purchases + pageviews. Empty DB → flat 0 line. */
   var CHARTS={
-    earnings:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('earningsChart',L,[ dset('Visits (×100)',gen(n,60,100,7),'#3F7FD0'), dset('Revenue (×$100)',gen(n,40,130,13),'#5E8C3E'), dset('Sales (×10)',gen(n,20,80,21),'#C55932') ]); },
-    traf:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('trafChart',L,[ dset('Visits',gen(n,30,120,7),'#3F7FD0') ]); },
-    ventas:function(tf){ var L=tfLabels(tf),n=L.length; lineChart('ventasChart',L,[ dset('Revenue ($)',gen(n,200,900,33),'#5E8C3E') ]); }
+    earnings: async function(tf){
+      var L=tfLabels(tf);
+      var pv = await sb.from('pageviews').select('created_at');
+      var pur = await sb.from('purchases').select('created_at,amount');
+      var visits = pv.error ? zeros(L.length) : bucketSum(tf, pv.data);
+      var revenue = pur.error ? zeros(L.length) : bucketSum(tf, pur.data, function(r){return r.amount;});
+      var sales = pur.error ? zeros(L.length) : bucketSum(tf, pur.data);
+      lineChart('earningsChart',L,[
+        dset('Visits', visits, '#3F7FD0'),
+        dset('Revenue ($)', revenue, '#5E8C3E'),
+        dset('Sales', sales, '#C55932')
+      ]);
+    },
+    traf: async function(tf){
+      var L=tfLabels(tf);
+      var pv = await sb.from('pageviews').select('created_at');
+      var visits = pv.error ? zeros(L.length) : bucketSum(tf, pv.data);
+      lineChart('trafChart',L,[ dset('Visits', visits, '#3F7FD0') ]);
+    },
+    ventas: async function(tf){
+      var L=tfLabels(tf);
+      var pur = await sb.from('purchases').select('created_at,amount');
+      var revenue = pur.error ? zeros(L.length) : bucketSum(tf, pur.data, function(r){return r.amount;});
+      lineChart('ventasChart',L,[ dset('Revenue ($)', revenue, '#5E8C3E') ]);
+    }
   };
   function activeTf(key){ var b=document.querySelector('.tf-tabs[data-tf-for="'+key+'"] button.active'); return b?b.dataset.tf:'dia'; }
 
@@ -842,20 +891,72 @@
   var COUNTRY_ES={ES:'España',MX:'México',AR:'Argentina',CO:'Colombia',CL:'Chile',PE:'Perú',VE:'Venezuela',EC:'Ecuador',US:'Estados Unidos',GT:'Guatemala',CU:'Cuba',BO:'Bolivia',DO:'Rep. Dominicana',HN:'Honduras',PY:'Paraguay',SV:'El Salvador',NI:'Nicaragua',CR:'Costa Rica',PA:'Panamá',UY:'Uruguay',PR:'Puerto Rico',FR:'Francia',PT:'Portugal',IT:'Italia',DE:'Alemania',GB:'Reino Unido',BR:'Brasil',CA:'Canadá'};
   function countryFlag(v){ if(v&&v.length===2) return '<img class="flag" src="https://flagcdn.com/40x30/'+v.toLowerCase()+'.png" alt="" loading="lazy">'; return '<span class="flag" style="display:inline-flex;align-items:center;justify-content:center;font-size:.9rem">🌐</span>'; }
   function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
-  var DEMO_PRODUCTS=[{name:'Cría un perro feliz',cat:'Educación',sales:842},{name:'Sueño tranquilo',cat:'Cachorros',sales:531},{name:'Ladridos bajo control',cat:'Conducta',sales:418},{name:'Los 5 comandos esenciales',cat:'Educación',sales:390},{name:'Ansiedad por separación',cat:'Conducta',sales:286}];
-  var DEMO_CUSTOMERS=[{name:'María L.',sub:'12 purchases',val:'$284'},{name:'Javier G.',sub:'9 purchases',val:'$213'},{name:'Ana S.',sub:'7 purchases',val:'$168'},{name:'Carlos R.',sub:'5 purchases',val:'$119'}];
-  var DEMO_ORDERS=[{name:'Cría un perro feliz',sub:'Today',val:'$29.99'},{name:'Sueño tranquilo',sub:'Yesterday',val:'$14.99'},{name:'Ladridos bajo control',sub:'2 days ago',val:'$19.99'},{name:'Ansiedad por separación',sub:'3 days ago',val:'$22.99'}];
-  var DEMO_SALES_COUNTRIES=[{flag:countryFlag('ES'),name:'España',val:'$1.24K'},{flag:countryFlag('MX'),name:'México',val:'$0.98K'},{flag:countryFlag('AR'),name:'Argentina',val:'$0.74K'},{flag:countryFlag('CO'),name:'Colombia',val:'$0.61K'},{flag:countryFlag('CL'),name:'Chile',val:'$0.43K'}];
   function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?x.flag:'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
+  function money0(n){ return '$'+Number(n||0).toFixed(2); }
+  function timeAgo(iso){
+    var d=new Date(iso), now=new Date();
+    var s=Math.floor((now-d)/1000);
+    if(s<60) return 'Just now';
+    if(s<3600) return Math.floor(s/60)+'m ago';
+    if(s<86400) return Math.floor(s/3600)+'h ago';
+    var days=Math.floor(s/86400);
+    if(days<7) return days+'d ago';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }
+  function firstName(s){ if(!s) return ''; return String(s).trim().split(/\s+/)[0]; }
 
   async function loadInicio(){
-    var visitas='12,4K';
-    try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visitas=pv.count.toLocaleString('es-ES'); }catch(e){}
-    $('ovVisitas').textContent=visitas; $('ovIngresos').textContent='$4,28K'; $('ovVentas').textContent='312';
+    // Visits = total pageviews
+    var visits = 0;
+    try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visits=pv.count; }catch(e){}
+    $('ovVisitas').textContent = visits.toLocaleString('en-US');
+
+    // Revenue + sales = from purchases
+    var revenue = 0, sales = 0, purchases = [];
+    try{
+      var pr = await sb.from('purchases').select('email,payer_name,product_id,amount,currency,status,created_at').order('created_at',{ascending:false});
+      if(!pr.error) purchases = pr.data || [];
+      purchases.forEach(function(p){ revenue += Number(p.amount||0); sales += 1; });
+    }catch(e){}
+    $('ovIngresos').textContent = money0(revenue);
+    $('ovVentas').textContent = sales.toLocaleString('en-US');
+
     CHARTS.earnings(activeTf('earnings'));
-    $('topProducts').innerHTML='<table class="tbl"><tr><th>Product</th><th>Category</th><th>Sales</th></tr>'+DEMO_PRODUCTS.map(function(p){return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('')+'</table>';
-    $('topCustomers').innerHTML=miniRows(DEMO_CUSTOMERS);
-    $('recentOrders').innerHTML=miniRows(DEMO_ORDERS);
+
+    // Top selling products
+    var byProd = {};
+    purchases.forEach(function(p){ if(p.product_id){ if(!byProd[p.product_id]) byProd[p.product_id]={count:0,revenue:0}; byProd[p.product_id].count+=1; byProd[p.product_id].revenue+=Number(p.amount||0); } });
+    var prodIds = Object.keys(byProd);
+    if(prodIds.length){
+      // Look up product titles
+      try{
+        var pq = await sb.from('products').select('id,title,category').in('id', prodIds);
+        var titleMap = {}; (pq.data||[]).forEach(function(p){ titleMap[p.id]=p; });
+        var topProdRows = prodIds.map(function(id){ return { id:id, title:(titleMap[id]&&titleMap[id].title)||'(deleted product)', cat:(titleMap[id]&&titleMap[id].category)||'', sales: byProd[id].count }; }).sort(function(a,b){return b.sales-a.sales;}).slice(0,5);
+        $('topProducts').innerHTML = '<table class="tbl"><tr><th>Product</th><th>Category</th><th>Sales</th></tr>' + topProdRows.map(function(p){return '<tr><td>'+esc(p.title)+'</td><td>'+esc(p.cat)+'</td><td>'+p.sales+'</td></tr>';}).join('') + '</table>';
+      }catch(e){ $('topProducts').innerHTML='<p class="muted">Could not load product names.</p>'; }
+    } else {
+      $('topProducts').innerHTML='<p class="muted">No sales yet. Top products will appear here when buyers start coming in.</p>';
+    }
+
+    // Top customers
+    var byCust = {};
+    purchases.forEach(function(p){ if(p.email){ if(!byCust[p.email]) byCust[p.email]={name:p.payer_name||p.email,count:0,revenue:0}; byCust[p.email].count+=1; byCust[p.email].revenue+=Number(p.amount||0); } });
+    var topCust = Object.keys(byCust).map(function(em){ var c=byCust[em]; return { name: firstName(c.name)||em, sub: c.count+' '+(c.count===1?'purchase':'purchases'), val: money0(c.revenue) }; }).sort(function(a,b){return parseFloat(b.val.replace(/[^0-9.]/g,''))-parseFloat(a.val.replace(/[^0-9.]/g,''));}).slice(0,5);
+    $('topCustomers').innerHTML = topCust.length ? miniRows(topCust) : '<p class="muted">No customers yet.</p>';
+
+    // Recent orders
+    var recentRows = purchases.slice(0,5);
+    if(recentRows.length){
+      var prodIds2 = Array.from(new Set(recentRows.map(function(p){return p.product_id;}).filter(Boolean)));
+      var titleMap2 = {};
+      if(prodIds2.length){
+        try{ var pq2 = await sb.from('products').select('id,title').in('id', prodIds2); (pq2.data||[]).forEach(function(p){ titleMap2[p.id]=p.title; }); }catch(e){}
+      }
+      $('recentOrders').innerHTML = miniRows(recentRows.map(function(p){ return { name: titleMap2[p.product_id]||'(unknown product)', sub: timeAgo(p.created_at), val: money0(p.amount) }; }));
+    } else {
+      $('recentOrders').innerHTML='<p class="muted">No orders yet.</p>';
+    }
   }
 
   /* ===== TRÁFICO ===== */
@@ -885,19 +986,33 @@
   }
 
   /* ===== VENTAS ===== */
-  var DEMO_SALES_ORDERS=[
-    {date:'Today',product:'Cría un perro feliz',total:29.99,status:'Paid'},
-    {date:'Today',product:'Sueño tranquilo',total:14.99,status:'Paid'},
-    {date:'Yesterday',product:'Ladridos bajo control',total:19.99,status:'Paid'},
-    {date:'Yesterday',product:'Ansiedad por separación',total:22.99,status:'Pending'},
-    {date:'2 days ago',product:'Adiestramiento avanzado',total:24.99,status:'Paid'},
-    {date:'3 days ago',product:'Alimentación sana',total:19.99,status:'Paid'}
-  ];
-  function loadVentas(){
-    $('salesStats').innerHTML=stat('312','Orders')+stat('$4,28K','Revenue')+stat('298','Paid')+stat('14','Pending');
+  async function loadVentas(){
+    var purchases = [];
+    try{ var pr = await sb.from('purchases').select('email,payer_name,product_id,amount,currency,status,paypal_order_id,created_at').order('created_at',{ascending:false}); if(!pr.error) purchases = pr.data || []; }catch(e){}
+
+    var paid = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='' || s==='paid' || s==='captured' || s==='completed'; });
+    var pending = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='pending' || s==='processing'; });
+    var revenue = paid.reduce(function(a,p){return a+Number(p.amount||0);}, 0);
+
+    $('salesStats').innerHTML = stat(purchases.length,'Orders') + stat(money0(revenue),'Revenue') + stat(paid.length,'Paid') + stat(pending.length,'Pending');
     CHARTS.ventas(activeTf('ventas'));
-    $('ordersBox').innerHTML='<table class="tbl"><tr><th>Date</th><th>Product</th><th>Total</th><th>Status</th></tr>'+DEMO_SALES_ORDERS.map(function(o){return '<tr><td>'+esc(o.date)+'</td><td>'+esc(o.product)+'</td><td>$'+Number(o.total).toFixed(2)+'</td><td>'+esc(o.status)+'</td></tr>';}).join('')+'</table>';
-    $('salesCountries').innerHTML=miniRows(DEMO_SALES_COUNTRIES);
+
+    if(purchases.length){
+      var prodIds = Array.from(new Set(purchases.map(function(p){return p.product_id;}).filter(Boolean)));
+      var titleMap = {};
+      if(prodIds.length){
+        try{ var pq = await sb.from('products').select('id,title').in('id', prodIds); (pq.data||[]).forEach(function(p){ titleMap[p.id]=p.title; }); }catch(e){}
+      }
+      $('ordersBox').innerHTML = '<table class="tbl"><tr><th>Date</th><th>Product</th><th>Buyer</th><th>Total</th><th>Status</th></tr>' +
+        purchases.slice(0,50).map(function(o){
+          return '<tr><td>'+esc(timeAgo(o.created_at))+'</td><td>'+esc(titleMap[o.product_id]||'(unknown)')+'</td><td>'+esc(o.payer_name||o.email||'—')+'</td><td>'+money0(o.amount)+'</td><td>'+esc(o.status||'paid')+'</td></tr>';
+        }).join('') + '</table>';
+    } else {
+      $('ordersBox').innerHTML = '<p class="muted">No orders yet. When PayPal captures a payment, it appears here.</p>';
+    }
+
+    // Sales by country isn't tracked on purchases yet — empty for now.
+    $('salesCountries').innerHTML = '<p class="muted">Country breakdown will appear here once we capture buyer geo on each purchase.</p>';
   }
 
   /* ===== SUSCRIPTORES ===== */
