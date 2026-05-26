@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Tu cuenta. Entra o crea una cuenta en segundos." />
   <title>Mi cuenta — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260606" />
+  <link rel="stylesheet" href="styles.css?v=20260607" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     /* ============ AUTH PAGE ============ */
@@ -305,32 +305,51 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260606"></script>
+<script src="partials.js?v=20260607"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="script.js?v=20260606"></script>
-<script src="animations.js?v=20260606"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js?v=20260607"></script>
+<script src="animations.js?v=20260607"></script>
 <script>
-/* ============ ACCOUNT LOGIC (localStorage) ============ */
-const AUTH_KEY = 'logramo_user';
+/* ============ ACCOUNT — real Supabase Auth ============ */
+const sb = window.supabase.createClient(
+  'https://eopobchvkfvkkrtrzeyu.supabase.co',
+  'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D',
+  { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'logramo_supa_auth' } }
+);
 
-function getUser() {
-  try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || null; }
-  catch { return null; }
+// Mirror the active session into the same localStorage key the chat panel and
+// nav initials watch, so they update without any extra wiring.
+const ID_KEY = 'logramo_user';
+function syncIdentity(profile) {
+  if (profile && profile.email) {
+    localStorage.setItem(ID_KEY, JSON.stringify({
+      id: profile.id,
+      username: profile.username,
+      name: profile.username,
+      email: profile.email,
+    }));
+  } else {
+    localStorage.removeItem(ID_KEY);
+  }
+  if (typeof window.refreshNavUser === 'function') window.refreshNavUser();
 }
-function setUser(u) { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); }
-function clearUser() { localStorage.removeItem(AUTH_KEY); }
 
-function renderAuthState() {
-  const u = getUser();
+async function loadProfile(userId) {
+  const r = await sb.from('profiles').select('id,username,email,created_at').eq('id', userId).maybeSingle();
+  return r && r.data;
+}
+
+function renderAuthState(profile) {
   const out = document.getElementById('authLoggedOut');
   const inn = document.getElementById('authLoggedIn');
-  if (u) {
+  if (profile) {
     out.style.display = 'none';
     inn.style.display = 'block';
-    document.getElementById('profileName').textContent = u.username;
-    document.getElementById('profileEmail').textContent = u.email;
-    document.getElementById('profileAvatar').textContent = (u.username || 'L').trim().charAt(0);
+    document.getElementById('profileName').textContent = profile.username;
+    document.getElementById('profileEmail').textContent = profile.email;
+    document.getElementById('profileAvatar').textContent = (profile.username || 'L').trim().charAt(0).toUpperCase();
   } else {
     out.style.display = 'block';
     inn.style.display = 'none';
@@ -359,85 +378,158 @@ function switchTab(tab) {
     f.classList.toggle('active', f.dataset.form === tab);
   });
 }
-
 document.querySelectorAll('.auth-tab').forEach(t => {
   t.addEventListener('click', () => switchTab(t.dataset.tab));
 });
 
-function handleSignup(e) {
+function spError(e) {
+  const msg = (e && e.message) || '';
+  if (/already registered|already exists/i.test(msg)) return 'Ya hay una cuenta con ese correo. Inicia sesión.';
+  if (/invalid login credentials/i.test(msg)) return 'Correo o contraseña incorrectos.';
+  if (/password|6 characters/i.test(msg)) return 'La contraseña debe tener al menos 6 caracteres.';
+  if (/invalid email/i.test(msg)) return 'El correo no parece válido.';
+  return msg || 'Algo falló. Vuelve a intentarlo.';
+}
+
+async function handleSignup(e) {
   e.preventDefault();
   clearError();
   const username = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  const email    = document.getElementById('signupEmail').value.trim().toLowerCase();
   const password = document.getElementById('signupPassword').value;
   if (!username || !email || !password) { showError('Rellena todos los campos.'); return false; }
-  setUser({ username, email, password, createdAt: Date.now() });
-  if (typeof showToast === 'function') showToast(`¡Bienvenido, ${username}!`);
-  renderAuthState();
+  if (password.length < 6)               { showError('La contraseña debe tener al menos 6 caracteres.'); return false; }
+
+  const btn = e.target.querySelector('button[type=submit]');
+  if (btn) btn.disabled = true;
+  try {
+    const r = await sb.auth.signUp({ email, password, options: { data: { username } } });
+    if (r.error) throw r.error;
+    const userId = r.data && r.data.user && r.data.user.id;
+    if (!userId) throw new Error('No user returned');
+    // Create the profile row — this also fires the welcome email trigger
+    const ins = await sb.from('profiles').insert({ id: userId, username, email });
+    if (ins.error) throw ins.error;
+    const profile = { id: userId, username, email };
+    syncIdentity(profile);
+    renderAuthState(profile);
+    if (typeof showToast === 'function') showToast(`¡Bienvenido, ${username}! Te enviamos un correo.`);
+  } catch (err) {
+    showError(spError(err));
+  } finally {
+    if (btn) btn.disabled = false;
+  }
   return false;
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
   clearError();
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
   const password = document.getElementById('loginPassword').value;
-  const u = getUser();
-  if (!u) { showError('No encontramos una cuenta con ese correo. Crea una nueva.'); return false; }
-  if (u.email !== email || u.password !== password) {
-    showError('Correo o contraseña incorrectos.');
-    return false;
+  if (!email || !password) { showError('Rellena todos los campos.'); return false; }
+
+  const btn = e.target.querySelector('button[type=submit]');
+  if (btn) btn.disabled = true;
+  try {
+    const r = await sb.auth.signInWithPassword({ email, password });
+    if (r.error) throw r.error;
+    const userId = r.data && r.data.user && r.data.user.id;
+    let profile = await loadProfile(userId);
+    if (!profile) {
+      // Profile row missing (e.g. signed up elsewhere) — create a minimal one
+      const fallbackName = (r.data.user.user_metadata && r.data.user.user_metadata.username) || email.split('@')[0];
+      await sb.from('profiles').insert({ id: userId, username: fallbackName, email });
+      profile = { id: userId, username: fallbackName, email };
+    }
+    syncIdentity(profile);
+    renderAuthState(profile);
+    if (typeof showToast === 'function') showToast(`¡Hola otra vez, ${profile.username}!`);
+  } catch (err) {
+    showError(spError(err));
+  } finally {
+    if (btn) btn.disabled = false;
   }
-  if (typeof showToast === 'function') showToast(`¡Hola otra vez, ${u.username}!`);
-  renderAuthState();
   return false;
 }
 
-function handleLogout() {
-  clearUser();
+async function handleLogout() {
+  await sb.auth.signOut();
+  syncIdentity(null);
+  renderAuthState(null);
   if (typeof showToast === 'function') showToast('Sesión cerrada');
-  renderAuthState();
 }
 
-function startEditUsername() {
-  const u = getUser();
-  if (!u) return;
+async function startEditUsername() {
+  const session = (await sb.auth.getSession()).data.session;
+  if (!session) return;
+  const userId = session.user.id;
+  const currentProfile = await loadProfile(userId);
+  if (!currentProfile) return;
+
   const nameEl = document.getElementById('profileName');
-  const btn = document.getElementById('editUsernameBtn');
-  const input = document.getElementById('usernameEditInput');
-  input.value = u.username;
+  const btn    = document.getElementById('editUsernameBtn');
+  const input  = document.getElementById('usernameEditInput');
+  input.value = currentProfile.username;
   nameEl.style.display = 'none';
   btn.style.display = 'none';
   input.style.display = 'inline-block';
-  input.focus();
-  input.select();
-  const save = () => {
+  input.focus(); input.select();
+  const save = async () => {
     const val = input.value.trim();
-    if (val.length >= 2) {
-      u.username = val;
-      setUser(u);
-      if (typeof showToast === 'function') showToast('Nombre actualizado');
+    if (val.length >= 2 && val !== currentProfile.username) {
+      const r = await sb.from('profiles').update({ username: val }).eq('id', userId);
+      if (!r.error) {
+        currentProfile.username = val;
+        syncIdentity(currentProfile);
+        if (typeof showToast === 'function') showToast('Nombre actualizado');
+      }
     }
-    renderAuthState();
+    renderAuthState(currentProfile);
   };
   input.onblur = save;
   input.onkeydown = (e) => {
     if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-    if (e.key === 'Escape') { input.value = u.username; input.blur(); }
+    if (e.key === 'Escape') { input.value = currentProfile.username; input.blur(); }
   };
 }
 
-function handleDeleteAccount() {
-  const u = getUser();
-  if (!u) return;
-  const ok = confirm(`¿Seguro que quieres eliminar la cuenta de ${u.username}? Esta acción no se puede deshacer.`);
-  if (!ok) return;
-  clearUser();
+async function handleDeleteAccount() {
+  const session = (await sb.auth.getSession()).data.session;
+  if (!session) return;
+  const userId = session.user.id;
+  const profile = await loadProfile(userId);
+  const label = (profile && profile.username) || 'tu cuenta';
+  if (!confirm(`¿Seguro que quieres eliminar la cuenta de ${label}? Esta acción no se puede deshacer.`)) return;
+  // Delete profile (auth.users row remains; admin can clean up server-side)
+  await sb.from('profiles').delete().eq('id', userId);
+  await sb.auth.signOut();
+  syncIdentity(null);
+  renderAuthState(null);
   if (typeof showToast === 'function') showToast('Cuenta eliminada');
-  renderAuthState();
 }
 
-renderAuthState();
+// On page load: restore session if any
+(async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const profile = await loadProfile(session.user.id);
+    syncIdentity(profile);
+    renderAuthState(profile);
+  } else {
+    renderAuthState(null);
+  }
+  sb.auth.onAuthStateChange(async (event, sess) => {
+    if (sess) {
+      const profile = await loadProfile(sess.user.id);
+      syncIdentity(profile);
+      renderAuthState(profile);
+    } else {
+      syncIdentity(null);
+      renderAuthState(null);
+    }
+  });
+})();
 </script>
 </body>
 </html>
