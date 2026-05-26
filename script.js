@@ -259,12 +259,15 @@ function sbInsert(table, row) {
 function trackSubscriber(email, source) {
   if (email && /\S+@\S+\.\S+/.test(email)) sbInsert('subscribers', { email: email.trim(), source: source || '' });
 }
-function trackPageview() {
+function trackPageview(opts) {
+  opts = opts || {};
   var base = { path: location.pathname || '/', referrer: document.referrer || '' };
+  if (opts.article_id) base.article_id = opts.article_id;
   fetch('https://ipapi.co/json/').then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (geo) {
     var country = (geo && (geo.country_code || geo.country)) || '';
-    var p = sbInsert('pageviews', { path: base.path, referrer: base.referrer, country: country });
-    // If the 'country' column doesn't exist yet, fall back to a plain pageview
+    var payload = Object.assign({}, base, { country: country });
+    var p = sbInsert('pageviews', payload);
+    // If the country column doesn't exist yet, fall back to a plain pageview
     if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('pageviews', base); }).catch(function () {});
   });
 }
@@ -748,5 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initComments();
   initShare();
   maybeAutoSubscribe();
-  trackPageview();
+  // On blog-post pages we wait for the dynamic loader to call trackPageview
+  // itself with the resolved article_id; on every other page, fire now.
+  if (location.pathname.indexOf('blog-post') === -1) trackPageview();
 });

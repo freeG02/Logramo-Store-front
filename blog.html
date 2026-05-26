@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
   <title>Blog — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260531" />
+  <link rel="stylesheet" href="styles.css?v=20260601" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -47,21 +47,11 @@
 
       <!-- Articles -->
       <div>
-        <!-- Featured -->
-        <div style="margin-bottom:24px" data-reveal>
+        <!-- Featured (most-read article — filled by JS) -->
+        <div id="featuredHeadWrap" style="margin-bottom:24px;display:none" data-reveal>
           <span class="eyebrow">Artículo destacado</span>
         </div>
-        <a href="blog-post.html" class="featured-post" data-reveal>
-          <div class="featured-post__img">
-            <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=85&fit=crop" alt="" loading="eager">
-          </div>
-          <div class="featured-post__body">
-            <span class="tag tag--terra" style="font-size:.6rem;padding:4px 10px;gap:4px"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Más leído</span>
-            <h2 class="featured-post__title">Los primeros 30 días con tu perro: la guía honesta</h2>
-            <p class="featured-post__excerpt">Nadie te dice que el primer mes puede ser agotador, confuso y maravilloso a la vez. Nosotros sí. Sin filtros y sin juzgarte.</p>
-            <span class="btn btn--primary">Leer artículo <svg class="icon"><use href="#i-arrow-right"/></svg></span>
-          </div>
-        </a>
+        <a id="featuredPost" class="featured-post" data-reveal style="display:none"></a>
 
         <!-- Grid -->
         <div style="margin-bottom:24px;margin-top:8px" data-reveal>
@@ -95,31 +85,9 @@
           </div>
         </div>
 
-        <div class="widget">
-          <h3>Más leídos</h3>
-          <div class="sidebar-articles">
-            <a href="blog-post.html" class="sidebar-article">
-              <img class="sidebar-article__img" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=160&q=70&fit=crop" alt="" loading="lazy">
-              <div>
-                <div class="sidebar-article__title">Por qué llora tu cachorro de noche</div>
-                <div class="sidebar-article__date">Hace 2 días · 4 min</div>
-              </div>
-            </a>
-            <a href="blog-post.html" class="sidebar-article">
-              <img class="sidebar-article__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=160&q=70&fit=crop" alt="" loading="lazy">
-              <div>
-                <div class="sidebar-article__title">Los 5 comandos que todo perro debe saber</div>
-                <div class="sidebar-article__date">Hace 5 días · 5 min</div>
-              </div>
-            </a>
-            <a href="blog-post.html" class="sidebar-article">
-              <img class="sidebar-article__img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=160&q=70&fit=crop" alt="" loading="lazy">
-              <div>
-                <div class="sidebar-article__title">Por qué ladra a otros perros</div>
-                <div class="sidebar-article__date">Hace 1 semana · 6 min</div>
-              </div>
-            </a>
-          </div>
+        <div class="widget" id="topReadWidget" hidden>
+          <h3 id="topReadTitle">Más leídos</h3>
+          <div class="sidebar-articles" id="topReadList"></div>
         </div>
 
         <div class="widget widget--forest" style="text-align:center">
@@ -139,12 +107,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260531"></script>
+<script src="partials.js?v=20260601"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=2"></script>
-<script src="animations.js?v=20260531"></script>
+<script src="animations.js?v=20260601"></script>
 <script>
 /* ============ BLOG — live articles from Supabase ============ */
 (function(){
@@ -215,6 +183,81 @@
       });
     })();
     applyFilters();
+
+    /* ---- Featured post + "Más leídos" sidebar (ranked by pageview count) ---- */
+    if(!arts.length) return;
+    var counts = {};
+    try{
+      var pv = await sb.from('pageviews').select('article_id').not('article_id','is',null);
+      (pv.data||[]).forEach(function(row){ if(row.article_id){ counts[row.article_id] = (counts[row.article_id]||0) + 1; } });
+    }catch(e){}
+    var hasViewData = Object.keys(counts).length > 0;
+    var ranked = arts.slice().sort(function(a,b){
+      var ca = counts[a.id] || 0, cb = counts[b.id] || 0;
+      if(ca !== cb) return cb - ca;
+      // Tiebreaker: keep DB order (which is pinned → sort_order → created_at)
+      return arts.indexOf(a) - arts.indexOf(b);
+    });
+    var featured = ranked[0];
+    var sidebarList = ranked.slice(1, 4);
+
+    /* Featured post hero */
+    if(featured){
+      var fp = document.getElementById('featuredPost');
+      var fpHead = document.getElementById('featuredHeadWrap');
+      var fpImg = featured.image_url
+        ? '<img src="'+esc(featured.image_url)+'" alt="" loading="eager">'
+        : '<div style="width:100%;height:100%;background:var(--c-sage)"></div>';
+      var fpBadge = hasViewData
+        ? '<span class="tag tag--terra" style="font-size:.6rem;padding:4px 10px;gap:4px"><svg class="icon icon--xs"><use href="#i-flame"/></svg> Más leído</span>'
+        : '<span class="tag tag--golden" style="font-size:.6rem;padding:4px 10px;gap:4px"><svg class="icon icon--xs"><use href="#i-star"/></svg> Destacado</span>';
+      fp.href = 'blog-post.html?id=' + encodeURIComponent(featured.id);
+      fp.innerHTML =
+        '<div class="featured-post__img">' + fpImg + '</div>' +
+        '<div class="featured-post__body">' +
+          fpBadge +
+          '<h2 class="featured-post__title">'+esc(featured.title||'')+'</h2>' +
+          '<p class="featured-post__excerpt">'+esc(featured.excerpt||'')+'</p>' +
+          '<span class="btn btn--primary">Leer artículo <svg class="icon"><use href="#i-arrow-right"/></svg></span>' +
+        '</div>';
+      fp.style.display = '';
+      if(fpHead) fpHead.style.display = '';
+    }
+
+    /* Sidebar "Más leídos" widget */
+    if(sidebarList.length){
+      function timeAgoSp(iso){
+        var d = new Date(iso), now = Date.now();
+        var s = Math.floor((now - d.getTime())/1000);
+        if(s < 60) return 'Hace un momento';
+        if(s < 3600) return 'Hace '+Math.floor(s/60)+' min';
+        if(s < 86400) return 'Hace '+Math.floor(s/3600)+' h';
+        var days = Math.floor(s/86400);
+        if(days === 1) return 'Hace 1 día';
+        if(days < 7) return 'Hace '+days+' días';
+        var weeks = Math.floor(days/7);
+        if(weeks === 1) return 'Hace 1 semana';
+        if(weeks < 5) return 'Hace '+weeks+' semanas';
+        return d.toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+      }
+      var widget = document.getElementById('topReadWidget');
+      var titleEl = document.getElementById('topReadTitle');
+      var listEl = document.getElementById('topReadList');
+      titleEl.textContent = hasViewData ? 'Más leídos' : 'Recientes';
+      listEl.innerHTML = sidebarList.map(function(a){
+        var img = a.image_url
+          ? '<img class="sidebar-article__img" src="'+esc(a.image_url)+'" alt="" loading="lazy">'
+          : '<div class="sidebar-article__img" style="background:var(--c-sage)"></div>';
+        return '<a href="blog-post.html?id='+encodeURIComponent(a.id)+'" class="sidebar-article">' +
+          img +
+          '<div>' +
+            '<div class="sidebar-article__title">'+esc(a.title||'')+'</div>' +
+            '<div class="sidebar-article__date">'+timeAgoSp(a.created_at)+' · '+(a.read_time||5)+' min</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+      widget.hidden = false;
+    }
   })();
 })();
 </script>
