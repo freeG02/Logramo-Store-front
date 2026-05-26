@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260529" />
+  <link rel="stylesheet" href="styles.css?v=20260530" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -145,8 +145,11 @@
     .list-item.is-unpublished { background:#f3f1e9; opacity:.7; }
     .list-item.is-unpublished .list-item__title,
     .list-item.is-unpublished .list-item__meta { color:var(--c-text-muted); }
-    .list-item__pub { font-size:.74rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:6px 12px; border-radius:9999px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); cursor:pointer; min-width:60px; }
+    .list-item__pub { width:34px; height:34px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:9999px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); color:var(--c-ink); cursor:pointer; transition:background .12s ease, color .12s ease; }
+    .list-item__pub svg { width:18px; height:18px; display:block; }
+    .list-item__pub:hover { background:var(--c-cream-alt); }
     .list-item__pub.is-hidden { background:var(--c-terracotta); color:var(--c-cream); border-color:var(--c-ink); }
+    .list-item__pub.is-hidden:hover { background:var(--c-terra-dark); }
     .list-item__badge { display:inline-block; margin-left:8px; padding:2px 8px; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); font-size:.62rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }
     .list-item.sortable-ghost { opacity:.5; }
     .list-item.sortable-chosen { box-shadow:4px 4px 0 var(--c-terracotta); }
@@ -529,7 +532,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260529"></script>
+<script src="partials.js?v=20260530"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -707,7 +710,9 @@
   /* ===== Drag-reorder + Pin helpers (shared by products/articles/videos/reviews) ===== */
   function dragHandleHtml(){ return '<span class="list-item__drag" title="Drag to reorder" aria-label="Drag">⋮⋮</span>'; }
   function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">'+(isPinned?'📌':'☆')+'</button>'; }
-  function pubBtnHtml(isPublished, id){ var hidden = isPublished === false; return '<button type="button" class="icon-btn list-item__pub'+(hidden?' is-hidden':'')+'" data-pub="'+id+'" title="'+(hidden?'Show on site':'Hide from site')+'">'+(hidden?'Show':'Hide')+'</button>'; }
+  var EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.1 4.1"/><path d="M6.6 6.6A17 17 0 0 0 2 12s3.5 6 10 6a10 10 0 0 0 4.5-1.1"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/></svg>';
+  function pubBtnHtml(isPublished, id){ var hidden = isPublished === false; return '<button type="button" class="list-item__pub'+(hidden?' is-hidden':'')+'" data-pub="'+id+'" title="'+(hidden?'Show on site':'Hide from site')+'" aria-label="'+(hidden?'Show on site':'Hide from site')+'">'+(hidden?EYE_OFF_SVG:EYE_OPEN_SVG)+'</button>'; }
   function applyPinClass(li, pinned){ li.classList.toggle('is-pinned', !!pinned); var b=li.querySelector('.list-item__pin'); if(b){ b.classList.toggle('is-pinned',!!pinned); b.textContent=pinned?'📌':'☆'; b.title=pinned?'Unpin':'Pin (max 3)'; } }
   function attachSortableList(containerId, table, getRows, afterReorder){
     var el=document.getElementById(containerId); if(!el || !window.Sortable) return;
@@ -751,8 +756,9 @@
     var hidden = isPublished === false;
     li.classList.toggle('is-unpublished', hidden);
     btn.classList.toggle('is-hidden', hidden);
-    btn.textContent = hidden ? 'Show' : 'Hide';
+    btn.innerHTML = hidden ? EYE_OFF_SVG : EYE_OPEN_SVG;
     btn.title = hidden ? 'Show on site' : 'Hide from site';
+    btn.setAttribute('aria-label', btn.title);
   }
   function wirePubClicks(containerId, table, getRows){
     var el=document.getElementById(containerId); if(!el) return;
