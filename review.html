@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="description" content="Comparte tu experiencia con tu guía Logramo." />
+  <title>Tu reseña — Logramo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <style>
+    .review-section { min-height: calc(100vh - 80px); padding: 56px 0 80px; }
+    @media (max-width: 560px) { .review-section { min-height: calc(100vh - 64px); padding: 32px 0 64px; } }
+
+    .review-card {
+      max-width: 640px; margin: 0 auto;
+      background: var(--c-cream); border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-md);
+      padding: 40px 36px 36px;
+    }
+    @media (max-width: 560px) {
+      .review-card { padding: 28px 22px 24px; border-radius: var(--radius-md); }
+    }
+    .review-card h1 {
+      margin: 8px 0 16px;
+      font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+      line-height: 1; letter-spacing: -.02em;
+      text-transform: uppercase; font-weight: 900;
+    }
+    .review-card h1 em { font-style: italic; color: var(--c-terracotta); font-weight: 900; }
+    .review-card .lede { color: var(--c-text-muted); margin: 0 0 26px; font-size: 1.02rem; line-height: 1.5; }
+
+    /* Star rating */
+    .rating {
+      display: inline-flex; gap: 6px; padding: 8px 0 2px;
+      direction: rtl;             /* trick: hover affects current + earlier siblings */
+    }
+    .rating input { display: none; }
+    .rating label {
+      cursor: pointer; line-height: 0; padding: 6px;
+      color: rgba(17,26,23,.18); transition: color .12s ease, transform .12s ease;
+    }
+    .rating label svg { width: 38px; height: 38px; display: block; }
+    .rating label:hover, .rating label:hover ~ label,
+    .rating input:checked ~ label { color: var(--c-golden); }
+    .rating label:hover { transform: translateY(-2px); }
+
+    /* Form fields */
+    .field { margin-top: 22px; }
+    .field label.lbl {
+      display: block; font-size: .78rem; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--c-text); margin-bottom: 8px;
+    }
+    .field .hint { display: block; font-size: .78rem; color: var(--c-text-muted); margin-top: 6px; }
+    .field textarea, .field input[type="text"] {
+      width: 100%; box-sizing: border-box;
+      border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-sm);
+      background: var(--c-cream-alt); color: var(--c-text);
+      font: inherit; padding: 12px 14px;
+      transition: box-shadow .12s ease, transform .12s ease;
+    }
+    .field textarea { min-height: 130px; resize: vertical; line-height: 1.5; }
+    .field textarea:focus, .field input[type="text"]:focus {
+      outline: none; box-shadow: var(--shadow-xs); transform: translate(-1px, -1px);
+    }
+
+    /* Photo uploader */
+    .photo-drop {
+      display: flex; align-items: center; gap: 14px;
+      border: 2px dashed rgba(17,26,23,.3); border-radius: var(--radius-sm);
+      background: var(--c-cream-alt); padding: 14px;
+      cursor: pointer; transition: border-color .15s ease, background .15s ease;
+    }
+    .photo-drop:hover { border-color: var(--c-terracotta); background: #fff; }
+    .photo-drop input[type="file"] { display: none; }
+    .photo-drop .photo-icon {
+      width: 48px; height: 48px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--c-peach); border: var(--bw-1) solid var(--c-ink);
+      border-radius: var(--radius-sm); color: var(--c-ink);
+    }
+    .photo-drop .photo-text { flex: 1; min-width: 0; }
+    .photo-drop .photo-text strong { display: block; font-size: .95rem; color: var(--c-text); }
+    .photo-drop .photo-text span { display: block; font-size: .8rem; color: var(--c-text-muted); margin-top: 2px; }
+    .photo-preview {
+      margin-top: 12px; display: none; align-items: center; gap: 12px;
+      background: var(--c-cream-alt); border: var(--bw-1) solid var(--c-ink);
+      border-radius: var(--radius-sm); padding: 10px;
+    }
+    .photo-preview.is-shown { display: flex; }
+    .photo-preview img {
+      width: 64px; height: 64px; object-fit: cover;
+      border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-sm);
+    }
+    .photo-preview .photo-meta { flex: 1; min-width: 0; font-size: .85rem; }
+    .photo-preview .photo-meta strong { display: block; color: var(--c-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .photo-preview .photo-meta span { color: var(--c-text-muted); font-size: .78rem; }
+    .photo-preview button {
+      background: transparent; border: none; color: var(--c-terracotta);
+      font-weight: 700; cursor: pointer; padding: 6px 10px; font-size: .85rem;
+    }
+
+    /* Submit row */
+    .submit-row {
+      margin-top: 30px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .btn-submit {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 26px; font-size: .85rem; font-weight: 900;
+      letter-spacing: .1em; text-transform: uppercase;
+      background: var(--c-golden); color: var(--c-ink);
+      border: var(--bw-2) solid var(--c-ink); border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm); cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-submit:hover:not(:disabled) { transform: translate(-2px,-2px); box-shadow: var(--shadow-md); }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+    .submit-row .help { font-size: .82rem; color: var(--c-text-muted); }
+
+    /* States */
+    .state { display: none; }
+    .state.is-active { display: block; }
+    .skeleton h1 { background: rgba(17,26,23,.08); color: transparent; border-radius: 6px; }
+    .skeleton .lede { background: rgba(17,26,23,.06); color: transparent; border-radius: 6px; height: 1.4em; }
+
+    .alert {
+      max-width: 540px; margin: 0 auto; text-align: center;
+      background: var(--c-cream-alt); border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-md);
+      padding: 44px 32px;
+    }
+    .alert .icon-circle {
+      width: 72px; height: 72px; margin: 0 auto 18px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--c-peach); border: var(--bw-2) solid var(--c-ink);
+      border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    }
+    .alert.success .icon-circle { background: var(--c-golden); }
+    .alert h2 {
+      margin: 0 0 12px; font-size: clamp(1.6rem, 3.6vw, 2rem);
+      line-height: 1.05; letter-spacing: -.01em;
+      text-transform: uppercase; font-weight: 900;
+    }
+    .alert p { margin: 0 auto 22px; color: var(--c-text-muted); font-size: 1rem; line-height: 1.5; max-width: 380px; }
+    .alert .btn-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; font-weight: 900; font-size: .82rem;
+      letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+      background: var(--c-ink); color: var(--c-cream);
+      border: var(--bw-2) solid var(--c-ink); border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm); transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .alert .btn-link:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-md); }
+
+    .form-error {
+      margin-top: 12px; padding: 10px 14px;
+      background: #FBE6DC; border: var(--bw-1) solid var(--c-terracotta);
+      border-radius: var(--radius-sm); color: var(--c-terra-dark);
+      font-size: .9rem; display: none;
+    }
+    .form-error.is-shown { display: block; }
+  </style>
+</head>
+<body data-page="biblioteca">
+
+<div id="partial-nav"></div>
+
+<section class="review-section">
+  <div class="container">
+
+    <!-- LOADING SKELETON -->
+    <div id="state-loading" class="state is-active">
+      <div class="review-card skeleton">
+        <span class="eyebrow">Cargando tu reseña</span>
+        <h1>&nbsp;</h1>
+        <p class="lede">&nbsp;</p>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div id="state-form" class="state">
+      <div class="review-card">
+        <span class="eyebrow" id="eyebrowText">Tu reseña</span>
+        <h1 id="heroHeadline">¿Cómo te <em>fue?</em></h1>
+        <p class="lede" id="ledeText">
+          Tu opinión nos ayuda — y le sirve a otros dueños como tú que están decidiendo si vale la pena.
+        </p>
+
+        <form id="reviewForm" novalidate>
+          <div class="field">
+            <label class="lbl">Tu valoración</label>
+            <div class="rating" role="radiogroup" aria-label="Valoración de 1 a 5 estrellas">
+              <input type="radio" name="rating" id="r5" value="5"><label for="r5" title="5 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
+              <input type="radio" name="rating" id="r4" value="4"><label for="r4" title="4 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
+              <input type="radio" name="rating" id="r3" value="3"><label for="r3" title="3 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
+              <input type="radio" name="rating" id="r2" value="2"><label for="r2" title="2 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
+              <input type="radio" name="rating" id="r1" value="1"><label for="r1" title="1 estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="lbl" for="quoteInput">Cuéntanos cómo te fue</label>
+            <textarea id="quoteInput" name="quote" maxlength="800" placeholder="¿Qué cambió? ¿Qué te sirvió? Habla como le hablarías a un amigo."></textarea>
+            <span class="hint">Mínimo 10 caracteres. Máximo 800.</span>
+          </div>
+
+          <div class="field">
+            <label class="lbl" for="dogNameInput">El nombre de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">— opcional</span></label>
+            <input id="dogNameInput" type="text" maxlength="40" placeholder="Ej. Lola, Toby, Coco…">
+          </div>
+
+          <div class="field">
+            <label class="lbl">Foto de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">— opcional</span></label>
+            <label class="photo-drop" for="photoInput" id="photoDrop">
+              <div class="photo-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.3" cy="9" r="1.8" fill="currentColor"/><path d="M4 18l5-5.5 3.5 3.5 3.5-4L21 17"/></svg>
+              </div>
+              <div class="photo-text">
+                <strong>Sube una foto de tu perro</strong>
+                <span>JPG, PNG o WEBP. Hasta 6 MB.</span>
+              </div>
+              <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp">
+            </label>
+            <div class="photo-preview" id="photoPreview">
+              <img id="photoThumb" alt="">
+              <div class="photo-meta">
+                <strong id="photoName"></strong>
+                <span id="photoSize"></span>
+              </div>
+              <button type="button" id="photoRemove">Quitar</button>
+            </div>
+          </div>
+
+          <div class="form-error" id="formError"></div>
+
+          <div class="submit-row">
+            <button type="submit" class="btn-submit" id="submitBtn">
+              <span id="submitLabel">Enviar mi reseña</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <span class="help">Lleva 30 segundos. Revisamos cada reseña antes de publicarla.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="state-success" class="state">
+      <div class="alert success">
+        <div class="icon-circle">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-ink)"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+        </div>
+        <h2>¡Gracias por tu <em style="color:var(--c-terracotta);font-style:italic">reseña!</em></h2>
+        <p>La leeremos pronto y, si todo está bien, aparecerá en la web. Un montón de gracias por tomarte el tiempo.</p>
+        <a class="btn-link" href="index.html">Volver al inicio →</a>
+      </div>
+    </div>
+
+    <!-- INVALID / EXPIRED / USED -->
+    <div id="state-error" class="state">
+      <div class="alert">
+        <div class="icon-circle">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-ink)"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 17h.01"/></svg>
+        </div>
+        <h2 id="errTitle">Este enlace ya no funciona</h2>
+        <p id="errMsg">El enlace de reseña ya fue usado o expiró. Si todavía quieres contarnos tu experiencia, respóndenos al email — leemos cada respuesta.</p>
+        <a class="btn-link" id="errCta" href="mailto:ayuda@logramo.com?subject=Mi%20experiencia%20con%20Logramo">Escríbenos →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div id="partial-footer"></div>
+<div id="partial-cart"></div>
+<div id="partial-chat"></div>
+<div id="partial-popups"></div>
+
+<script src="partials.js"></script>
+<script>
+(function () {
+  var FUNCTION_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co/functions/v1/submit-review';
+  var ANON_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
+
+  function $(id) { return document.getElementById(id); }
+  function show(stateId) {
+    ['state-loading','state-form','state-success','state-error'].forEach(function (id) {
+      var el = $(id); if (!el) return;
+      el.classList.toggle('is-active', id === stateId);
+    });
+  }
+  function getQuery(name) {
+    var u = new URL(window.location.href);
+    return u.searchParams.get(name) || '';
+  }
+  function fmtSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+  function showFormError(msg) {
+    var el = $('formError');
+    el.textContent = msg;
+    el.classList.add('is-shown');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function clearFormError() {
+    var el = $('formError');
+    el.classList.remove('is-shown');
+    el.textContent = '';
+  }
+
+  // ---------- Token state ----------
+  var TOKEN = getQuery('token');
+  var PHOTO_DATA_URL = null;
+
+  if (!TOKEN) {
+    show('state-error');
+    $('errTitle').textContent = 'Enlace no válido';
+    $('errMsg').textContent = 'Este enlace no incluye un código de reseña. Si llegaste aquí desde un email nuestro, copia el enlace completo o respóndenos directamente.';
+    return;
+  }
+
+  // ---------- Load prefill ----------
+  fetch(FUNCTION_URL + '?token=' + encodeURIComponent(TOKEN), {
+    method: 'GET',
+    headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (!data || !data.ok) {
+      show('state-error');
+      var reason = (data && data.reason) || 'invalid';
+      if (reason === 'used') {
+        $('errTitle').textContent = 'Este enlace ya fue usado';
+        $('errMsg').textContent = 'Recibimos tu reseña antes. ¡Gracias! Si quieres editarla o agregar algo, respóndenos al email.';
+      } else if (reason === 'expired') {
+        $('errTitle').textContent = 'Este enlace expiró';
+        $('errMsg').textContent = 'El enlace tenía 90 días. Si todavía quieres contarnos cómo te fue, respóndenos al email — leemos cada palabra.';
+      } else {
+        $('errTitle').textContent = 'Enlace no válido';
+        $('errMsg').textContent = 'No encontramos este enlace. Asegúrate de copiarlo entero desde el email, o respóndenos directamente y te ayudamos.';
+      }
+      return;
+    }
+
+    // Personalize headline
+    var first = (data.firstName || '').trim();
+    if (first) {
+      $('heroHeadline').innerHTML = first + ', ¿cómo te <em>fue?</em>';
+    }
+    if (data.productTitle) {
+      $('ledeText').innerHTML =
+        'Hace un par de semanas descargaste <strong>' +
+        escapeHtml(data.productTitle) +
+        '</strong>. Cuéntanos cómo te fue — tu reseña le sirve a otros dueños como tú.';
+      $('eyebrowText').textContent = 'Tu reseña · ' + data.productTitle;
+    }
+    show('state-form');
+  })
+  .catch(function () {
+    show('state-error');
+    $('errTitle').textContent = 'No pudimos cargar tu reseña';
+    $('errMsg').textContent = 'Algo falló al conectarnos al servidor. Recarga la página, o respóndenos al email si el problema sigue.';
+  });
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ---------- Photo handling ----------
+  var photoInput = $('photoInput');
+  var photoPreview = $('photoPreview');
+  var photoThumb = $('photoThumb');
+  var photoName = $('photoName');
+  var photoSize = $('photoSize');
+  var photoRemove = $('photoRemove');
+
+  photoInput.addEventListener('change', function () {
+    var f = photoInput.files && photoInput.files[0];
+    if (!f) return;
+    if (f.size > 6 * 1024 * 1024) {
+      showFormError('La foto pesa más de 6 MB. Reduce el tamaño y vuelve a intentarlo.');
+      photoInput.value = '';
+      return;
+    }
+    if (!/^image\/(jpeg|jpg|png|webp)$/i.test(f.type)) {
+      showFormError('Solo aceptamos JPG, PNG o WEBP.');
+      photoInput.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      PHOTO_DATA_URL = ev.target.result;
+      photoThumb.src = PHOTO_DATA_URL;
+      photoName.textContent = f.name;
+      photoSize.textContent = fmtSize(f.size);
+      photoPreview.classList.add('is-shown');
+      clearFormError();
+    };
+    reader.readAsDataURL(f);
+  });
+
+  photoRemove.addEventListener('click', function () {
+    PHOTO_DATA_URL = null;
+    photoInput.value = '';
+    photoPreview.classList.remove('is-shown');
+  });
+
+  // ---------- Submit ----------
+  $('reviewForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearFormError();
+
+    var ratingEl = document.querySelector('input[name="rating"]:checked');
+    var rating = ratingEl ? Number(ratingEl.value) : 0;
+    var quote = $('quoteInput').value.trim();
+    var dogName = $('dogNameInput').value.trim();
+
+    if (!rating) { showFormError('Elige una valoración del 1 al 5.'); return; }
+    if (quote.length < 10) { showFormError('Cuéntanos un poco más — mínimo 10 caracteres.'); return; }
+    if (quote.length > 800) { showFormError('La reseña es muy larga. Máximo 800 caracteres.'); return; }
+
+    var btn = $('submitBtn');
+    var label = $('submitLabel');
+    var originalLabel = label.textContent;
+    btn.disabled = true;
+    label.textContent = 'Enviando…';
+
+    fetch(FUNCTION_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': ANON_KEY,
+        'Authorization': 'Bearer ' + ANON_KEY
+      },
+      body: JSON.stringify({
+        token: TOKEN,
+        rating: rating,
+        quote: quote,
+        dogName: dogName,
+        photoDataUrl: PHOTO_DATA_URL || ''
+      })
+    })
+    .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+    .then(function (res) {
+      btn.disabled = false;
+      label.textContent = originalLabel;
+      if (res.body && res.body.ok) {
+        show('state-success');
+        return;
+      }
+      var reason = (res.body && res.body.reason) || 'unknown';
+      if (reason === 'used' || reason === 'expired' || reason === 'invalid') {
+        show('state-error');
+        if (reason === 'used') {
+          $('errTitle').textContent = 'Este enlace ya fue usado';
+          $('errMsg').textContent = 'Parece que ya nos enviaste tu reseña. ¡Gracias!';
+        } else if (reason === 'expired') {
+          $('errTitle').textContent = 'Este enlace expiró';
+          $('errMsg').textContent = 'El enlace tenía 90 días. Respóndenos al email si todavía quieres contarnos.';
+        } else {
+          $('errTitle').textContent = 'Enlace no válido';
+          $('errMsg').textContent = 'No encontramos este enlace. Respóndenos al email y te ayudamos.';
+        }
+        return;
+      }
+      if (reason === 'quote_too_short') { showFormError('Cuéntanos un poco más — mínimo 10 caracteres.'); return; }
+      if (reason === 'quote_too_long') { showFormError('La reseña es muy larga. Máximo 800 caracteres.'); return; }
+      if (reason === 'bad_rating') { showFormError('Elige una valoración del 1 al 5.'); return; }
+      showFormError('No pudimos enviar tu reseña. Intenta de nuevo en un momento.');
+    })
+    .catch(function () {
+      btn.disabled = false;
+      label.textContent = originalLabel;
+      showFormError('Algo falló de nuestro lado. Intenta de nuevo, o respóndenos al email.');
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
