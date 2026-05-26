@@ -600,29 +600,55 @@ chatToggle?.addEventListener('click', () => {
   const POLL_MS  = 8000;
   const ID_KEY   = 'logramo_user';
 
+  // --- Thread state (hoisted so applyIdentity can read CONV/MSGS safely) ---
+  let CONV = null;     // current active conversation object (open or closed)
+  let MSGS = [];       // messages in CONV
+  let pollTimer = null;
+
   // --- Identity helpers ---
   function readIdentity() { try { return JSON.parse(localStorage.getItem(ID_KEY)) || null; } catch { return null; } }
   function writeIdentity(u) { try { localStorage.setItem(ID_KEY, JSON.stringify(u)); } catch (_) {} }
   function identityName(u) { return (u && (u.username || u.name)) || ''; }
+  // True if a Supabase Auth session exists in localStorage. The cuenta page
+  // configures supabase-js with storageKey: 'logramo_supa_auth'.
+  function hasAuthSession() {
+    try {
+      const raw = localStorage.getItem('logramo_supa_auth');
+      if (!raw) return false;
+      const s = JSON.parse(raw);
+      return !!(s && (s.access_token || (s.currentSession && s.currentSession.access_token)));
+    } catch { return false; }
+  }
+  // Hides the strip + fields entirely. Used whenever the visitor is "locked
+  // in" — either they're auth-logged-in or they already started a thread.
+  function applyMinimal(u) {
+    nameEl.value = identityName(u);
+    emailEl.value = (u && u.email) || '';
+    idRow.hidden = true;
+    nameRow.hidden = true;
+  }
   function applyIdentity(u) {
+    const inThread = !!(CONV && (CONV.is_open || (MSGS && MSGS.length)));
     if (u && u.email) {
-      // Always pre-populate so submit has the right values.
       nameEl.value = identityName(u);
       emailEl.value = u.email;
-      // Real auth (u.id is the auth.users UUID): the visitor is locked into
-      // their account — don't offer "No soy yo", don't show name/email fields.
-      // Remembered-from-past-chat (no u.id): show the identity strip with the
-      // "No soy yo" escape hatch so they can answer as someone else.
-      if (u.id) {
+      // Auth-logged-in OR mid-thread: no identity surfaces at all
+      if (u.id || hasAuthSession() || inThread) {
         idRow.hidden = true;
         nameRow.hidden = true;
       } else {
+        // Remembered between visits, no thread yet → strip with "No soy yo"
         idName.textContent = identityName(u) || u.email.split('@')[0];
         idEmail.textContent = ' · ' + u.email;
         idRow.hidden = false;
         nameRow.hidden = true;
       }
+    } else if (inThread) {
+      // No saved identity but a thread is active (edge case) — also hide fields
+      idRow.hidden = true;
+      nameRow.hidden = true;
     } else {
+      // Brand-new visitor, no thread → ask for name+email
       idRow.hidden = true;
       nameRow.hidden = false;
     }
@@ -658,10 +684,7 @@ chatToggle?.addEventListener('click', () => {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // --- Thread state ---
-  let CONV = null;      // current active conversation object (open or closed)
-  let MSGS = [];        // messages in CONV
-  let pollTimer = null;
+  // --- Thread state (CONV, MSGS, pollTimer declared at top of setupChat) ---
   let suppressForceNew = false;
 
   function renderMessages() {
@@ -685,6 +708,8 @@ chatToggle?.addEventListener('click', () => {
   function showActiveState() {
     closedBox.hidden = true;
     form.style.display = '';
+    // Mid-thread → no identity surfaces, just the textarea
+    applyIdentity(readIdentity());
     setStatus('● Online');
   }
   function showNoConvState() {
@@ -782,16 +807,18 @@ chatToggle?.addEventListener('click', () => {
       const data = await r.json();
       if (!r.ok || !data.ok) throw new Error(data.reason || ('HTTP ' + r.status));
 
-      // Remember identity for next time
+      // Remember identity for next time (preserves id from real auth if present)
       const existing = readIdentity() || {};
       writeIdentity(Object.assign({}, existing, { username: name, name: name, email: email }));
-      applyIdentity(readIdentity());
       // Push the new initials into the navbar immediately
       if (typeof window.refreshNavUser === 'function') window.refreshNavUser();
 
       CONV = data.conversation;
       MSGS = data.messages || [];
       renderMessages();
+      // Re-apply identity now that CONV exists — its inThread branch hides
+      // the identity strip + name/email fields cleanly.
+      applyIdentity(readIdentity());
       msgEl.value = '';
       msgEl.placeholder = 'Sigue la conversación…';
       setHint('Te avisamos por email cuando respondamos.');
