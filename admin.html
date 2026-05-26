@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260602" />
+  <link rel="stylesheet" href="styles.css?v=20260603" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -32,8 +32,36 @@
     .side__link .icon { width:18px; height:18px; }
     .side__link:hover { color:var(--c-cream); background:rgba(255,255,255,.06); }
     .side__link.active { color:var(--c-ink); background:var(--c-golden); }
+    .side__badge { margin-left:auto; min-width:22px; height:22px; padding:0 7px; display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); font-size:.66rem; font-weight:900; letter-spacing:.04em; }
     .side__foot { margin-top:auto; }
     .side__user { font-size:.72rem; color:rgba(254,250,232,.5); padding:8px 12px; word-break:break-all; }
+
+    /* Messages inbox */
+    .msg-filter { padding:8px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-sm); background:var(--c-cream); font:inherit; font-size:.85rem; cursor:pointer; }
+    .msg-item { background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:14px; margin-bottom:10px; overflow:hidden; transition:box-shadow .15s; }
+    .msg-item.is-unread { box-shadow:3px 3px 0 var(--c-terracotta); }
+    .msg-item.is-open { box-shadow:6px 6px 0 var(--c-ink); }
+    .msg-item__head { display:flex; align-items:center; gap:14px; padding:14px 18px; cursor:pointer; }
+    .msg-item__head:hover { background:var(--c-cream-alt); }
+    .msg-item__main { flex:1; min-width:0; }
+    .msg-item__row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .msg-item__name { font-family:var(--font-display); font-weight:900; font-size:.95rem; color:var(--c-ink); }
+    .msg-item__email { font-size:.74rem; color:var(--c-text-muted); margin-top:2px; }
+    .msg-item__preview { font-size:.82rem; color:var(--c-text); margin-top:6px; line-height:1.45; }
+    .msg-item__chev { width:20px; height:20px; color:var(--c-text-muted); flex-shrink:0; transition:transform .2s; }
+    .msg-item.is-open .msg-item__chev { transform:rotate(180deg); }
+    .msg-item__body { padding:6px 18px 18px; border-top:1px solid rgba(17,26,23,.1); background:var(--c-cream-alt); }
+    .msg-item__full { padding:14px 0 6px; font-size:.92rem; line-height:1.55; color:var(--c-ink); white-space:pre-wrap; }
+    .msg-item__prev-reply { margin:14px 0 6px; padding:10px 14px; background:var(--c-cream); border:1px dashed rgba(17,26,23,.25); border-radius:10px; font-size:.85rem; color:var(--c-text); }
+    .msg-item__prev-reply span { display:block; font-size:.66rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; color:var(--c-text-muted); margin-bottom:6px; }
+    .msg-item__reply { margin-top:14px; }
+    .msg-item__textarea { width:100%; box-sizing:border-box; padding:12px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-sm); background:var(--c-cream); font:inherit; font-size:.9rem; line-height:1.5; resize:vertical; min-height:120px; }
+    .msg-item__textarea:focus { outline:none; box-shadow:var(--shadow-xs); transform:translate(-1px,-1px); }
+    .msg-item__actions { display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+    .msg-pill { display:inline-flex; align-items:center; padding:2px 10px; border-radius:9999px; font-size:.62rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--c-ink); }
+    .msg-pill--new  { background:var(--c-terracotta); color:var(--c-cream); }
+    .msg-pill--done { background:var(--c-sage);       color:var(--c-ink); }
+    .msg-pill--mute { background:rgba(30,40,32,.1);   color:var(--c-text-muted); }
     .main { padding:32px 36px 100px; max-width:1180px; }
     .side-toggle { display:none; }
     .side-backdrop { display:none; }
@@ -260,6 +288,7 @@
     <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Sales</button>
     <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-image"/></svg> Content</button>
     <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Subscribers</button>
+    <button class="side__link" data-view="mensajes"><svg class="icon"><use href="#i-chat"/></svg> Messages<span class="side__badge" id="msgUnread" hidden>0</span></button>
     <button class="side__link" data-view="ajustes"><svg class="icon"><use href="#i-user"/></svg> Settings</button>
     <div class="side__foot">
       <div class="side__user" id="whoami"></div>
@@ -509,6 +538,27 @@
       </div>
     </section>
 
+    <!-- ===== MESSAGES ===== -->
+    <section data-page-view="mensajes" hidden>
+      <div class="page-head"><h1>Messages</h1><p>Every chat message visitors send appears here. Reply from this page or directly from your email.</p></div>
+      <div class="stats" id="msgStats"></div>
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <h2 style="margin:0">Inbox</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="msgFilter" class="msg-filter">
+              <option value="all">All</option>
+              <option value="new" selected>Unread</option>
+              <option value="replied">Replied</option>
+              <option value="archived">Archived</option>
+            </select>
+            <button class="icon-btn" id="msgRefresh">Refresh</button>
+          </div>
+        </div>
+        <div id="msgBox"><p class="muted">Loading…</p></div>
+      </div>
+    </section>
+
     <!-- ===== SETTINGS ===== -->
     <section data-page-view="ajustes" hidden>
       <div class="page-head"><h1>Settings</h1><p>Your admin account.</p></div>
@@ -536,7 +586,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260602"></script>
+<script src="partials.js?v=20260603"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1048,6 +1098,7 @@
     btn.addEventListener('click',function(e){ e.stopPropagation(); panel.hidden=!panel.hidden; if(!panel.hidden){ bellCount=0; dot.hidden=true; } });
     document.addEventListener('click',function(e){ if(!$('bellWrap').contains(e.target)) panel.hidden=true; });
     try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New sale</strong> · $'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
+    try{ sb.channel('messages-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},function(p){ var m=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New message</strong> · '+esc(m.name||'')+(m.email?(' · '+esc(m.email)):'')+'</div>'); if(typeof loadMessages==='function') loadMessages(); }).subscribe(); }catch(e){}
   }
 
   /* ===== VENTAS ===== */
@@ -1091,6 +1142,117 @@
     }catch(e){ $('subStats').innerHTML=''; $('subBox').innerHTML='<p class="muted">Subscribers table missing. Run the extra SQL. ('+esc(e.message||'')+')</p>'; }
   }
   $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,source,date\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+(s.source||'')+'","'+s.created_at+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='subscribers-logramo.csv'; a.click(); });
+
+  /* ===== MESSAGES ===== */
+  var MESSAGES = [], MSG_OPEN = null;
+  function msgStatusBadge(s){
+    var cls = s==='replied' ? 'msg-pill--done' : (s==='archived' ? 'msg-pill--mute' : 'msg-pill--new');
+    var label = s==='replied' ? 'Replied' : (s==='archived' ? 'Archived' : 'New');
+    return '<span class="msg-pill '+cls+'">'+label+'</span>';
+  }
+  function msgPreview(s){ var t=(s||'').replace(/\s+/g,' ').trim(); return esc(t.length>140 ? t.slice(0,140)+'…' : t); }
+  function msgCard(m){
+    var isOpen = MSG_OPEN === m.id;
+    return '<div class="msg-item'+(m.status==='new'?' is-unread':'')+(isOpen?' is-open':'')+'" data-id="'+m.id+'">'
+      +'<div class="msg-item__head" data-toggle="'+m.id+'">'
+        +'<div class="msg-item__main">'
+          +'<div class="msg-item__row"><span class="msg-item__name">'+esc(m.name||'(no name)')+'</span>'+msgStatusBadge(m.status)+'</div>'
+          +'<div class="msg-item__email">'+esc(m.email||'')+' · '+esc(timeAgo(m.created_at))+'</div>'
+          +(!isOpen?'<div class="msg-item__preview">'+msgPreview(m.body)+'</div>':'')
+        +'</div>'
+        +'<svg class="msg-item__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
+      +'</div>'
+      +(isOpen ? '<div class="msg-item__body">'
+        +'<div class="msg-item__full">'+esc(m.body||'').replace(/\n/g,'<br>')+'</div>'
+        +(m.reply_body ? '<div class="msg-item__prev-reply"><span>Última respuesta · '+esc(timeAgo(m.replied_at))+'</span><div>'+esc(m.reply_body).replace(/\n/g,'<br>')+'</div></div>' : '')
+        +'<div class="msg-item__reply">'
+          +'<label class="muted" style="display:block;font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Reply to '+esc(m.email)+'</label>'
+          +'<textarea class="msg-item__textarea" data-reply="'+m.id+'" rows="5" placeholder="Write your reply… they receive it as an email from ayuda@logramo.com.">'+esc(m.reply_body||'')+'</textarea>'
+          +'<div class="msg-item__actions">'
+            +'<button class="btn btn--primary" data-send="'+m.id+'"><svg class="icon icon--xs"><use href="#i-mail"/></svg> Send reply</button>'
+            +'<button class="icon-btn" data-archive="'+m.id+'">'+(m.status==='archived'?'Unarchive':'Archive')+'</button>'
+            +'<span class="muted" data-status="'+m.id+'"></span>'
+          +'</div>'
+        +'</div>'
+      +'</div>' : '')
+    +'</div>';
+  }
+  function renderMsgUnreadBadge(){
+    var n=(MESSAGES||[]).filter(function(m){return m.status==='new';}).length;
+    var b=$('msgUnread'); if(!b) return;
+    b.textContent=n; b.hidden = n===0;
+  }
+  async function loadMessages(){
+    var box=$('msgBox'); if(!box) return;
+    var filter = ($('msgFilter') && $('msgFilter').value) || 'new';
+    box.innerHTML='<p class="muted">Loading…</p>';
+    try{
+      var q = sb.from('messages').select('*').order('created_at',{ascending:false}).limit(200);
+      var r = await q;
+      if(r.error) throw r.error;
+      MESSAGES = r.data || [];
+      renderMsgUnreadBadge();
+      var totals = { all: MESSAGES.length };
+      ['new','replied','archived'].forEach(function(s){ totals[s] = MESSAGES.filter(function(m){return m.status===s;}).length; });
+      $('msgStats').innerHTML = stat(totals.all,'Total')+stat(totals.new,'Unread')+stat(totals.replied,'Replied')+stat(totals.archived,'Archived');
+      var visible = filter==='all' ? MESSAGES : MESSAGES.filter(function(m){return m.status===filter;});
+      if(!visible.length){
+        box.innerHTML = '<p class="muted">No messages '+(filter==='all'?'yet. When visitors send through the chat, they appear here.':'in this view.')+'</p>';
+        return;
+      }
+      box.innerHTML = visible.map(msgCard).join('');
+    }catch(e){
+      box.innerHTML = '<p class="muted">Could not load messages ('+esc(e.message||'')+').</p>';
+    }
+  }
+  $('msgFilter').addEventListener('change', loadMessages);
+  $('msgRefresh').addEventListener('click', loadMessages);
+  $('msgBox').addEventListener('click', async function(e){
+    var toggle = e.target.closest('[data-toggle]');
+    var send   = e.target.closest('[data-send]');
+    var arch   = e.target.closest('[data-archive]');
+    if (send) {
+      var id = send.dataset.send;
+      var ta = document.querySelector('[data-reply="'+id+'"]');
+      var statusEl = document.querySelector('[data-status="'+id+'"]');
+      var reply = (ta && ta.value || '').trim();
+      if (reply.length < 2) { if(statusEl) statusEl.textContent='Add a reply first.'; return; }
+      send.disabled = true; var origLabel = send.innerHTML; send.innerHTML='Sending…'; if(statusEl) statusEl.textContent='';
+      try {
+        var r = await fetch(LOGRAMO_SB_URL + '/functions/v1/send-message-reply', {
+          method: 'POST',
+          headers: { 'apikey': LOGRAMO_SB_KEY, 'Authorization': 'Bearer '+LOGRAMO_SB_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id, reply: reply })
+        });
+        var data = await r.json().catch(function(){return {};});
+        if (!r.ok || !data.ok) throw new Error(data.reason || ('HTTP '+r.status));
+        if(statusEl) statusEl.textContent='✓ Sent';
+        MSG_OPEN = null;
+        setTimeout(loadMessages, 600);
+      } catch (err) {
+        send.disabled = false; send.innerHTML = origLabel;
+        if(statusEl) statusEl.textContent = 'Failed: '+(err.message||err);
+      }
+      return;
+    }
+    if (arch) {
+      var id = arch.dataset.archive;
+      var row = MESSAGES.find(function(m){return String(m.id)===String(id);});
+      if(!row) return;
+      var next = row.status==='archived' ? 'new' : 'archived';
+      try {
+        var r = await sb.from('messages').update({status: next}).eq('id', id);
+        if(r.error) throw r.error;
+        loadMessages();
+      } catch (err) { alert('Error: '+err.message); }
+      return;
+    }
+    if (toggle) {
+      var id = toggle.dataset.toggle;
+      MSG_OPEN = MSG_OPEN === id ? null : id;
+      loadMessages();
+    }
+  });
 
   /* ===== AJUSTES ===== */
   $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('At least 6 characters.');return;} $('passStatus').textContent='Saving…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Changed'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
@@ -1194,7 +1356,7 @@
   wirePubClicks('aList','articles',function(){return ARTICLES;});
 
   /* ===== NAV ===== */
-  var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs };
+  var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs, mensajes:loadMessages };
   document.querySelectorAll('.side__link[data-view]').forEach(function(btn){ btn.addEventListener('click',function(){
     var v=btn.dataset.view;
     document.querySelectorAll('.side__link[data-view]').forEach(function(b){b.classList.toggle('active',b===btn);});
@@ -1229,7 +1391,7 @@
     $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
-    await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); hLoad();
+    await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); hLoad(); loadMessages();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });

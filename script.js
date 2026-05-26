@@ -567,29 +567,92 @@ function showToast(message) {
   }, 3200);
 }
 
-/* Chat */
+/* Chat — real contact form. Saves to public.messages and triggers an
+   email notification via the DB webhook → send-message-notify edge fn. */
 const chatToggle = document.getElementById('chatToggle');
 const chatPanel = document.getElementById('chatPanel');
 chatToggle?.addEventListener('click', () => {
   const open = chatPanel?.classList.toggle('open');
   chatToggle.innerHTML = open ? '<svg class="icon"><use href="#i-close"/></svg>' : '<svg class="icon"><use href="#i-chat"/></svg>';
 });
-function chatOption(text) {
-  const body = document.getElementById('chatBody'); if (!body) return;
-  const u = document.createElement('div'); u.className = 'chat-msg chat-msg--user'; u.textContent = text; body.appendChild(u);
-  setTimeout(() => {
-    const b = document.createElement('div'); b.className = 'chat-msg chat-msg--bot';
-    const responses = {
-      'Tengo un cachorro nuevo': 'Te recomendamos empezar con nuestra guía gratuita "Los primeros 30 días". ¡Es perfecta para ti!',
-      'Mi perro tiene un problema de conducta': 'Cuéntanos más. Puedes ver nuestra biblioteca de guías de conducta.',
-      'Quiero saber más sobre los libros': 'Visita la biblioteca: <a href="biblioteca.html" style="color:var(--c-terracotta);font-weight:700">Ver biblioteca →</a>',
-    };
-    b.innerHTML = responses[text] || '¡Gracias! Te responderemos pronto.';
-    body.appendChild(b); body.scrollTop = body.scrollHeight;
-  }, 700);
-  document.querySelector('.chat-panel__options')?.remove();
-  body.scrollTop = body.scrollHeight;
-}
+
+(function setupChat() {
+  const form = document.getElementById('chatForm');
+  if (!form) return;
+  const body = document.getElementById('chatBody');
+  const hint = document.getElementById('chatHint');
+  const send = document.getElementById('chatSend');
+  const nameEl = document.getElementById('chatName');
+  const emailEl = document.getElementById('chatEmail');
+  const msgEl = document.getElementById('chatMessage');
+  const quickWrap = document.getElementById('chatQuick');
+
+  // Quick-fill buttons drop a starter phrase into the textarea + focus it
+  if (quickWrap) {
+    quickWrap.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-quick]'); if (!btn) return;
+      const seed = btn.getAttribute('data-quick') || '';
+      if (msgEl.value.trim()) msgEl.value = msgEl.value + '\n\n' + seed;
+      else msgEl.value = seed;
+      msgEl.focus();
+      // Place cursor at the end
+      try { msgEl.setSelectionRange(msgEl.value.length, msgEl.value.length); } catch (_) {}
+    });
+  }
+
+  function setHint(text, kind) {
+    if (!hint) return;
+    hint.textContent = text;
+    hint.style.color = kind === 'err' ? 'var(--c-terracotta)' : (kind === 'ok' ? 'var(--c-forest)' : '');
+  }
+
+  function showSuccessState(name) {
+    if (!body) return;
+    body.innerHTML =
+      '<div class="chat-msg chat-msg--bot">¡Recibido, ' + (name || 'gracias') + '! Te respondemos por email lo antes posible — normalmente en menos de 24 h.</div>' +
+      '<div class="chat-msg chat-msg--bot">Mientras tanto, puedes echar un vistazo a <a href="biblioteca.html" style="color:var(--c-terracotta);font-weight:700">la biblioteca</a> o al <a href="blog.html" style="color:var(--c-terracotta);font-weight:700">blog</a>.</div>';
+    form.remove();
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = (nameEl.value || '').trim();
+    const email = (emailEl.value || '').trim();
+    const message = (msgEl.value || '').trim();
+    if (!name) { setHint('Ponle un nombre para saber cómo llamarte.', 'err'); nameEl.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setHint('Necesitamos un correo válido para responderte.', 'err'); emailEl.focus(); return; }
+    if (message.length < 5) { setHint('Cuéntanos un poco más para poder ayudarte.', 'err'); msgEl.focus(); return; }
+
+    send.disabled = true;
+    const originalSend = send.innerHTML;
+    send.innerHTML = 'Enviando…';
+    setHint('Enviando tu mensaje…');
+
+    try {
+      const r = await fetch(LOGRAMO_SB_URL + '/rest/v1/messages', {
+        method: 'POST',
+        headers: {
+          'apikey': LOGRAMO_SB_KEY,
+          'Authorization': 'Bearer ' + LOGRAMO_SB_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          name: name.slice(0, 60),
+          email: email.slice(0, 120),
+          body: message.slice(0, 1500),
+          source: 'chat:' + (location.pathname || '/')
+        })
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      showSuccessState(name.split(/\s+/)[0]);
+    } catch (err) {
+      send.disabled = false;
+      send.innerHTML = originalSend;
+      setHint('Algo falló al enviar. Intenta de nuevo o escríbenos a ayuda@logramo.com.', 'err');
+    }
+  });
+})();
 
 /* Video modal */
 function ytEmbedId(url) {

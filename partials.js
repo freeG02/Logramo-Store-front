@@ -179,13 +179,24 @@ const CHAT_HTML = `
     <div><div class="chat-panel__name">Logramo</div><div class="chat-panel__status">● Online</div></div>
   </div>
   <div class="chat-panel__body" id="chatBody">
-    <div class="chat-msg chat-msg--bot">¡Hola! ¿En qué te puedo ayudar?</div>
+    <div class="chat-msg chat-msg--bot">¡Hola! Cuéntanos qué pasa con tu perro y te respondemos por email lo antes posible.</div>
+    <div class="chat-panel__quick" id="chatQuick">
+      <button type="button" class="chat-panel__option" data-quick="Tengo un cachorro nuevo y no sé por dónde empezar.">Cachorro nuevo</button>
+      <button type="button" class="chat-panel__option" data-quick="Mi perro tiene un problema de conducta. Os cuento: ">Problema de conducta</button>
+      <button type="button" class="chat-panel__option" data-quick="Tengo una duda sobre uno de los libros: ">Sobre los libros</button>
+    </div>
   </div>
-  <div class="chat-panel__options">
-    <button class="chat-panel__option" onclick="chatOption('Tengo un cachorro nuevo')">Tengo un cachorro nuevo</button>
-    <button class="chat-panel__option" onclick="chatOption('Mi perro tiene un problema de conducta')">Problema de conducta</button>
-    <button class="chat-panel__option" onclick="chatOption('Quiero saber más sobre los libros')">Info sobre los libros</button>
-  </div>
+  <form class="chat-panel__form" id="chatForm" novalidate>
+    <div class="chat-panel__row">
+      <input type="text" id="chatName" class="chat-panel__input" placeholder="Tu nombre" maxlength="60" required>
+      <input type="email" id="chatEmail" class="chat-panel__input" placeholder="Tu correo" maxlength="120" required>
+    </div>
+    <textarea id="chatMessage" class="chat-panel__textarea" placeholder="¿En qué te podemos ayudar?" maxlength="1500" rows="3" required></textarea>
+    <div class="chat-panel__foot">
+      <span class="chat-panel__hint" id="chatHint">Te respondemos al correo que dejes.</span>
+      <button type="submit" class="chat-panel__send" id="chatSend">Enviar <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></button>
+    </div>
+  </form>
 </div>`;
 
 /* ============ STANDARD POPUPS ============ */
