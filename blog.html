@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
   <title>Blog — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260601" />
+  <link rel="stylesheet" href="styles.css?v=20260602" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -73,16 +73,9 @@
           </form>
         </div>
 
-        <div class="widget">
+        <div class="widget" id="temasWidget" hidden>
           <h3>Temas</h3>
-          <div class="cat-list">
-            <div class="cat-row"><a href="#">Cachorros</a><span class="cat-row__count">12</span></div>
-            <div class="cat-row"><a href="#">Educación</a><span class="cat-row__count">9</span></div>
-            <div class="cat-row"><a href="#">Conducta</a><span class="cat-row__count">8</span></div>
-            <div class="cat-row"><a href="#">Salud</a><span class="cat-row__count">7</span></div>
-            <div class="cat-row"><a href="#">Alimentación</a><span class="cat-row__count">5</span></div>
-            <div class="cat-row"><a href="#">Historias</a><span class="cat-row__count">4</span></div>
-          </div>
+          <div class="cat-list" id="temasList"></div>
         </div>
 
         <div class="widget" id="topReadWidget" hidden>
@@ -94,7 +87,7 @@
           <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40" style="color:var(--c-golden)"><use href="#i-pdf"/></svg></div>
           <h3>Guía gratuita</h3>
           <p style="color:rgba(254,250,232,.7);font-size:.85rem;margin-bottom:16px;line-height:1.55">Lo que ojalá alguien te hubiera contado antes. PDF gratis, sin trampa.</p>
-          <button class="btn btn--golden full-w" data-popup="popup-freebie">Descargar gratis</button>
+          <a href="biblioteca.html?filter=gratis" class="btn btn--golden full-w">Ver guías gratis <svg class="icon"><use href="#i-arrow-right"/></svg></a>
         </div>
 
       </aside>
@@ -107,12 +100,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260601"></script>
+<script src="partials.js?v=20260602"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260601"></script>
-<script src="animations.js?v=20260601"></script>
+<script src="script.js?v=20260602"></script>
+<script src="animations.js?v=20260602"></script>
 <script>
 /* ============ BLOG — live articles from Supabase ============ */
 (function(){
@@ -183,6 +176,29 @@
       });
     })();
     applyFilters();
+
+    /* ---- Temas widget (real per-category counts; clicking a row activates the matching filter chip) ---- */
+    (function renderTemas(){
+      var listEl = document.getElementById('temasList');
+      var widget = document.getElementById('temasWidget');
+      if(!listEl || !widget) return;
+      var byCat = {};
+      arts.forEach(function(a){ if(a.category){ byCat[a.category] = (byCat[a.category]||0) + 1; } });
+      var cats = Object.keys(byCat).sort(function(a,b){ return byCat[b] - byCat[a]; });
+      if(!cats.length) return;
+      listEl.innerHTML = cats.map(function(name){
+        return '<div class="cat-row"><a href="#" data-temas-filter="'+slug(name)+'">'+esc(name)+'</a><span class="cat-row__count">'+byCat[name]+'</span></div>';
+      }).join('');
+      widget.hidden = false;
+      listEl.addEventListener('click', function(e){
+        var link = e.target.closest('[data-temas-filter]'); if(!link) return;
+        e.preventDefault();
+        var f = link.getAttribute('data-temas-filter');
+        var chip = row && row.querySelector('[data-filter="'+f+'"]');
+        if(chip) chip.click();
+        if(mount) mount.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    })();
 
     /* ---- Featured post + "Más leídos" sidebar (ranked by pageview count) ---- */
     if(!arts.length) return;
