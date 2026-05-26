@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260611" />
+  <link rel="stylesheet" href="styles.css?v=20260612" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -222,6 +222,11 @@
     .bell__panel { position:absolute; top:54px; right:0; width:300px; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:16px; box-shadow:var(--shadow-md); z-index:60; overflow:hidden; }
     .bell__head { padding:14px 16px; font-family:var(--font-display); font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid rgba(30,40,32,.12); }
     .bell__item { padding:13px 16px; font-size:.85rem; border-bottom:1px solid rgba(30,40,32,.08); }
+    .bell__item--clickable { cursor:pointer; transition:background .12s ease; }
+    .bell__item--clickable:hover { background:var(--c-cream-alt); }
+    .bell__item-preview { margin-top:4px; color:var(--c-text-muted); font-size:.78rem; line-height:1.4; }
+    .bell__item-cta { margin-top:6px; font-family:var(--font-display); font-weight:800; font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--c-terracotta); }
+    .bell__panel { max-height:480px; overflow-y:auto; }
 
     /* overview cards */
     .cards3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
@@ -593,7 +598,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260611"></script>
+<script src="partials.js?v=20260612"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1099,13 +1104,52 @@
 
   /* ===== NOTIFICATION BELL ===== */
   var bellInit=false, bellCount=0;
+  // Opens the Messages view, expands the given conversation, scrolls to it.
+  // Loads the messages first if they haven't been fetched yet.
+  async function openConversationFromBell(convId){
+    var navBtn = document.querySelector('.side__link[data-view="mensajes"]');
+    if(navBtn) navBtn.click();
+    // Wait for loadMessages to populate CONVS if needed
+    for (var i = 0; i < 30 && (!CONVS || !CONVS.length); i++) {
+      await new Promise(function(r){ setTimeout(r, 100); });
+    }
+    CONV_OPEN = convId;
+    loadMessages();
+    // Scroll the expanded row into view after the next render tick
+    setTimeout(function(){
+      var row = document.querySelector('.msg-item[data-conv="'+convId+'"]');
+      if(row) row.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 250);
+  }
   function initBell(){
     if(bellInit) return; bellInit=true;
     var btn=$('bellBtn'),panel=$('bellPanel'),dot=$('bellDot'),list=$('bellList');
     btn.addEventListener('click',function(e){ e.stopPropagation(); panel.hidden=!panel.hidden; if(!panel.hidden){ bellCount=0; dot.hidden=true; } });
     document.addEventListener('click',function(e){ if(!$('bellWrap').contains(e.target)) panel.hidden=true; });
+    // Click handler for the items inside the bell panel (delegated)
+    list.addEventListener('click', function(e){
+      var item = e.target.closest('.bell__item[data-conv]');
+      if (!item) return;
+      panel.hidden = true;
+      openConversationFromBell(item.getAttribute('data-conv'));
+    });
     try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New sale</strong> · $'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
-    try{ sb.channel('messages-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'direction=eq.in'},function(p){ var m=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New message</strong> · '+esc((m.body||'').slice(0,80))+'</div>'); if(typeof loadMessages==='function') loadMessages(); }).subscribe(); }catch(e){}
+    try{ sb.channel('messages-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'direction=eq.in'},function(p){
+      var m=p.new||{};
+      bellCount++; dot.textContent=bellCount; dot.hidden=false;
+      if(list.querySelector('.muted')) list.innerHTML='';
+      // Pull the visitor's name from CONVS if we have it cached, else fall back
+      var conv = (CONVS||[]).filter(function(c){return String(c.id)===String(m.conversation_id);})[0];
+      var who = conv ? (conv.visitor_name || conv.visitor_email) : 'Visitante';
+      list.insertAdjacentHTML('afterbegin',
+        '<div class="bell__item bell__item--clickable" data-conv="'+esc(m.conversation_id||'')+'">' +
+          '<strong>New message · '+esc(who)+'</strong>' +
+          '<div class="bell__item-preview">'+esc((m.body||'').slice(0,100))+'</div>' +
+          '<div class="bell__item-cta">Click para responder &nbsp;→</div>' +
+        '</div>'
+      );
+      if(typeof loadMessages==='function') loadMessages();
+    }).subscribe(); }catch(e){}
   }
 
   /* ===== VENTAS ===== */
