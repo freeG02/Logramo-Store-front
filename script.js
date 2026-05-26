@@ -606,12 +606,22 @@ chatToggle?.addEventListener('click', () => {
   function identityName(u) { return (u && (u.username || u.name)) || ''; }
   function applyIdentity(u) {
     if (u && u.email) {
+      // Always pre-populate so submit has the right values.
       nameEl.value = identityName(u);
       emailEl.value = u.email;
-      idName.textContent = identityName(u) || u.email.split('@')[0];
-      idEmail.textContent = ' · ' + u.email;
-      idRow.hidden = false;
-      nameRow.hidden = true;
+      // Real auth (u.id is the auth.users UUID): the visitor is locked into
+      // their account — don't offer "No soy yo", don't show name/email fields.
+      // Remembered-from-past-chat (no u.id): show the identity strip with the
+      // "No soy yo" escape hatch so they can answer as someone else.
+      if (u.id) {
+        idRow.hidden = true;
+        nameRow.hidden = true;
+      } else {
+        idName.textContent = identityName(u) || u.email.split('@')[0];
+        idEmail.textContent = ' · ' + u.email;
+        idRow.hidden = false;
+        nameRow.hidden = true;
+      }
     } else {
       idRow.hidden = true;
       nameRow.hidden = false;
