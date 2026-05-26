@@ -324,8 +324,8 @@
     var skins=['terra','peach','golden','sky','sage','lavender'];
     var n=rv.rating||5, stars=''; for(var s=0;s<n;s++)stars+='<svg class="icon"><use href="#i-star"/></svg>';
     var av=rv.avatar?'<div class="review-card__avatar"><img src="'+esc(rv.avatar)+'" alt=""></div>':'<div class="review-card__avatar">'+esc(initials(rv.name))+'</div>';
-    var dogTag=rv.dog_name?'<span class="review-card__dog"><svg class="icon"><use href="#i-paw"/></svg> '+esc(rv.dog_name)+'</span>':'';
-    return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__top"><div class="review-card__stars">'+stars+'</div>'+dogTag+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div><div class="review-card__loc">'+esc(rv.location||'')+'</div></div></div></div>';
+    var dogLine=rv.dog_name?'<div class="review-card__loc"><svg class="icon icon--xs"><use href="#i-paw"/></svg> Con '+esc(rv.dog_name)+'</div>':'';
+    return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__stars">'+stars+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div>'+dogLine+'</div></div></div>';
   }
   (async function(){
     try{
@@ -333,6 +333,7 @@
       var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
       if(r.error||!r.data||!r.data.length) return; // keep fallback markup
       grid.innerHTML=r.data.map(reviewCard).join('');
+      if(window.refreshScrollAffordances) window.refreshScrollAffordances(grid);
     }catch(e){}
   })();
 
@@ -418,6 +419,7 @@
           +'<div class="video-card__overlay"><div class="video-card__label">'+esc(v.label||'')+'</div><div class="video-card__title">'+esc(v.title||'')+'</div></div>'
         +'</div>';
       }).join('');
+      if(window.refreshScrollAffordances) window.refreshScrollAffordances(grid);
     }catch(e){}
   })();
 })();

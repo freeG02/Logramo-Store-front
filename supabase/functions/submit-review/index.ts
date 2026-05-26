@@ -161,7 +161,7 @@ async function handlePost(body: any): Promise<Response> {
     return json({ ok: false, reason: "bad_rating" }, 400);
   }
   if (quote.length < 10) return json({ ok: false, reason: "quote_too_short" }, 400);
-  if (quote.length > 800) return json({ ok: false, reason: "quote_too_long" }, 400);
+  if (quote.length > 320) return json({ ok: false, reason: "quote_too_long" }, 400);
 
   const info = await validateToken(token);
   if (!info.ok) return json({ ok: false, reason: info.reason }, 410);

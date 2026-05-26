@@ -2532,10 +2532,40 @@ h6 { font-size: .9rem; }
   border-radius: var(--radius-full);
 }
 
-/* Hide affordances on desktop (only show under tablet/mobile) */
+/* Hide affordances on desktop (only show under tablet/mobile),
+   EXCEPT for the reviews carousel — there we keep the hint + dots
+   at all sizes and also show Prev/Next arrow buttons. */
 @media (min-width: 900px) {
   .h-scroll-hint,
   .h-scroll-dots { display: none; }
+  /* Reviews always show their hint + dots + arrows */
+  .reviews-grid + .h-scroll-dots,
+  .h-scroll-wrap:has(> .reviews-grid) .h-scroll-hint { display: flex; }
+}
+
+/* Prev / Next arrow buttons (reviews only — wired by JS for .reviews-grid) */
+.h-scroll-arrows {
+  display: none;                             /* mobile = touch swipe, hide arrows */
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+.h-scroll-arrow {
+  width: 48px; height: 48px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--c-cream);
+  color: var(--c-ink);
+  border: var(--bw-2) solid var(--c-ink);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.h-scroll-arrow:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-md); background: var(--c-golden); }
+.h-scroll-arrow:active { transform: translate(0,0); box-shadow: var(--shadow-xs); }
+.h-scroll-arrow svg { width: 22px; height: 22px; }
+@media (min-width: 900px) {
+  .h-scroll-arrows { display: flex; }
 }
 
 /* ============================================================
@@ -2711,6 +2741,7 @@ h1, h2, h3, h4,
   overflow-x: auto;
   overflow-y: visible;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;          /* JS just sets scrollLeft; browser animates the jump */
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
@@ -2738,27 +2769,23 @@ h1, h2, h3, h4,
   .reviews-grid > * { width: min(82vw, 360px); }
 }
 
-/* Top row of a review card — stars on the left, dog-name pill on the right */
-.review-card__top {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; margin-bottom: 16px;
+/* Review card: fixed height so all cards in the carousel match.
+   Quote is clamped to 6 lines and capped at ~280 chars from the form side. */
+.review-card { min-height: 320px; }
+.review-card__quote {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Don't let flex:1 stretch the quote past the clamp */
+  flex: 0 1 auto;
 }
-.review-card__top .review-card__stars { margin-bottom: 0; }
-.review-card__dog {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--c-cream); color: var(--c-ink);
-  border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-full);
-  padding: 5px 12px 5px 9px;
-  font-size: .72rem; font-weight: 900;
-  letter-spacing: .08em; text-transform: uppercase;
-  box-shadow: var(--shadow-xs);
-  white-space: nowrap;
+.review-card__author { margin-top: auto; }   /* pin the author block to the bottom */
+.review-card__loc {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 2px;
 }
-.review-card__dog svg { width: 14px; height: 14px; }
-/* On dark-card variants, keep the pill cream so it pops */
-.review-card--peach .review-card__dog,
-.review-card--golden .review-card__dog,
-.review-card--terra .review-card__dog { background: var(--c-cream); color: var(--c-ink); }
+.review-card__loc svg { width: 12px; height: 12px; opacity: .85; }
 
 /* ============================================================
    ANIMATION SUPPORT — sticky-stack + horizontal drag

@@ -164,8 +164,8 @@
 
           <div class="field">
             <label class="lbl" for="quoteInput">Cuéntanos cómo te fue</label>
-            <textarea id="quoteInput" name="quote" maxlength="800" placeholder="¿Qué cambió? ¿Qué te sirvió? Habla como le hablarías a un amigo."></textarea>
-            <span class="hint">Mínimo 10 caracteres. Máximo 800.</span>
+            <textarea id="quoteInput" name="quote" maxlength="280" placeholder="¿Qué cambió? ¿Qué te sirvió? Habla como le hablarías a un amigo."></textarea>
+            <span class="hint">Mínimo 10 caracteres. Máximo 280. <span id="quoteCounter" style="opacity:.7"></span></span>
           </div>
 
           <div class="field">
@@ -251,6 +251,19 @@
   // ---------- Token state ----------
   var TOKEN = getQuery('token');
 
+  // Live character counter on the quote textarea
+  (function () {
+    var ta = $('quoteInput'), counter = $('quoteCounter');
+    if (!ta || !counter) return;
+    function refresh() {
+      var n = ta.value.length;
+      counter.textContent = '· ' + n + ' / 280';
+      counter.style.color = n > 260 ? 'var(--c-terracotta)' : '';
+    }
+    ta.addEventListener('input', refresh);
+    refresh();
+  })();
+
   if (!TOKEN) {
     show('state-error');
     $('errTitle').textContent = 'Enlace no válido';
@@ -318,7 +331,7 @@
 
     if (!rating) { showFormError('Elige una valoración del 1 al 5.'); return; }
     if (quote.length < 10) { showFormError('Cuéntanos un poco más — mínimo 10 caracteres.'); return; }
-    if (quote.length > 800) { showFormError('La reseña es muy larga. Máximo 800 caracteres.'); return; }
+    if (quote.length > 280) { showFormError('La reseña es muy larga. Máximo 280 caracteres.'); return; }
 
     var btn = $('submitBtn');
     var label = $('submitLabel');

@@ -245,68 +245,151 @@
   /* Marquee scroll-reaction removed — animation stays at constant CSS speed */
 
   /* ============ HORIZONTAL SCROLL AFFORDANCES ============
-     Wrap each horizontal-scrolling track in a div, append a "Swipe →"
-     hint pill, dot indicators, and a right-edge fade gradient. Hint
-     fades out as soon as the user scrolls; dots update live; end-fade
-     hides when scrolled to the end.
+     Wrap each horizontal-scrolling track in a div, append a "Desliza →"
+     hint pill, dot indicators, and (for reviews) Prev/Next arrow buttons.
+     Hint fades out as soon as the user scrolls; dots update live.
+     Re-runnable: if a track has already been wired, the existing
+     affordances are torn down and rebuilt — needed because index.html
+     swaps in live cards from Supabase after the initial DOM load.
   */
-  function initScrollAffordances() {
-    const tracks = document.querySelectorAll('[data-h-drag], .video-grid');
-    tracks.forEach(track => {
-      // Only apply on small screens for video-grid (data-h-drag is always horizontal)
-      const isVideo = track.classList.contains('video-grid');
-      const cards = Array.from(track.children);
-      if (cards.length < 2) return;
+  // Animated scroll that works regardless of CSS scroll-behavior / browser quirks.
+  // 320ms ease-out. Cancels any in-flight scroll on the same track.
+  function smoothScrollToCard(track, card) {
+    if (!track || !card) return;
+    // scrollLeft value that places the card's left edge at the track's left edge.
+    // Using bounding rects avoids offsetParent mismatches.
+    const targetLeft = Math.round(
+      card.getBoundingClientRect().left
+      - track.getBoundingClientRect().left
+      + track.scrollLeft
+    );
+    if (Math.abs(targetLeft - track.scrollLeft) < 2) return;
+    // Single direct write. Because the target IS a valid snap point,
+    // scroll-snap-type: mandatory keeps it pinned there.
+    // CSS `scroll-behavior: smooth` on the track makes this animate in
+    // real browsers; headless test runners that drop smooth just jump.
+    track.scrollLeft = targetLeft;
+  }
 
-      // Wrap track in .h-scroll-wrap
-      const wrap = document.createElement('div');
+  function affordanceForTrack(track) {
+    if (!track) return;
+    const cards = Array.from(track.children);
+    if (cards.length < 2) return;
+
+    const isReviews = track.classList.contains('reviews-grid');
+
+    // If we've already wrapped this track, tear down the old affordances
+    // so we can rebuild against the current children (idempotent re-init).
+    let wrap = track.parentNode && track.parentNode.classList.contains('h-scroll-wrap')
+      ? track.parentNode : null;
+    if (wrap) {
+      // Remove any siblings we previously injected (dots + arrows)
+      const stale = wrap.parentNode.querySelectorAll(
+        ':scope > .h-scroll-dots, :scope > .h-scroll-arrows'
+      );
+      stale.forEach(el => el.remove());
+      // Remove old hint inside the wrap
+      const oldHint = wrap.querySelector(':scope > .h-scroll-hint');
+      if (oldHint) oldHint.remove();
+      // Clear old scroll listener tracker
+      if (track._affHandler) {
+        track.removeEventListener('scroll', track._affHandler);
+        track._affHandler = null;
+      }
+    } else {
+      wrap = document.createElement('div');
       wrap.className = 'h-scroll-wrap';
       track.parentNode.insertBefore(wrap, track);
       wrap.appendChild(track);
+    }
 
-      // Hint pill
-      const hint = document.createElement('div');
-      hint.className = 'h-scroll-hint';
-      hint.innerHTML = 'Desliza <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14M13 6l6 6-6 6"/></svg>';
-      wrap.appendChild(hint);
+    // Hint pill
+    const hint = document.createElement('div');
+    hint.className = 'h-scroll-hint';
+    hint.innerHTML = 'Desliza <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14M13 6l6 6-6 6"/></svg>';
+    wrap.appendChild(hint);
 
-      // Dots — appended after the wrap so they sit centered below
-      const dots = document.createElement('div');
-      dots.className = 'h-scroll-dots';
-      cards.forEach((_, i) => {
-        const dot = document.createElement('span');
-        dot.className = 'h-scroll-dot' + (i === 0 ? ' is-active' : '');
-        dots.appendChild(dot);
-      });
-      wrap.parentNode.insertBefore(dots, wrap.nextSibling);
-
-      const updateState = () => {
-        const sl = track.scrollLeft;
-        const max = track.scrollWidth - track.clientWidth;
-        if (sl > 8) wrap.classList.add('is-scrolled');
-        else wrap.classList.remove('is-scrolled');
-        if (sl >= max - 8) wrap.classList.add('is-at-end');
-        else wrap.classList.remove('is-at-end');
-
-        // Determine active card (the one whose center is closest to track center)
+    // Prev/Next arrows for reviews (visible on desktop)
+    if (isReviews) {
+      const arrows = document.createElement('div');
+      arrows.className = 'h-scroll-arrows';
+      arrows.innerHTML =
+        '<button type="button" class="h-scroll-arrow" data-dir="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H6M11 6l-6 6 6 6"/></svg></button>' +
+        '<button type="button" class="h-scroll-arrow" data-dir="1"  aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14M13 6l6 6-6 6"/></svg></button>';
+      wrap.parentNode.insertBefore(arrows, wrap.nextSibling);
+      arrows.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-dir]'); if (!btn) return;
+        const dir = Number(btn.dataset.dir);
         const trackRect = track.getBoundingClientRect();
-        const trackCenter = trackRect.left + trackRect.width / 2;
-        let bestIdx = 0, bestDist = Infinity;
-        cards.forEach((c, i) => {
-          const cr = c.getBoundingClientRect();
-          const dist = Math.abs((cr.left + cr.width / 2) - trackCenter);
-          if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+        // Re-read the children on every click — if the carousel was re-rendered
+        // after this listener was attached (e.g., the homepage swaps in live
+        // reviews from Supabase a moment after wiring), the closure-captured
+        // `cards` array would point at stale, detached DOM nodes.
+        const liveCards = Array.from(track.children);
+        let currentIdx = 0;
+        liveCards.forEach((c, i) => {
+          if (c.getBoundingClientRect().left <= trackRect.left + 4) currentIdx = i;
         });
-        Array.from(dots.children).forEach((d, i) => {
-          d.classList.toggle('is-active', i === bestIdx);
-        });
-      };
+        const targetIdx = Math.min(liveCards.length - 1, Math.max(0, currentIdx + dir));
+        smoothScrollToCard(track, liveCards[targetIdx]);
+      });
+    }
 
-      track.addEventListener('scroll', updateState, { passive: true });
-      window.addEventListener('resize', updateState);
-      updateState();
+    // Dots
+    const dots = document.createElement('div');
+    dots.className = 'h-scroll-dots';
+    cards.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'h-scroll-dot' + (i === 0 ? ' is-active' : '');
+      dot.setAttribute('aria-label', 'Ir a la tarjeta ' + (i + 1));
+      dot.addEventListener('click', () => {
+        const liveCards = Array.from(track.children);
+        smoothScrollToCard(track, liveCards[i]);
+      });
+      dots.appendChild(dot);
     });
+    wrap.parentNode.insertBefore(dots, wrap.nextSibling);
+
+    const updateState = () => {
+      const sl = track.scrollLeft;
+      const max = track.scrollWidth - track.clientWidth;
+      wrap.classList.toggle('is-scrolled', sl > 8);
+      wrap.classList.toggle('is-at-end', sl >= max - 8);
+
+      const trackRect = track.getBoundingClientRect();
+      const trackCenter = trackRect.left + trackRect.width / 2;
+      let bestIdx = 0, bestDist = Infinity;
+      cards.forEach((c, i) => {
+        const cr = c.getBoundingClientRect();
+        const dist = Math.abs((cr.left + cr.width / 2) - trackCenter);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      });
+      Array.from(dots.children).forEach((d, i) => {
+        d.classList.toggle('is-active', i === bestIdx);
+      });
+    };
+
+    track._affHandler = updateState;
+    track.addEventListener('scroll', updateState, { passive: true });
+    window.addEventListener('resize', updateState);
+    updateState();
   }
+
+  function initScrollAffordances() {
+    document.querySelectorAll('[data-h-drag], .video-grid').forEach(affordanceForTrack);
+  }
+
+  // Exposed so dynamic loaders (homepage reviews / videos pulled from Supabase
+  // after DOMContentLoaded) can re-wire affordances against the new children.
+  window.refreshScrollAffordances = function (target) {
+    if (!target) return initScrollAffordances();
+    if (typeof target === 'string') {
+      document.querySelectorAll(target).forEach(affordanceForTrack);
+    } else {
+      affordanceForTrack(target);
+    }
+  };
 
   document.addEventListener('DOMContentLoaded', () => {
     initStickyStack();
