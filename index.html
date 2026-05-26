@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Guías reales para dueños primerizos que están sobreviviendo el caos (y amándolo). Sin tecnicismos, sin juicios." />
   <title>Logramo — Cría un perro feliz</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260526" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -305,12 +305,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js"></script>
+<script src="partials.js?v=20260526"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=2"></script>
-<script src="animations.js"></script>
+<script src="animations.js?v=20260526"></script>
 
 <script>
 /* ============ HOME — live content from Supabase ============ */
@@ -324,8 +324,8 @@
     var skins=['terra','peach','golden','sky','sage','lavender'];
     var n=rv.rating||5, stars=''; for(var s=0;s<n;s++)stars+='<svg class="icon"><use href="#i-star"/></svg>';
     var av=rv.avatar?'<div class="review-card__avatar"><img src="'+esc(rv.avatar)+'" alt=""></div>':'<div class="review-card__avatar">'+esc(initials(rv.name))+'</div>';
-    var dogLine=rv.dog_name?'<div class="review-card__loc"><svg class="icon icon--xs"><use href="#i-paw"/></svg> Con '+esc(rv.dog_name)+'</div>':'';
-    return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__stars">'+stars+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div>'+dogLine+'</div></div></div>';
+    var dogTag=rv.dog_name?'<span class="review-card__dog"><svg class="icon"><use href="#i-paw"/></svg> '+esc(rv.dog_name)+'</span>':'';
+    return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__top"><div class="review-card__stars">'+stars+'</div>'+dogTag+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div><div class="review-card__loc">'+esc(rv.location||'')+'</div></div></div></div>';
   }
   (async function(){
     try{

@@ -2777,15 +2777,31 @@ h1, h2, h3, h4,
   -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  /* Don't let flex:1 stretch the quote past the clamp */
   flex: 0 1 auto;
 }
 .review-card__author { margin-top: auto; }   /* pin the author block to the bottom */
-.review-card__loc {
-  display: inline-flex; align-items: center; gap: 4px;
-  margin-top: 2px;
+
+/* Top row — stars on the left, dog-name pill on the right */
+.review-card__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 16px;
 }
-.review-card__loc svg { width: 12px; height: 12px; opacity: .85; }
+.review-card__top .review-card__stars { margin-bottom: 0; }
+.review-card__dog {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--c-cream); color: var(--c-ink);
+  border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-full);
+  padding: 5px 12px 5px 9px;
+  font-size: .72rem; font-weight: 900;
+  letter-spacing: .08em; text-transform: uppercase;
+  box-shadow: var(--shadow-xs);
+  white-space: nowrap;
+}
+.review-card__dog svg { width: 14px; height: 14px; }
+/* On dark-card variants, keep the pill cream so it pops */
+.review-card--peach .review-card__dog,
+.review-card--golden .review-card__dog,
+.review-card--terra .review-card__dog { background: var(--c-cream); color: var(--c-ink); }
 
 /* ============================================================
    ANIMATION SUPPORT — sticky-stack + horizontal drag
