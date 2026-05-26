@@ -776,6 +776,8 @@ chatToggle?.addEventListener('click', () => {
       const existing = readIdentity() || {};
       writeIdentity(Object.assign({}, existing, { username: name, name: name, email: email }));
       applyIdentity(readIdentity());
+      // Push the new initials into the navbar immediately
+      if (typeof window.refreshNavUser === 'function') window.refreshNavUser();
 
       CONV = data.conversation;
       MSGS = data.messages || [];

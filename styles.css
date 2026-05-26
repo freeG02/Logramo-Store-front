@@ -479,6 +479,19 @@ h6 { font-size: .9rem; }
 }
 .nav__btn:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-sm); background: var(--c-golden); }
 .nav__btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--c-ink); }
+
+/* Logged-in state: golden background with 2-letter initials */
+.nav__btn--user .nav__initials {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: .82rem;
+  letter-spacing: .02em;
+  line-height: 1;
+  color: var(--c-ink);
+}
+.nav__btn--user:has(.nav__initials:not([hidden])) {
+  background: var(--c-golden);
+}
 .cart-count {
   position: absolute; top: -4px; right: -4px;
   background: var(--c-terracotta); color: var(--c-cream);

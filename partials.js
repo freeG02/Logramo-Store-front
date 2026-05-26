@@ -74,8 +74,9 @@ const NAV_HTML = `
       <li><a href="sobre-nosotros.html" data-link="sobre">Nosotros</a></li>
     </ul>
     <div class="nav__actions">
-      <a href="cuenta.html" class="nav__btn" aria-label="Mi cuenta" title="Mi cuenta" data-link="cuenta">
-        <svg class="icon"><use href="#i-user"/></svg>
+      <a href="cuenta.html" class="nav__btn nav__btn--user" aria-label="Mi cuenta" title="Mi cuenta" data-link="cuenta" id="navUserBtn">
+        <svg class="icon" id="navUserIcon"><use href="#i-user"/></svg>
+        <span class="nav__initials" id="navUserInitials" hidden></span>
       </a>
       <button class="nav__btn" id="cartBtn" aria-label="Carrito">
         <svg class="icon"><use href="#i-cart"/></svg>
@@ -260,3 +261,50 @@ const currentLink = linkMap[PAGE];
 if (currentLink) {
   document.querySelectorAll(`[data-link="${currentLink}"]`).forEach(a => a.classList.add('active'));
 }
+
+/* ============ NAV USER BUTTON — swap icon for 2-letter initials when known ============
+   Identity source is the same `logramo_user` localStorage key that the
+   chat panel + cuenta.html read/write. Re-runs on `storage` events so an
+   identity change in another tab updates the nav live. */
+(function () {
+  function initialsFor(u) {
+    if (!u) return '';
+    const raw = (u.username || u.name || u.email || '').trim();
+    if (!raw) return '';
+    const parts = raw.replace(/@.*$/, '').split(/[\s._\-+]+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+    const one = parts[0] || '';
+    return one.slice(0, 2).toUpperCase() || (raw.charAt(0).toUpperCase() + (raw.charAt(1) || '').toUpperCase());
+  }
+  function applyNavUser() {
+    const icon = document.getElementById('navUserIcon');
+    const ini = document.getElementById('navUserInitials');
+    const btn = document.getElementById('navUserBtn');
+    if (!icon || !ini || !btn) return;
+    let u = null;
+    try { u = JSON.parse(localStorage.getItem('logramo_user')) || null; } catch (_) {}
+    const code = initialsFor(u);
+    if (code) {
+      ini.textContent = code;
+      ini.hidden = false;
+      icon.style.display = 'none';
+      const name = (u && (u.username || u.name)) || (u && u.email) || '';
+      btn.setAttribute('aria-label', 'Mi cuenta · ' + name);
+      btn.setAttribute('title', name);
+    } else {
+      ini.hidden = true;
+      icon.style.display = '';
+      btn.setAttribute('aria-label', 'Mi cuenta');
+      btn.setAttribute('title', 'Mi cuenta');
+    }
+  }
+  applyNavUser();
+  // Update live when identity changes (chat send, cuenta login, other tab)
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'logramo_user') applyNavUser();
+  });
+  // Expose so the chat code can call it without waiting for next page load
+  window.refreshNavUser = applyNavUser;
+})();
