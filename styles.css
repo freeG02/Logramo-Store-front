@@ -2738,26 +2738,27 @@ h1, h2, h3, h4,
   .reviews-grid > * { width: min(82vw, 360px); }
 }
 
-/* Dog photo strip — shown when a verified buyer attached a photo */
-.review-card.has-photo { padding-top: 0; overflow: hidden; }
-.review-card__photo {
-  position: relative;
-  margin: -32px -32px 22px;     /* break out of the card's 32px padding */
-  height: 180px;
-  border-bottom: var(--bw-1) solid var(--c-ink);
-  overflow: hidden;
+/* Top row of a review card — stars on the left, dog-name pill on the right */
+.review-card__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 16px;
 }
-.review-card__photo img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
-.review-card__photo-tag {
-  position: absolute; bottom: 10px; left: 10px;
+.review-card__top .review-card__stars { margin-bottom: 0; }
+.review-card__dog {
+  display: inline-flex; align-items: center; gap: 6px;
   background: var(--c-cream); color: var(--c-ink);
   border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-full);
-  padding: 5px 12px; font-size: .72rem; font-weight: 900;
+  padding: 5px 12px 5px 9px;
+  font-size: .72rem; font-weight: 900;
   letter-spacing: .08em; text-transform: uppercase;
   box-shadow: var(--shadow-xs);
+  white-space: nowrap;
 }
+.review-card__dog svg { width: 14px; height: 14px; }
+/* On dark-card variants, keep the pill cream so it pops */
+.review-card--peach .review-card__dog,
+.review-card--golden .review-card__dog,
+.review-card--terra .review-card__dog { background: var(--c-cream); color: var(--c-ink); }
 
 /* ============================================================
    ANIMATION SUPPORT — sticky-stack + horizontal drag

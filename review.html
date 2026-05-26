@@ -64,42 +64,6 @@
       outline: none; box-shadow: var(--shadow-xs); transform: translate(-1px, -1px);
     }
 
-    /* Photo uploader */
-    .photo-drop {
-      display: flex; align-items: center; gap: 14px;
-      border: 2px dashed rgba(17,26,23,.3); border-radius: var(--radius-sm);
-      background: var(--c-cream-alt); padding: 14px;
-      cursor: pointer; transition: border-color .15s ease, background .15s ease;
-    }
-    .photo-drop:hover { border-color: var(--c-terracotta); background: #fff; }
-    .photo-drop input[type="file"] { display: none; }
-    .photo-drop .photo-icon {
-      width: 48px; height: 48px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--c-peach); border: var(--bw-1) solid var(--c-ink);
-      border-radius: var(--radius-sm); color: var(--c-ink);
-    }
-    .photo-drop .photo-text { flex: 1; min-width: 0; }
-    .photo-drop .photo-text strong { display: block; font-size: .95rem; color: var(--c-text); }
-    .photo-drop .photo-text span { display: block; font-size: .8rem; color: var(--c-text-muted); margin-top: 2px; }
-    .photo-preview {
-      margin-top: 12px; display: none; align-items: center; gap: 12px;
-      background: var(--c-cream-alt); border: var(--bw-1) solid var(--c-ink);
-      border-radius: var(--radius-sm); padding: 10px;
-    }
-    .photo-preview.is-shown { display: flex; }
-    .photo-preview img {
-      width: 64px; height: 64px; object-fit: cover;
-      border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-sm);
-    }
-    .photo-preview .photo-meta { flex: 1; min-width: 0; font-size: .85rem; }
-    .photo-preview .photo-meta strong { display: block; color: var(--c-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .photo-preview .photo-meta span { color: var(--c-text-muted); font-size: .78rem; }
-    .photo-preview button {
-      background: transparent; border: none; color: var(--c-terracotta);
-      font-weight: 700; cursor: pointer; padding: 6px 10px; font-size: .85rem;
-    }
-
     /* Submit row */
     .submit-row {
       margin-top: 30px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
@@ -207,28 +171,7 @@
           <div class="field">
             <label class="lbl" for="dogNameInput">El nombre de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">— opcional</span></label>
             <input id="dogNameInput" type="text" maxlength="40" placeholder="Ej. Lola, Toby, Coco…">
-          </div>
-
-          <div class="field">
-            <label class="lbl">Foto de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">— opcional</span></label>
-            <label class="photo-drop" for="photoInput" id="photoDrop">
-              <div class="photo-icon">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.3" cy="9" r="1.8" fill="currentColor"/><path d="M4 18l5-5.5 3.5 3.5 3.5-4L21 17"/></svg>
-              </div>
-              <div class="photo-text">
-                <strong>Sube una foto de tu perro</strong>
-                <span>JPG, PNG o WEBP. Hasta 6 MB.</span>
-              </div>
-              <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp">
-            </label>
-            <div class="photo-preview" id="photoPreview">
-              <img id="photoThumb" alt="">
-              <div class="photo-meta">
-                <strong id="photoName"></strong>
-                <span id="photoSize"></span>
-              </div>
-              <button type="button" id="photoRemove">Quitar</button>
-            </div>
+            <span class="hint">Si lo añades, aparecerá junto a tu reseña en la web.</span>
           </div>
 
           <div class="form-error" id="formError"></div>
@@ -293,11 +236,6 @@
     var u = new URL(window.location.href);
     return u.searchParams.get(name) || '';
   }
-  function fmtSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  }
   function showFormError(msg) {
     var el = $('formError');
     el.textContent = msg;
@@ -312,7 +250,6 @@
 
   // ---------- Token state ----------
   var TOKEN = getQuery('token');
-  var PHOTO_DATA_URL = null;
 
   if (!TOKEN) {
     show('state-error');
@@ -369,45 +306,6 @@
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ---------- Photo handling ----------
-  var photoInput = $('photoInput');
-  var photoPreview = $('photoPreview');
-  var photoThumb = $('photoThumb');
-  var photoName = $('photoName');
-  var photoSize = $('photoSize');
-  var photoRemove = $('photoRemove');
-
-  photoInput.addEventListener('change', function () {
-    var f = photoInput.files && photoInput.files[0];
-    if (!f) return;
-    if (f.size > 6 * 1024 * 1024) {
-      showFormError('La foto pesa más de 6 MB. Reduce el tamaño y vuelve a intentarlo.');
-      photoInput.value = '';
-      return;
-    }
-    if (!/^image\/(jpeg|jpg|png|webp)$/i.test(f.type)) {
-      showFormError('Solo aceptamos JPG, PNG o WEBP.');
-      photoInput.value = '';
-      return;
-    }
-    var reader = new FileReader();
-    reader.onload = function (ev) {
-      PHOTO_DATA_URL = ev.target.result;
-      photoThumb.src = PHOTO_DATA_URL;
-      photoName.textContent = f.name;
-      photoSize.textContent = fmtSize(f.size);
-      photoPreview.classList.add('is-shown');
-      clearFormError();
-    };
-    reader.readAsDataURL(f);
-  });
-
-  photoRemove.addEventListener('click', function () {
-    PHOTO_DATA_URL = null;
-    photoInput.value = '';
-    photoPreview.classList.remove('is-shown');
-  });
-
   // ---------- Submit ----------
   $('reviewForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -439,8 +337,7 @@
         token: TOKEN,
         rating: rating,
         quote: quote,
-        dogName: dogName,
-        photoDataUrl: PHOTO_DATA_URL || ''
+        dogName: dogName
       })
     })
     .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
