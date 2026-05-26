@@ -1,11 +1,11 @@
 // @ts-nocheck — Deno Edge Function (Supabase)
-// Sends an admin reply email to the original visitor and marks the message
-// row as `replied`. Called from the admin dashboard via POST.
+// Admin endpoint that posts a reply into a conversation thread.
 //
 //   POST /send-message-reply
-//        body: { id: <message uuid>, reply: <text> }
-//      → fetches the message row, sends email to message.email, then patches
-//        the row (status='replied', replied_at=now, reply_body=reply).
+//        body: { conversation_id, body }
+//      → inserts a messages row with direction='out' (which fires the
+//        bump_conversation_last_message trigger), sends an email to the
+//        visitor with the reply text, and returns { ok }.
 //
 // ENV (auto-injected by Supabase):
 //   RESEND_API_KEY
@@ -27,9 +27,7 @@ const CORS = {
 };
 
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status, headers: { "Content-Type": "application/json", ...CORS },
-  });
+  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...CORS } });
 }
 function esc(s: string): string {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -41,27 +39,24 @@ function firstName(s?: string | null): string {
   return cap(s.trim().split(/\s+/)[0].slice(0, 20));
 }
 
-async function sbSelect(path: string): Promise<any[]> {
+async function sb(method: string, path: string, body?: any, prefer = "return=representation") {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-  });
-  if (!r.ok) return [];
-  return await r.json();
-}
-async function sbPatch(table: string, filter: string, body: any): Promise<Response> {
-  return await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filter}`, {
-    method: "PATCH",
+    method,
     headers: {
       apikey: SUPABASE_KEY,
       Authorization: `Bearer ${SUPABASE_KEY}`,
       "Content-Type": "application/json",
-      Prefer: "return=minimal",
+      Prefer: prefer,
     },
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : undefined,
   });
+  const text = await r.text();
+  let data: any = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  return { ok: r.ok, status: r.status, data };
 }
 
-function buildHtml(opts: { name: string; original: string; reply: string }): string {
+function buildHtml(opts: { name: string; reply: string }): string {
   const greeting = opts.name ? `${esc(opts.name)},<br>` : "";
   return `<!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"/><title>Te respondemos · Logramo</title></head>
@@ -76,12 +71,8 @@ function buildHtml(opts: { name: string; original: string; reply: string }): str
   <tr><td style="padding:8px 32px 0;">
     <div style="background:#F8F3D9;border:1px solid #111A17;border-radius:14px;padding:22px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:15.5px;line-height:1.6;color:#111A17;">${nl2br(opts.reply)}</div>
   </td></tr>
-  ${opts.original ? `<tr><td style="padding:24px 32px 0;">
-    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5A6857;margin-bottom:6px;">Tu mensaje original</div>
-    <div style="border-left:3px solid #C55932;padding:4px 0 4px 14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:1.55;color:#5A6857;">${nl2br(opts.original)}</div>
-  </td></tr>` : ""}
   <tr><td style="padding:28px 32px 32px;">
-    <p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3C4824;">¿Otra duda? Responde a este email — estamos del otro lado.</p>
+    <p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3C4824;">¿Otra duda? Vuelve al chat en <a href="https://logramo.com" style="color:#C55932;text-decoration:underline;">logramo.com</a> o responde a este email — leemos cada respuesta.</p>
   </td></tr>
   <tr><td style="background:#ADCBEF;padding:18px 32px;text-align:center;border-top:2px solid #111A17;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#3C4824;">
     © Logramo · Hecho para perros y los humanos que los adoran
@@ -96,40 +87,42 @@ serve(async (req: Request) => {
     return new Response("Logramo send-message-reply OK", { status: 200, headers: CORS });
   }
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: CORS });
-
-  if (!SUPABASE_KEY) return json({ ok: false, reason: "server_misconfigured" }, 500);
+  if (!SUPABASE_KEY)  return json({ ok: false, reason: "server_misconfigured" }, 500);
   if (!RESEND_API_KEY) return json({ ok: false, reason: "no_resend_key" }, 500);
 
   let body: any;
   try { body = await req.json(); }
   catch { return json({ ok: false, reason: "bad_json" }, 400); }
 
-  const id = String(body?.id ?? "").trim();
-  const reply = String(body?.reply ?? "").trim();
-  if (!id) return json({ ok: false, reason: "missing_id" }, 400);
+  const convId = String(body?.conversation_id ?? "").trim();
+  const reply  = String(body?.body ?? body?.reply ?? "").trim();
+  if (!convId) return json({ ok: false, reason: "missing_conversation_id" }, 400);
   if (reply.length < 2) return json({ ok: false, reason: "reply_too_short" }, 400);
   if (reply.length > 6000) return json({ ok: false, reason: "reply_too_long" }, 400);
 
-  const rows = await sbSelect(`messages?id=eq.${encodeURIComponent(id)}&select=id,name,email,body,status`);
-  const m = rows?.[0];
-  if (!m) return json({ ok: false, reason: "not_found" }, 404);
+  const convs = await sb("GET", `conversations?id=eq.${encodeURIComponent(convId)}&select=*`);
+  const c = Array.isArray(convs.data) && convs.data[0];
+  if (!c) return json({ ok: false, reason: "not_found" }, 404);
 
+  // Insert the outbound message — triggers bump last_message_at
+  const ins = await sb("POST", "messages", {
+    conversation_id: convId,
+    direction: "out",
+    body: reply,
+  });
+  if (!ins.ok) return json({ ok: false, reason: "insert_failed", detail: ins.data }, 500);
+
+  // Send the email to the visitor
   const subject = `Te respondemos · Logramo`;
-  const html = buildHtml({ name: firstName(m.name), original: m.body || "", reply });
-
+  const html = buildHtml({ name: firstName(c.visitor_name), reply });
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to: [m.email], subject, html, reply_to: REPLY_TO }),
+    body: JSON.stringify({ from: FROM, to: [c.visitor_email], subject, html, reply_to: REPLY_TO }),
   });
   if (!r.ok) {
     const detail = await r.text();
     return json({ ok: false, reason: "resend_failed", detail }, 500);
   }
-  const data = await r.json();
-
-  await sbPatch("messages", `id=eq.${encodeURIComponent(id)}`,
-    { status: "replied", replied_at: new Date().toISOString(), reply_body: reply });
-
-  return json({ ok: true, id: data?.id });
+  return json({ ok: true });
 });

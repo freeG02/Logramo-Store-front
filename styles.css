@@ -2048,6 +2048,30 @@ h6 { font-size: .9rem; }
 .chat-panel__quick { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
 .chat-panel__quick .chat-panel__option { font-size:.66rem; padding:6px 10px; border-radius:var(--radius-full); }
 
+/* Closed-conversation banner with "Start new" button */
+.chat-panel__closed {
+  padding:14px 18px;
+  border-top:var(--bw-1) solid rgba(17,26,23,.12);
+  background: var(--c-cream-alt);
+  text-align:center;
+}
+.chat-panel__closed p {
+  margin:0 0 10px;
+  font-family:var(--font-body); font-weight:700; font-size:.82rem;
+  color:var(--c-text); line-height:1.4;
+}
+.chat-panel__newconv {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:9px 18px;
+  font-family:var(--font-body); font-weight:900; font-size:.72rem;
+  letter-spacing:.08em; text-transform:uppercase;
+  background:var(--c-golden); color:var(--c-ink);
+  border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-full);
+  box-shadow:var(--shadow-xs); cursor:pointer;
+  transition:transform .12s var(--ease-back), box-shadow .12s var(--ease-back);
+}
+.chat-panel__newconv:hover { transform:translate(-2px,-2px); box-shadow:var(--shadow-sm); }
+
 /* Chat contact form */
 .chat-panel__form {
   display:flex; flex-direction:column; gap:10px;

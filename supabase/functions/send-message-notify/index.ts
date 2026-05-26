@@ -69,10 +69,12 @@ serve(async (req: Request) => {
   try { payload = await req.json(); }
   catch { return new Response(JSON.stringify({ error: "invalid JSON" }), { status: 400 }); }
 
-  // Supabase Database Webhook shape: { type, table, schema, record, old_record }
+  // Trigger payload shape: { type, table, schema, record }
+  // record fields come from the trigger and include visitor_email/visitor_name
+  // (looked up from conversations). Also tolerant of the legacy flat shape.
   const r = payload?.record ?? payload ?? {};
-  const name: string = (r.name ?? "").toString().trim() || "Visitante";
-  const email: string = (r.email ?? "").toString().trim();
+  const name: string = (r.visitor_name ?? r.name ?? "").toString().trim() || "Visitante";
+  const email: string = (r.visitor_email ?? r.email ?? "").toString().trim();
   const body: string = (r.body ?? "").toString();
   const source: string = (r.source ?? "chat").toString();
   const when = spDate(r.created_at);

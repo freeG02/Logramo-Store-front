@@ -577,37 +577,38 @@ chatToggle?.addEventListener('click', () => {
 });
 
 (function setupChat() {
-  const form = document.getElementById('chatForm');
+  const form     = document.getElementById('chatForm');
   if (!form) return;
-  const body = document.getElementById('chatBody');
-  const hint = document.getElementById('chatHint');
-  const send = document.getElementById('chatSend');
-  const nameEl = document.getElementById('chatName');
-  const emailEl = document.getElementById('chatEmail');
-  const nameRow = document.getElementById('chatNameRow');
-  const idRow = document.getElementById('chatIdentity');
-  const idName = document.getElementById('chatIdName');
-  const idEmail = document.getElementById('chatIdEmail');
+  const body     = document.getElementById('chatBody');
+  const hint     = document.getElementById('chatHint');
+  const send     = document.getElementById('chatSend');
+  const nameEl   = document.getElementById('chatName');
+  const emailEl  = document.getElementById('chatEmail');
+  const nameRow  = document.getElementById('chatNameRow');
+  const idRow    = document.getElementById('chatIdentity');
+  const idName   = document.getElementById('chatIdName');
+  const idEmail  = document.getElementById('chatIdEmail');
   const idChange = document.getElementById('chatIdChange');
-  const msgEl = document.getElementById('chatMessage');
+  const msgEl    = document.getElementById('chatMessage');
   const quickWrap = document.getElementById('chatQuick');
+  const statusEl  = document.getElementById('chatStatus');
+  const closedBox = document.getElementById('chatClosed');
+  const newConvBtn = document.getElementById('chatNewConvBtn');
+  const panel    = document.getElementById('chatPanel');
 
-  // ---- Identity: prefill from cuenta.html's localStorage user if any ----
-  // Same key the account page uses; also rewritten after a successful send so
-  // even visitors who never signed up get a "remember me" experience.
-  const ID_KEY = 'logramo_user';
-  function readIdentity() {
-    try { return JSON.parse(localStorage.getItem(ID_KEY)) || null; }
-    catch { return null; }
-  }
-  function writeIdentity(u) {
-    try { localStorage.setItem(ID_KEY, JSON.stringify(u)); } catch (_) {}
-  }
+  const FN_BASE  = 'https://eopobchvkfvkkrtrzeyu.supabase.co/functions/v1';
+  const POLL_MS  = 8000;
+  const ID_KEY   = 'logramo_user';
+
+  // --- Identity helpers ---
+  function readIdentity() { try { return JSON.parse(localStorage.getItem(ID_KEY)) || null; } catch { return null; } }
+  function writeIdentity(u) { try { localStorage.setItem(ID_KEY, JSON.stringify(u)); } catch (_) {} }
+  function identityName(u) { return (u && (u.username || u.name)) || ''; }
   function applyIdentity(u) {
     if (u && u.email) {
-      nameEl.value = u.username || u.name || '';
+      nameEl.value = identityName(u);
       emailEl.value = u.email;
-      idName.textContent = u.username || u.name || u.email.split('@')[0];
+      idName.textContent = identityName(u) || u.email.split('@')[0];
       idEmail.textContent = ' · ' + u.email;
       idRow.hidden = false;
       nameRow.hidden = true;
@@ -619,22 +620,19 @@ chatToggle?.addEventListener('click', () => {
   applyIdentity(readIdentity());
 
   idChange.addEventListener('click', () => {
-    // Let them edit a different name/email for this message without wiping the saved identity yet.
     idRow.hidden = true;
     nameRow.hidden = false;
+    nameEl.value = ''; emailEl.value = '';
     nameEl.focus();
-    nameEl.select();
   });
 
-  // Quick-fill buttons drop a starter phrase into the textarea + focus it
+  // --- Quick-fill chips drop a starter phrase into the textarea ---
   if (quickWrap) {
     quickWrap.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-quick]'); if (!btn) return;
       const seed = btn.getAttribute('data-quick') || '';
-      if (msgEl.value.trim()) msgEl.value = msgEl.value + '\n\n' + seed;
-      else msgEl.value = seed;
+      msgEl.value = (msgEl.value.trim() ? msgEl.value + '\n\n' : '') + seed;
       msgEl.focus();
-      // Place cursor at the end
       try { msgEl.setSelectionRange(msgEl.value.length, msgEl.value.length); } catch (_) {}
     });
   }
@@ -642,59 +640,176 @@ chatToggle?.addEventListener('click', () => {
   function setHint(text, kind) {
     if (!hint) return;
     hint.textContent = text;
-    hint.style.color = kind === 'err' ? 'var(--c-terracotta)' : (kind === 'ok' ? 'var(--c-forest)' : '');
+    hint.style.color = kind === 'err' ? 'var(--c-terracotta)' : '';
+  }
+  function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function showSuccessState(name) {
-    if (!body) return;
+  // --- Thread state ---
+  let CONV = null;      // current active conversation object (open or closed)
+  let MSGS = [];        // messages in CONV
+  let pollTimer = null;
+  let suppressForceNew = false;
+
+  function renderMessages() {
+    if (!CONV) {
+      // First-time/empty state: keep the welcome + quick-fill chips intact
+      return;
+    }
+    body.innerHTML = MSGS.map(function (m) {
+      const cls = m.direction === 'in' ? 'chat-msg--user' : 'chat-msg--bot';
+      return '<div class="chat-msg ' + cls + '">' + esc(m.body).replace(/\n/g, '<br>') + '</div>';
+    }).join('');
+    // Auto-scroll to newest
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function showClosedState() {
+    closedBox.hidden = false;
+    form.style.display = 'none';
+    setStatus('● Conversación cerrada');
+  }
+  function showActiveState() {
+    closedBox.hidden = true;
+    form.style.display = '';
+    setStatus('● Online');
+  }
+  function showNoConvState() {
+    // Brand-new visitor or "start over" — form is the primary surface
+    CONV = null; MSGS = [];
+    closedBox.hidden = true;
+    form.style.display = '';
+    msgEl.value = '';
+    msgEl.placeholder = '¿En qué te podemos ayudar?';
     body.innerHTML =
-      '<div class="chat-msg chat-msg--bot">¡Recibido, ' + (name || 'gracias') + '! Te respondemos por email lo antes posible — normalmente en menos de 24 h.</div>' +
-      '<div class="chat-msg chat-msg--bot">Mientras tanto, puedes echar un vistazo a <a href="biblioteca.html" style="color:var(--c-terracotta);font-weight:700">la biblioteca</a> o al <a href="blog.html" style="color:var(--c-terracotta);font-weight:700">blog</a>.</div>';
-    form.remove();
+      '<div class="chat-msg chat-msg--bot">¡Hola! Cuéntanos qué pasa con tu perro y te respondemos por email lo antes posible.</div>' +
+      '<div class="chat-panel__quick" id="chatQuick">' +
+        '<button type="button" class="chat-panel__option" data-quick="Tengo un cachorro nuevo y no sé por dónde empezar.">Cachorro nuevo</button>' +
+        '<button type="button" class="chat-panel__option" data-quick="Mi perro tiene un problema de conducta. Os cuento: ">Problema de conducta</button>' +
+        '<button type="button" class="chat-panel__option" data-quick="Tengo una duda sobre uno de los libros: ">Sobre los libros</button>' +
+      '</div>';
+    // Re-wire quick chips after innerHTML swap
+    const qw = document.getElementById('chatQuick');
+    if (qw) qw.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-quick]'); if (!btn) return;
+      const seed = btn.getAttribute('data-quick') || '';
+      msgEl.value = (msgEl.value.trim() ? msgEl.value + '\n\n' : '') + seed;
+      msgEl.focus();
+    });
+    setStatus('● Online');
   }
 
+  async function loadHistory() {
+    const u = readIdentity();
+    if (!u || !u.email) return; // No identity yet → keep welcome state
+    try {
+      const r = await fetch(FN_BASE + '/chat-load?email=' + encodeURIComponent(u.email));
+      const data = await r.json();
+      if (!data.ok || !data.conversations.length) return;
+      // Latest conversation = current
+      CONV = data.conversations[0];
+      MSGS = CONV.messages || [];
+      renderMessages();
+      if (CONV.is_open) showActiveState();
+      else showClosedState();
+      msgEl.placeholder = CONV.is_open ? 'Sigue la conversación…' : '';
+    } catch (_) { /* keep welcome state if load fails */ }
+  }
+
+  function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(refreshFromServer, POLL_MS);
+  }
+  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+  async function refreshFromServer() {
+    const u = readIdentity();
+    if (!u || !u.email) return;
+    try {
+      const r = await fetch(FN_BASE + '/chat-load?email=' + encodeURIComponent(u.email));
+      const data = await r.json();
+      if (!data.ok || !data.conversations.length) return;
+      const latest = data.conversations[0];
+      // If the open conversation switched (closed + new started), refresh fully
+      const sameConv = CONV && CONV.id === latest.id;
+      const prevCount = MSGS.length;
+      CONV = latest;
+      MSGS = latest.messages || [];
+      if (!sameConv) {
+        renderMessages();
+        if (CONV.is_open) showActiveState(); else showClosedState();
+        return;
+      }
+      // Same conversation: render only if message count changed
+      if (MSGS.length !== prevCount) renderMessages();
+      // Auto-close transition
+      if (!CONV.is_open && closedBox.hidden) showClosedState();
+    } catch (_) {}
+  }
+
+  // --- Submit a new message ---
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    setHint('Enviando tu mensaje…');
     const name = (nameEl.value || '').trim();
     const email = (emailEl.value || '').trim();
     const message = (msgEl.value || '').trim();
-    if (!name) { setHint('Ponle un nombre para saber cómo llamarte.', 'err'); nameEl.focus(); return; }
+    if (!name)  { setHint('Ponle un nombre para saber cómo llamarte.', 'err'); nameEl.focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setHint('Necesitamos un correo válido para responderte.', 'err'); emailEl.focus(); return; }
-    if (message.length < 5) { setHint('Cuéntanos un poco más para poder ayudarte.', 'err'); msgEl.focus(); return; }
+    if (message.length < 2) { setHint('Cuéntanos un poco más para poder ayudarte.', 'err'); msgEl.focus(); return; }
 
-    send.disabled = true;
-    const originalSend = send.innerHTML;
-    send.innerHTML = 'Enviando…';
-    setHint('Enviando tu mensaje…');
+    const origSend = send.innerHTML;
+    send.disabled = true; send.innerHTML = 'Enviando…';
 
     try {
-      const r = await fetch(LOGRAMO_SB_URL + '/rest/v1/messages', {
-        method: 'POST',
-        headers: {
-          'apikey': LOGRAMO_SB_KEY,
-          'Authorization': 'Bearer ' + LOGRAMO_SB_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          name: name.slice(0, 60),
-          email: email.slice(0, 120),
-          body: message.slice(0, 1500),
-          source: 'chat:' + (location.pathname || '/')
-        })
+      const r = await fetch(FN_BASE + '/chat-send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, body: message, source: 'chat:' + (location.pathname || '/') })
       });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      // Remember this person for next visit (only updates name/email, leaves
-      // any other fields cuenta.html may have stored intact).
+      const data = await r.json();
+      if (!r.ok || !data.ok) throw new Error(data.reason || ('HTTP ' + r.status));
+
+      // Remember identity for next time
       const existing = readIdentity() || {};
       writeIdentity(Object.assign({}, existing, { username: name, name: name, email: email }));
-      showSuccessState(name.split(/\s+/)[0]);
+      applyIdentity(readIdentity());
+
+      CONV = data.conversation;
+      MSGS = data.messages || [];
+      renderMessages();
+      msgEl.value = '';
+      msgEl.placeholder = 'Sigue la conversación…';
+      setHint('Te avisamos por email cuando respondamos.');
+      startPolling();
     } catch (err) {
-      send.disabled = false;
-      send.innerHTML = originalSend;
       setHint('Algo falló al enviar. Intenta de nuevo o escríbenos a ayuda@logramo.com.', 'err');
+    } finally {
+      send.disabled = false; send.innerHTML = origSend;
     }
   });
+
+  // --- "Empezar una nueva" after a conversation auto-closes ---
+  newConvBtn.addEventListener('click', () => {
+    showNoConvState();
+    applyIdentity(readIdentity());
+    msgEl.focus();
+  });
+
+  // --- Open / close the panel ---
+  // The existing chatToggle handler above just toggles `.open`.
+  // We also need to start polling when it opens.
+  if (panel) {
+    new MutationObserver(() => {
+      if (panel.classList.contains('open')) {
+        loadHistory().then(startPolling);
+      } else {
+        stopPolling();
+      }
+    }).observe(panel, { attributes: true, attributeFilter: ['class'] });
+  }
 })();
 
 /* Video modal */

@@ -176,7 +176,7 @@ const CHAT_HTML = `
 <div class="chat-panel" id="chatPanel">
   <div class="chat-panel__header">
     <div class="chat-panel__avatar"><svg class="icon"><use href="#i-paw"/></svg></div>
-    <div><div class="chat-panel__name">Logramo</div><div class="chat-panel__status">● Online</div></div>
+    <div><div class="chat-panel__name">Logramo</div><div class="chat-panel__status" id="chatStatus">● Online</div></div>
   </div>
   <div class="chat-panel__body" id="chatBody">
     <div class="chat-msg chat-msg--bot">¡Hola! Cuéntanos qué pasa con tu perro y te respondemos por email lo antes posible.</div>
@@ -185,6 +185,10 @@ const CHAT_HTML = `
       <button type="button" class="chat-panel__option" data-quick="Mi perro tiene un problema de conducta. Os cuento: ">Problema de conducta</button>
       <button type="button" class="chat-panel__option" data-quick="Tengo una duda sobre uno de los libros: ">Sobre los libros</button>
     </div>
+  </div>
+  <div class="chat-panel__closed" id="chatClosed" hidden>
+    <p>Esta conversación se cerró por inactividad.</p>
+    <button type="button" class="chat-panel__newconv" id="chatNewConvBtn">Empezar una nueva &nbsp;→</button>
   </div>
   <form class="chat-panel__form" id="chatForm" novalidate>
     <div class="chat-panel__identity" id="chatIdentity" hidden>
