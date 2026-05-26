@@ -2702,6 +2702,42 @@ h1, h2, h3, h4,
 .review-card__stars { color: var(--c-golden) !important; }
 .review-card__stars svg { width: 20px; height: 20px; }
 
+/* Reviews — always-horizontal carousel (mobile + desktop).
+   Overrides the default 3-column grid + the generic [data-h-drag] mobile rules. */
+.reviews-grid {
+  display: flex !important;
+  grid-template-columns: none !important;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  padding: 8px 24px 36px;
+  margin: 0 -24px;
+  perspective: 1400px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.reviews-grid::-webkit-scrollbar { display: none; }
+.reviews-grid > * {
+  flex: 0 0 auto;
+  width: 360px;
+  scroll-snap-align: start;
+  transform-style: preserve-3d;
+  will-change: transform;
+  opacity: 1 !important;
+  transition: box-shadow .25s var(--ease-out), transform .25s var(--ease-out) !important;
+}
+.reviews-grid.is-dragging { cursor: grabbing; }
+.reviews-grid.is-dragging > * { pointer-events: none; }
+.reviews-grid img { pointer-events: none; -webkit-user-drag: none; }
+@media (max-width: 899px) {
+  .reviews-grid { padding: 8px 20px 36px; margin: 0 -20px; }
+  .reviews-grid > * { width: min(82vw, 360px); }
+}
+
 /* Dog photo strip — shown when a verified buyer attached a photo */
 .review-card.has-photo { padding-top: 0; overflow: hidden; }
 .review-card__photo {

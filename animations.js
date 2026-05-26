@@ -48,11 +48,12 @@
      tilt (rotateY) based on it, then ease back to flat.
   */
   function initDragScroll() {
-    // Only activate horizontal drag below 900px — on desktop the marked
-    // grids render as normal grids so we don't need to (and mustn't) hijack
-    // pointer/wheel events.
-    if (window.matchMedia('(min-width: 900px)').matches) return;
+    // On desktop, most grids render as normal grids and shouldn't hijack
+    // pointer events. The reviews carousel is the exception — it stays a
+    // single-row scroller at every viewport, so it always gets drag.
+    const isDesktop = window.matchMedia('(min-width: 900px)').matches;
     document.querySelectorAll('[data-h-drag]').forEach(track => {
+      if (isDesktop && !track.classList.contains('reviews-grid')) return;
       let isDown = false, startX = 0, startScroll = 0, lastX = 0, lastT = 0;
       let velocity = 0, raf, dragged = false, dragDist = 0;
 
