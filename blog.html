@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
   <title>Blog — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260530" />
+  <link rel="stylesheet" href="styles.css?v=20260531" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -139,12 +139,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260530"></script>
+<script src="partials.js?v=20260531"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=2"></script>
-<script src="animations.js?v=20260530"></script>
+<script src="animations.js?v=20260531"></script>
 <script>
 /* ============ BLOG — live articles from Supabase ============ */
 (function(){
@@ -197,7 +197,7 @@
   if(searchInput) searchInput.addEventListener('input',function(){ query=(searchInput.value||'').trim().toLowerCase(); applyFilters(); });
   (async function(){
     var arts=[];
-    try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error)arts=(r.data||[]).filter(function(a){return a.published!==false;}); }catch(e){}
+    try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error){ var now=Date.now(); arts=(r.data||[]).filter(function(a){ if(a.published===false) return false; if(a.publish_at && new Date(a.publish_at).getTime()>now) return false; return true; }); } }catch(e){}
     render(arts);
     /* Hide filter chips that have zero matching articles */
     (function pruneFilters(){

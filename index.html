@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Guías reales para dueños primerizos que están sobreviviendo el caos (y amándolo). Sin tecnicismos, sin juicios." />
   <title>Logramo — Cría un perro feliz</title>
-  <link rel="stylesheet" href="styles.css?v=20260530" />
+  <link rel="stylesheet" href="styles.css?v=20260531" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -305,12 +305,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260530"></script>
+<script src="partials.js?v=20260531"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=2"></script>
-<script src="animations.js?v=20260530"></script>
+<script src="animations.js?v=20260531"></script>
 
 <script>
 /* ============ HOME — live content from Supabase ============ */
@@ -391,11 +391,14 @@
   (async function(){
     try{
       var grid=document.getElementById('homeBlogGrid'); if(!grid) return;
-      var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}).limit(6);
+      var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}).limit(12);
       if(r.error||!r.data||!r.data.length) return; // keep fallback markup
+      var now=Date.now();
+      var arts=r.data.filter(function(a){ if(a.published===false) return false; if(a.publish_at && new Date(a.publish_at).getTime()>now) return false; return true; });
+      if(!arts.length) return;
       var skins=['sky','peach','golden'];
       var catColors={Cachorros:'terra',Educación:'solid',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'forest'};
-      grid.innerHTML=r.data.slice(0,3).map(function(a,i){
+      grid.innerHTML=arts.slice(0,3).map(function(a,i){
         var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="" loading="lazy">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>';
         return '<a href="blog-post.html?id='+encodeURIComponent(a.id)+'" class="article-card article-card--'+skins[i%3]+'"><div class="article-card__img-wrap"><span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'')+'</p><div class="article-card__meta"><span><svg class="icon icon--xs"><use href="#i-clock"/></svg> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
       }).join('');
