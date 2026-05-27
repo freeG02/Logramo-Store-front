@@ -181,6 +181,38 @@
     .list-item__star { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.85rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; opacity:0.35; filter:grayscale(1); transition:opacity .12s ease, background .12s ease, filter .12s ease, transform .12s ease; }
     .list-item__star:hover { opacity:0.7; background:var(--c-cream-alt); transform:translate(-1px,-1px); }
     .list-item__star.is-on { opacity:1; filter:none; background:var(--c-terracotta); }
+
+    /* ============ COMMENTS MODERATION ============ */
+    .cm-toolbar { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:6px 0 18px; }
+    .cm-filters { display:flex; gap:6px; flex-wrap:wrap; }
+    .cm-search { flex:1; min-width:220px; padding:10px 14px; border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-full); background:var(--c-cream); font:inherit; outline:none; box-shadow:var(--shadow-xs); }
+    .cm-search:focus { transform:translate(-1px,-1px); box-shadow:var(--shadow-sm); }
+    .cm-stats { display:flex; gap:18px; font-family:var(--font-display); font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:var(--c-text-muted); margin-bottom:14px; }
+    .cm-stats strong { color:var(--c-ink); font-weight:900; margin-right:4px; }
+    .cm-list { display:flex; flex-direction:column; gap:14px; }
+    .cm-item { display:grid; grid-template-columns:48px 1fr auto; gap:14px; padding:18px; background:var(--c-cream-alt); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-xs); }
+    .cm-item.is-hidden { opacity:.55; }
+    .cm-item.is-reply { margin-left:32px; background:var(--c-cream); }
+    .cm-avatar { width:42px; height:42px; border-radius:50%; background:var(--c-sage); color:var(--c-forest); border:var(--bw-1) solid var(--c-ink); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:900; font-size:.85rem; }
+    .cm-body { min-width:0; }
+    .cm-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+    .cm-name { font-family:var(--font-display); font-weight:800; font-size:.92rem; }
+    .cm-meta { font-family:var(--font-display); font-weight:600; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--c-text-muted); }
+    .cm-article { font-size:.78rem; color:var(--c-text-muted); }
+    .cm-article a { color:var(--c-terracotta); font-weight:700; text-decoration:underline; }
+    .cm-text { font-size:.94rem; line-height:1.55; color:var(--c-ink); margin-top:6px; word-wrap:break-word; }
+    .cm-status-badge { display:inline-block; padding:2px 8px; border-radius:9999px; border:var(--bw-1) solid var(--c-ink); font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; font-weight:800; }
+    .cm-status-badge--ok { background:var(--c-sage); color:var(--c-forest); }
+    .cm-status-badge--hidden { background:var(--c-text-muted); color:var(--c-cream); }
+    .cm-actions { display:flex; flex-direction:column; gap:8px; min-width:120px; }
+    .cm-actions .icon-btn { white-space:nowrap; justify-content:center; }
+    .cm-actions .icon-btn--danger { color:var(--c-terracotta); }
+    .cm-list .muted { padding:20px; text-align:center; }
+    @media (max-width: 720px) {
+      .cm-item { grid-template-columns:42px 1fr; }
+      .cm-actions { grid-column:1 / -1; flex-direction:row; flex-wrap:wrap; min-width:0; }
+      .cm-actions .icon-btn { flex:1; }
+    }
     .list-item.is-pinned { box-shadow:3px 3px 0 var(--c-golden); border-color:var(--c-ink); }
     .list-item.is-unpublished { background:#f3f1e9; opacity:.7; }
     .list-item.is-unpublished .list-item__title,
@@ -365,6 +397,7 @@
         <button class="subtab" data-sub="cat">Categories</button>
         <button class="subtab" data-sub="vid">Homepage videos</button>
         <button class="subtab" data-sub="rev">Reviews</button>
+        <button class="subtab" data-sub="com">Comments</button>
       </div>
       <p class="muted" style="margin:-8px 0 18px;font-size:.84rem">
         Tip: click the <strong>⭐ star</strong> next to any product below to set it as the homepage highlight.
@@ -540,6 +573,24 @@
           <div>
             <div class="panel panel--list"><h2>Reviews</h2><div class="list" id="rList"></div></div>
           </div>
+        </div>
+      </div>
+
+      <!-- COMMENTS -->
+      <div data-sub-view="com" hidden>
+        <div class="panel">
+          <h2>Blog comments</h2>
+          <p class="panel__hint">Every comment posted on your blog posts. Hide it to remove it from the site while keeping the row. Delete it to remove it forever.</p>
+          <div class="cm-toolbar">
+            <div class="cm-filters">
+              <button type="button" class="subtab active" data-cm-filter="all">All</button>
+              <button type="button" class="subtab" data-cm-filter="approved">Visible</button>
+              <button type="button" class="subtab" data-cm-filter="hidden">Hidden</button>
+            </div>
+            <input type="search" id="cmSearch" placeholder="Search by author or text…" class="cm-search">
+          </div>
+          <div id="cmStats" class="cm-stats"></div>
+          <div id="cmList" class="cm-list"><p class="muted">Loading…</p></div>
         </div>
       </div>
 
@@ -983,6 +1034,140 @@
   /* The homepage highlight is now toggled directly from each product row in
      the Products list (star icon). See the [data-highlight] click handler
      wired to #pList above. The previous searchable picker tab was removed. */
+
+  /* ===== BLOG COMMENTS MODERATION =====
+     Lists every comment posted to a blog post and lets the admin hide
+     (status='hidden') or delete it. RLS policies (see migration
+     20260531_admin_comment_moderation.sql) restrict this to profiles
+     where is_admin = true — so mark your own profile first. */
+  var COMMENTS = [];
+  var ARTICLES_BY_ID = {};
+  var cmFilter = 'all';
+  var cmQuery = '';
+  function cmInitials(name){ var s=String(name||'').trim(); if(!s) return '•'; var parts=s.split(/[\s._\-+@]+/).filter(Boolean); if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase(); return s.slice(0,2).toUpperCase(); }
+  function cmFmtDate(iso){ if(!iso) return ''; var d=new Date(iso); var now=Date.now(); var diffH=(now-d.getTime())/3600000; if(diffH<24) return Math.max(1,Math.floor(diffH))+'h ago'; var diffD=Math.floor(diffH/24); if(diffD<7) return diffD+'d ago'; return d.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}); }
+  function cmRender(){
+    var box = $('cmList'); if(!box) return;
+    var stats = $('cmStats');
+    var rows = COMMENTS.slice();
+    var visible = rows.filter(function(c){return c.status==='approved';}).length;
+    var hidden  = rows.filter(function(c){return c.status==='hidden';}).length;
+    if(stats) stats.innerHTML = '<span><strong>'+rows.length+'</strong> total</span><span><strong>'+visible+'</strong> visible</span><span><strong>'+hidden+'</strong> hidden</span>';
+    if(cmFilter==='approved') rows = rows.filter(function(c){return c.status==='approved';});
+    if(cmFilter==='hidden')   rows = rows.filter(function(c){return c.status==='hidden';});
+    if(cmQuery){
+      var q = cmQuery;
+      rows = rows.filter(function(c){
+        return (c.author_name||'').toLowerCase().indexOf(q)>-1
+            || (c.body||'').toLowerCase().indexOf(q)>-1;
+      });
+    }
+    if(!rows.length){ box.innerHTML='<p class="muted">No comments to show.</p>'; return; }
+    box.innerHTML = rows.map(function(c){
+      var article = ARTICLES_BY_ID[c.article_id];
+      var articleHtml = article
+        ? '<a href="blog-post.html?id='+esc(c.article_id)+'" target="_blank" rel="noopener">'+esc(article.title||'Article')+'</a>'
+        : '<span class="muted">(article deleted)</span>';
+      var isHidden = c.status === 'hidden';
+      var isReply  = !!c.parent_id;
+      var badge = isHidden
+        ? '<span class="cm-status-badge cm-status-badge--hidden">Hidden</span>'
+        : '<span class="cm-status-badge cm-status-badge--ok">Visible</span>';
+      var replyTag = isReply ? '<span class="cm-meta">↳ reply</span>' : '';
+      return '<div class="cm-item'+(isHidden?' is-hidden':'')+(isReply?' is-reply':'')+'" data-cm="'+esc(c.id)+'">'
+        +'<div class="cm-avatar">'+esc(cmInitials(c.author_name))+'</div>'
+        +'<div class="cm-body">'
+          +'<div class="cm-head">'
+            +'<span class="cm-name">'+esc(c.author_name||'Anónimo')+'</span>'
+            +badge
+            +replyTag
+            +'<span class="cm-meta">'+esc(cmFmtDate(c.created_at))+'</span>'
+          +'</div>'
+          +'<div class="cm-article">On: '+articleHtml+'</div>'
+          +'<p class="cm-text">'+esc(c.body||'')+'</p>'
+        +'</div>'
+        +'<div class="cm-actions">'
+          +(isHidden
+            ? '<button type="button" class="icon-btn" data-cm-show="'+esc(c.id)+'">Show on site</button>'
+            : '<button type="button" class="icon-btn" data-cm-hide="'+esc(c.id)+'">Hide from site</button>')
+          +'<button type="button" class="icon-btn icon-btn--danger" data-cm-del="'+esc(c.id)+'">Delete</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  }
+  async function cmLoad(){
+    var box = $('cmList'); if(!box) return;
+    box.innerHTML = '<p class="muted">Loading…</p>';
+    try{
+      var r = await sb.from('blog_comments').select('*').order('created_at',{ascending:false});
+      if(r.error) throw r.error;
+      COMMENTS = r.data || [];
+      // Pre-fetch article titles in one round-trip
+      var ids = Array.from(new Set(COMMENTS.map(function(c){return c.article_id;}).filter(Boolean)));
+      ARTICLES_BY_ID = {};
+      if(ids.length){
+        try{
+          var ra = await sb.from('articles').select('id,title').in('id', ids);
+          (ra.data||[]).forEach(function(a){ ARTICLES_BY_ID[a.id] = a; });
+        }catch(_){}
+      }
+      cmRender();
+    }catch(e){
+      var msg = e.message || '';
+      var hint = /relation|does not exist/i.test(msg)
+        ? '\n\nDid you run the blog_likes_and_comments migration?'
+        : (/permission|policy/i.test(msg)
+          ? '\n\nYou are logged in but not marked as admin. Run the admin migration and set is_admin=true on your profile.'
+          : '');
+      box.innerHTML = '<p class="muted">Could not load comments ('+esc(msg)+').'+esc(hint)+'</p>';
+    }
+  }
+  async function cmSetStatus(id, status){
+    try{
+      var r = await sb.from('blog_comments').update({ status: status }).eq('id', id);
+      if(r.error) throw r.error;
+      var c = COMMENTS.find(function(x){return String(x.id)===String(id);});
+      if(c) c.status = status;
+      cmRender();
+    }catch(e){
+      alert('Could not update: '+(e.message||e)+'\n\n(Are you marked as admin? See the migration.)');
+    }
+  }
+  async function cmDelete(id){
+    var c = COMMENTS.find(function(x){return String(x.id)===String(id);}) || {};
+    if(!confirm('Delete this comment by '+(c.author_name||'(unknown)')+' permanently?\n\n"'+(c.body||'').slice(0,140)+'"')) return;
+    try{
+      var r = await sb.from('blog_comments').delete().eq('id', id);
+      if(r.error) throw r.error;
+      COMMENTS = COMMENTS.filter(function(x){return String(x.id)!==String(id);});
+      cmRender();
+    }catch(e){
+      alert('Could not delete: '+(e.message||e)+'\n\n(Are you marked as admin? See the migration.)');
+    }
+  }
+
+  // Wire toolbar + list actions
+  document.addEventListener('click', function(e){
+    var f = e.target.closest('[data-cm-filter]');
+    if(f){
+      cmFilter = f.getAttribute('data-cm-filter');
+      document.querySelectorAll('[data-cm-filter]').forEach(function(b){ b.classList.toggle('active', b===f); });
+      cmRender();
+      return;
+    }
+    var hide = e.target.closest('[data-cm-hide]');
+    if(hide){ cmSetStatus(hide.getAttribute('data-cm-hide'), 'hidden'); return; }
+    var show = e.target.closest('[data-cm-show]');
+    if(show){ cmSetStatus(show.getAttribute('data-cm-show'), 'approved'); return; }
+    var del  = e.target.closest('[data-cm-del]');
+    if(del){ cmDelete(del.getAttribute('data-cm-del')); return; }
+  });
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.id === 'cmSearch'){
+      cmQuery = (e.target.value||'').trim().toLowerCase();
+      cmRender();
+    }
+  });
 
   /* ===== BLOG CATEGORIES =====
      Available color tokens come from styles.css palette + the existing tag
@@ -1687,7 +1872,7 @@
     $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
-    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); loadMessages();
+    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); cmLoad(); loadMessages();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
