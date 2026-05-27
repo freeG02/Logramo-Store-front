@@ -272,15 +272,24 @@ function trackPageview(opts) {
   });
 }
 
-/* Scroll Reveal */
+/* Scroll Reveal — IntersectionObserver with a safety fallback.
+   On very tall elements (long blog posts) the 0.12 threshold can fail to
+   trigger because viewport_height / element_height < 0.12. We add a low
+   threshold (0) AND a 1.5s safety timer that force-reveals anything still
+   hidden, so content is never permanently invisible on slow devices. */
 const reveals = document.querySelectorAll('[data-reveal], [data-stagger]');
 if ('IntersectionObserver' in window && reveals.length) {
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: [0, 0.12], rootMargin: '0px 0px -40px 0px' });
   reveals.forEach(el => io.observe(el));
+  // Safety: anything still hidden after 1500ms gets revealed anyway
+  setTimeout(() => {
+    document.querySelectorAll('[data-reveal]:not(.in), [data-stagger]:not(.in)')
+      .forEach(el => { el.classList.add('in'); io.unobserve(el); });
+  }, 1500);
 } else { reveals.forEach(el => el.classList.add('in')); }
 
 /* Number Counter */
@@ -891,8 +900,11 @@ if (productHero && stickyCta && 'IntersectionObserver' in window) {
   obs.observe(productHero);
 }
 
-/* Filters — multi-toggle when row has [data-multi-filter] */
+/* Filters — multi-toggle when row has [data-multi-filter].
+   Skip rows that have their own dedicated filter logic (blog + library)
+   to avoid this generic handler clobbering their click state. */
 document.querySelectorAll('.filter-row').forEach(row => {
+  if (row.hasAttribute('data-blog-filter') || row.hasAttribute('data-library-filter')) return;
   const multi = row.hasAttribute('data-multi-filter');
   const buttons = row.querySelectorAll('.filter-btn');
 

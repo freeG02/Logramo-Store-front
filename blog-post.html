@@ -19,7 +19,7 @@
   <div class="container">
     <div class="post-hero__inner" data-reveal>
       <nav class="breadcrumb">
-        <a href="index.html">Inicio</a><span>/</span>
+        <a href="./">Inicio</a><span>/</span>
         <a href="blog.html">Blog</a><span>/</span>
         <span id="bpCrumb">Cargando…</span>
       </nav>
@@ -28,7 +28,7 @@
       <p class="lead" id="bpLead" style="margin-bottom: 28px"></p>
       <div class="post-meta">
         <div class="post-meta__author">
-          <div class="post-meta__avatar">LG</div>
+          <div class="post-meta__avatar bp-hide-mobile">LG</div>
           <span>Equipo Logramo</span>
         </div>
         <span>·</span>
@@ -48,7 +48,7 @@
 <!-- ============ POST LAYOUT ============ -->
 <div class="post-layout">
 
-  <article id="postContent" class="post-content" data-reveal>
+  <article id="postContent" class="post-content">
     <div id="bpBody"><p class="muted">Cargando…</p></div>
 
     <!-- Not-found state -->
@@ -61,8 +61,25 @@
     <!-- Tags -->
     <div class="post-tags" id="bpTags" style="display:none"></div>
 
+    <!-- Engage row: like + share -->
+    <div class="post-engage" id="bpEngage" style="display:none">
+      <button type="button" class="like-btn" id="bpLikeBtn" aria-pressed="false">
+        <svg class="like-btn__heart" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z" fill="currentColor"/>
+        </svg>
+        <span class="like-btn__label" id="bpLikeLabel">Me gusta</span>
+        <span class="like-btn__count" id="bpLikeCount">0</span>
+      </button>
+      <div class="post-engage__share">
+        <span class="post-engage__share-label">Compartir</span>
+        <button class="share-btn share-btn--whatsapp" data-platform="whatsapp" aria-label="WhatsApp"><svg class="icon icon--sm"><use href="#i-whatsapp"/></svg></button>
+        <button class="share-btn share-btn--facebook" data-platform="facebook" aria-label="Facebook"><svg class="icon icon--sm"><use href="#i-facebook"/></svg></button>
+        <button class="share-btn share-btn--twitter" data-platform="twitter" aria-label="Twitter"><svg class="icon icon--sm"><use href="#i-twitter"/></svg></button>
+      </div>
+    </div>
+
     <!-- Share -->
-    <div class="post-share">
+    <div class="post-share bp-hide-mobile">
       <h4>¿Te ha servido? Cuéntaselo a alguien</h4>
       <div class="share-btns">
         <button class="share-btn share-btn--whatsapp" data-platform="whatsapp"><svg class="icon icon--sm"><use href="#i-whatsapp"/></svg> WhatsApp</button>
@@ -71,9 +88,60 @@
       </div>
     </div>
 
-    <!-- Author Card -->
-    <div class="author-card">
-      <div class="author-card__avatar">LG</div>
+    <!-- ============ COMMENTS ============ -->
+    <section class="comments-section" id="bpComments" style="display:none">
+      <h3 class="comments-section__title">
+        <span id="commentsCount">0</span> comentarios
+      </h3>
+
+      <!-- Logged-out CTA -->
+      <div class="comment-auth-cta" id="commentAuthCta" hidden>
+        <p class="comment-auth-cta__text">
+          <strong>¿Quieres unirte a la conversación?</strong>
+          Inicia sesión o crea una cuenta para comentar y dar like.
+        </p>
+        <div class="comment-auth-cta__actions">
+          <a class="btn btn--primary" id="commentAuthLogin" href="cuenta.html">Iniciar sesión</a>
+          <a class="btn btn--cream" id="commentAuthSignup" href="cuenta.html">Crear cuenta</a>
+        </div>
+      </div>
+
+      <!-- Logged-in form -->
+      <form class="comment-form" id="commentForm" hidden>
+        <div class="comment-form__head">
+          <div class="comment-form__avatar" id="commentMyAvatar">·</div>
+          <div class="comment-form__hello">
+            Comentando como <strong id="commentMyName">tú</strong>
+            <span class="comment-form__reply-target" id="commentReplyTarget" hidden></span>
+          </div>
+        </div>
+        <textarea
+          class="comment-form__textarea"
+          id="commentBody"
+          placeholder="¿Qué piensas? Cuenta tu experiencia, una duda, una historia…"
+          maxlength="1500"
+          rows="3"
+          required></textarea>
+        <div class="comment-form__foot">
+          <span class="comment-form__hint" id="commentHint">Sé honesto, sé tú mismo. Aquí nadie juzga.</span>
+          <div class="comment-form__buttons">
+            <button type="button" class="btn btn--cream btn--sm" id="commentReplyCancel" hidden>Cancelar respuesta</button>
+            <button type="submit" class="btn btn--primary btn--sm" id="commentSubmit">Publicar</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Comments list -->
+      <div class="comment-list" id="commentList">
+        <p class="comment-list__empty muted" id="commentEmpty" hidden>
+          Aún no hay comentarios. Sé el primero en empezar la conversación 🐾
+        </p>
+      </div>
+    </section>
+
+    <!-- Author Card (appears LAST on mobile via CSS order) -->
+    <div class="author-card" id="bpAuthorCard">
+      <div class="author-card__avatar bp-hide-mobile">LG</div>
       <div>
         <div class="author-card__name">Equipo Logramo</div>
         <p class="author-card__bio">Un equipo de dueños de perros (y algún perro encargado del control de calidad) obsesionados con que la relación entre humanos y perros sea lo mejor posible. Escribimos desde la experiencia real, con honestidad y con mucho cariño.</p>
@@ -116,13 +184,17 @@
     </div>
 
     <div class="widget widget--terra" id="planWidget" style="text-align:center">
-      <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40"><use href="#i-book"/></svg></div>
-      <h3 id="planTitle">El plan completo</h3>
-      <p id="planDesc" style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55">12 semanas. Paso a paso. Cada etapa en su momento, sin buscar en Google a las 3am.</p>
-      <a id="planCta" href="biblioteca.html" class="btn btn--golden full-w">Ver biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+      <div style="display:flex;justify-content:center;margin-bottom:14px">
+        <div class="widget__icon-circle">
+          <svg width="34" height="34" style="color:var(--c-ink)"><use href="#i-book"/></svg>
+        </div>
+      </div>
+      <h3 id="planTitle">Nuestra biblioteca</h3>
+      <p id="planDesc" style="color:rgba(254,250,232,.9);font-size:.88rem;margin-bottom:18px;line-height:1.55">Guías reales, prácticas y honestas — para que dejes de buscar en Google a las 3am y encuentres lo que tu perro necesita 🐾</p>
+      <a id="planCta" href="biblioteca.html" class="btn btn--golden full-w">Ver la biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
     </div>
 
-    <div class="widget">
+    <div class="widget bp-hide-mobile">
       <h3>Compartir</h3>
       <div style="display:flex;flex-direction:column;gap:8px">
         <button class="share-btn share-btn--whatsapp full-w" data-platform="whatsapp"><svg class="icon icon--sm"><use href="#i-whatsapp"/></svg> WhatsApp</button>
@@ -149,12 +221,26 @@
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
 const SB_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
 const SB_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
-const sb = createClient(SB_URL, SB_KEY);
+const sb = createClient(SB_URL, SB_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'logramo_supa_auth' }
+});
 
 function $ (id){ return document.getElementById(id); }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function slugify(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60); }
 function fmtSpDate(iso){ if(!iso) return ''; var d=new Date(iso); var m=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear(); }
+function initials(name){ var s=String(name||'').trim(); if(!s) return '•'; var parts=s.split(/[\s._\-+@]+/).filter(Boolean); if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase(); return s.slice(0,2).toUpperCase(); }
+function timeAgoSp(iso){
+  var d=new Date(iso), now=Date.now();
+  var s=Math.floor((now-d.getTime())/1000);
+  if(s<60) return 'Hace un momento';
+  if(s<3600) return 'Hace '+Math.floor(s/60)+' min';
+  if(s<86400) return 'Hace '+Math.floor(s/3600)+' h';
+  var days=Math.floor(s/86400);
+  if(days===1) return 'Hace 1 día';
+  if(days<7) return 'Hace '+days+' días';
+  return fmtSpDate(iso);
+}
 
 function renderBody(s){
   if(!s) return '<p class="muted">Sin contenido todavía.</p>';
@@ -166,8 +252,6 @@ function renderBody(s){
   }).join('');
 }
 
-/* Populated from blog_categories at load (see IIFE below). Defaults kept so the
-   page still renders if the fetch fails. */
 let CAT_COLOR = {Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'};
 const CAT_ICON = {Cachorros:'i-paw',Educación:'i-target',Conducta:'i-flame',Salud:'i-shield',Alimentación:'i-bone',Historias:'i-book'};
 const TAG_SKINS = ['terra','golden','forest','peach','sage','lavender'];
@@ -217,9 +301,273 @@ function buildToc(bodyEl){
   setActive();
 }
 
+/* ============ AUTH HELPERS ============ */
+let CURRENT_USER = null;
+let CURRENT_PROFILE = null;
+
+async function loadCurrentUser(){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ CURRENT_USER=null; CURRENT_PROFILE=null; return null; }
+    CURRENT_USER = session.user;
+    const r = await sb.from('profiles').select('id,username,email').eq('id', CURRENT_USER.id).maybeSingle();
+    CURRENT_PROFILE = (r && r.data) || { id: CURRENT_USER.id, username: (CURRENT_USER.email||'').split('@')[0], email: CURRENT_USER.email };
+    return CURRENT_USER;
+  }catch(_){ CURRENT_USER=null; CURRENT_PROFILE=null; return null; }
+}
+
+function authReturnUrl(){
+  return 'cuenta.html?next=' + encodeURIComponent(location.pathname + location.search + location.hash);
+}
+
+function showLoginPrompt(message){
+  // Lightweight inline toast + redirect option
+  if(window.showToast) window.showToast(message || 'Inicia sesión para continuar', 2400);
+  // Delay redirect briefly so user sees the message
+  setTimeout(function(){ location.href = authReturnUrl(); }, 1200);
+}
+
+/* ============ LIKES ============ */
+let LIKE_COUNT = 0;
+let LIKED_BY_ME = false;
+let LIKE_BUSY = false;
+let ARTICLE_ID = null;
+
+function paintLikeBtn(){
+  const btn = $('bpLikeBtn');
+  const lbl = $('bpLikeLabel');
+  const cnt = $('bpLikeCount');
+  if(!btn) return;
+  btn.classList.toggle('is-liked', !!LIKED_BY_ME);
+  btn.setAttribute('aria-pressed', LIKED_BY_ME ? 'true' : 'false');
+  if(lbl) lbl.textContent = LIKED_BY_ME ? 'Te gusta' : 'Me gusta';
+  if(cnt) cnt.textContent = LIKE_COUNT;
+}
+
+async function loadLikes(){
+  try{
+    // Total count
+    const r = await sb.from('blog_likes').select('article_id', { count:'exact', head:true }).eq('article_id', ARTICLE_ID);
+    LIKE_COUNT = (r && r.count) || 0;
+    // Mine
+    if(CURRENT_USER){
+      const rm = await sb.from('blog_likes').select('article_id').eq('article_id', ARTICLE_ID).eq('user_id', CURRENT_USER.id).maybeSingle();
+      LIKED_BY_ME = !!(rm && rm.data);
+    } else {
+      LIKED_BY_ME = false;
+    }
+  }catch(_){
+    LIKE_COUNT = 0; LIKED_BY_ME = false;
+  }
+  paintLikeBtn();
+}
+
+async function toggleLike(){
+  if(LIKE_BUSY) return;
+  if(!CURRENT_USER){ showLoginPrompt('Inicia sesión para dar like'); return; }
+  LIKE_BUSY = true;
+  // Optimistic
+  const prevLiked = LIKED_BY_ME, prevCount = LIKE_COUNT;
+  LIKED_BY_ME = !LIKED_BY_ME;
+  LIKE_COUNT = Math.max(0, LIKE_COUNT + (LIKED_BY_ME ? 1 : -1));
+  paintLikeBtn();
+  try{
+    if(LIKED_BY_ME){
+      const r = await sb.from('blog_likes').insert({ article_id: ARTICLE_ID, user_id: CURRENT_USER.id });
+      if(r.error && !/duplicate|unique/i.test(r.error.message)) throw r.error;
+    } else {
+      const r = await sb.from('blog_likes').delete().eq('article_id', ARTICLE_ID).eq('user_id', CURRENT_USER.id);
+      if(r.error) throw r.error;
+    }
+  }catch(e){
+    // Revert
+    LIKED_BY_ME = prevLiked; LIKE_COUNT = prevCount; paintLikeBtn();
+    if(window.showToast) window.showToast('No se pudo guardar tu like. Intenta de nuevo.', 2200);
+  }
+  LIKE_BUSY = false;
+}
+
+/* ============ COMMENTS ============ */
+let COMMENTS = [];
+let REPLY_PARENT = null;
+
+function buildCommentTree(rows){
+  const byId = {}; const roots = [];
+  rows.forEach(function(c){ c.replies=[]; byId[c.id]=c; });
+  rows.forEach(function(c){
+    if(c.parent_id && byId[c.parent_id]) byId[c.parent_id].replies.push(c);
+    else roots.push(c);
+  });
+  // Sort: roots newest first, replies oldest first (so the conversation reads top→down)
+  roots.sort(function(a,b){ return new Date(b.created_at) - new Date(a.created_at); });
+  Object.values(byId).forEach(function(c){ c.replies.sort(function(a,b){ return new Date(a.created_at) - new Date(b.created_at); }); });
+  return roots;
+}
+
+function commentHtml(c, depth){
+  depth = depth || 0;
+  const isMine = CURRENT_USER && c.user_id === CURRENT_USER.id;
+  const ini = initials(c.author_name || '•');
+  const repliesHtml = (c.replies||[]).map(function(r){ return commentHtml(r, depth+1); }).join('');
+  return '<div class="comment'+(depth?' comment--reply':'')+'" data-comment-id="'+esc(c.id)+'">'
+    +'<div class="comment__avatar">'+esc(ini)+'</div>'
+    +'<div class="comment__body">'
+      +'<div class="comment__header">'
+        +'<span class="comment__name">'+esc(c.author_name||'Anónimo')+(isMine?' <span class="comment__me">tú</span>':'')+'</span>'
+        +'<span class="comment__date">'+esc(timeAgoSp(c.created_at))+'</span>'
+      +'</div>'
+      +'<p class="comment__text">'+esc(c.body)+'</p>'
+      +'<div class="comment__actions">'
+        +(depth<2 ? '<button type="button" class="comment__action" data-reply="'+esc(c.id)+'" data-name="'+esc(c.author_name||'')+'">Responder</button>' : '')
+        +(isMine ? '<button type="button" class="comment__action comment__action--danger" data-delete="'+esc(c.id)+'">Borrar</button>' : '')
+      +'</div>'
+      +(repliesHtml ? '<div class="comment__replies">'+repliesHtml+'</div>' : '')
+    +'</div>'
+  +'</div>';
+}
+
+function renderComments(){
+  const list = $('commentList');
+  const empty = $('commentEmpty');
+  const cnt = $('commentsCount');
+  if(!list) return;
+  const tree = buildCommentTree(COMMENTS);
+  if(cnt) cnt.textContent = COMMENTS.length;
+  if(!COMMENTS.length){
+    list.innerHTML = '';
+    if(empty){ empty.hidden = false; list.appendChild(empty); }
+    return;
+  }
+  if(empty) empty.hidden = true;
+  list.innerHTML = tree.map(function(c){ return commentHtml(c, 0); }).join('');
+}
+
+async function loadComments(){
+  try{
+    const r = await sb.from('blog_comments').select('*').eq('article_id', ARTICLE_ID).order('created_at', { ascending:true });
+    COMMENTS = (r && r.data) || [];
+  }catch(_){ COMMENTS = []; }
+  renderComments();
+}
+
+function setReplyTarget(parentId, parentName){
+  REPLY_PARENT = parentId;
+  const t = $('commentReplyTarget');
+  const cancel = $('commentReplyCancel');
+  if(parentId){
+    if(t){ t.textContent = ' · Respondiendo a '+(parentName||'comentario'); t.hidden = false; }
+    if(cancel) cancel.hidden = false;
+    // Scroll form into view
+    const form = $('commentForm'); if(form) form.scrollIntoView({ behavior:'smooth', block:'center' });
+    setTimeout(function(){ const ta=$('commentBody'); if(ta) ta.focus(); }, 250);
+  } else {
+    if(t) t.hidden = true;
+    if(cancel) cancel.hidden = true;
+  }
+}
+
+async function submitComment(e){
+  e.preventDefault();
+  if(!CURRENT_USER){ showLoginPrompt('Inicia sesión para comentar'); return; }
+  const ta = $('commentBody');
+  const body = (ta?ta.value:'').trim();
+  if(body.length < 1){ if(ta) ta.focus(); return; }
+  if(body.length > 1500){ if(window.showToast) window.showToast('Máximo 1500 caracteres.'); return; }
+  const submitBtn = $('commentSubmit');
+  if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Publicando…'; }
+  try{
+    const author = (CURRENT_PROFILE && (CURRENT_PROFILE.username || CURRENT_PROFILE.email)) || (CURRENT_USER.email||'').split('@')[0] || 'Anónimo';
+    const row = {
+      article_id: ARTICLE_ID,
+      user_id: CURRENT_USER.id,
+      author_name: author,
+      body: body,
+      parent_id: REPLY_PARENT || null
+    };
+    const r = await sb.from('blog_comments').insert(row).select().single();
+    if(r.error) throw r.error;
+    COMMENTS.push(r.data);
+    renderComments();
+    if(ta) ta.value = '';
+    setReplyTarget(null, null);
+    if(window.showToast) window.showToast('¡Comentario publicado!');
+  }catch(e){
+    if(window.showToast) window.showToast('No se pudo publicar. Intenta de nuevo.');
+  }finally{
+    if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'Publicar'; }
+  }
+}
+
+async function deleteComment(id){
+  if(!CURRENT_USER) return;
+  if(!confirm('¿Borrar este comentario?')) return;
+  try{
+    const r = await sb.from('blog_comments').delete().eq('id', id).eq('user_id', CURRENT_USER.id);
+    if(r.error) throw r.error;
+    COMMENTS = COMMENTS.filter(function(c){ return c.id !== id; });
+    renderComments();
+  }catch(e){
+    if(window.showToast) window.showToast('No se pudo borrar.');
+  }
+}
+
+function paintCommentForm(){
+  const form = $('commentForm');
+  const cta = $('commentAuthCta');
+  if(CURRENT_USER && CURRENT_PROFILE){
+    if(form) form.hidden = false;
+    if(cta) cta.hidden = true;
+    const name = (CURRENT_PROFILE.username || CURRENT_PROFILE.email || '').trim();
+    const nameEl = $('commentMyName'); if(nameEl) nameEl.textContent = name || 'tú';
+    const av = $('commentMyAvatar'); if(av) av.textContent = initials(name);
+  } else {
+    if(form) form.hidden = true;
+    if(cta){
+      cta.hidden = false;
+      const ret = encodeURIComponent(location.pathname + location.search + location.hash);
+      const login = $('commentAuthLogin');  if(login) login.href = 'cuenta.html?next=' + ret;
+      const signup = $('commentAuthSignup'); if(signup) signup.href = 'cuenta.html?next=' + ret;
+    }
+  }
+}
+
+/* ============ WIRE UP ============ */
+function wireEngagement(){
+  const likeBtn = $('bpLikeBtn');
+  if(likeBtn) likeBtn.addEventListener('click', toggleLike);
+
+  const form = $('commentForm');
+  if(form) form.addEventListener('submit', submitComment);
+
+  const list = $('commentList');
+  if(list){
+    list.addEventListener('click', function(e){
+      const replyBtn = e.target.closest('[data-reply]');
+      if(replyBtn){
+        if(!CURRENT_USER){ showLoginPrompt('Inicia sesión para responder'); return; }
+        setReplyTarget(replyBtn.getAttribute('data-reply'), replyBtn.getAttribute('data-name'));
+        return;
+      }
+      const delBtn = e.target.closest('[data-delete]');
+      if(delBtn){ deleteComment(delBtn.getAttribute('data-delete')); return; }
+    });
+  }
+
+  const cancel = $('commentReplyCancel');
+  if(cancel) cancel.addEventListener('click', function(){ setReplyTarget(null, null); });
+
+  // React to auth changes (login/logout in same tab)
+  sb.auth.onAuthStateChange(async function(){
+    await loadCurrentUser();
+    paintCommentForm();
+    loadLikes();
+  });
+}
+
 (async function () {
   var id = new URLSearchParams(location.search).get('id');
   if (!id) { showNotFound(); return; }
+  ARTICLE_ID = id;
 
   /* Refresh CAT_COLOR from the live blog_categories table before rendering. */
   try {
@@ -268,6 +616,10 @@ function buildToc(bodyEl){
   // Auto-generate TOC from h2s
   buildToc(bodyEl);
 
+  // Show engage row + comments
+  $('bpEngage').style.display = '';
+  $('bpComments').style.display = '';
+
   // "Plan completo" widget → swap to the related product when one is set
   if (a.related_product_id) {
     try {
@@ -286,6 +638,13 @@ function buildToc(bodyEl){
       }
     } catch (_) { /* fall back to the default biblioteca link */ }
   }
+
+  // Load user + engagement data
+  await loadCurrentUser();
+  paintCommentForm();
+  wireEngagement();
+  loadLikes();
+  loadComments();
 
   // Track the pageview (with article_id)
   if (window.trackPageview) window.trackPageview({ article_id: a.id });

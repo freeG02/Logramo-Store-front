@@ -46,13 +46,13 @@
     </div>
     <div class="stat">
       <div class="stat__icon"><svg class="icon icon--lg"><use href="#i-book"/></svg></div>
-      <div class="stat__number" data-count="38">0</div>
+      <div class="stat__number" id="statBooks">0</div>
       <div class="stat__label">Libros y guías</div>
     </div>
     <div class="stat">
       <div class="stat__icon"><svg class="icon icon--lg"><use href="#i-paw"/></svg></div>
-      <div class="stat__number" data-count="5">0</div>
-      <div class="stat__label">Años acompañándote</div>
+      <div class="stat__number" data-count="1">0</div>
+      <div class="stat__label">Año acompañándote</div>
     </div>
     <div class="stat">
       <div class="stat__icon"><svg class="icon icon--lg"><use href="#i-heart"/></svg></div>
@@ -61,6 +61,25 @@
     </div>
   </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* Load the real published-products count and write it into the stats block.
+     We set the text directly (not data-count) so it works whether the
+     counter animation has already finished or not. */
+  (function(){
+    try {
+      var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
+      sb.from('products').select('id', { count:'exact', head:true }).neq('published', false).then(function(r){
+        var n = (r && r.count) || 0;
+        var el = document.getElementById('statBooks');
+        if (!el) return;
+        el.setAttribute('data-count', String(n));
+        // Force-set the displayed text in case the count animation already ran
+        el.textContent = String(n);
+      });
+    } catch (_) {}
+  })();
+</script>
 
 <!-- ============ STORY ============ -->
 <section class="story-section" data-reveal>
@@ -151,8 +170,8 @@
   </div>
 </section>
 
-<!-- ============ CTA ============ -->
-<section class="newsletter-section" data-reveal>
+<!-- ============ CTA (hidden for signed-in accounts) ============ -->
+<section class="newsletter-section" data-reveal id="aboutNewsletter">
   <div class="newsletter-section__inner">
     <div style="display:flex;justify-content:center;margin-bottom:20px"><svg width="56" height="56" style="color:var(--c-cream)"><use href="#i-paw"/></svg></div>
     <h2 class="newsletter-section__title">¿Te apuntas<br>al equipo? 🐾</h2>
@@ -164,6 +183,19 @@
     <p class="newsletter-section__note">+2,400 dueños ya confían en nosotros · cero spam, prometido</p>
   </div>
 </section>
+<script>
+  /* Hide newsletter for signed-in users */
+  (function(){
+    try {
+      var u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
+      var hasSession = !!localStorage.getItem('logramo_supa_auth');
+      if ((u && u.id) || hasSession) {
+        var n = document.getElementById('aboutNewsletter');
+        if (n) n.style.display = 'none';
+      }
+    } catch (_) {}
+  })();
+</script>
 
 <div id="partial-footer"></div>
 <div id="partial-cart"></div>

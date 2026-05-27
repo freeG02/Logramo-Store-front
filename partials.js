@@ -61,15 +61,17 @@ const ICONS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" style="position:absol
   <symbol id="illo-star" viewBox="0 0 80 80"><path d="M40 8 L48 30 L72 30 L52 44 L60 68 L40 54 L20 68 L28 44 L8 30 L32 30 Z" fill="#F6D055" stroke="#1E2820" stroke-width="2"/></symbol>
 </defs></svg>`;
 
-/* ============ NAV ============ */
+/* ============ NAV ============
+   Note: "Inicio" links use "./" instead of "index.html" so the URL bar
+   stays clean (logramo.com/ instead of logramo.com/index.html). */
 const NAV_HTML = `
 <nav class="nav" id="mainNav">
   <div class="container nav__inner">
-    <a href="index.html" class="nav__logo" aria-label="Logramo">
+    <a href="./" class="nav__logo" aria-label="Logramo">
       <svg width="130" height="22" viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg>
     </a>
     <ul class="nav__links">
-      <li><a href="index.html" data-link="home">Inicio</a></li>
+      <li><a href="./" data-link="home">Inicio</a></li>
       <li><a href="biblioteca.html" data-link="biblioteca">Biblioteca</a></li>
       <li><a href="blog.html" data-link="blog">Blog</a></li>
       <li><a href="sobre-nosotros.html" data-link="sobre">Nosotros</a></li>
@@ -91,13 +93,13 @@ const NAV_HTML = `
 </nav>
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Menú">
   <div class="mobile-nav__head">
-    <a href="index.html" class="nav__logo">
+    <a href="./" class="nav__logo">
       <svg width="120" height="20" viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg>
     </a>
     <button class="mobile-nav__close" id="menuClose" aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button>
   </div>
   <ul class="mobile-nav__links">
-    <li><a href="index.html">Inicio</a></li>
+    <li><a href="./">Inicio</a></li>
     <li><a href="biblioteca.html">Biblioteca</a></li>
     <li><a href="blog.html">Blog</a></li>
     <li><a href="sobre-nosotros.html">Nosotros</a></li>
@@ -122,7 +124,7 @@ const FOOTER_HTML = `
       <div class="footer__col">
         <h4>Explorar</h4>
         <ul>
-          <li><a href="index.html">Inicio</a></li>
+          <li><a href="./">Inicio</a></li>
           <li><a href="biblioteca.html">Biblioteca</a></li>
           <li><a href="blog.html">Blog</a></li>
           <li><a href="sobre-nosotros.html">Nosotros</a></li>
@@ -171,7 +173,7 @@ const CART_HTML = `
 
 const CHAT_HTML = `
 <div class="chat-btn">
-  <div class="chat-btn__bubble">¿Perdido con tu perro? 😅</div>
+  <div class="chat-btn__bubble" id="chatBubble">¿En qué te ayudamos? 🐾</div>
   <button class="chat-btn__trigger" id="chatToggle" aria-label="Abrir chat"><svg class="icon"><use href="#i-chat"/></svg></button>
 </div>
 <div class="chat-panel" id="chatPanel">
@@ -514,4 +516,63 @@ if (currentLink) {
 
   window.openFreebieModal = openFreebieModal;
   window.openFreebieFor = openFreebieFor;
+})();
+
+/* ============ CHAT BUBBLE — randomized messages ============
+   The bubble sits to the LEFT of the chat icon. Desktop users see it on
+   hover (CSS). On mobile / touch (no hover), JS pulses the bubble in for a
+   few seconds every ~25s with a fresh message each time. */
+(function () {
+  const bubble = document.getElementById('chatBubble');
+  if (!bubble) return;
+
+  const MESSAGES = [
+    '¿Tu perro otra vez en el sofá? 😅',
+    '¿Otra noche sin dormir? Cuéntanos',
+    '¿En qué te ayudamos hoy? 🐾',
+    '¿Te ladra a todo? Tranqui, estamos aquí',
+    '¿Tu perrito haciendo de las suyas? 🙈',
+    '¿Necesitas un consejo rápido?',
+    '¿Cómo va con tu peludo? 🐶',
+    '¿Pregunta canina? Aquí estamos',
+    '¿Te muerde los zapatos? Pasa 😉',
+    '¿Te tira de la correa? Hablemos 🐕',
+    '¿Comida, paseo, sueño? Pregunta',
+    '¿Algo que no entiendes? Cuéntanos',
+  ];
+
+  // Initial random message
+  let i = Math.floor(Math.random() * MESSAGES.length);
+  bubble.textContent = MESSAGES[i];
+
+  // Rotate to a different random message — never repeats the current one
+  function rotateMessage() {
+    if (MESSAGES.length < 2) return;
+    let next;
+    do { next = Math.floor(Math.random() * MESSAGES.length); } while (next === i);
+    i = next;
+    bubble.textContent = MESSAGES[i];
+  }
+
+  // Rotate while bubble is hidden so the next reveal shows a fresh one too
+  setInterval(rotateMessage, 18000);
+
+  // Touch / no-hover devices: pulse the bubble in periodically.
+  // We use matchMedia('(hover: none)') so desktops keep purely-on-hover behavior.
+  const noHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  if (noHover) {
+    function pulse() {
+      // Only show if the chat panel isn't open
+      const panel = document.getElementById('chatPanel');
+      const panelOpen = panel && panel.classList && panel.classList.contains('open');
+      if (panelOpen) return;
+      rotateMessage();
+      bubble.classList.add('is-visible');
+      setTimeout(() => bubble.classList.remove('is-visible'), 4200);
+    }
+    // First pulse a bit after the page settles
+    setTimeout(pulse, 6000);
+    // Then every ~25s
+    setInterval(pulse, 25000);
+  }
 })();

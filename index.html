@@ -113,7 +113,7 @@
     </div>
     <div class="stat">
       <div class="stat__icon"><svg class="icon icon--lg"><use href="#i-book"/></svg></div>
-      <div class="stat__number" data-count="38">0</div>
+      <div class="stat__number" id="homeStatBooks" data-count="0">0</div>
       <div class="stat__label">Guías y libros</div>
     </div>
     <div class="stat">
@@ -286,8 +286,8 @@
   </div>
 </section>
 
-<!-- ============ NEWSLETTER ============ -->
-<section class="newsletter-section" data-reveal>
+<!-- ============ NEWSLETTER (hidden for signed-in accounts) ============ -->
+<section class="newsletter-section" data-reveal id="homeNewsletter">
   <div class="newsletter-section__inner">
     <div style="display:flex;justify-content:center;margin-bottom:20px"><svg width="56" height="56" style="color:var(--c-cream)"><use href="#i-mail"/></svg></div>
     <h2 class="newsletter-section__title">Una vez a la semana.<br>Lo que de verdad vale.</h2>
@@ -299,6 +299,19 @@
     <p class="newsletter-section__note">Cero spam · prometido 😌</p>
   </div>
 </section>
+<script>
+  /* Hide newsletter section for visitors who are signed in. */
+  (function(){
+    try {
+      var u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
+      var hasSession = !!localStorage.getItem('logramo_supa_auth');
+      if ((u && u.id) || hasSession) {
+        var n = document.getElementById('homeNewsletter');
+        if (n) n.style.display = 'none';
+      }
+    } catch (_) {}
+  })();
+</script>
 
 <div id="partial-footer"></div>
 <div id="partial-cart"></div>
@@ -384,6 +397,20 @@
           +'</div>'
         +'</div>';
       sec.style.display='';
+    }catch(e){}
+  })();
+
+  /* ---- Real book count for stats block ---- */
+  (async function(){
+    try{
+      var r = await sb.from('products').select('id', { count:'exact', head:true }).neq('published', false);
+      var n = (r && r.count) || 0;
+      var el = document.getElementById('homeStatBooks');
+      if (el && n > 0){
+        el.setAttribute('data-count', String(n));
+        // If the counter animation already ran, update text directly
+        if (el.textContent !== '0') el.textContent = String(n);
+      }
     }catch(e){}
   })();
 

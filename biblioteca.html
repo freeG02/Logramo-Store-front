@@ -173,8 +173,8 @@ window.initFcCarousel = function(){
   </div>
 </section>
 
-<!-- ============ NEWSLETTER CTA ============ -->
-<section class="newsletter-section" data-reveal>
+<!-- ============ NEWSLETTER CTA (hidden for signed-in accounts) ============ -->
+<section class="newsletter-section" data-reveal id="libNewsletter">
   <div class="newsletter-section__inner">
     <div style="display:flex;justify-content:center;margin-bottom:16px"><svg width="56" height="56" style="color:var(--c-cream)"><use href="#i-bell"/></svg></div>
     <h2 class="newsletter-section__title">Hay más libros<br>en camino.</h2>
@@ -185,6 +185,19 @@ window.initFcCarousel = function(){
     </form>
   </div>
 </section>
+<script>
+  /* Hide the newsletter section for visitors who are signed in. */
+  (function(){
+    try {
+      var u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
+      var hasSession = !!localStorage.getItem('logramo_supa_auth');
+      if ((u && u.id) || hasSession) {
+        var n = document.getElementById('libNewsletter');
+        if (n) n.style.display = 'none';
+      }
+    } catch (_) {}
+  })();
+</script>
 
 <div id="partial-footer"></div>
 <div id="partial-cart"></div>
