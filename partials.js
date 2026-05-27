@@ -41,6 +41,7 @@ const ICONS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" style="position:absol
   <symbol id="i-youtube" viewBox="0 0 24 24"><path d="M21.6 7.2a2.6 2.6 0 00-1.8-1.85C18.2 5 12 5 12 5s-6.2 0-7.8.35A2.6 2.6 0 002.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.6 2.6 0 001.8 1.85C5.8 19 12 19 12 19s6.2 0 7.8-.35a2.6 2.6 0 001.8-1.85c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15.2V8.8l5.4 3.2z" fill="currentColor"/></symbol>
   <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2zm5.6 13.7c-.2.6-1.2 1.2-1.7 1.3-.5.1-1 .1-1.6-.1-.4-.1-.8-.2-1.5-.5-2.5-1.1-4.2-3.7-4.3-3.9-.1-.2-1-1.4-1-2.7s.7-1.9.9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2c.1.2 0 .4-.1.5l-.3.3c-.1.1-.2.3-.1.5.1.2.5.9 1.2 1.5.8.8 1.5 1 1.7 1.1.2.1.3 0 .4-.1l.6-.7c.1-.2.3-.2.5-.1l1.9.9c.2.1.4.2.4.4z" fill="currentColor"/></symbol>
   <symbol id="i-twitter" viewBox="0 0 24 24"><path d="M18.2 2.3h3.3l-7.2 8.3 8.5 11.2H16.2l-5.2-6.8-6 6.8H1.7l7.7-8.8L1.3 2.3h6.8l4.7 6.2z" fill="currentColor"/></symbol>
+  <symbol id="i-pinterest" viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-3.7 19.3c-.1-.8-.2-2.2.1-3.1.2-.8 1.4-5.9 1.4-5.9s-.4-.7-.4-1.8c0-1.7 1-2.9 2.2-2.9 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 3.9-.3 1.2.6 2.1 1.8 2.1 2.1 0 3.8-2.2 3.8-5.5 0-2.9-2.1-4.9-5.1-4.9-3.4 0-5.4 2.6-5.4 5.2 0 1 .4 2.1.9 2.7.1.1.1.2.1.3l-.3 1.4c-.1.2-.2.3-.4.2-1.5-.7-2.4-2.9-2.4-4.6 0-3.8 2.8-7.3 7.9-7.3 4.2 0 7.4 3 7.4 6.9 0 4.1-2.6 7.4-6.2 7.4-1.2 0-2.4-.6-2.8-1.3l-.7 2.8c-.3 1-.9 2.2-1.4 3A10 10 0 0022 12 10 10 0 0012 2z" fill="currentColor"/></symbol>
 
   <symbol id="logo-logramo" viewBox="0 0 193.55 28.54">
     <path d="M16.05,24.13c-2.59.2-5.16.38-7.71.55-2.56.17-5.13.34-7.71.49-.11-4.15-.2-8.28-.26-12.38C.29,8.7.17,4.57,0,.39c1.46-.02,2.89-.06,4.31-.13,1.41-.07,2.84-.15,4.27-.26-.24,1.61-.46,3.22-.67,4.84-.21,1.62-.36,3.25-.47,4.88-.09,1.37-.16,2.73-.21,4.09-.05,1.36-.1,2.72-.15,4.09,1.44.04,2.85.06,4.26.06s2.81.02,4.22.07l.49,6.1Z"/>
@@ -113,10 +114,9 @@ const FOOTER_HTML = `
         <div class="footer__brand-logo"><svg width="150" height="24" viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
         <p class="footer__brand-desc">El sitio que ojalá hubiéramos encontrado nosotros cuando empezamos. Guías reales, consejos honestos y cero tecnicismos — para dueños como tú.</p>
         <div class="footer__social">
-          <a href="#" class="footer__social-link" aria-label="Instagram"><svg class="icon"><use href="#i-instagram"/></svg></a>
           <a href="#" class="footer__social-link" aria-label="Facebook"><svg class="icon"><use href="#i-facebook"/></svg></a>
-          <a href="#" class="footer__social-link" aria-label="TikTok"><svg class="icon"><use href="#i-tiktok"/></svg></a>
           <a href="#" class="footer__social-link" aria-label="YouTube"><svg class="icon"><use href="#i-youtube"/></svg></a>
+          <a href="#" class="footer__social-link" aria-label="Pinterest"><svg class="icon"><use href="#i-pinterest"/></svg></a>
         </div>
       </div>
       <div class="footer__col">
