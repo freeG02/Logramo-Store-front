@@ -472,19 +472,21 @@ function handleNewsletter(e) { handlePopupForm(e, 'popup-newsletter', '¡Suscrip
 function handleSimpleNewsletter(e) { e.preventDefault(); trackSubscriber(emailFromForm(e.target), 'newsletter'); e.target.reset(); showToast('¡Suscripción confirmada! Bienvenido'); }
 
 /* Auto-trigger subscribe popup on blog after delay.
-   Skip entirely when the visitor is already signed in (real Supabase Auth
-   identity OR a remembered logramo_user). They don't need to be re-asked. */
-function isKnownVisitor() {
+   Skip entirely when the visitor is a REAL signed-in account (Supabase Auth
+   session OR a logramo_user with an `id`, which only the cuenta.html signup
+   flow sets). A "remembered" visitor who only typed their email into the
+   chat is NOT considered signed in and will still see the prompt. */
+function isAuthenticated() {
   try {
     const u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
-    if (u && u.email) return true;
+    if (u && u.id) return true;
   } catch (_) {}
   return !!localStorage.getItem('logramo_supa_auth');
 }
 function maybeAutoSubscribe() {
   const isBlog = /blog\.html/i.test(window.location.pathname);
   const dismissed = sessionStorage.getItem('logramo_sub_seen');
-  if (isBlog && !dismissed && !isKnownVisitor() && document.getElementById('popup-newsletter')) {
+  if (isBlog && !dismissed && !isAuthenticated() && document.getElementById('popup-newsletter')) {
     setTimeout(() => {
       if (!document.querySelector('.popup-overlay.open')) {
         openPopup('popup-newsletter');
