@@ -58,9 +58,6 @@
       <a href="blog.html" class="btn btn--primary">Volver al blog <svg class="icon"><use href="#i-arrow-right"/></svg></a>
     </div>
 
-    <!-- Tags -->
-    <div class="post-tags" id="bpTags" style="display:none"></div>
-
     <!-- Engage row: like + share -->
     <div class="post-engage" id="bpEngage" style="display:none">
       <button type="button" class="like-btn" id="bpLikeBtn" aria-pressed="false">
@@ -75,16 +72,6 @@
         <button class="share-btn share-btn--whatsapp" data-platform="whatsapp" aria-label="WhatsApp"><svg class="icon icon--sm"><use href="#i-whatsapp"/></svg></button>
         <button class="share-btn share-btn--facebook" data-platform="facebook" aria-label="Facebook"><svg class="icon icon--sm"><use href="#i-facebook"/></svg></button>
         <button class="share-btn share-btn--twitter" data-platform="twitter" aria-label="Twitter"><svg class="icon icon--sm"><use href="#i-twitter"/></svg></button>
-      </div>
-    </div>
-
-    <!-- Share -->
-    <div class="post-share bp-hide-mobile">
-      <h4>¿Te ha servido? Cuéntaselo a alguien</h4>
-      <div class="share-btns">
-        <button class="share-btn share-btn--whatsapp" data-platform="whatsapp"><svg class="icon icon--sm"><use href="#i-whatsapp"/></svg> WhatsApp</button>
-        <button class="share-btn share-btn--facebook" data-platform="facebook"><svg class="icon icon--sm"><use href="#i-facebook"/></svg> Facebook</button>
-        <button class="share-btn share-btn--twitter" data-platform="twitter"><svg class="icon icon--sm"><use href="#i-twitter"/></svg> Twitter</button>
       </div>
     </div>
 
@@ -613,13 +600,6 @@ function wireEngagement(){
   // Body
   var bodyEl = $('bpBody');
   bodyEl.innerHTML = renderBody(a.body);
-
-  // Tags
-  if (Array.isArray(a.tags) && a.tags.length) {
-    var tagsEl = $('bpTags');
-    tagsEl.innerHTML = a.tags.map(function(t, i){ return '<span class="tag tag--'+TAG_SKINS[i % TAG_SKINS.length]+'">'+esc(t)+'</span>'; }).join('');
-    tagsEl.style.display = '';
-  }
 
   // Auto-generate TOC from h2s
   buildToc(bodyEl);
