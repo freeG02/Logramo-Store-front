@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Tu cuenta. Entra o crea una cuenta en segundos." />
   <title>Mi cuenta — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260615" />
+  <link rel="stylesheet" href="styles.css?v=20260616" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     /* ============ AUTH PAGE ============ */
@@ -92,16 +92,17 @@
     .auth-input:focus { transform: translate(-2px,-2px); box-shadow: var(--shadow-sm); }
     .auth-input::placeholder { color: #999; }
 
-    /* Newsletter opt-in checkbox on the signup form — small but in a panel */
+    /* Newsletter opt-in checkbox — fits its content + centered in the card */
     .auth-toggle {
-      display: flex;
+      display: inline-flex;
+      align-self: center;
       align-items: center;
       gap: 10px;
-      padding: 10px 14px;
+      padding: 8px 16px;
       margin: 2px 0 0;
       background: var(--c-cream-alt, #FEFAE8);
       border: var(--bw-1) solid var(--c-ink);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-full);
       cursor: pointer;
       user-select: none;
       transition: background .15s var(--ease);
@@ -348,12 +349,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260615"></script>
+<script src="partials.js?v=20260616"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260615"></script>
-<script src="animations.js?v=20260615"></script>
+<script src="script.js?v=20260616"></script>
+<script src="animations.js?v=20260616"></script>
 <script>
 /* ============ ACCOUNT — real Supabase Auth ============ */
 const sb = window.supabase.createClient(
