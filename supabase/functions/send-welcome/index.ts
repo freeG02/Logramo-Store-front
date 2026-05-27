@@ -235,9 +235,18 @@ serve(async (req: Request) => {
   const record = payload?.record ?? payload ?? {};
   const email: string = (record.email ?? "").trim();
   const name: string | undefined = record.name ?? undefined;
+  const source: string = String(record.source ?? "");
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return new Response(JSON.stringify({ error: "invalid email" }), { status: 400 });
+  }
+
+  // Skip the newsletter welcome for users who subscribed as part of creating
+  // an account — send-account-welcome already greeted them.
+  if (source === "account-signup") {
+    return new Response(JSON.stringify({ ok: true, skipped: "account-signup source" }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
   }
 
   const firstName = smartFirstName(email, name);

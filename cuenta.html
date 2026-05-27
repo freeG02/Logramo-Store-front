@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Tu cuenta. Entra o crea una cuenta en segundos." />
   <title>Mi cuenta — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260612" />
+  <link rel="stylesheet" href="styles.css?v=20260613" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     /* ============ AUTH PAGE ============ */
@@ -92,6 +92,45 @@
     .auth-input:focus { transform: translate(-2px,-2px); box-shadow: var(--shadow-sm); }
     .auth-input::placeholder { color: #999; }
 
+    /* Newsletter opt-in checkbox on the signup form */
+    .auth-toggle {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      margin: 4px 0 6px;
+      background: var(--c-cream-alt, #FEFAE8);
+      border: var(--bw-1) solid var(--c-ink);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s var(--ease);
+    }
+    .auth-toggle:hover { background: var(--c-cream); }
+    .auth-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+    .auth-toggle__box {
+      flex: 0 0 22px;
+      width: 22px; height: 22px;
+      border: var(--bw-1) solid var(--c-ink);
+      border-radius: 6px;
+      background: var(--c-cream);
+      box-shadow: var(--shadow-xs);
+      position: relative;
+      transition: background .15s var(--ease);
+    }
+    .auth-toggle input:checked + .auth-toggle__box { background: var(--c-golden); }
+    .auth-toggle input:checked + .auth-toggle__box::after {
+      content: ''; position: absolute;
+      left: 6px; top: 2px; width: 6px; height: 12px;
+      border: solid var(--c-ink); border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg);
+    }
+    .auth-toggle__text {
+      flex: 1; min-width: 0;
+      font-size: .82rem;
+      line-height: 1.4;
+      color: var(--c-ink);
+    }
     .auth-note {
       font-size: .8rem;
       color: var(--c-ink);
@@ -262,6 +301,11 @@
             <label for="signupPassword">Contraseña</label>
             <input class="auth-input" id="signupPassword" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
           </div>
+          <label class="auth-toggle" for="signupSubscribe">
+            <input type="checkbox" id="signupSubscribe" checked />
+            <span class="auth-toggle__box" aria-hidden="true"></span>
+            <span class="auth-toggle__text">Suscribirme al newsletter — consejos sobre perros, una vez por semana. Sin spam.</span>
+          </label>
           <button type="submit" class="btn btn--dark btn--lg"><svg class="icon"><use href="#i-paw"/></svg> Crear cuenta</button>
           <p class="auth-note">Sin spam · sin tarjeta · solo lo esencial</p>
         </form>
@@ -305,12 +349,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260612"></script>
+<script src="partials.js?v=20260613"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260612"></script>
-<script src="animations.js?v=20260612"></script>
+<script src="script.js?v=20260613"></script>
+<script src="animations.js?v=20260613"></script>
 <script>
 /* ============ ACCOUNT — real Supabase Auth ============ */
 const sb = window.supabase.createClient(
@@ -397,6 +441,7 @@ async function handleSignup(e) {
   const username = document.getElementById('signupName').value.trim();
   const email    = document.getElementById('signupEmail').value.trim().toLowerCase();
   const password = document.getElementById('signupPassword').value;
+  const wantsNewsletter = document.getElementById('signupSubscribe')?.checked !== false;
   if (!username || !email || !password) { showError('Rellena todos los campos.'); return false; }
   if (password.length < 6)               { showError('La contraseña debe tener al menos 6 caracteres.'); return false; }
 
@@ -407,9 +452,16 @@ async function handleSignup(e) {
     if (r.error) throw r.error;
     const userId = r.data && r.data.user && r.data.user.id;
     if (!userId) throw new Error('No user returned');
-    // Create the profile row — this also fires the welcome email trigger
+    // Create the profile row — this also fires the account welcome email trigger
     const ins = await sb.from('profiles').insert({ id: userId, username, email });
     if (ins.error) throw ins.error;
+    // If the visitor opted in, add them to the subscribers list with a
+    // distinctive source so send-welcome can skip the second email.
+    if (wantsNewsletter) {
+      try {
+        await sb.from('subscribers').insert({ email, source: 'account-signup' });
+      } catch (_) { /* dup or RLS — non-fatal */ }
+    }
     const profile = { id: userId, username, email };
     syncIdentity(profile);
     renderAuthState(profile);
