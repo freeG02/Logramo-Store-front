@@ -175,11 +175,12 @@
     .list-item__info { flex:1; min-width:0; } .list-item__title { font-weight:700; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .list-item__meta { font-size:.74rem; color:var(--c-text-muted); }
     .list-item__drag { cursor:grab; user-select:none; display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; color:var(--c-text-muted); font-size:1.1rem; line-height:1; }
     .list-item__drag:hover { background:var(--c-cream-alt); color:var(--c-ink); }
-    .list-item__pin { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.95rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
-    .list-item__pin.is-pinned { background:var(--c-golden); }
-    .list-item__star { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.95rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; transition:background .12s ease, transform .12s ease; }
-    .list-item__star:hover { background:var(--c-cream-alt); transform:translate(-1px,-1px); }
-    .list-item__star.is-on { background:var(--c-terracotta); color:var(--c-cream); }
+    .list-item__pin { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.85rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; opacity:0.35; filter:grayscale(1); transition:opacity .12s ease, background .12s ease, filter .12s ease; }
+    .list-item__pin:hover { opacity:0.7; background:var(--c-cream-alt); }
+    .list-item__pin.is-pinned { opacity:1; filter:none; background:var(--c-golden); }
+    .list-item__star { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.85rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; opacity:0.35; filter:grayscale(1); transition:opacity .12s ease, background .12s ease, filter .12s ease, transform .12s ease; }
+    .list-item__star:hover { opacity:0.7; background:var(--c-cream-alt); transform:translate(-1px,-1px); }
+    .list-item__star.is-on { opacity:1; filter:none; background:var(--c-terracotta); }
     .list-item.is-pinned { box-shadow:3px 3px 0 var(--c-golden); border-color:var(--c-ink); }
     .list-item.is-unpublished { background:#f3f1e9; opacity:.7; }
     .list-item.is-unpublished .list-item__title,
@@ -799,7 +800,7 @@
     try{ var st=await sb.from('site_settings').select('value').eq('key','highlight_product_id').maybeSingle(); CURRENT_HIGHLIGHT_ID = (st&&st.data)?(st.data.value||null):null; }catch(e){ CURRENT_HIGHLIGHT_ID = null; }
   }
   function highlightBtnHtml(isOn, id){
-    return '<button type="button" class="list-item__star'+(isOn?' is-on':'')+'" data-highlight="'+id+'" title="'+(isOn?'Quitar destacado del home':'Destacar en home')+'" aria-label="Highlight on homepage">'+(isOn?'⭐':'☆')+'</button>';
+    return '<button type="button" class="list-item__star'+(isOn?' is-on':'')+'" data-highlight="'+id+'" title="'+(isOn?'Quitar destacado del home':'Destacar en home')+'" aria-label="Highlight on homepage">⭐</button>';
   }
   async function pLoad(){
     var box=$('pList');
@@ -847,7 +848,6 @@
       stars.forEach(function(b){
         var on = String(b.getAttribute('data-highlight')) === String(CURRENT_HIGHLIGHT_ID||'');
         b.classList.toggle('is-on', on);
-        b.textContent = on ? '⭐' : '☆';
         b.title = on ? 'Quitar destacado del home' : 'Destacar en home';
       });
       /* Repaint the title-row badge */
@@ -884,11 +884,11 @@
 
   /* ===== Drag-reorder + Pin helpers (shared by products/articles/videos/reviews) ===== */
   function dragHandleHtml(){ return '<span class="list-item__drag" title="Drag to reorder" aria-label="Drag">⋮⋮</span>'; }
-  function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">'+(isPinned?'📌':'☆')+'</button>'; }
+  function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">📌</button>'; }
   var EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
   var EYE_OFF_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.1 4.1"/><path d="M6.6 6.6A17 17 0 0 0 2 12s3.5 6 10 6a10 10 0 0 0 4.5-1.1"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/></svg>';
   function pubBtnHtml(isPublished, id){ var hidden = isPublished === false; return '<button type="button" class="list-item__pub'+(hidden?' is-hidden':'')+'" data-pub="'+id+'" title="'+(hidden?'Show on site':'Hide from site')+'" aria-label="'+(hidden?'Show on site':'Hide from site')+'">'+(hidden?EYE_OFF_SVG:EYE_OPEN_SVG)+'</button>'; }
-  function applyPinClass(li, pinned){ li.classList.toggle('is-pinned', !!pinned); var b=li.querySelector('.list-item__pin'); if(b){ b.classList.toggle('is-pinned',!!pinned); b.textContent=pinned?'📌':'☆'; b.title=pinned?'Unpin':'Pin (max 3)'; } }
+  function applyPinClass(li, pinned){ li.classList.toggle('is-pinned', !!pinned); var b=li.querySelector('.list-item__pin'); if(b){ b.classList.toggle('is-pinned',!!pinned); b.title=pinned?'Unpin':'Pin (max 3)'; } }
   function attachSortableList(containerId, table, getRows, afterReorder){
     var el=document.getElementById(containerId); if(!el || !window.Sortable) return;
     if(el._sortable){ try{ el._sortable.destroy(); }catch(e){} }
