@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
   <title>Blog — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260617" />
+  <link rel="stylesheet" href="styles.css?v=20260618" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -63,7 +63,7 @@
       <!-- Sidebar -->
       <aside class="blog-sidebar">
 
-        <div class="widget widget--terra">
+        <div class="widget widget--terra" id="sidebarNewsletter">
           <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40"><use href="#i-mail"/></svg></div>
           <h3 style="text-align:center">Una vez por semana en tu correo</h3>
           <p style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55;text-align:center">Consejos reales, artículos nuevos y algún fail canino épico. Sin spam.</p>
@@ -72,6 +72,19 @@
             <button type="submit" class="btn btn--golden full-w">Suscribirme</button>
           </form>
         </div>
+        <script>
+          /* Hide this widget for signed-in / remembered visitors. */
+          (function(){
+            try {
+              var u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
+              var hasSession = !!localStorage.getItem('logramo_supa_auth');
+              if ((u && u.email) || hasSession) {
+                var w = document.getElementById('sidebarNewsletter');
+                if (w) w.style.display = 'none';
+              }
+            } catch (_) {}
+          })();
+        </script>
 
         <div class="widget" id="temasWidget" hidden>
           <h3>Temas</h3>
@@ -100,12 +113,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260617"></script>
+<script src="partials.js?v=20260618"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260617"></script>
-<script src="animations.js?v=20260617"></script>
+<script src="script.js?v=20260618"></script>
+<script src="animations.js?v=20260618"></script>
 <script>
 /* ============ BLOG — live articles from Supabase ============ */
 (function(){

@@ -471,11 +471,20 @@ function handleFreebie(e) { handlePopupForm(e, 'popup-freebie', '¡Guía enviada
 function handleNewsletter(e) { handlePopupForm(e, 'popup-newsletter', '¡Suscripción confirmada!', 'newsletter-popup'); }
 function handleSimpleNewsletter(e) { e.preventDefault(); trackSubscriber(emailFromForm(e.target), 'newsletter'); e.target.reset(); showToast('¡Suscripción confirmada! Bienvenido'); }
 
-/* Auto-trigger subscribe popup on blog after delay */
+/* Auto-trigger subscribe popup on blog after delay.
+   Skip entirely when the visitor is already signed in (real Supabase Auth
+   identity OR a remembered logramo_user). They don't need to be re-asked. */
+function isKnownVisitor() {
+  try {
+    const u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
+    if (u && u.email) return true;
+  } catch (_) {}
+  return !!localStorage.getItem('logramo_supa_auth');
+}
 function maybeAutoSubscribe() {
   const isBlog = /blog\.html/i.test(window.location.pathname);
   const dismissed = sessionStorage.getItem('logramo_sub_seen');
-  if (isBlog && !dismissed && document.getElementById('popup-newsletter')) {
+  if (isBlog && !dismissed && !isKnownVisitor() && document.getElementById('popup-newsletter')) {
     setTimeout(() => {
       if (!document.querySelector('.popup-overlay.open')) {
         openPopup('popup-newsletter');
