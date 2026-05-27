@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" id="bpMetaDesc" content="Logramo — Consejos reales sobre perros" />
   <title id="bpDocTitle">Cargando… — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260616" />
+  <link rel="stylesheet" href="styles.css?v=20260617" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -115,11 +115,11 @@
       <ul id="tocList"></ul>
     </div>
 
-    <div class="widget widget--terra" style="text-align:center">
+    <div class="widget widget--terra" id="planWidget" style="text-align:center">
       <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40"><use href="#i-book"/></svg></div>
-      <h3>El plan completo</h3>
-      <p style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55">12 semanas. Paso a paso. Sin improvisar ni buscar en Google a las 3am.</p>
-      <a href="biblioteca.html" class="btn btn--golden full-w">Ver biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+      <h3 id="planTitle">El plan completo</h3>
+      <p id="planDesc" style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55">12 semanas. Paso a paso. Sin improvisar ni buscar en Google a las 3am.</p>
+      <a id="planCta" href="biblioteca.html" class="btn btn--golden full-w">Ver biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
     </div>
 
     <div class="widget">
@@ -139,11 +139,11 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260616"></script>
+<script src="partials.js?v=20260617"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="script.js?v=20260616"></script>
-<script src="animations.js?v=20260616"></script>
+<script src="script.js?v=20260617"></script>
+<script src="animations.js?v=20260617"></script>
 
 <script type="module">
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
@@ -166,7 +166,9 @@ function renderBody(s){
   }).join('');
 }
 
-const CAT_COLOR = {Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'};
+/* Populated from blog_categories at load (see IIFE below). Defaults kept so the
+   page still renders if the fetch fails. */
+let CAT_COLOR = {Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'};
 const CAT_ICON = {Cachorros:'i-paw',Educación:'i-target',Conducta:'i-flame',Salud:'i-shield',Alimentación:'i-bone',Historias:'i-book'};
 const TAG_SKINS = ['terra','golden','forest','peach','sage','lavender'];
 
@@ -219,6 +221,12 @@ function buildToc(bodyEl){
   var id = new URLSearchParams(location.search).get('id');
   if (!id) { showNotFound(); return; }
 
+  /* Refresh CAT_COLOR from the live blog_categories table before rendering. */
+  try {
+    var rc = await sb.from('blog_categories').select('name,color');
+    if (!rc.error) (rc.data || []).forEach(function(c){ CAT_COLOR[c.name] = c.color; });
+  } catch (_) {}
+
   var r = await sb.from('articles').select('*').eq('id', id).maybeSingle();
   var a = r && r.data;
   if (!a || a.published === false) { showNotFound(); return; }
@@ -259,6 +267,25 @@ function buildToc(bodyEl){
 
   // Auto-generate TOC from h2s
   buildToc(bodyEl);
+
+  // "Plan completo" widget → swap to the related product when one is set
+  if (a.related_product_id) {
+    try {
+      var rp = await sb.from('products').select('id,title,description,cover_sub,is_free').eq('id', a.related_product_id).maybeSingle();
+      var p = rp && rp.data;
+      if (p) {
+        var planTitle = $('planTitle');
+        var planDesc  = $('planDesc');
+        var planCta   = $('planCta');
+        if (planTitle) planTitle.textContent = p.title || 'Saber más';
+        if (planDesc) planDesc.textContent = p.description || (p.cover_sub || 'La guía que va con este artículo.');
+        if (planCta) {
+          planCta.href = 'producto.html?id=' + encodeURIComponent(p.id);
+          planCta.innerHTML = (p.is_free ? 'Descargar gratis' : 'Ver libro') + ' <svg class="icon"><use href="#i-arrow-right"/></svg>';
+        }
+      }
+    } catch (_) { /* fall back to the default biblioteca link */ }
+  }
 
   // Track the pageview (with article_id)
   if (window.trackPageview) window.trackPageview({ article_id: a.id });

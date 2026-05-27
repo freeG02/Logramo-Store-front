@@ -211,6 +211,38 @@ const CHAT_HTML = `
   </form>
 </div>`;
 
+/* ============ FREEBIE DOWNLOAD MODAL ============
+   Opens when a visitor clicks Descargar on a free product card. Shows the
+   product's cover + title + pages + description + a single big download
+   button. If the visitor isn't logged in, the button redirects to
+   cuenta.html?next=... which returns here with the modal re-opened and
+   the download triggered automatically. */
+const FREEBIE_HTML = `
+<div class="popup-overlay" id="popup-freebie-dl">
+  <div class="popup popup--freebie">
+    <button class="popup__close" data-close-popup aria-label="Cerrar"><svg class="icon icon--sm"><use href="#i-close"/></svg></button>
+    <div class="freebie-modal__grid">
+      <div class="freebie-modal__cover" id="freebieCover">
+        <div class="freebie-modal__cover-sub" id="freebieCoverSub">Guía PDF</div>
+        <div class="freebie-modal__cover-title" id="freebieCoverTitle">—</div>
+        <svg class="freebie-modal__cover-icon" id="freebieCoverIcon" width="40" height="40"><use href="#i-paw"/></svg>
+      </div>
+      <div class="freebie-modal__body">
+        <span class="eyebrow" id="freebieEyebrow">Gratis</span>
+        <h2 class="freebie-modal__title" id="freebieTitle">—</h2>
+        <p class="freebie-modal__meta" id="freebieMeta"></p>
+        <p class="freebie-modal__desc" id="freebieDesc">—</p>
+        <div class="freebie-modal__actions">
+          <button type="button" class="btn btn--primary btn--lg full-w" id="freebieDownloadBtn">
+            <svg class="icon"><use href="#i-pdf"/></svg> <span id="freebieDownloadLabel">Descargar ahora</span>
+          </button>
+          <p class="freebie-modal__hint" id="freebieHint">El PDF se descarga al instante.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
 /* ============ STANDARD POPUPS ============ */
 const POPUPS_HTML = `
 <div class="popup-overlay" id="popup-freebie">
@@ -254,6 +286,7 @@ injectPartial('partial-footer', FOOTER_HTML);
 injectPartial('partial-cart', CART_HTML);
 injectPartial('partial-chat', CHAT_HTML);
 injectPartial('partial-popups', POPUPS_HTML);
+document.body.insertAdjacentHTML('beforeend', FREEBIE_HTML);
 
 /* Mark active nav link */
 const linkMap = { home: 'home', biblioteca: 'biblioteca', blog: 'blog', sobre: 'sobre' };
@@ -307,4 +340,178 @@ if (currentLink) {
   });
   // Expose so the chat code can call it without waiting for next page load
   window.refreshNavUser = applyNavUser;
+})();
+
+/* ============ FREEBIE DOWNLOAD MODAL — logic ============
+   - openFreebieModal(product) fills the modal and shows it.
+   - Click "Descargar ahora" → if logged-in, downloads the PDF. If not,
+     redirects to cuenta.html?next=...&download=<productId>. On return,
+     the freebie auto-opens and the download fires automatically.
+   - To trigger the open from elsewhere, use:
+       window.openFreebieFor(productId)   // fetches the product first
+       window.openFreebieModal(product)   // pass a product row directly
+*/
+(function () {
+  const SB_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
+  const SB_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
+
+  const COVER_BG = {
+    sky:'#ADCBEF', sage:'#B5C1AB', lavender:'#F2DCFF', golden:'#F6D055',
+    pink:'#FCD1D8', peach:'#FFCDB8', terra:'#C55932', forest:'#3C4824',
+  };
+
+  function isLoggedIn() {
+    try {
+      const u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
+      if (u && u.id) return true;
+    } catch (_) {}
+    return !!localStorage.getItem('logramo_supa_auth');
+  }
+
+  function showModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('open');
+    document.body.classList.add('popup-open');
+  }
+  function hideModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('open');
+    document.body.classList.remove('popup-open');
+  }
+
+  function openFreebieModal(p) {
+    if (!p) return;
+    // Cover side
+    const cover = document.getElementById('freebieCover');
+    if (cover) {
+      cover.style.background = COVER_BG[p.cover_color] || COVER_BG.sky;
+      if (p.cover_image) {
+        cover.innerHTML = '<img src="' + (p.cover_image || '') + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
+      } else {
+        cover.innerHTML =
+          '<div class="freebie-modal__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>' +
+          '<div class="freebie-modal__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>' +
+          '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>';
+      }
+    }
+    // Body side
+    const tEl = document.getElementById('freebieTitle');
+    const dEl = document.getElementById('freebieDesc');
+    const mEl = document.getElementById('freebieMeta');
+    const eyebrow = document.getElementById('freebieEyebrow');
+    if (tEl) tEl.textContent = p.title || 'Tu guía gratuita';
+    if (dEl) dEl.textContent = p.description || '';
+    if (eyebrow) eyebrow.textContent = p.is_free ? 'Gratis' : 'Tu guía';
+
+    const meta = [];
+    if (p.pages) meta.push(p.pages + ' ' + (p.pages === 1 ? 'página' : 'páginas'));
+    meta.push('PDF · Descarga inmediata');
+    if (mEl) mEl.textContent = meta.join(' · ');
+
+    // CTA
+    const btn = document.getElementById('freebieDownloadBtn');
+    const lbl = document.getElementById('freebieDownloadLabel');
+    const hint = document.getElementById('freebieHint');
+    const loggedIn = isLoggedIn();
+    if (lbl) lbl.textContent = loggedIn ? 'Descargar ahora' : 'Crear cuenta para descargar';
+    if (hint) hint.textContent = loggedIn
+      ? (p.pdf_url ? 'El PDF se descarga al instante.' : 'Aún no hay PDF cargado. Avísanos por chat.')
+      : 'Creamos tu cuenta en 30 segundos y descargas al volver. No spam.';
+    if (btn) {
+      btn.onclick = function (e) {
+        e.preventDefault();
+        if (!isLoggedIn()) {
+          // Send them to signup; on return open this modal + trigger download
+          const next = encodeURIComponent(location.pathname + location.search);
+          location.href = 'cuenta.html?next=' + next + '&download=' + encodeURIComponent(p.id);
+          return;
+        }
+        if (!p.pdf_url) return;
+        triggerDownload(p.pdf_url, suggestedFilename(p));
+      };
+    }
+    showModal('popup-freebie-dl');
+  }
+
+  function suggestedFilename(p) {
+    const base = (p.title || 'guia-logramo').toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .slice(0, 80);
+    return base + '.pdf';
+  }
+  function triggerDownload(url, filename) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'guia.pdf';
+    a.rel = 'noopener';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { a.remove(); }, 200);
+  }
+
+  async function fetchProduct(productId) {
+    try {
+      const r = await fetch(SB_URL + '/rest/v1/products?id=eq.' + encodeURIComponent(productId) + '&select=*', {
+        headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
+      });
+      if (!r.ok) return null;
+      const arr = await r.json();
+      return (Array.isArray(arr) && arr[0]) || null;
+    } catch (_) { return null; }
+  }
+
+  async function openFreebieFor(productId) {
+    const p = await fetchProduct(productId);
+    if (p) openFreebieModal(p);
+  }
+
+  // Intercept clicks on any element marked data-freebie="<productId>"
+  document.addEventListener('click', function (e) {
+    const trigger = e.target.closest('[data-freebie]');
+    if (!trigger) return;
+    const id = trigger.getAttribute('data-freebie');
+    if (!id) return;
+    e.preventDefault();
+    openFreebieFor(id);
+  });
+
+  // Close handlers (X button or backdrop)
+  document.addEventListener('click', function (e) {
+    const overlay = document.getElementById('popup-freebie-dl');
+    if (!overlay || !overlay.classList.contains('open')) return;
+    if (e.target.matches('[data-close-popup]') || e.target.closest('[data-close-popup]')) {
+      hideModal('popup-freebie-dl');
+    } else if (e.target === overlay) {
+      hideModal('popup-freebie-dl');
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') hideModal('popup-freebie-dl');
+  });
+
+  // If we just came back from cuenta.html with ?download=<id>, auto-open + download
+  (function autoResume() {
+    const params = new URLSearchParams(location.search);
+    const wantId = params.get('download');
+    if (!wantId || !isLoggedIn()) return;
+    openFreebieFor(wantId).then(function () {
+      // Give the modal a beat to render, then click the download button
+      setTimeout(function () {
+        const btn = document.getElementById('freebieDownloadBtn');
+        if (btn) btn.click();
+        // Clean the URL so reloads don't re-trigger
+        params.delete('download');
+        const clean = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+        history.replaceState(null, '', clean);
+      }, 400);
+    });
+  })();
+
+  window.openFreebieModal = openFreebieModal;
+  window.openFreebieFor = openFreebieFor;
 })();

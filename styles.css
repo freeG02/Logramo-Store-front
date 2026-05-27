@@ -2376,8 +2376,20 @@ h6 { font-size: .9rem; }
   transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
 }
 .featured-post:hover { transform: translate(-4px,-4px); box-shadow: var(--shadow-md); }
-.featured-post__img { aspect-ratio: 4/3; overflow: hidden; border-right: var(--bw-1) solid var(--c-ink); }
-.featured-post__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease-out); }
+/* Image fills whatever height the text panel sets; min-height keeps it
+   reasonable when the text is short. */
+.featured-post__img {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  border-right: var(--bw-1) solid var(--c-ink);
+}
+.featured-post__img img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  transition: transform 1s var(--ease-out);
+}
 .featured-post:hover .featured-post__img img { transform: scale(1.05); }
 .featured-post__body { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
 .featured-post__title {
@@ -2820,6 +2832,50 @@ h1, h2, h3, h4,
 .review-card--terra   .review-card__avatar { background: var(--c-cream); color: var(--c-ink); }
 .review-card__stars { color: var(--c-golden) !important; }
 .review-card__stars svg { width: 20px; height: 20px; }
+
+/* ============ FREEBIE DOWNLOAD MODAL ============ */
+.popup--freebie { max-width: 760px; padding: 0; overflow: hidden; }
+.freebie-modal__grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+}
+@media (max-width: 660px) {
+  .freebie-modal__grid { grid-template-columns: 1fr; }
+}
+.freebie-modal__cover {
+  background: var(--c-sky);
+  border-right: var(--bw-1) solid var(--c-ink);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px;
+  padding: 32px 24px;
+  min-height: 360px;
+  text-align: center;
+}
+@media (max-width: 660px) {
+  .freebie-modal__cover { border-right: none; border-bottom: var(--bw-1) solid var(--c-ink); min-height: 220px; padding: 28px 20px; }
+}
+.freebie-modal__cover-sub {
+  font-family: var(--font-body); font-weight: 700;
+  font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--c-ink); opacity: .65;
+}
+.freebie-modal__cover-title {
+  font-family: var(--font-display); font-weight: 900;
+  font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1;
+  letter-spacing: -.02em; text-transform: uppercase;
+  color: var(--c-ink); margin: 0;
+}
+.freebie-modal__cover-icon { color: var(--c-terracotta); }
+.freebie-modal__body { padding: 32px 32px 28px; display: flex; flex-direction: column; }
+.freebie-modal__title {
+  font-family: var(--font-display); font-weight: 900;
+  font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.05; letter-spacing: -.02em;
+  text-transform: uppercase; margin: 10px 0 8px; color: var(--c-ink);
+}
+.freebie-modal__meta { font-size: .82rem; color: var(--c-text-muted); margin: 0 0 16px; }
+.freebie-modal__desc { color: var(--c-text); font-size: .96rem; line-height: 1.55; margin: 0 0 22px; flex: 1; }
+.freebie-modal__actions { margin-top: auto; }
+.freebie-modal__hint { font-size: .78rem; color: var(--c-text-muted); text-align: center; margin: 10px 0 0; }
 
 /* Reviews — always-horizontal carousel (mobile + desktop).
    Overrides the default 3-column grid + the generic [data-h-drag] mobile rules. */

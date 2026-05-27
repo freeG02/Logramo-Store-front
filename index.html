@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Guías reales para dueños primerizos que están sobreviviendo el caos (y amándolo). Sin tecnicismos, sin juicios." />
   <title>Logramo — Cría un perro feliz</title>
-  <link rel="stylesheet" href="styles.css?v=20260616" />
+  <link rel="stylesheet" href="styles.css?v=20260617" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -305,12 +305,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260616"></script>
+<script src="partials.js?v=20260617"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260616"></script>
-<script src="animations.js?v=20260616"></script>
+<script src="script.js?v=20260617"></script>
+<script src="animations.js?v=20260617"></script>
 
 <script>
 /* ============ HOME — live content from Supabase ============ */
@@ -374,7 +374,7 @@
         +'<p class="freebie__desc">'+esc(p.description||'')+'</p>'
         +(bullets?'<div class="freebie__bullets" data-stagger>'+bullets+'</div>':'')
         +'<div class="product-hero__price-row" style="margin:8px 0 24px">'+priceHtml+'</div>'
-        +'<a href="producto.html?id='+encodeURIComponent(p.id)+'" class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-'+(p.is_free?'pdf':'cart')+'"/></svg> '+cta+'</a>'
+        +'<a '+(p.is_free?'href="#" data-freebie="'+esc(p.id)+'"':'href="producto.html?id='+encodeURIComponent(p.id)+'"')+' class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-'+(p.is_free?'pdf':'cart')+'"/></svg> '+cta+'</a>'
         +'</div>'
         +'<div class="freebie__image-wrap">'
           + visual
@@ -397,7 +397,9 @@
       var arts=r.data.filter(function(a){ if(a.published===false) return false; if(a.publish_at && new Date(a.publish_at).getTime()>now) return false; return true; });
       if(!arts.length) return;
       var skins=['sky','peach','golden'];
+      /* Try to load colors from blog_categories; fall back to defaults if it fails */
       var catColors={Cachorros:'terra',Educación:'solid',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'forest'};
+      try{ var rc=await sb.from('blog_categories').select('name,color'); if(!rc.error){ (rc.data||[]).forEach(function(c){ catColors[c.name]=c.color; }); } }catch(e){}
       grid.innerHTML=arts.slice(0,3).map(function(a,i){
         var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="" loading="lazy">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>';
         return '<a href="blog-post.html?id='+encodeURIComponent(a.id)+'" class="article-card article-card--'+skins[i%3]+'"><div class="article-card__img-wrap"><span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'')+'</p><div class="article-card__meta"><span><svg class="icon icon--xs"><use href="#i-clock"/></svg> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';

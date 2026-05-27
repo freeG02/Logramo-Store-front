@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260616" />
+  <link rel="stylesheet" href="styles.css?v=20260617" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -189,6 +189,12 @@
     .list-item__badge { display:inline-block; margin-left:8px; padding:2px 8px; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); font-size:.62rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }
     .list-item__badge--sched { background:var(--c-golden); color:var(--c-ink); }
     .list-item.is-scheduled { box-shadow:3px 3px 0 var(--c-golden); }
+    /* Category color swatches in the dashboard */
+    .cat-swatches { display:flex; flex-wrap:wrap; gap:8px; padding:6px 0 2px; }
+    .cat-swatch { width:32px; height:32px; border-radius:50%; border:var(--bw-1) solid var(--c-ink); cursor:pointer; padding:0; box-shadow:var(--shadow-xs); transition:transform .12s var(--ease-back); }
+    .cat-swatch:hover { transform:translate(-1px,-1px); box-shadow:var(--shadow-sm); }
+    .cat-swatch.is-selected { box-shadow:0 0 0 3px var(--c-ink), 3px 3px 0 var(--c-ink); transform:translate(-2px,-2px); }
+    .cat-dot { display:inline-block; flex-shrink:0; width:14px; height:14px; border-radius:50%; border:var(--bw-1) solid var(--c-ink); margin-right:6px; }
     .list-item.sortable-ghost { opacity:.5; }
     .list-item.sortable-chosen { box-shadow:4px 4px 0 var(--c-terracotta); }
     /* Repeater rows: drag handle */
@@ -352,6 +358,7 @@
       <div class="subtabs">
         <button class="subtab active" data-sub="prod">Products</button>
         <button class="subtab" data-sub="art">Articles</button>
+        <button class="subtab" data-sub="cat">Categories</button>
         <button class="subtab" data-sub="vid">Homepage videos</button>
         <button class="subtab" data-sub="rev">Reviews</button>
         <button class="subtab" data-sub="home">Highlight</button>
@@ -373,6 +380,7 @@
               </div>
               <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Free (adds the “Gratis” tag)</label></div>
               <div class="field"><label for="p-original">Original price ($) <span class="muted">— optional strike-through</span></label><input type="number" id="p-original" step="0.01" min="0" placeholder="49.99" /></div>
+              <div class="field"><label for="p-pages">Pages <span class="muted">— optional, shown in the freebie download modal</span></label><input type="number" id="p-pages" min="1" placeholder="e.g. 24" /></div>
               <input type="hidden" id="p-buy-url" value="" />
               <div class="field"><label for="p-desc">Description</label><textarea id="p-desc" placeholder="A warm one-liner about the book…"></textarea></div>
               <div class="field"><label>Tags</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Type and press Enter… (Gratis, Caliente…)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
@@ -429,12 +437,13 @@
               <p class="panel__hint">Create blog posts with their tags.</p>
               <div class="field"><label for="a-title">Title</label><input type="text" id="a-title" placeholder="e.g. Las 5 palabras que tu perro debe aprender" /></div>
               <div class="row2">
-                <div class="field"><label for="a-cat">Category</label><select id="a-cat"><option>Cachorros</option><option>Educación</option><option>Conducta</option><option>Salud</option><option>Alimentación</option><option>Historias</option></select></div>
+                <div class="field"><label for="a-cat">Category</label><select id="a-cat"></select><span class="muted" style="display:block;font-size:.74rem;margin-top:6px">Manage these in the <strong>Categories</strong> subtab.</span></div>
                 <div class="field"><label for="a-read">Read time (min)</label><input type="number" id="a-read" min="1" value="5" /></div>
               </div>
               <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Hot 🔥 (trending article)</label></div>
               <div class="field"><label class="check"><input type="checkbox" id="a-published" checked /> Published (visible on the site)</label></div>
               <div class="field"><label for="a-publish-at">Schedule for later <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">— optional</span></label><input type="datetime-local" id="a-publish-at" /><span class="muted" id="a-schedule-hint" style="display:block;font-size:.78rem;margin-top:6px">Leave empty to publish now. Pick a future time to schedule.</span></div>
+              <div class="field"><label for="a-related-product">Related product <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">— optional</span></label><select id="a-related-product"><option value="">— Show "Ver biblioteca" (default)</option></select><span class="muted" style="display:block;font-size:.78rem;margin-top:6px">Shown in the "Plan completo" sidebar widget when readers open this article.</span></div>
               <div class="field"><label for="a-excerpt">Excerpt</label><textarea id="a-excerpt" placeholder="A hook that grabs attention…"></textarea></div>
               <div class="field"><label for="a-body">Body</label><textarea id="a-body" rows="14" placeholder="Write the full article. Separate paragraphs with a blank line. Basic HTML is allowed (&lt;strong&gt;, &lt;em&gt;, &lt;a href&gt;, &lt;h2&gt;, &lt;ul&gt;&lt;li&gt;)."></textarea><span class="muted" style="display:block;font-size:.78rem;margin-top:6px">Blank line = new paragraph. Plain HTML also works.</span></div>
               <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="a-img-file" /><div id="a-img-thumb" class="thumbs"></div></div>
@@ -446,6 +455,35 @@
           <div>
             <div class="panel"><h2>Preview</h2><div class="preview-mount" id="aPreview"></div></div>
             <div class="panel panel--list"><h2>Published articles</h2><div class="list" id="aList"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOG CATEGORIES -->
+      <div data-sub-view="cat" hidden>
+        <div class="grid2">
+          <div>
+            <div class="panel">
+              <h2 id="catEditorTitle">Add category</h2>
+              <p class="panel__hint">These show up in the article editor and color-code articles on the blog.</p>
+              <div class="field"><label for="cat-name">Name</label><input type="text" id="cat-name" placeholder="e.g. Adopción" /></div>
+              <div class="field">
+                <label>Color</label>
+                <div id="cat-swatches" class="cat-swatches"></div>
+                <input type="hidden" id="cat-color" value="sage" />
+              </div>
+              <div class="actions">
+                <button type="button" class="btn btn--primary" id="catSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Save</button>
+                <button type="button" class="icon-btn" id="catResetBtn">Clear</button>
+                <span class="muted" id="catSaveStatus"></span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="panel panel--list">
+              <h2>All categories</h2>
+              <div class="list" id="catList"><p class="muted">Loading…</p></div>
+            </div>
           </div>
         </div>
       </div>
@@ -598,7 +636,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260616"></script>
+<script src="partials.js?v=20260617"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -754,7 +792,7 @@
   $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading PDF…'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='✓ PDF uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
   function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'📄 <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF uploaded</a> · <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Remove</button>':'No PDF uploaded yet.'; }
   $('p-pdf-info').addEventListener('click',function(e){ if(e.target.id==='p-pdf-rm'){ $('p-pdf-url').value=''; renderPdf(); } });
-  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, published:$('p-published').checked, featured:$('p-featured').checked, original_price:($('p-original').value?parseFloat($('p-original').value):null), buy_url:$('p-buy-url').value.trim(), problems:repProblems.get(), solutions:repSolutions.get(), modules:repModules.get(), audience:repAudience.get() }; }
+  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, pages:($('p-pages').value?parseInt($('p-pages').value,10):null), published:$('p-published').checked, featured:$('p-featured').checked, original_price:($('p-original').value?parseFloat($('p-original').value):null), buy_url:$('p-buy-url').value.trim(), problems:repProblems.get(), solutions:repSolutions.get(), modules:repModules.get(), audience:repAudience.get() }; }
   function pCard(p){
     var tags=(p.tags||[]).map(badge).join('');
     var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
@@ -764,10 +802,10 @@
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
-  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){var hidden=p.published===false; return '<div class="list-item'+(p.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+'" data-id="'+p.id+'">'+dragHandleHtml()+pinBtnHtml(p.pinned,p.id)+'<div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+(hidden?' <span class="list-item__badge">Hidden</span>':'')+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(p.published,p.id)+'<button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; attachSortableList('pList','products',function(){return PRODUCTS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
-  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){var hidden=p.published===false; return '<div class="list-item'+(p.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+'" data-id="'+p.id+'">'+dragHandleHtml()+pinBtnHtml(p.pinned,p.id)+'<div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+(hidden?' <span class="list-item__badge">Hidden</span>':'')+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(p.published,p.id)+'<button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; attachSortableList('pList','products',function(){return PRODUCTS;}); if(typeof refreshRelatedProductOptions==='function') refreshRelatedProductOptions(); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-pages').value=p.pages||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
-  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
+  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-pages').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
   $('pResetBtn').addEventListener('click',pReset);
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
   ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
@@ -886,13 +924,132 @@
   $('h-list').addEventListener('click',function(e){ var b=e.target.closest('[data-hp]'); if(!b)return; $('h-product').value=b.dataset.hp; hRender(); });
   $('hSaveBtn').addEventListener('click',async function(){ var v=$('h-product').value; $('hSaveStatus').textContent='Saving…'; var r=await sb.from('site_settings').upsert({key:'highlight_product_id',value:v,updated_at:new Date().toISOString()},{onConflict:'key'}); if(r.error){$('hSaveStatus').textContent='';alert('Error: '+r.error.message+(/site_settings|relation/.test(r.error.message)?'\n\nDid you run the site_settings SQL?':''));return;} $('hSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('hSaveStatus').textContent='';},1600); });
 
+  /* ===== BLOG CATEGORIES =====
+     Available color tokens come from styles.css palette + the existing tag
+     skins. Same names work as tag class suffixes (tag--terra, etc). */
+  var CAT_COLOR_OPTIONS = [
+    {slug:'terra',    hex:'#C55932'},
+    {slug:'forest',   hex:'#3C4824'},
+    {slug:'golden',   hex:'#F6D055'},
+    {slug:'peach',    hex:'#FFCDB8'},
+    {slug:'lavender', hex:'#F2DCFF'},
+    {slug:'sky',      hex:'#ADCBEF'},
+    {slug:'sage',     hex:'#B5C1AB'},
+    {slug:'burgundy', hex:'#C65768'},
+    {slug:'pink',     hex:'#FCD1D8'},
+    {slug:'rose',     hex:'#DBC3C3'},
+  ];
+  var CATS = [], editingCat = null;
+  function slugifyCat(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40); }
+  function catColorHex(slug){ var c=CAT_COLOR_OPTIONS.find(function(x){return x.slug===slug;}); return c?c.hex:'#B5C1AB'; }
+  function renderCatSwatches(selected){
+    var box = $('cat-swatches'); if(!box) return;
+    box.innerHTML = CAT_COLOR_OPTIONS.map(function(c){
+      var on = c.slug === selected;
+      return '<button type="button" class="cat-swatch'+(on?' is-selected':'')+'" data-color="'+c.slug+'" style="background:'+c.hex+'" title="'+c.slug+'" aria-label="'+c.slug+'"></button>';
+    }).join('');
+  }
+  async function loadCategories(){
+    var box = $('catList'); if(!box) return;
+    try{
+      var r = await sb.from('blog_categories').select('*').order('sort_order',{ascending:true}).order('name',{ascending:true});
+      if(r.error) throw r.error;
+      CATS = r.data || [];
+      box.innerHTML = CATS.length ? CATS.map(function(c){
+        return '<div class="list-item" data-id="'+c.id+'">'
+          +'<span class="cat-dot" style="background:'+catColorHex(c.color)+'"></span>'
+          +'<div class="list-item__info"><div class="list-item__title">'+esc(c.name)+'</div><div class="list-item__meta">'+esc(c.color)+' · '+esc(c.slug)+'</div></div>'
+          +'<button class="icon-btn" data-cedit="'+c.id+'">Edit</button>'
+          +'<button class="icon-btn icon-btn--danger" data-cdel="'+c.id+'">Delete</button>'
+        +'</div>';
+      }).join('') : '<p class="muted">No categories yet. Add the first one on the left.</p>';
+      refreshArticleCatSelect();
+    }catch(e){
+      box.innerHTML = '<p class="muted">Could not load categories ('+esc(e.message||'')+').</p>';
+    }
+  }
+  function refreshArticleCatSelect(){
+    var sel = $('a-cat'); if(!sel) return;
+    var current = sel.value;
+    sel.innerHTML = CATS.map(function(c){ return '<option value="'+esc(c.name)+'">'+esc(c.name)+'</option>'; }).join('');
+    if(current && CATS.some(function(c){return c.name===current;})) sel.value = current;
+  }
+  function catReset(){
+    editingCat = null;
+    $('cat-name').value = '';
+    $('cat-color').value = 'sage';
+    renderCatSwatches('sage');
+    $('catEditorTitle').textContent = 'Add category';
+  }
+  $('cat-swatches')&&$('cat-swatches').addEventListener('click', function(e){
+    var b = e.target.closest('[data-color]'); if(!b) return;
+    $('cat-color').value = b.dataset.color;
+    renderCatSwatches(b.dataset.color);
+  });
+  $('catSaveBtn')&&$('catSaveBtn').addEventListener('click', async function(){
+    var name = $('cat-name').value.trim();
+    var color = $('cat-color').value || 'sage';
+    var status = $('catSaveStatus');
+    if(name.length < 2){ status.textContent = 'Name is too short.'; return; }
+    status.textContent = 'Saving…';
+    var payload = { name: name, slug: slugifyCat(name), color: color };
+    try{
+      var r;
+      if(editingCat){
+        r = await sb.from('blog_categories').update(payload).eq('id', editingCat);
+      } else {
+        var sort = (CATS.length ? Math.max.apply(null, CATS.map(function(c){return c.sort_order||0;})) : 0) + 10;
+        r = await sb.from('blog_categories').insert(Object.assign({sort_order: sort}, payload));
+      }
+      if(r.error) throw r.error;
+      status.textContent = '✓ Saved';
+      setTimeout(function(){ status.textContent=''; }, 1400);
+      catReset();
+      loadCategories();
+    }catch(e){
+      status.textContent = '';
+      alert('Error: '+(e.message||e));
+    }
+  });
+  $('catResetBtn')&&$('catResetBtn').addEventListener('click', catReset);
+  $('catList')&&$('catList').addEventListener('click', async function(e){
+    var ed = e.target.closest('[data-cedit]'), del = e.target.closest('[data-cdel]');
+    if(ed){
+      var c = CATS.find(function(x){return String(x.id)===String(ed.dataset.cedit);});
+      if(!c) return;
+      editingCat = c.id;
+      $('cat-name').value = c.name;
+      $('cat-color').value = c.color || 'sage';
+      renderCatSwatches(c.color || 'sage');
+      $('catEditorTitle').textContent = 'Edit category';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    if(del){
+      var c = CATS.find(function(x){return String(x.id)===String(del.dataset.cdel);});
+      if(!c) return;
+      if(!confirm('Delete category "'+c.name+'"? Articles already using it will keep their text label.')) return;
+      var r = await sb.from('blog_categories').delete().eq('id', c.id);
+      if(r.error){ alert('Error: '+r.error.message); return; }
+      loadCategories();
+    }
+  });
+
   /* ===== ARTICLES ===== */
   // Convert a `datetime-local` input value (local time, no zone) into an ISO
   // timestamptz string. Returns null when the field is empty.
   function localDtToIso(v){ if(!v) return null; var d=new Date(v); return isNaN(d.getTime())?null:d.toISOString(); }
   // Reverse: ISO timestamptz → value for a datetime-local input (local time).
   function isoToLocalDt(iso){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d.getTime())) return ''; var pad=function(n){return String(n).padStart(2,'0');}; return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes()); }
-  function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), body:$('a-body').value, read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, published:$('a-published').checked, publish_at:localDtToIso($('a-publish-at').value), tags:aField.get() }; }
+  function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), body:$('a-body').value, read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, published:$('a-published').checked, publish_at:localDtToIso($('a-publish-at').value), related_product_id:$('a-related-product').value||null, tags:aField.get() }; }
+  function refreshRelatedProductOptions(){
+    var sel = $('a-related-product'); if(!sel) return;
+    var current = sel.value;
+    var opts = ['<option value="">— Show "Ver biblioteca" (default)</option>']
+      .concat((PRODUCTS||[]).filter(function(p){return p.published!==false;})
+        .map(function(p){ return '<option value="'+esc(p.id)+'">'+esc(p.title||'(untitled)')+'</option>'; }));
+    sel.innerHTML = opts.join('');
+    if(current) sel.value = current;
+  }
   function aCard(a){ var catColors={Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'}; var tag='<span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'; var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">🔥 Caliente</span>':''; var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>'; return '<a href="blog-post.html" class="article-card" data-cat="'+slugify(a.category)+(a.hot?' caliente':'')+'"><div class="article-card__img-wrap">'+tag+hot+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'Título del artículo')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'Extracto…')+'</p><div class="article-card__meta"><span><svg class="icon icon--xs"><use href="#i-clock"/></svg> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
   function aPreview(){ $('aPreview').innerHTML=aCard(aGather()); }
   $('a-img-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('aSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'articles'); $('a-img').value=url; renderAThumb(); aPreview(); $('aSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('aSaveStatus').textContent='';},1200); }catch(err){ $('aSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
@@ -907,9 +1064,9 @@
     if(scheduled){ var dt=new Date(schedMs); badges+=' <span class="list-item__badge list-item__badge--sched">Scheduled · '+dt.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'</span>'; }
     return '<div class="list-item'+(a.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+(scheduled?' is-scheduled':'')+'" data-id="'+a.id+'">'+dragHandleHtml()+pinBtnHtml(a.pinned,a.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+badges+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(a.published,a.id)+'<button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';
   }).join(''):'<p class="muted">No articles yet.</p>'; attachSortableList('aList','articles',function(){return ARTICLES;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
-  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-body').value=a.body||''; $('a-hot').checked=!!a.hot; $('a-published').checked=a.published!==false; $('a-publish-at').value=isoToLocalDt(a.publish_at); updateScheduleHint(); aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
+  $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-body').value=a.body||''; $('a-hot').checked=!!a.hot; $('a-published').checked=a.published!==false; $('a-publish-at').value=isoToLocalDt(a.publish_at); $('a-related-product').value=a.related_product_id||''; updateScheduleHint(); aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
   $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Add a title.');return;} $('aSaveStatus').textContent='Saving…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
-  function aReset(){ editingA=null; aField.set([]); $('a-title').value='';$('a-cat').value='Cachorros';$('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-body').value='';$('a-hot').checked=false;$('a-published').checked=true;$('a-publish-at').value=''; updateScheduleHint(); renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
+  function aReset(){ editingA=null; aField.set([]); $('a-title').value=''; $('a-cat').value=(CATS[0]&&CATS[0].name)||''; $('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-body').value='';$('a-hot').checked=false;$('a-published').checked=true;$('a-publish-at').value=''; $('a-related-product').value=''; updateScheduleHint(); renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
   function updateScheduleHint(){
     var hint=$('a-schedule-hint'); if(!hint) return;
     var iso=localDtToIso($('a-publish-at').value);
@@ -1469,7 +1626,7 @@
     $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
-    await loadTags(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); hLoad(); loadMessages();
+    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); hLoad(); loadMessages();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });

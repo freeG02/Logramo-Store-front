@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Logramo — Tu cuenta. Entra o crea una cuenta en segundos." />
   <title>Mi cuenta — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260616" />
+  <link rel="stylesheet" href="styles.css?v=20260617" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     /* ============ AUTH PAGE ============ */
@@ -349,12 +349,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260616"></script>
+<script src="partials.js?v=20260617"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260616"></script>
-<script src="animations.js?v=20260616"></script>
+<script src="script.js?v=20260617"></script>
+<script src="animations.js?v=20260617"></script>
 <script>
 /* ============ ACCOUNT — real Supabase Auth ============ */
 const sb = window.supabase.createClient(
@@ -466,6 +466,7 @@ async function handleSignup(e) {
     syncIdentity(profile);
     renderAuthState(profile);
     if (typeof showToast === 'function') showToast(`¡Bienvenido, ${username}! Te enviamos un correo.`);
+    redirectToNextIfAny();
   } catch (err) {
     showError(spError(err));
   } finally {
@@ -497,12 +498,27 @@ async function handleLogin(e) {
     syncIdentity(profile);
     renderAuthState(profile);
     if (typeof showToast === 'function') showToast(`¡Hola otra vez, ${profile.username}!`);
+    redirectToNextIfAny();
   } catch (err) {
     showError(spError(err));
   } finally {
     if (btn) btn.disabled = false;
   }
   return false;
+}
+
+/* If we arrived here via ?next=…, hop back to that page once auth succeeds.
+   Used by the freebie modal's "Create account to download" flow. */
+function redirectToNextIfAny() {
+  const params = new URLSearchParams(location.search);
+  const next = params.get('next');
+  if (!next) return;
+  const dl = params.get('download');
+  // Pass the download id along on the return URL so the modal auto-fires
+  let target = next;
+  if (dl) target += (target.includes('?') ? '&' : '?') + 'download=' + encodeURIComponent(dl);
+  // Brief delay so the toast can show
+  setTimeout(function () { location.href = target; }, 700);
 }
 
 async function handleLogout() {

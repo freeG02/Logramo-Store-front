@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
   <title>Blog — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260616" />
+  <link rel="stylesheet" href="styles.css?v=20260617" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -100,12 +100,12 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260616"></script>
+<script src="partials.js?v=20260617"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260616"></script>
-<script src="animations.js?v=20260616"></script>
+<script src="script.js?v=20260617"></script>
+<script src="animations.js?v=20260617"></script>
 <script>
 /* ============ BLOG — live articles from Supabase ============ */
 (function(){
@@ -119,7 +119,9 @@
   var active=[], query='';
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  var CAT_COLOR={Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'};
+  /* CAT_COLOR is built from blog_categories at load time (see IIFE below);
+     unknown categories fall back to 'sage'. */
+  var CAT_COLOR={};
   function isNew(a){return a.created_at && (Date.now()-new Date(a.created_at).getTime())<30*864e5;}
   function card(a){
     var cats=[slug(a.category)]; if(a.hot)cats.push('caliente'); if(isNew(a))cats.push('nuevo');
@@ -157,6 +159,8 @@
   if(clearBtn) clearBtn.addEventListener('click',function(){ active=[]; buttons.forEach(function(x){x.classList.toggle('active',x.getAttribute('data-filter')==='all');}); applyFilters(); });
   if(searchInput) searchInput.addEventListener('input',function(){ query=(searchInput.value||'').trim().toLowerCase(); applyFilters(); });
   (async function(){
+    /* Populate CAT_COLOR before rendering so category badges get the right tag color */
+    try{ var rc=await sb.from('blog_categories').select('name,color'); if(!rc.error){ (rc.data||[]).forEach(function(c){ CAT_COLOR[c.name]=c.color; }); } }catch(e){}
     var arts=[];
     try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(!r.error){ var now=Date.now(); arts=(r.data||[]).filter(function(a){ if(a.published===false) return false; if(a.publish_at && new Date(a.publish_at).getTime()>now) return false; return true; }); } }catch(e){}
     render(arts);
