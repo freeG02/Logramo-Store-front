@@ -2258,7 +2258,7 @@ h6 { font-size: .9rem; }
   text-transform: uppercase;
   box-shadow: var(--shadow-sm);
 }
-.post-content a { color: var(--c-terracotta); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.post-content a:not(.btn):not(.share-btn):not(.comment__action) { color: var(--c-terracotta); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
 
 .post-tags { margin-top: 36px; display: flex; gap: 8px; flex-wrap: wrap; }
 .post-share { margin-top: 48px; padding-top: 32px; border-top: var(--bw-1) solid var(--c-border); }
@@ -2400,13 +2400,25 @@ h6 { font-size: .9rem; }
   border: var(--bw-2) solid var(--c-ink);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: 22px 24px;
+  padding: 26px 24px 24px;
   display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center;
   margin-bottom: 28px;
 }
+.comment-auth-cta__icon {
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--c-terracotta); color: var(--c-cream);
+  border: var(--bw-2) solid var(--c-ink);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 4px;
+}
 .comment-auth-cta__text { margin: 0; font-size: .95rem; line-height: 1.5; color: var(--c-ink); max-width: 480px; }
 .comment-auth-cta__text strong { display: block; font-family: var(--font-body); font-weight: 900; font-size: 1.05rem; text-transform: uppercase; letter-spacing: -.01em; margin-bottom: 4px; }
-.comment-auth-cta__actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.comment-auth-cta__actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+.comment-auth-cta__actions .btn { text-decoration: none; }
+.comment-auth-cta__actions .btn--primary { color: var(--c-cream); }
+.comment-auth-cta__actions .btn--cream { color: var(--c-ink); }
 
 .comment-form { margin-bottom: 32px; }
 .comment-form__head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -2488,17 +2500,8 @@ h6 { font-size: .9rem; }
 
 /* ============ BLOG POST MOBILE ============ */
 @media (max-width: 768px) {
-  /* Hide certain elements only on mobile (avatars, secondary share block) */
+  /* Hide elements that only make sense on desktop (avatars, dup share block) */
   .bp-hide-mobile { display: none !important; }
-
-  /* Reorder so the author bio card lands LAST on mobile */
-  .post-content { display: flex; flex-direction: column; }
-  #bpBody          { order: 1; }
-  #bpTags          { order: 2; }
-  #bpEngage        { order: 3; }
-  .post-share      { order: 4; }
-  #bpComments      { order: 5; }
-  #bpAuthorCard    { order: 6; margin-top: 36px; }
 
   /* Tighter engage row on mobile */
   .post-engage {
@@ -2507,6 +2510,11 @@ h6 { font-size: .9rem; }
     gap: 10px;
   }
   .post-engage__share-label { display: none; }
+
+  /* Author card sits OUTSIDE the article (as a grid sibling). On mobile the
+     layout is single-column so it lands as the last block of the page,
+     after the article and the sidebar widgets. */
+  #bpAuthorCard { margin-top: 24px; }
 }
 
 /* BLOG SIDEBAR */

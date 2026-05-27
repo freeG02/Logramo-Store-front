@@ -96,6 +96,7 @@
 
       <!-- Logged-out CTA -->
       <div class="comment-auth-cta" id="commentAuthCta" hidden>
+        <div class="comment-auth-cta__icon"><svg width="32" height="32"><use href="#i-chat"/></svg></div>
         <p class="comment-auth-cta__text">
           <strong>¿Quieres unirte a la conversación?</strong>
           Inicia sesión o crea una cuenta para comentar y dar like.
@@ -138,16 +139,12 @@
         </p>
       </div>
     </section>
-
-    <!-- Author Card (appears LAST on mobile via CSS order) -->
-    <div class="author-card" id="bpAuthorCard">
-      <div class="author-card__avatar bp-hide-mobile">LG</div>
-      <div>
-        <div class="author-card__name">Equipo Logramo</div>
-        <p class="author-card__bio">Un equipo de dueños de perros (y algún perro encargado del control de calidad) obsesionados con que la relación entre humanos y perros sea lo mejor posible. Escribimos desde la experiencia real, con honestidad y con mucho cariño.</p>
-      </div>
-    </div>
   </article>
+
+  <!-- Sidebar moved BEFORE author card so on mobile the order is:
+       article → sidebar widgets (TOC, biblioteca) → author card.
+       On desktop, CSS grid auto-flow places sidebar in column 2 / row 1
+       and author card in column 1 / row 2 (below the article). -->
 
   <!-- Sidebar -->
   <aside class="blog-sidebar">
@@ -204,6 +201,17 @@
     </div>
 
   </aside>
+
+  <!-- Author card lives outside the article so on mobile it lands as the
+       very last block (after the sidebar widgets). On desktop the grid
+       auto-flow places it in row 2 / column 1, beneath the article. -->
+  <div class="author-card" id="bpAuthorCard">
+    <div class="author-card__avatar bp-hide-mobile">LG</div>
+    <div>
+      <div class="author-card__name">Equipo Logramo</div>
+      <p class="author-card__bio">Un equipo de dueños de perros (y algún perro encargado del control de calidad) obsesionados con que la relación entre humanos y perros sea lo mejor posible. Escribimos desde la experiencia real, con honestidad y con mucho cariño.</p>
+    </div>
+  </div>
 </div>
 
 <div id="partial-footer"></div>
