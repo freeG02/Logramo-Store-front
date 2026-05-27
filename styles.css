@@ -2404,6 +2404,13 @@ h6 { font-size: .9rem; }
   display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center;
   margin-bottom: 28px;
 }
+/* The `display: flex` rules above (and `display: inline-flex` on .btn)
+   override the native [hidden] behavior. Force re-hiding here so the
+   logged-in/out toggles in JS actually work. */
+.comment-auth-cta[hidden],
+.btn[hidden],
+.comment-form[hidden],
+.comment-form__reply-target[hidden] { display: none !important; }
 .comment-auth-cta__icon {
   width: 56px; height: 56px;
   display: flex; align-items: center; justify-content: center;

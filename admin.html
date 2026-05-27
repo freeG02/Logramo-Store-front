@@ -177,6 +177,9 @@
     .list-item__drag:hover { background:var(--c-cream-alt); color:var(--c-ink); }
     .list-item__pin { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.95rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
     .list-item__pin.is-pinned { background:var(--c-golden); }
+    .list-item__star { width:30px; height:30px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; cursor:pointer; font-size:.95rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; transition:background .12s ease, transform .12s ease; }
+    .list-item__star:hover { background:var(--c-cream-alt); transform:translate(-1px,-1px); }
+    .list-item__star.is-on { background:var(--c-terracotta); color:var(--c-cream); }
     .list-item.is-pinned { box-shadow:3px 3px 0 var(--c-golden); border-color:var(--c-ink); }
     .list-item.is-unpublished { background:#f3f1e9; opacity:.7; }
     .list-item.is-unpublished .list-item__title,
@@ -361,8 +364,10 @@
         <button class="subtab" data-sub="cat">Categories</button>
         <button class="subtab" data-sub="vid">Homepage videos</button>
         <button class="subtab" data-sub="rev">Reviews</button>
-        <button class="subtab" data-sub="home">Highlight</button>
       </div>
+      <p class="muted" style="margin:-8px 0 18px;font-size:.84rem">
+        Tip: click the <strong>⭐ star</strong> next to any product below to set it as the homepage highlight.
+      </p>
 
       <!-- PRODUCTS -->
       <div data-sub-view="prod">
@@ -537,19 +542,6 @@
         </div>
       </div>
 
-      <!-- HOMEPAGE -->
-      <div data-sub-view="home" hidden>
-        <div class="panel" style="max-width:600px">
-          <h2>Highlighted product</h2>
-          <p class="panel__hint">Search and pick which product shows in the big highlight block on the homepage. Choose “Auto” to use your Featured product automatically.</p>
-          <div class="field"><label for="h-search">Search products</label><input type="text" id="h-search" placeholder="Type a product name…" autocomplete="off" /></div>
-          <div id="h-current" class="muted" style="margin-bottom:10px"></div>
-          <div id="h-list" class="hp-list"></div>
-          <input type="hidden" id="h-product" value="" />
-          <div class="actions"><button type="button" class="btn btn--primary" id="hSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Save</button><span class="muted" id="hSaveStatus"></span></div>
-          <p class="panel__hint" style="margin-top:16px">The homepage also shows your 3 latest articles, your Homepage videos, and your reviews — all managed in the tabs above.</p>
-        </div>
-      </div>
     </section>
 
     <!-- ===== TRAFFIC ===== -->
@@ -802,7 +794,86 @@
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
-  async function pLoad(){ var box=$('pList'); try{ var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[]; box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){var hidden=p.published===false; return '<div class="list-item'+(p.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+'" data-id="'+p.id+'">'+dragHandleHtml()+pinBtnHtml(p.pinned,p.id)+'<div class="list-item__info"><div class="list-item__title">'+(p.featured?'⭐ ':'')+esc(p.title)+(hidden?' <span class="list-item__badge">Hidden</span>':'')+'</div><div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(p.published,p.id)+'<button class="icon-btn" data-edit="'+p.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button></div>';}).join(''):'<p class="muted">No products yet.</p>'; attachSortableList('pList','products',function(){return PRODUCTS;}); if(typeof refreshRelatedProductOptions==='function') refreshRelatedProductOptions(); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
+  var CURRENT_HIGHLIGHT_ID = null;
+  async function loadHighlight(){
+    try{ var st=await sb.from('site_settings').select('value').eq('key','highlight_product_id').maybeSingle(); CURRENT_HIGHLIGHT_ID = (st&&st.data)?(st.data.value||null):null; }catch(e){ CURRENT_HIGHLIGHT_ID = null; }
+  }
+  function highlightBtnHtml(isOn, id){
+    return '<button type="button" class="list-item__star'+(isOn?' is-on':'')+'" data-highlight="'+id+'" title="'+(isOn?'Quitar destacado del home':'Destacar en home')+'" aria-label="Highlight on homepage">'+(isOn?'⭐':'☆')+'</button>';
+  }
+  async function pLoad(){
+    var box=$('pList');
+    try{
+      await loadHighlight();
+      var r=await sb.from('products').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error) throw r.error; PRODUCTS=r.data||[];
+      box.innerHTML=PRODUCTS.length?PRODUCTS.map(function(p){
+        var hidden=p.published===false;
+        var isHighlight = String(p.id) === String(CURRENT_HIGHLIGHT_ID||'');
+        return '<div class="list-item'+(p.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+'" data-id="'+p.id+'">'
+          +dragHandleHtml()
+          +pinBtnHtml(p.pinned,p.id)
+          +highlightBtnHtml(isHighlight,p.id)
+          +'<div class="list-item__info">'
+            +'<div class="list-item__title">'+esc(p.title)+(hidden?' <span class="list-item__badge">Hidden</span>':'')+(isHighlight?' <span class="list-item__badge" style="background:var(--c-terracotta);color:var(--c-cream);border-color:var(--c-ink)">On homepage</span>':'')+'</div>'
+            +'<div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div>'
+          +'</div>'
+          +pubBtnHtml(p.published,p.id)
+          +'<button class="icon-btn" data-edit="'+p.id+'">Edit</button>'
+          +'<button class="icon-btn icon-btn--danger" data-del="'+p.id+'">Delete</button>'
+        +'</div>';
+      }).join(''):'<p class="muted">No products yet.</p>';
+      attachSortableList('pList','products',function(){return PRODUCTS;});
+      if(typeof refreshRelatedProductOptions==='function') refreshRelatedProductOptions();
+    }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; }
+  }
+  /* Highlight star — click any star to set that product as the homepage
+     highlight (or clear it if it's already the highlighted one). */
+  $('pList').addEventListener('click', async function(e){
+    var hb = e.target.closest('[data-highlight]');
+    if (!hb) return;
+    var id = hb.getAttribute('data-highlight');
+    var clearing = (String(CURRENT_HIGHLIGHT_ID||'') === String(id));
+    var newValue = clearing ? '' : id;
+    hb.disabled = true;
+    try{
+      var r = await sb.from('site_settings').upsert(
+        { key:'highlight_product_id', value:newValue, updated_at:new Date().toISOString() },
+        { onConflict:'key' }
+      );
+      if(r.error) throw r.error;
+      CURRENT_HIGHLIGHT_ID = newValue || null;
+      /* Repaint every star to reflect the new winner */
+      var stars = document.querySelectorAll('#pList [data-highlight]');
+      stars.forEach(function(b){
+        var on = String(b.getAttribute('data-highlight')) === String(CURRENT_HIGHLIGHT_ID||'');
+        b.classList.toggle('is-on', on);
+        b.textContent = on ? '⭐' : '☆';
+        b.title = on ? 'Quitar destacado del home' : 'Destacar en home';
+      });
+      /* Repaint the title-row badge */
+      document.querySelectorAll('#pList .list-item').forEach(function(li){
+        var pid = li.getAttribute('data-id');
+        var title = li.querySelector('.list-item__title');
+        if (!title) return;
+        var badge = title.querySelector('.list-item__badge[data-role="hl"]');
+        var shouldShow = String(pid) === String(CURRENT_HIGHLIGHT_ID||'');
+        if (badge) badge.remove();
+        if (shouldShow) {
+          var span = document.createElement('span');
+          span.className = 'list-item__badge';
+          span.setAttribute('data-role','hl');
+          span.style.cssText = 'background:var(--c-terracotta);color:var(--c-cream);border-color:var(--c-ink);margin-left:6px';
+          span.textContent = 'On homepage';
+          title.appendChild(span);
+        }
+      });
+    }catch(err){
+      alert('Could not save highlight: '+(err.message||err)+(/site_settings|relation/.test(err.message||'')?'\n\nDid you run the site_settings SQL?':''));
+    }finally{
+      hb.disabled = false;
+    }
+  });
+
   $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-pages').value=p.pages||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
   function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-pages').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
@@ -909,20 +980,9 @@
   $('rResetBtn').addEventListener('click',rReset);
   function rReset(){ editingR=null; $('r-name').value='';$('r-loc').value='';$('r-quote').value='';$('r-rating').value='5';$('r-avatar').value='';$('r-sort').value='0'; renderRAvatar(); $('rEditorTitle').textContent='Add review'; }
 
-  /* ===== HOMEPAGE (highlight picker — searchable) ===== */
-  function hCurrentLabel(){ var id=$('h-product').value; if(!id){ $('h-current').textContent='Selected: Auto (Featured / newest)'; return; } var p=(PRODUCTS||[]).filter(function(x){return String(x.id)===String(id);})[0]; $('h-current').textContent='Selected: '+(p?p.title:'(unknown product)'); }
-  function hRender(){
-    var q=($('h-search').value||'').trim().toLowerCase();
-    var sel=$('h-product').value;
-    var items=[{id:'',title:'Auto (Featured / newest)',meta:'Recommended'}].concat((PRODUCTS||[]).filter(function(p){return p.published!==false;}).map(function(p){ return {id:String(p.id),title:p.title||'(untitled)',meta:(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))}; }));
-    var filtered=items.filter(function(it){ return !q || it.title.toLowerCase().indexOf(q)>-1 || (it.meta||'').toLowerCase().indexOf(q)>-1; });
-    $('h-list').innerHTML=filtered.length?filtered.map(function(it){ return '<button type="button" class="hp-item'+(String(it.id)===String(sel)?' active':'')+'" data-hp="'+esc(it.id)+'"><span class="hp-item__title">'+esc(it.title)+'</span><span class="hp-item__meta">'+esc(it.meta||'')+'</span></button>'; }).join(''):'<p class="muted" style="padding:10px">No products match “'+esc(q)+'”.</p>';
-    hCurrentLabel();
-  }
-  async function hLoad(){ if(!$('h-list')) return; try{ var st=await sb.from('site_settings').select('value').eq('key','highlight_product_id').maybeSingle(); $('h-product').value=(st&&st.data)?(st.data.value||''):''; }catch(e){ $('h-product').value=''; } hRender(); }
-  $('h-search').addEventListener('input',hRender);
-  $('h-list').addEventListener('click',function(e){ var b=e.target.closest('[data-hp]'); if(!b)return; $('h-product').value=b.dataset.hp; hRender(); });
-  $('hSaveBtn').addEventListener('click',async function(){ var v=$('h-product').value; $('hSaveStatus').textContent='Saving…'; var r=await sb.from('site_settings').upsert({key:'highlight_product_id',value:v,updated_at:new Date().toISOString()},{onConflict:'key'}); if(r.error){$('hSaveStatus').textContent='';alert('Error: '+r.error.message+(/site_settings|relation/.test(r.error.message)?'\n\nDid you run the site_settings SQL?':''));return;} $('hSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('hSaveStatus').textContent='';},1600); });
+  /* The homepage highlight is now toggled directly from each product row in
+     the Products list (star icon). See the [data-highlight] click handler
+     wired to #pList above. The previous searchable picker tab was removed. */
 
   /* ===== BLOG CATEGORIES =====
      Available color tokens come from styles.css palette + the existing tag
@@ -1627,7 +1687,7 @@
     $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
-    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); hLoad(); loadMessages();
+    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); loadMessages();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
