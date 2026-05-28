@@ -2318,22 +2318,19 @@ h6 { font-size: .9rem; }
 .comment__text { font-size: .94rem; line-height: 1.6; }
 .comment__reply { font-family: var(--font-body); font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--c-terracotta); margin-top: 8px; }
 
-/* Admin (Logramo) comments stand out: thicker terracotta border + tinted card */
-.comment--admin {
-  padding: 16px;
-  border: 3px solid var(--c-terracotta);
-  border-radius: var(--radius-lg);
-  background: rgba(197, 89, 50, .06);
-  box-shadow: var(--shadow-xs);
+/* Admin (Logramo) comments stand out: terracotta avatar with a bolder stroke,
+   and the whole name shown as a terracotta pill */
+.comment--admin .comment__avatar {
+  background: var(--c-terracotta); color: var(--c-cream);
+  border-width: 3px;
 }
-.comment--admin .comment__avatar { background: var(--c-terracotta); color: var(--c-cream); border-width: 3px; }
-.comment__badge-admin {
-  display: inline-flex; align-items: center;
-  padding: 2px 9px; border-radius: 9999px;
+.comment__name--admin {
+  display: inline-block;
   background: var(--c-terracotta); color: var(--c-cream);
   border: var(--bw-1) solid var(--c-ink);
-  font-family: var(--font-body); font-weight: 800; font-size: .62rem;
-  text-transform: uppercase; letter-spacing: .08em;
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+  letter-spacing: .02em;
 }
 .comment__admin-like {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
