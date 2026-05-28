@@ -2323,7 +2323,9 @@ h6 { font-size: .9rem; }
 .comment--admin .comment__avatar {
   background: var(--c-terracotta); color: var(--c-cream);
   border-width: 3px;
+  overflow: hidden; padding: 0;
 }
+.comment--admin .comment__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .comment__name--admin {
   display: inline-block;
   background: var(--c-terracotta); color: var(--c-cream);

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" id="bpMetaDesc" content="Logramo — Consejos reales sobre perros" />
   <title id="bpDocTitle">Cargando… — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260630" />
+  <link rel="stylesheet" href="styles.css?v=20260631" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -407,7 +407,7 @@ function commentHtml(c, depth){
   const repliesHtml = (c.replies||[]).map(function(r){ return commentHtml(r, depth+1); }).join('');
   const heartSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z" fill="currentColor"/></svg>';
   return '<div class="comment'+(depth?' comment--reply':'')+(isAdmin?' comment--admin':'')+'" data-comment-id="'+esc(c.id)+'">'
-    +'<div class="comment__avatar">'+esc(ini)+'</div>'
+    +'<div class="comment__avatar">'+(isAdmin?'<img src="favicon.svg" alt="Logramo" />':esc(ini))+'</div>'
     +'<div class="comment__body">'
       +'<div class="comment__header">'
         +(isAdmin
