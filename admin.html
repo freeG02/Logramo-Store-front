@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260620" />
+  <link rel="stylesheet" href="styles.css?v=20260621" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -15,7 +15,8 @@
     /* ---- Login ---- */
     .login-screen { min-height:90vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; }
     .login-card { width:100%; max-width:380px; background:var(--c-cream); border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); padding:36px; text-align:center; }
-    .login-card .login-logo svg { height:30px; width:auto; margin-bottom:18px; }
+    .login-card .login-logo { display:flex; justify-content:center; margin-bottom:18px; }
+    .login-card .login-logo svg { height:30px; width:auto; }
     .login-card .login-logo svg path { fill:var(--c-ink); }
     .login-card h1 { font-family:var(--font-display); font-weight:900; font-size:1.4rem; text-transform:uppercase; margin-bottom:6px; }
     .login-card p { color:var(--c-text-muted); font-size:.9rem; margin-bottom:22px; }
@@ -680,7 +681,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260620"></script>
+<script src="partials.js?v=20260621"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
