@@ -214,6 +214,11 @@
     .cm-actions { display:flex; flex-direction:column; gap:8px; min-width:120px; }
     .cm-actions .icon-btn { white-space:nowrap; justify-content:center; }
     .cm-actions .icon-btn--danger { color:var(--c-terracotta); }
+    .cm-actions .icon-btn--liked { background:var(--c-terracotta); color:var(--c-cream); border-color:var(--c-ink); }
+    .cm-badge-admin { display:inline-block; padding:2px 8px; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); border:var(--bw-1) solid var(--c-ink); font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; font-weight:800; }
+    .cm-reply-box { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+    .cm-reply-box textarea { width:100%; padding:10px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); font:inherit; resize:vertical; min-height:60px; box-sizing:border-box; }
+    .cm-reply-box .cm-reply-actions { display:flex; gap:8px; }
     .cm-list .muted { padding:20px; text-align:center; }
     @media (max-width: 720px) {
       .cm-item { grid-template-columns:42px 1fr; }
@@ -1054,6 +1059,7 @@
      where is_admin = true — so mark your own profile first. */
   var COMMENTS = [];
   var ARTICLES_BY_ID = {};
+  var ADMIN_UID = null;
   var cmFilter = 'all';
   var cmQuery = '';
   function cmInitials(name){ var s=String(name||'').trim(); if(!s) return '•'; var parts=s.split(/[\s._\-+@]+/).filter(Boolean); if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase(); return s.slice(0,2).toUpperCase(); }
@@ -1086,19 +1092,33 @@
         ? '<span class="cm-status-badge cm-status-badge--hidden">Hidden</span>'
         : '<span class="cm-status-badge cm-status-badge--ok">Visible</span>';
       var replyTag = isReply ? '<span class="cm-meta">↳ reply</span>' : '';
+      var adminTag = c.is_admin_author ? '<span class="cm-badge-admin">Logramo</span>' : '';
+      var liked = !!c.admin_liked;
       return '<div class="cm-item'+(isHidden?' is-hidden':'')+(isReply?' is-reply':'')+'" data-cm="'+esc(c.id)+'">'
         +'<div class="cm-avatar">'+esc(cmInitials(c.author_name))+'</div>'
         +'<div class="cm-body">'
           +'<div class="cm-head">'
             +'<span class="cm-name">'+esc(c.author_name||'Anónimo')+'</span>'
+            +adminTag
             +badge
             +replyTag
             +'<span class="cm-meta">'+esc(cmFmtDate(c.created_at))+'</span>'
           +'</div>'
           +'<div class="cm-article">On: '+articleHtml+'</div>'
           +'<p class="cm-text">'+esc(c.body||'')+'</p>'
+          +'<div class="cm-reply-box" data-cm-replybox="'+esc(c.id)+'" hidden>'
+            +'<textarea placeholder="Responder como Logramo…"></textarea>'
+            +'<div class="cm-reply-actions">'
+              +'<button type="button" class="icon-btn" data-cm-replysend="'+esc(c.id)+'">Reply as Logramo</button>'
+              +'<button type="button" class="icon-btn" data-cm-replycancel="'+esc(c.id)+'">Cancel</button>'
+            +'</div>'
+          +'</div>'
         +'</div>'
         +'<div class="cm-actions">'
+          +(liked
+            ? '<button type="button" class="icon-btn icon-btn--liked" data-cm-unlike="'+esc(c.id)+'">♥ Liked</button>'
+            : '<button type="button" class="icon-btn" data-cm-like="'+esc(c.id)+'">♡ Like</button>')
+          +'<button type="button" class="icon-btn" data-cm-replytoggle="'+esc(c.id)+'">Reply</button>'
           +(isHidden
             ? '<button type="button" class="icon-btn" data-cm-show="'+esc(c.id)+'">Show on site</button>'
             : '<button type="button" class="icon-btn" data-cm-hide="'+esc(c.id)+'">Hide from site</button>')
@@ -1158,6 +1178,52 @@
     }
   }
 
+  async function cmSetLike(id, liked){
+    try{
+      var r = await sb.from('blog_comments').update({ admin_liked: liked }).eq('id', id);
+      if(r.error) throw r.error;
+      var c = COMMENTS.find(function(x){return String(x.id)===String(id);});
+      if(c) c.admin_liked = liked;
+      cmRender();
+    }catch(e){
+      alert('Could not update like: '+(e.message||e)+'\n\n(Are you marked as admin? See the migration.)');
+    }
+  }
+  function cmToggleReplyBox(id){
+    var box = document.querySelector('[data-cm-replybox="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');
+    if(!box) return;
+    box.hidden = !box.hidden;
+    if(!box.hidden){ var ta=box.querySelector('textarea'); if(ta) ta.focus(); }
+  }
+  async function cmSendReply(id){
+    var parent = COMMENTS.find(function(x){return String(x.id)===String(id);});
+    if(!parent){ alert('Comment not found.'); return; }
+    var box = document.querySelector('[data-cm-replybox="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');
+    var ta = box && box.querySelector('textarea');
+    var body = (ta ? ta.value : '').trim();
+    if(body.length < 1){ if(ta) ta.focus(); return; }
+    if(body.length > 1500){ alert('Máximo 1500 caracteres.'); return; }
+    if(!ADMIN_UID){ alert('No admin session.'); return; }
+    var sendBtn = box.querySelector('[data-cm-replysend]');
+    if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = 'Sending…'; }
+    try{
+      var r = await sb.from('blog_comments').insert({
+        article_id: parent.article_id,
+        user_id: ADMIN_UID,
+        author_name: 'Logramo',
+        body: body,
+        parent_id: parent.id,
+        status: 'approved'
+      }).select().single();
+      if(r.error) throw r.error;
+      COMMENTS.unshift(r.data);
+      cmRender();
+    }catch(e){
+      if(sendBtn){ sendBtn.disabled = false; sendBtn.textContent = 'Reply as Logramo'; }
+      alert('Could not reply: '+(e.message||e)+'\n\n(Are you marked as admin? See the migration.)');
+    }
+  }
+
   // Wire toolbar + list actions
   document.addEventListener('click', function(e){
     var f = e.target.closest('[data-cm-filter]');
@@ -1167,6 +1233,16 @@
       cmRender();
       return;
     }
+    var like = e.target.closest('[data-cm-like]');
+    if(like){ cmSetLike(like.getAttribute('data-cm-like'), true); return; }
+    var unlike = e.target.closest('[data-cm-unlike]');
+    if(unlike){ cmSetLike(unlike.getAttribute('data-cm-unlike'), false); return; }
+    var rtoggle = e.target.closest('[data-cm-replytoggle]');
+    if(rtoggle){ cmToggleReplyBox(rtoggle.getAttribute('data-cm-replytoggle')); return; }
+    var rsend = e.target.closest('[data-cm-replysend]');
+    if(rsend){ cmSendReply(rsend.getAttribute('data-cm-replysend')); return; }
+    var rcancel = e.target.closest('[data-cm-replycancel]');
+    if(rcancel){ cmToggleReplyBox(rcancel.getAttribute('data-cm-replycancel')); return; }
     var hide = e.target.closest('[data-cm-hide]');
     if(hide){ cmSetStatus(hide.getAttribute('data-cm-hide'), 'hidden'); return; }
     var show = e.target.closest('[data-cm-show]');
@@ -1502,17 +1578,24 @@
   }
 
   /* ===== TRÁFICO ===== */
+  var TRAF_ROWS=[];
+  function renderTrafCountries(tf){
+    var box=$('trafCountries'); if(!box) return;
+    var byCountry={};
+    TRAF_ROWS.forEach(function(x){ var d=new Date(x.created_at); if(!inRange(tf,d)) return; if(x.country) byCountry[x.country]=(byCountry[x.country]||0)+1; });
+    var cty=Object.keys(byCountry).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
+    box.innerHTML=cty.length?miniRows(cty):'<p class="muted">No country data in this range yet.</p>';
+  }
   async function loadTrafico(){
     try{
       var r=await sb.from('pageviews').select('*'); if(r.error)throw r.error;
-      var rows=r.data||[]; var now=Date.now(), day=864e5;
+      var rows=r.data||[]; TRAF_ROWS=rows; var now=Date.now(), day=864e5;
       var total=rows.length, last7=rows.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length, today=rows.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length;
-      var byPath={},byCountry={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; if(x.country) byCountry[x.country]=(byCountry[x.country]||0)+1; });
+      var byPath={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; });
       var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
       $('trafStats').innerHTML=stat(total,'Total visits')+stat(last7,'Last 7 days')+stat(today,'Today')+stat(Object.keys(byPath).length,'Distinct pages');
       CHARTS.traf(activeTf('traf'));
-      var cty=Object.keys(byCountry).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byCountry[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
-      $('trafCountries').innerHTML=cty.length?miniRows(cty):'<p class="muted">No country data yet (capture is active — it fills up with visits).</p>';
+      renderTrafCountries(activeTf('traf'));
       $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Page</th><th>Visits</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">No visits recorded yet.</p>';
     }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Traffic table missing. ('+esc(e.message||'')+')</p>'; }
   }
@@ -1857,11 +1940,11 @@
     if(loaders[v]) loaders[v]();
     setDrawer(false);
   }); });
-  document.querySelectorAll('.subtab').forEach(function(t){ t.addEventListener('click',function(){ document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('active',x===t);}); document.querySelectorAll('[data-sub-view]').forEach(function(s){s.hidden=s.dataset.subView!==t.dataset.sub;}); }); });
+  document.querySelectorAll('.subtabs .subtab').forEach(function(t){ t.addEventListener('click',function(){ document.querySelectorAll('.subtabs .subtab').forEach(function(x){x.classList.toggle('active',x===t);}); document.querySelectorAll('[data-sub-view]').forEach(function(s){s.hidden=s.dataset.subView!==t.dataset.sub;}); }); });
   // Overview cards jump to their panel
   document.querySelectorAll('.ov-card[data-goto]').forEach(function(c){ c.addEventListener('click',function(){ var l=document.querySelector('.side__link[data-view="'+c.dataset.goto+'"]'); if(l) l.click(); }); });
   // Timeframe selectors on each graph card
-  document.querySelectorAll('.tf-tabs').forEach(function(tabs){ tabs.addEventListener('click',function(e){ var b=e.target.closest('button[data-tf]'); if(!b) return; tabs.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); var key=tabs.dataset.tfFor; if(CHARTS[key]) CHARTS[key](b.dataset.tf); }); });
+  document.querySelectorAll('.tf-tabs').forEach(function(tabs){ tabs.addEventListener('click',function(e){ var b=e.target.closest('button[data-tf]'); if(!b) return; tabs.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); var key=tabs.dataset.tfFor; if(CHARTS[key]) CHARTS[key](b.dataset.tf); if(key==='traf') renderTrafCountries(b.dataset.tf); }); });
 
   /* ===== AUTH ===== */
   function friendlyNameFromEmail(email){
@@ -1878,6 +1961,7 @@
   }
   async function enter(session){
     $('loginScreen').hidden=true; $('shell').hidden=false;
+    ADMIN_UID = session && session.user ? session.user.id : null;
     var email=session&&session.user?session.user.email:'';
     var name=friendlyNameFromEmail(email)||email;
     $('whoami').textContent=name;

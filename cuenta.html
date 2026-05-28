@@ -469,11 +469,23 @@ document.querySelectorAll('[data-pw-toggle]').forEach(btn => {
 
 function spError(e) {
   const msg = (e && e.message) || '';
+  if ((e && e.code === '23505') || /profiles_username_lower_unique/i.test(msg)) return 'Ese nombre de usuario ya está en uso. Elige otro.';
   if (/already registered|already exists/i.test(msg)) return 'Ya hay una cuenta con ese correo. Inicia sesión.';
   if (/invalid login credentials/i.test(msg)) return 'Correo o contraseña incorrectos.';
   if (/password|6 characters/i.test(msg)) return 'La contraseña debe tener al menos 6 caracteres.';
   if (/invalid email/i.test(msg)) return 'El correo no parece válido.';
   return msg || 'Algo falló. Vuelve a intentarlo.';
+}
+
+// Case-insensitive availability check via the username_available RPC.
+// Best-effort: if the RPC is unreachable we let the DB unique index be
+// the final guard (handled in spError) rather than blocking signup.
+async function isUsernameTaken(name) {
+  try {
+    const r = await sb.rpc('username_available', { name: name });
+    if (r.error) return false;
+    return r.data === false;
+  } catch (_) { return false; }
 }
 
 async function handleSignup(e) {
@@ -489,6 +501,7 @@ async function handleSignup(e) {
   const btn = e.target.querySelector('button[type=submit]');
   if (btn) btn.disabled = true;
   try {
+    if (await isUsernameTaken(username)) { showError('Ese nombre de usuario ya está en uso. Elige otro.'); if (btn) btn.disabled = false; return false; }
     const r = await sb.auth.signUp({ email, password, options: { data: { username } } });
     if (r.error) throw r.error;
     const userId = r.data && r.data.user && r.data.user.id;
@@ -587,11 +600,20 @@ async function startEditUsername() {
   const save = async () => {
     const val = input.value.trim();
     if (val.length >= 2 && val !== currentProfile.username) {
+      if (val.toLowerCase() !== currentProfile.username.toLowerCase() && await isUsernameTaken(val)) {
+        if (typeof showToast === 'function') showToast('Ese nombre de usuario ya está en uso.');
+        input.value = currentProfile.username;
+        renderAuthState(currentProfile);
+        return;
+      }
       const r = await sb.from('profiles').update({ username: val }).eq('id', userId);
       if (!r.error) {
         currentProfile.username = val;
         syncIdentity(currentProfile);
         if (typeof showToast === 'function') showToast('Nombre actualizado');
+      } else {
+        input.value = currentProfile.username;
+        if (typeof showToast === 'function') showToast(spError(r.error));
       }
     }
     renderAuthState(currentProfile);

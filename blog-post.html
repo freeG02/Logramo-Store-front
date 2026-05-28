@@ -402,16 +402,19 @@ function buildCommentTree(rows){
 function commentHtml(c, depth){
   depth = depth || 0;
   const isMine = CURRENT_USER && c.user_id === CURRENT_USER.id;
+  const isAdmin = !!c.is_admin_author;
   const ini = initials(c.author_name || '•');
   const repliesHtml = (c.replies||[]).map(function(r){ return commentHtml(r, depth+1); }).join('');
-  return '<div class="comment'+(depth?' comment--reply':'')+'" data-comment-id="'+esc(c.id)+'">'
+  const heartSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z" fill="currentColor"/></svg>';
+  return '<div class="comment'+(depth?' comment--reply':'')+(isAdmin?' comment--admin':'')+'" data-comment-id="'+esc(c.id)+'">'
     +'<div class="comment__avatar">'+esc(ini)+'</div>'
     +'<div class="comment__body">'
       +'<div class="comment__header">'
-        +'<span class="comment__name">'+esc(c.author_name||'Anónimo')+(isMine?' <span class="comment__me">tú</span>':'')+'</span>'
+        +'<span class="comment__name">'+esc(c.author_name||'Anónimo')+(isAdmin?' <span class="comment__badge-admin">Logramo</span>':'')+(isMine&&!isAdmin?' <span class="comment__me">tú</span>':'')+'</span>'
         +'<span class="comment__date">'+esc(timeAgoSp(c.created_at))+'</span>'
       +'</div>'
       +'<p class="comment__text">'+esc(c.body)+'</p>'
+      +(c.admin_liked?'<div class="comment__admin-like">'+heartSvg+' A Logramo le gustó</div>':'')
       +'<div class="comment__actions">'
         +(depth<2 ? '<button type="button" class="comment__action" data-reply="'+esc(c.id)+'" data-name="'+esc(c.author_name||'')+'">Responder</button>' : '')
         +(isMine ? '<button type="button" class="comment__action comment__action--danger" data-delete="'+esc(c.id)+'">Borrar</button>' : '')
@@ -526,6 +529,72 @@ function paintCommentForm(){
   }
 }
 
+/* ============ RELATED-PRODUCT POPUP ============ */
+function setupRelatedProductPopup(p, articleId){
+  if(!p || !p.id) return;
+  var dismissKey = 'lg_relpop_' + articleId;
+  try { if(sessionStorage.getItem(dismissKey)) return; } catch(_){}
+  var shown = false, timer = null;
+  function cleanup(){ if(timer) clearTimeout(timer); window.removeEventListener('scroll', onScroll); }
+  function build(){
+    if(shown) return; shown = true; cleanup();
+    var pop = document.createElement('div');
+    pop.className = 'rel-pop';
+    pop.setAttribute('role','dialog');
+    pop.setAttribute('aria-label','Producto relacionado');
+    var thumb = p.cover_image ? '<div class="rel-pop__thumb"><img src="'+esc(p.cover_image)+'" alt=""></div>' : '';
+    var ctaLabel = p.is_free ? 'Descargar gratis' : 'Ver libro';
+    pop.innerHTML =
+      '<button type="button" class="rel-pop__close" aria-label="Cerrar">&times;</button>'
+      + thumb
+      + '<div class="rel-pop__body">'
+        + '<span class="rel-pop__eyebrow">'+(p.is_free?'Guía gratis 🐾':'Va con este artículo')+'</span>'
+        + '<h4 class="rel-pop__title">'+esc(p.title||'Nuestra guía')+'</h4>'
+        + '<p class="rel-pop__desc">'+esc(p.cover_sub || p.description || '')+'</p>'
+        + '<a class="btn btn--primary rel-pop__cta" href="producto.html?id='+encodeURIComponent(p.id)+'">'+ctaLabel+' <svg class="icon"><use href="#i-arrow-right"/></svg></a>'
+      + '</div>';
+    document.body.appendChild(pop);
+    requestAnimationFrame(function(){ pop.classList.add('is-in'); });
+    pop.querySelector('.rel-pop__close').addEventListener('click', function(){
+      pop.classList.remove('is-in');
+      try{ sessionStorage.setItem(dismissKey,'1'); }catch(_){}
+      setTimeout(function(){ if(pop.parentNode) pop.parentNode.removeChild(pop); }, 300);
+    });
+  }
+  function onScroll(){
+    var sc = window.scrollY || document.documentElement.scrollTop;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    if(h>0 && sc/h > 0.45) build();
+  }
+  // Show on whichever comes first: 9s of reading, or scrolling ~45% down.
+  timer = setTimeout(build, 9000);
+  window.addEventListener('scroll', onScroll, { passive:true });
+}
+
+/* ============ MOBILE: chapters card sits right after the article body ============ */
+(function(){
+  var mq = window.matchMedia('(max-width: 1100px)');
+  function place(){
+    var toc = document.getElementById('tocWidget');
+    var body = document.getElementById('bpBody');
+    var aside = document.querySelector('.blog-sidebar');
+    var plan = document.getElementById('planWidget');
+    if(!toc) return;
+    if(mq.matches){
+      // Mobile: chapters go directly after the article body (above like + comments)
+      if(body && body.parentNode && toc.previousElementSibling !== body){
+        body.parentNode.insertBefore(toc, body.nextSibling);
+      }
+    } else if(aside && toc.parentNode !== aside){
+      // Desktop: restore chapters to the top of the sidebar
+      if(plan) aside.insertBefore(toc, plan); else aside.appendChild(toc);
+    }
+  }
+  place();
+  if(mq.addEventListener) mq.addEventListener('change', place);
+  else if(mq.addListener) mq.addListener(place);
+})();
+
 /* ============ WIRE UP ============ */
 function wireEngagement(){
   const likeBtn = $('bpLikeBtn');
@@ -611,7 +680,7 @@ function wireEngagement(){
   // "Plan completo" widget → swap to the related product when one is set
   if (a.related_product_id) {
     try {
-      var rp = await sb.from('products').select('id,title,description,cover_sub,is_free').eq('id', a.related_product_id).maybeSingle();
+      var rp = await sb.from('products').select('id,title,description,cover_sub,is_free,cover_image').eq('id', a.related_product_id).maybeSingle();
       var p = rp && rp.data;
       if (p) {
         var planTitle = $('planTitle');
@@ -623,6 +692,8 @@ function wireEngagement(){
           planCta.href = 'producto.html?id=' + encodeURIComponent(p.id);
           planCta.innerHTML = (p.is_free ? 'Descargar gratis' : 'Ver libro') + ' <svg class="icon"><use href="#i-arrow-right"/></svg>';
         }
+        // Related-product popup (only shown when the article HAS a related product)
+        setupRelatedProductPopup(p, a.id);
       }
     } catch (_) { /* fall back to the default biblioteca link */ }
   }

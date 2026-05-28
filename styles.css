@@ -2318,6 +2318,31 @@ h6 { font-size: .9rem; }
 .comment__text { font-size: .94rem; line-height: 1.6; }
 .comment__reply { font-family: var(--font-body); font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--c-terracotta); margin-top: 8px; }
 
+/* Admin (Logramo) comments stand out: thicker terracotta border + tinted card */
+.comment--admin {
+  padding: 16px;
+  border: 3px solid var(--c-terracotta);
+  border-radius: var(--radius-lg);
+  background: rgba(197, 89, 50, .06);
+  box-shadow: var(--shadow-xs);
+}
+.comment--admin .comment__avatar { background: var(--c-terracotta); color: var(--c-cream); border-width: 3px; }
+.comment__badge-admin {
+  display: inline-flex; align-items: center;
+  padding: 2px 9px; border-radius: 9999px;
+  background: var(--c-terracotta); color: var(--c-cream);
+  border: var(--bw-1) solid var(--c-ink);
+  font-family: var(--font-body); font-weight: 800; font-size: .62rem;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.comment__admin-like {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+  color: var(--c-terracotta);
+  font-family: var(--font-body); font-weight: 700; font-size: .72rem;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.comment__admin-like svg { width: 14px; height: 14px; }
+
 .comment-form {
   background: var(--c-cream-alt);
   border: var(--bw-1) solid var(--c-ink);
@@ -2345,7 +2370,7 @@ h6 { font-size: .9rem; }
 .post-engage {
   margin: 40px 0 36px;
   padding: 18px 22px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 24px;
   background: var(--c-cream-alt);
   border: var(--bw-1) solid var(--c-ink);
   border-radius: var(--radius-full);
@@ -2355,6 +2380,44 @@ h6 { font-size: .9rem; }
 .post-engage__share { display: flex; align-items: center; gap: 8px; }
 .post-engage__share-label { font-family: var(--font-body); font-weight: 700; font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--c-text-muted); }
 .post-engage__share .share-btn { padding: 8px 10px; gap: 0; }
+
+/* ============ RELATED-PRODUCT POPUP ============ */
+.rel-pop {
+  position: fixed; right: 22px; bottom: 22px; z-index: 120;
+  width: min(360px, calc(100vw - 32px));
+  background: var(--c-cream);
+  border: var(--bw-1) solid var(--c-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: 6px 6px 0 var(--c-ink);
+  overflow: hidden;
+  transform: translateY(140%); opacity: 0;
+  transition: transform .35s var(--ease-back), opacity .35s var(--ease);
+}
+.rel-pop.is-in { transform: translateY(0); opacity: 1; }
+.rel-pop__close {
+  position: absolute; top: 8px; right: 10px; z-index: 2;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: var(--bw-1) solid var(--c-ink); background: var(--c-cream);
+  font-size: 1.2rem; line-height: 1; cursor: pointer; color: var(--c-ink);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-xs);
+  transition: transform .15s var(--ease-back), box-shadow .15s var(--ease-back), background .2s var(--ease);
+}
+.rel-pop__close:hover { background: var(--c-golden); transform: translate(-1px,-1px); box-shadow: var(--shadow-sm); }
+.rel-pop__thumb { width: 100%; height: 130px; border-bottom: var(--bw-1) solid var(--c-ink); background: var(--c-cream-alt); }
+.rel-pop__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rel-pop__body { padding: 18px 20px 20px; }
+.rel-pop__eyebrow { font-family: var(--font-body); font-weight: 800; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--c-terracotta); }
+.rel-pop__title { font-family: var(--font-body); font-weight: 900; font-size: 1.15rem; line-height: 1.15; text-transform: uppercase; letter-spacing: -.01em; margin: 6px 0 8px; }
+.rel-pop__desc { font-size: .88rem; line-height: 1.5; color: var(--c-text-muted); margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rel-pop__cta { width: 100%; justify-content: center; }
+@media (max-width: 560px) {
+  .rel-pop { right: 12px; left: 12px; bottom: 12px; width: auto; }
+  .rel-pop__thumb { height: 110px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rel-pop { transition: opacity .2s ease; transform: none; }
+}
 
 .like-btn {
   display: inline-flex; align-items: center; gap: 10px;
