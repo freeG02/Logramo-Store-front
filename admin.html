@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260622" />
+  <link rel="stylesheet" href="styles.css?v=20260623" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -22,9 +22,9 @@
     .login-card p { color:var(--c-text-muted); font-size:.9rem; margin-bottom:22px; }
     .login-card input { width:100%; box-sizing:border-box; padding:13px 14px; margin-bottom:12px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; font-family:var(--font-body); font-size:.95rem; }
     .login-error { color:var(--c-burgundy); font-weight:700; font-size:.85rem; min-height:1.2em; margin-top:12px; margin-bottom:0; }
-    .login-card .pw-wrap { position:relative; }
-    .login-card .pw-wrap input { padding-right:46px; }
-    .pw-toggle { position:absolute; top:13px; right:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; border:none; background:transparent; color:var(--c-ink); opacity:.55; cursor:pointer; border-radius:8px; }
+    .login-card .pw-wrap { position:relative; margin-bottom:12px; }
+    .login-card .pw-wrap input { padding-right:46px; margin-bottom:0; }
+    .pw-toggle { position:absolute; top:50%; transform:translateY(-50%); right:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; border:none; background:transparent; color:var(--c-ink); opacity:.55; cursor:pointer; border-radius:8px; }
     .pw-toggle:hover { opacity:1; }
     .pw-toggle.is-on { opacity:1; color:var(--c-terracotta); }
     .pw-eye { width:20px; height:20px; display:block; }
@@ -692,7 +692,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260622"></script>
+<script src="partials.js?v=20260623"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
