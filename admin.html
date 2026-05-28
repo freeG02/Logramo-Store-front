@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260621" />
+  <link rel="stylesheet" href="styles.css?v=20260622" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -22,6 +22,12 @@
     .login-card p { color:var(--c-text-muted); font-size:.9rem; margin-bottom:22px; }
     .login-card input { width:100%; box-sizing:border-box; padding:13px 14px; margin-bottom:12px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; font-family:var(--font-body); font-size:.95rem; }
     .login-error { color:var(--c-burgundy); font-weight:700; font-size:.85rem; min-height:1.2em; margin-top:12px; margin-bottom:0; }
+    .login-card .pw-wrap { position:relative; }
+    .login-card .pw-wrap input { padding-right:46px; }
+    .pw-toggle { position:absolute; top:13px; right:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; border:none; background:transparent; color:var(--c-ink); opacity:.55; cursor:pointer; border-radius:8px; }
+    .pw-toggle:hover { opacity:1; }
+    .pw-toggle.is-on { opacity:1; color:var(--c-terracotta); }
+    .pw-eye { width:20px; height:20px; display:block; }
 
     /* ---- App shell ---- */
     .shell { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
@@ -326,7 +332,12 @@
     <h1>Admin panel</h1>
     <p>Log in to manage your site.</p>
     <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
-    <input type="password" id="loginPass" placeholder="Password" required autocomplete="current-password" />
+    <div class="pw-wrap">
+      <input type="password" id="loginPass" placeholder="Password" required autocomplete="current-password" />
+      <button type="button" class="pw-toggle" id="loginPassToggle" aria-label="Show password">
+        <svg class="pw-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
     <button class="btn btn--primary btn--lg full-w" type="submit" id="loginBtn">Log in</button>
     <p class="login-error" id="loginError"></p>
   </form>
@@ -681,7 +692,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260621"></script>
+<script src="partials.js?v=20260622"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1877,6 +1888,7 @@
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
+  (function(){ var t=$('loginPassToggle'); if(!t) return; t.addEventListener('click',function(){ var i=$('loginPass'); if(!i) return; var show=i.type==='password'; i.type=show?'text':'password'; t.classList.toggle('is-on',show); t.setAttribute('aria-label',show?'Hide password':'Show password'); t.querySelector('.pw-eye').outerHTML=(show?EYE_OFF_SVG:EYE_OPEN_SVG).replace('<svg ','<svg class="pw-eye" '); }); })();
   $('logoutBtn').addEventListener('click',async function(){ await sb.auth.signOut(); leave(); });
 
   /* ===== INIT ===== */
