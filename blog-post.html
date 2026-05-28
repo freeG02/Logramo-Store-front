@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" id="bpMetaDesc" content="Logramo — Consejos reales sobre perros" />
   <title id="bpDocTitle">Cargando… — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260631" />
+  <link rel="stylesheet" href="styles.css?v=20260632" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -404,10 +404,11 @@ function commentHtml(c, depth){
   const isMine = CURRENT_USER && c.user_id === CURRENT_USER.id;
   const isAdmin = !!c.is_admin_author;
   const ini = initials(c.author_name || '•');
+  const nReplies = (c.replies||[]).length;
   const repliesHtml = (c.replies||[]).map(function(r){ return commentHtml(r, depth+1); }).join('');
   const heartSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5l-1.45-1.32C5.4 14.6 2 11.6 2 7.9 2 5 4.3 2.7 7.2 2.7c1.66 0 3.24.77 4.3 2.04 1.06-1.27 2.64-2.04 4.3-2.04 2.9 0 5.2 2.3 5.2 5.2 0 3.7-3.4 6.7-8.55 11.28z" fill="currentColor"/></svg>';
   return '<div class="comment'+(depth?' comment--reply':'')+(isAdmin?' comment--admin':'')+'" data-comment-id="'+esc(c.id)+'">'
-    +'<div class="comment__avatar">'+(isAdmin?'<img src="favicon.svg" alt="Logramo" />':esc(ini))+'</div>'
+    +'<div class="comment__avatar">'+(isAdmin?'<img src="heart.svg" alt="Logramo" />':esc(ini))+'</div>'
     +'<div class="comment__body">'
       +'<div class="comment__header">'
         +(isAdmin
@@ -421,7 +422,13 @@ function commentHtml(c, depth){
         +(depth<2 ? '<button type="button" class="comment__action" data-reply="'+esc(c.id)+'" data-name="'+esc(c.author_name||'')+'">Responder</button>' : '')
         +(isMine ? '<button type="button" class="comment__action comment__action--danger" data-delete="'+esc(c.id)+'">Borrar</button>' : '')
       +'</div>'
-      +(repliesHtml ? '<div class="comment__replies">'+repliesHtml+'</div>' : '')
+      +(repliesHtml
+        ? '<button type="button" class="comment__replies-toggle" data-replies-toggle="'+esc(c.id)+'" aria-expanded="false">'
+            +'<svg class="comment__replies-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>'
+            +'<span class="comment__replies-toggle-text">Ver '+nReplies+(nReplies===1?' respuesta':' respuestas')+'</span>'
+          +'</button>'
+          +'<div class="comment__replies" data-replies-for="'+esc(c.id)+'" hidden>'+repliesHtml+'</div>'
+        : '')
     +'</div>'
   +'</div>';
 }
@@ -608,6 +615,20 @@ function wireEngagement(){
   const list = $('commentList');
   if(list){
     list.addEventListener('click', function(e){
+      const togBtn = e.target.closest('[data-replies-toggle]');
+      if(togBtn){
+        const id = togBtn.getAttribute('data-replies-toggle');
+        const box = list.querySelector('[data-replies-for="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');
+        if(box){
+          const open = box.hasAttribute('hidden');
+          if(open){ box.removeAttribute('hidden'); } else { box.setAttribute('hidden',''); }
+          togBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          const txt = togBtn.querySelector('.comment__replies-toggle-text');
+          const n = (box.querySelectorAll(':scope > .comment').length) || 0;
+          if(txt) txt.textContent = open ? 'Ocultar respuestas' : ('Ver '+n+(n===1?' respuesta':' respuestas'));
+        }
+        return;
+      }
       const replyBtn = e.target.closest('[data-reply]');
       if(replyBtn){
         if(!CURRENT_USER){ showLoginPrompt('Inicia sesión para responder'); return; }

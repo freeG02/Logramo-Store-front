@@ -2328,7 +2328,7 @@ h6 { font-size: .9rem; }
 .comment--admin .comment__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .comment__name--admin {
   display: inline-block;
-  background: var(--c-terracotta); color: var(--c-cream);
+  background: var(--c-peach); color: var(--c-ink);
   border: var(--bw-1) solid var(--c-ink);
   border-radius: var(--radius-full);
   padding: 3px 12px;
@@ -2554,6 +2554,16 @@ h6 { font-size: .9rem; }
 
 .comment__replies { margin-top: 18px; padding-left: 20px; border-left: 2px dashed var(--c-border); display: flex; flex-direction: column; gap: 18px; }
 .comment--reply .comment__avatar { width: 36px; height: 36px; font-size: .72rem; }
+.comment__replies-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 14px; padding: 0;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body); font-weight: 700; font-size: .74rem;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--c-terracotta);
+}
+.comment__replies-toggle:hover { color: var(--c-terra-dark); }
+.comment__replies-caret { width: 16px; height: 16px; transition: transform .2s var(--ease); }
+.comment__replies-toggle[aria-expanded="true"] .comment__replies-caret { transform: rotate(180deg); }
 
 /* ============ SIDEBAR WIDGET ICON CIRCLE ============ */
 .widget__icon-circle {
