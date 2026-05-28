@@ -643,6 +643,14 @@ h6 { font-size: .9rem; }
 .hero__sticker--1 { top: 8%; left: -30px; transform: rotate(-6deg); background: var(--c-golden); --rot: -6deg; }
 .hero__sticker--2 { bottom: 22%; right: -20px; transform: rotate(5deg); background: var(--c-terracotta); color: var(--c-cream); --rot: 5deg; animation-delay: 1s; }
 .hero__sticker--3 { bottom: -10px; left: 20%; transform: rotate(-3deg); --rot: -3deg; animation-delay: 2s; }
+
+/* Per-image badge groups: fade in/out in sync with the active hero image */
+.hero__stickers { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s var(--ease-out); }
+.hero__stickers.is-active { opacity: 1; }
+/* Second image's badge palette (distinct from the first set) */
+.hero__stickers--b .hero__sticker--1 { background: var(--c-peach); color: var(--c-ink); }
+.hero__stickers--b .hero__sticker--2 { background: var(--c-forest); color: var(--c-cream); }
+.hero__stickers--b .hero__sticker--3 { background: var(--c-sky); color: var(--c-ink); }
 @keyframes floaty {
   0%,100% { transform: translateY(0) rotate(var(--rot)); }
   50% { transform: translateY(-10px) rotate(var(--rot)); }
@@ -2258,7 +2266,7 @@ h6 { font-size: .9rem; }
   text-transform: uppercase;
   box-shadow: var(--shadow-sm);
 }
-.post-content a:not(.btn):not(.share-btn):not(.comment__action) { color: var(--c-terracotta); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.post-content a:not(.btn):not(.share-btn):not(.comment__action):not(.toc-link) { color: var(--c-terracotta); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
 
 .post-tags { margin-top: 36px; display: flex; gap: 8px; flex-wrap: wrap; }
 .post-share { margin-top: 48px; padding-top: 32px; border-top: var(--bw-1) solid var(--c-border); }
@@ -2320,7 +2328,8 @@ h6 { font-size: .9rem; }
 
 /* Admin (Logramo) comments stand out: terracotta avatar with a bolder stroke,
    and the whole name shown as a terracotta pill */
-.comment--admin .comment__avatar {
+.comment.comment--admin .comment__avatar {
+  width: 46px; height: 46px;
   background: var(--c-terracotta); color: var(--c-cream);
   border-width: 3px;
   overflow: hidden; padding: 0;
@@ -2553,6 +2562,7 @@ h6 { font-size: .9rem; }
 }
 
 .comment__replies { margin-top: 18px; padding-left: 20px; border-left: 2px dashed var(--c-border); display: flex; flex-direction: column; gap: 18px; }
+.comment__replies[hidden] { display: none; }
 .comment--reply .comment__avatar { width: 36px; height: 36px; font-size: .72rem; }
 .comment__replies-toggle {
   display: inline-flex; align-items: center; gap: 6px;
@@ -2564,6 +2574,38 @@ h6 { font-size: .9rem; }
 .comment__replies-toggle:hover { color: var(--c-terra-dark); }
 .comment__replies-caret { width: 16px; height: 16px; transition: transform .2s var(--ease); }
 .comment__replies-toggle[aria-expanded="true"] .comment__replies-caret { transform: rotate(180deg); }
+
+/* ============ LEGAL PAGES ============ */
+.legal-wrap { max-width: 800px; margin: 0 auto; padding: 130px 28px 110px; }
+.legal-head { margin-bottom: 36px; }
+.legal-head .eyebrow { color: var(--c-terracotta); }
+.legal-head h1 { font-family: var(--font-body); font-weight: 900; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.05; text-transform: uppercase; letter-spacing: -.02em; margin: 10px 0 14px; }
+.legal-updated { font-size: .85rem; color: var(--c-text-muted); }
+.legal-body { font-family: var(--font-body); font-size: 1.02rem; line-height: 1.75; color: var(--c-ink); }
+.legal-body h2 { font-family: var(--font-body); font-weight: 900; font-size: 1.4rem; text-transform: uppercase; letter-spacing: -.01em; margin: 42px 0 14px; }
+.legal-body h3 { font-weight: 800; font-size: 1.08rem; margin: 24px 0 8px; }
+.legal-body p { margin-bottom: 18px; }
+.legal-body ul { margin: 0 0 18px; padding-left: 24px; }
+.legal-body li { margin-bottom: 8px; }
+.legal-body a { color: var(--c-terracotta); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.legal-body strong { font-weight: 800; }
+
+/* ============ COOKIE CONSENT BANNER ============ */
+.cookie-banner {
+  position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 200;
+  max-width: 760px; margin: 0 auto;
+  background: var(--c-cream); border: var(--bw-1) solid var(--c-ink);
+  border-radius: var(--radius-lg); box-shadow: 6px 6px 0 var(--c-ink);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  transform: translateY(140%); opacity: 0;
+  transition: transform .4s var(--ease-back), opacity .4s var(--ease);
+}
+.cookie-banner.is-in { transform: translateY(0); opacity: 1; }
+.cookie-banner__text { flex: 1; min-width: 240px; font-family: var(--font-body); font-size: .9rem; line-height: 1.55; color: var(--c-ink); }
+.cookie-banner__text a { color: var(--c-terracotta); text-decoration: underline; font-weight: 700; }
+.cookie-banner__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 560px) { .cookie-banner__actions { width: 100%; } .cookie-banner__actions .btn { flex: 1; } }
 
 /* ============ SIDEBAR WIDGET ICON CIRCLE ============ */
 .widget__icon-circle {

@@ -142,10 +142,11 @@ const FOOTER_HTML = `
       <div class="footer__col">
         <h4>Legal</h4>
         <ul>
-          <li><a href="#">Privacidad</a></li>
-          <li><a href="#">Términos</a></li>
-          <li><a href="#">Cookies</a></li>
-          <li><a href="#">Contacto</a></li>
+          <li><a href="politica-privacidad.html">Privacidad</a></li>
+          <li><a href="terminos.html">Términos</a></li>
+          <li><a href="politica-cookies.html">Cookies</a></li>
+          <li><a href="reembolsos.html">Reembolsos</a></li>
+          <li><a href="mailto:ayuda@logramo.com">Contacto</a></li>
         </ul>
       </div>
     </div>

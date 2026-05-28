@@ -261,6 +261,8 @@ function trackSubscriber(email, source) {
 }
 function trackPageview(opts) {
   opts = opts || {};
+  // Non-essential analytics: only run if the visitor accepted cookies.
+  try { if (localStorage.getItem('lg_cookie_consent') !== 'accepted') return; } catch (e) { return; }
   var base = { path: location.pathname || '/', referrer: document.referrer || '' };
   if (opts.article_id) base.article_id = opts.article_id;
   fetch('https://ipapi.co/json/').then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (geo) {
@@ -320,16 +322,19 @@ if (counters.length && 'IntersectionObserver' in window) {
   counters.forEach(el => cio.observe(el));
 }
 
-/* Hero image crossfade loop */
+/* Hero image crossfade loop — also swaps each image's own badge set */
 (function () {
   var heroImgs = document.querySelectorAll('.hero__img-wrap .hero__img');
+  var stickerSets = document.querySelectorAll('.hero__image .hero__stickers');
   if (heroImgs.length < 2) return;
   var i = 0;
   setInterval(function () {
     heroImgs[i].classList.remove('is-active');
+    if (stickerSets[i]) stickerSets[i].classList.remove('is-active');
     i = (i + 1) % heroImgs.length;
     heroImgs[i].classList.add('is-active');
-  }, 4500);
+    if (stickerSets[i]) stickerSets[i].classList.add('is-active');
+  }, 7000);
 })();
 
 /* Hero Parallax */
@@ -1038,3 +1043,41 @@ document.addEventListener('DOMContentLoaded', () => {
   // itself with the resolved article_id; on every other page, fire now.
   if (location.pathname.indexOf('blog-post') === -1) trackPageview();
 });
+
+/* Cookie-consent banner — gates the non-essential analytics above.
+   Essential cookies (auth session, this preference) are always allowed. */
+(function () {
+  if (location.pathname.indexOf('admin') > -1) return; // not needed on the dashboard
+  var KEY = 'lg_cookie_consent';
+  var choice;
+  try { choice = localStorage.getItem(KEY); } catch (e) { return; }
+  if (choice === 'accepted' || choice === 'rejected') return; // already chosen
+  function show() {
+    if (document.querySelector('.cookie-banner')) return;
+    var bar = document.createElement('div');
+    bar.className = 'cookie-banner';
+    bar.setAttribute('role', 'dialog');
+    bar.setAttribute('aria-label', 'Aviso de cookies');
+    bar.innerHTML =
+      '<p class="cookie-banner__text">Usamos cookies esenciales para que el sitio funcione y, si lo aceptas, cookies de analítica para mejorarlo. Más info en nuestra <a href="politica-cookies.html">Política de Cookies</a>.</p>'
+      + '<div class="cookie-banner__actions">'
+        + '<button type="button" class="btn btn--cream btn--sm" data-cookie="reject">Rechazar</button>'
+        + '<button type="button" class="btn btn--primary btn--sm" data-cookie="accept">Aceptar</button>'
+      + '</div>';
+    document.body.appendChild(bar);
+    setTimeout(function () { bar.classList.add('is-in'); }, 40);
+    bar.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cookie]'); if (!b) return;
+      var v = b.getAttribute('data-cookie') === 'accept' ? 'accepted' : 'rejected';
+      try { localStorage.setItem(KEY, v); } catch (e) {}
+      bar.classList.remove('is-in');
+      setTimeout(function () { if (bar.parentNode) bar.parentNode.removeChild(bar); }, 400);
+      // If accepted, count this visit now (blog-post tracks itself on next load)
+      if (v === 'accepted' && typeof trackPageview === 'function' && location.pathname.indexOf('blog-post') === -1) {
+        trackPageview();
+      }
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show);
+  else show();
+})();
