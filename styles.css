@@ -1699,6 +1699,23 @@ h6 { font-size: .9rem; }
 /* Dashboard: single-emoji input for cover design */
 .emoji-input { width: 92px; padding: 10px 14px; font-size: 1.6rem; line-height: 1; text-align: center; border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-md); background: var(--c-cream); box-shadow: var(--shadow-xs); }
 .emoji-input:focus { outline: none; transform: translate(-1px,-1px); box-shadow: var(--shadow-sm); }
+
+/* ============ EMOJI ICONS (sitewide — replaced decorative SVG sprite) ============ */
+.emoji-icon { display: inline-block; line-height: 1; font-style: normal; vertical-align: middle; }
+/* Big decorative icons in cards/sections */
+.stat__icon { font-size: 2.6rem; line-height: 1; }
+.path-card__illo { font-size: 3.4rem; line-height: 1; }
+.for-card__icon { font-size: 2.6rem; line-height: 1; }
+.widget__icon-circle .emoji-icon { font-size: 1.8rem; }
+.comment-auth-cta__icon { font-size: 1.6rem; }
+.about-stat__icon { font-size: 2.2rem; }
+/* Rating-stars row: keep stars at a comfortable inline size */
+.review-card__stars { font-size: 1.05rem; letter-spacing: 2px; line-height: 1; }
+.reviews__stars { font-size: 1.4rem; letter-spacing: 4px; line-height: 1; }
+/* Tags (small chips like "Para nuevos dueños 🐾") */
+.tag .emoji-icon { font-size: 1.05em; vertical-align: -1px; }
+/* Hero stickers — inline with text */
+.hero__sticker .emoji-icon { font-size: 1em; }
 .book-card__cover--forest { background: var(--c-forest); color: var(--c-cream); }
 .book-card__cover--terra { background: var(--c-terracotta); color: var(--c-cream); }
 .book-card__cover-title {

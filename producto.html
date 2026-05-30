@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías digitales para criar un perro feliz — fáciles de leer y de verdad útiles." />
   <title>Producto — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260703" />
+  <link rel="stylesheet" href="styles.css?v=20260704" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="biblioteca">
@@ -31,9 +31,9 @@
         <p class="product-hero__desc" id="phDesc"></p>
         <div class="product-hero__price-row" id="phPriceRow"></div>
         <div class="product-hero__trust" style="margin-bottom:36px">
-          <div class="trust-item"><svg class="icon icon--sm"><use href="#i-check-circle"/></svg> Acceso inmediato</div>
-          <div class="trust-item"><svg class="icon icon--sm"><use href="#i-shield"/></svg> Garantía 30 días</div>
-          <div class="trust-item"><svg class="icon icon--sm"><use href="#i-clock"/></svg> Acceso de por vida</div>
+          <div class="trust-item"><span class="emoji-icon">✅</span> Acceso inmediato</div>
+          <div class="trust-item"><span class="emoji-icon">🛡️</span> Garantía 30 días</div>
+          <div class="trust-item"><span class="emoji-icon">⏰</span> Acceso de por vida</div>
         </div>
         <div class="product-hero__ctas" id="phCtas"></div>
       </div>
@@ -89,24 +89,24 @@
     <div class="reviews__head" data-reveal>
       <span class="eyebrow">Lo que dicen los lectores</span>
       <div class="reviews__stars">
-        <svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg>
+        <span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span>
       </div>
       <h2 style="margin-bottom:16px">+340 valoraciones reales</h2>
       <p class="reviews__avg"><strong>4.9</strong> de media</p>
     </div>
     <div class="reviews-grid" data-stagger data-h-drag id="prodReviews">
       <div class="review-card review-card--terra">
-        <div class="review-card__stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <div class="review-card__stars"><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span></div>
         <p class="review-card__quote">"Tres semanas sin dormir. En cuatro días siguiendo el plan, silencio. Lloré de alivio."</p>
         <div class="review-card__author"><div class="review-card__avatar"><img src="https://i.pravatar.cc/100?img=47" alt=""></div><div><div class="review-card__name">María L.</div><div class="review-card__loc">Madrid · Border collie</div></div></div>
       </div>
       <div class="review-card review-card--peach">
-        <div class="review-card__stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <div class="review-card__stars"><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span></div>
         <p class="review-card__quote">"Pensé que mi perro tenía un problema. Era yo. Me lo explicaron sin hacerme sentir mal."</p>
         <div class="review-card__author"><div class="review-card__avatar">JG</div><div><div class="review-card__name">Javier G.</div><div class="review-card__loc">Barcelona · Labrador</div></div></div>
       </div>
       <div class="review-card review-card--golden">
-        <div class="review-card__stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <div class="review-card__stars"><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span></div>
         <p class="review-card__quote">"$30 bien invertidos. Camina sin tirar, duerme de noche, no ladra a todo. En serio."</p>
         <div class="review-card__author"><div class="review-card__avatar"><img src="https://i.pravatar.cc/100?img=32" alt=""></div><div><div class="review-card__name">Ana S.</div><div class="review-card__loc">Valencia · Mestizo</div></div></div>
       </div>
@@ -171,11 +171,11 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260703"></script>
+<script src="partials.js?v=20260704"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260701"></script>
+<script src="script.js?v=20260704"></script>
 <script src="animations.js?v=20260623"></script>
 
 <script>
@@ -290,13 +290,13 @@
     document.getElementById('bcTitle').textContent=p.title||'Producto';
     document.title=(p.title||'Producto')+' — Logramo';
     var tt=topTag(p);
-    document.getElementById('phBadge').innerHTML = tt ? '<span class="tag tag--golden" style="margin-bottom:20px"><svg class="icon icon--xs"><use href="#i-flame"/></svg> '+esc(TAG_LABEL[tt]||tt)+'</span>' : '';
+    document.getElementById('phBadge').innerHTML = tt ? '<span class="tag tag--golden" style="margin-bottom:20px"><span class="emoji-icon">🔥</span> '+esc(TAG_LABEL[tt]||tt)+'</span>' : '';
     document.getElementById('phTitle').textContent=p.title||'';
     document.getElementById('phDesc').textContent=p.description||'';
     var price=p.is_free?'<span class="product-hero__price">Gratis</span>':'<span class="product-hero__price">'+money(p.price)+'</span>';
     var orig = (!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)) ? '<span class="product-hero__original">'+money(p.original_price)+'</span>' : '';
     var disc='';
-    if(!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)){ var pct=Math.round((1-Number(p.price)/Number(p.original_price))*100); disc='<span class="tag tag--terra"><svg class="icon icon--xs"><use href="#i-flame"/></svg> '+pct+'% off</span>'; }
+    if(!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)){ var pct=Math.round((1-Number(p.price)/Number(p.original_price))*100); disc='<span class="tag tag--terra"><span class="emoji-icon">🔥</span> '+pct+'% off</span>'; }
     document.getElementById('phPriceRow').innerHTML=price+orig+disc;
     var label=p.is_free?'Descargar gratis':'Comprar ahora';
     var icon=p.is_free?'i-pdf':'i-cart';
@@ -305,7 +305,7 @@
     } else {
       var ppNote = (window.LogramoCurrency && LogramoCurrency.checkoutNote) ? LogramoCurrency.checkoutNote(p.price) : '';
       var ppNoteHtml = ppNote ? '<p class="paypal-wrap__note">'+esc(ppNote)+'</p>' : '';
-      document.getElementById('phCtas').innerHTML='<div class="paypal-wrap"><div class="paypal-wrap__head"><svg class="icon icon--sm"><use href="#i-shield"/></svg> <span>Pago seguro · Tarjeta o PayPal</span></div><div id="paypal-button-container"></div>'+ppNoteHtml+'</div>';
+      document.getElementById('phCtas').innerHTML='<div class="paypal-wrap"><div class="paypal-wrap__head"><span class="emoji-icon">🛡️</span> <span>Pago seguro · Tarjeta o PayPal</span></div><div id="paypal-button-container"></div>'+ppNoteHtml+'</div>';
     }
     // sticky
     document.getElementById('stickyTitle').textContent=p.title||'';
@@ -376,7 +376,7 @@
     } else {
       el.className='product-cover in';
       el.innerHTML='<div class="product-cover__book" style="background:var(--c-'+(p.cover_color||'terracotta')+')">'
-        +'<div class="product-cover__badge"><svg class="icon icon--xs"><use href="#i-star"/></svg> Guía Digital · PDF</div>'
+        +'<div class="product-cover__badge"><span class="emoji-icon">⭐</span> Guía Digital · PDF</div>'
         +'<div style="display:flex;justify-content:center;margin-bottom:24px">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji cover-emoji--xl">'+esc(p.cover_icon)+'</span>'):('<svg width="64" height="64" style="color:var(--c-golden)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div>'
         +'<div class="product-cover__title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div>'
         +'<p class="product-cover__sub">'+esc(p.cover_sub||'Guía digital en PDF.')+'</p>'
@@ -446,9 +446,9 @@
       if(r.error||!r.data||!r.data.length) return;
       var skins=['terra','peach','golden','sky','sage','lavender'];
       grid.innerHTML=r.data.map(function(rv,i){
-        var n=rv.rating||5, stars=''; for(var s=0;s<n;s++)stars+='<svg class="icon"><use href="#i-star"/></svg>';
+        var n=rv.rating||5, stars=''; for(var s=0;s<n;s++)stars+='<span class="emoji-icon">⭐</span>';
         var av=rv.avatar?'<div class="review-card__avatar"><img src="'+esc(rv.avatar)+'" alt=""></div>':'<div class="review-card__avatar">'+esc(initials(rv.name))+'</div>';
-        var dogTag=rv.dog_name?'<span class="review-card__dog"><svg class="icon"><use href="#i-paw"/></svg> '+esc(rv.dog_name)+'</span>':'';
+        var dogTag=rv.dog_name?'<span class="review-card__dog"><span class="emoji-icon">🐾</span> '+esc(rv.dog_name)+'</span>':'';
         return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__top"><div class="review-card__stars">'+stars+'</div>'+dogTag+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div><div class="review-card__loc">'+esc(rv.location||'')+'</div></div></div></div>';
       }).join('');
       if(window.refreshScrollAffordances) window.refreshScrollAffordances(grid);

@@ -598,7 +598,7 @@ const chatToggle = document.getElementById('chatToggle');
 const chatPanel = document.getElementById('chatPanel');
 chatToggle?.addEventListener('click', () => {
   const open = chatPanel?.classList.toggle('open');
-  chatToggle.innerHTML = open ? '<svg class="icon"><use href="#i-close"/></svg>' : '<svg class="icon"><use href="#i-chat"/></svg>';
+  chatToggle.innerHTML = open ? '<svg class="icon"><use href="#i-close"/></svg>' : '<span class="emoji-icon">💬</span>';
 });
 
 (function setupChat() {

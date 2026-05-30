@@ -78,7 +78,7 @@ const NAV_HTML = `
     </ul>
     <div class="nav__actions">
       <a href="cuenta.html" class="nav__btn nav__btn--user" aria-label="Mi cuenta" title="Mi cuenta" data-link="cuenta" id="navUserBtn">
-        <svg class="icon" id="navUserIcon"><use href="#i-user"/></svg>
+        <span class="emoji-icon">👤</span>
         <span class="nav__initials" id="navUserInitials" hidden></span>
       </a>
       <button class="nav__btn" id="cartBtn" aria-label="Carrito">
@@ -175,11 +175,11 @@ const CART_HTML = `
 const CHAT_HTML = `
 <div class="chat-btn">
   <div class="chat-btn__bubble" id="chatBubble">¿En qué te ayudamos? 🐾</div>
-  <button class="chat-btn__trigger" id="chatToggle" aria-label="Abrir chat"><svg class="icon"><use href="#i-chat"/></svg></button>
+  <button class="chat-btn__trigger" id="chatToggle" aria-label="Abrir chat"><span class="emoji-icon">💬</span></button>
 </div>
 <div class="chat-panel" id="chatPanel">
   <div class="chat-panel__header">
-    <div class="chat-panel__avatar"><svg class="icon"><use href="#i-paw"/></svg></div>
+    <div class="chat-panel__avatar"><span class="emoji-icon">🐾</span></div>
     <div><div class="chat-panel__name">Logramo</div><div class="chat-panel__status" id="chatStatus">● Online</div></div>
   </div>
   <div class="chat-panel__body" id="chatBody">
@@ -228,7 +228,7 @@ const FREEBIE_HTML = `
       <div class="freebie-modal__cover" id="freebieCover">
         <div class="freebie-modal__cover-sub" id="freebieCoverSub">Guía PDF</div>
         <div class="freebie-modal__cover-title" id="freebieCoverTitle">—</div>
-        <svg class="freebie-modal__cover-icon" id="freebieCoverIcon" width="40" height="40"><use href="#i-paw"/></svg>
+        <span class="emoji-icon">🐾</span>
       </div>
       <div class="freebie-modal__body">
         <span class="eyebrow" id="freebieEyebrow">Gratis</span>
