@@ -1692,6 +1692,31 @@ h6 { font-size: .9rem; }
 
 /* Cover icon slot — emoji sits at the bottom-center of the cover (legacy SVG icons keep their old look) */
 .cover-icon-slot { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: center; }
+/* Cover IMAGE slot — uploaded cover photo sits framed in a 4:5 portrait box (1080×1350).
+   Design your cover image at 4:5 (e.g., 1080×1350) to fit with zero whitespace. */
+.cover-image-slot {
+  margin-top: auto; width: 90%;
+  aspect-ratio: 4 / 5;
+  margin-left: auto; margin-right: auto;
+  background: var(--c-cream);
+  border: var(--bw-1) solid var(--c-ink);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.cover-image-slot img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* Hero (product page) variant — bigger slot for the big book hero */
+.cover-image-slot--hero { width: 70%; max-width: 280px; margin-top: 0; margin-bottom: 24px; border-width: var(--bw-2); border-radius: 8px; }
+
+/* ============ BLOG PAGER ============ */
+.blog-pager { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 56px 0 24px; flex-wrap: wrap; }
+.blog-pager__info { font-family: var(--font-body); font-weight: 700; color: var(--c-ink); font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; }
+.blog-pager button[disabled] { opacity: .35; pointer-events: none; }
+
+/* Mobile blog cards: hide the description, keep title + tag + read time */
+@media (max-width: 720px) {
+  .article-card__excerpt { display: none; }
+}
 .cover-emoji { display: inline-block; line-height: 1; font-size: 2.2rem; }
 .cover-emoji--lg { font-size: 2.6rem; }
 .cover-emoji--xl { font-size: 3.4rem; }

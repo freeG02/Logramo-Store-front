@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Blog de Logramo — Consejos reales sobre perros" />
   <title>Blog — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260704" />
+  <link rel="stylesheet" href="styles.css?v=20260705" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -115,7 +115,7 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260704"></script>
+<script src="partials.js?v=20260705"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -132,6 +132,12 @@
   var clearBtn=document.getElementById('filterClear');
   var searchInput=document.getElementById('blogSearch');
   var active=[], query='';
+  var PAGE_SIZE = 8;
+  var currentPage = 1;
+  // Pager container injected once, right after the article grid
+  var pager = document.createElement('div');
+  pager.id = 'blogPager'; pager.className = 'blog-pager';
+  if(mount.parentNode) mount.parentNode.insertBefore(pager, mount.nextSibling);
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   /* CAT_COLOR is built from blog_categories at load time (see IIFE below);
@@ -149,18 +155,44 @@
       +'<div class="article-card__meta"><span><span class="emoji-icon">⏰</span> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function render(arts){
-    if(!arts.length){ mount.innerHTML='<p class="muted" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-muted)">Aún no hay artículos publicados.</p>'; return; }
+    if(!arts.length){ mount.innerHTML='<p class="muted" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-muted)">Aún no hay artículos publicados.</p>'; pager.innerHTML=''; return; }
     mount.innerHTML=arts.map(card).join('');
+    currentPage = 1;
+    applyFilters();
   }
   function applyFilters(){
-    var anyVisible=false;
+    // 1) filter — collect cards that pass the active filters + search
+    var passing = [];
     document.querySelectorAll('#blogDynamic .article-card').forEach(function(cd){
       var cats=(cd.getAttribute('data-cat')||'').split(' ');
       var mf=!active.length||active.some(function(a){return cats.indexOf(a)>-1;});
       var ms=!query||(cd.getAttribute('data-title')||'').indexOf(query)>-1||(cd.getAttribute('data-ex')||'').indexOf(query)>-1;
-      var show=mf&&ms; cd.style.display=show?'':'none'; if(show)anyVisible=true;
+      if(mf&&ms){ passing.push(cd); }
+      else { cd.style.display='none'; }
     });
+    // 2) paginate — only show the slice for the current page
+    var totalPages = Math.max(1, Math.ceil(passing.length / PAGE_SIZE));
+    if(currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage-1)*PAGE_SIZE, end = start + PAGE_SIZE;
+    passing.forEach(function(cd, i){ cd.style.display = (i>=start && i<end) ? '' : 'none'; });
+    // 3) draw the pager
+    if(passing.length <= PAGE_SIZE){ pager.innerHTML=''; return; }
+    var prevDis = currentPage<=1 ? 'disabled' : '';
+    var nextDis = currentPage>=totalPages ? 'disabled' : '';
+    pager.innerHTML = '<button type="button" class="btn btn--cream" data-page-prev '+prevDis+'>← Anterior</button>'
+      + '<span class="blog-pager__info">Página '+currentPage+' de '+totalPages+'</span>'
+      + '<button type="button" class="btn btn--primary" data-page-next '+nextDis+'>Siguiente →</button>';
   }
+  function goToPage(n){
+    currentPage = Math.max(1, n);
+    applyFilters();
+    var top = mount.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+  pager.addEventListener('click', function(e){
+    var p = e.target.closest('[data-page-prev]'); if(p && !p.hasAttribute('disabled')){ goToPage(currentPage-1); return; }
+    var n = e.target.closest('[data-page-next]'); if(n && !n.hasAttribute('disabled')){ goToPage(currentPage+1); return; }
+  });
   buttons.forEach(function(b){ b.addEventListener('click',function(){
     var f=b.getAttribute('data-filter');
     if(f==='all'){ active=[]; buttons.forEach(function(x){x.classList.toggle('active',x===b);}); }
@@ -169,10 +201,10 @@
       active=[].slice.call(buttons).filter(function(x){return x.classList.contains('active')&&x.getAttribute('data-filter')!=='all';}).map(function(x){return x.getAttribute('data-filter');});
       var allBtn=row.querySelector('[data-filter="all"]'); if(allBtn) allBtn.classList.toggle('active', active.length===0);
     }
-    applyFilters();
+    currentPage = 1; applyFilters();
   }); });
-  if(clearBtn) clearBtn.addEventListener('click',function(){ active=[]; buttons.forEach(function(x){x.classList.toggle('active',x.getAttribute('data-filter')==='all');}); applyFilters(); });
-  if(searchInput) searchInput.addEventListener('input',function(){ query=(searchInput.value||'').trim().toLowerCase(); applyFilters(); });
+  if(clearBtn) clearBtn.addEventListener('click',function(){ active=[]; buttons.forEach(function(x){x.classList.toggle('active',x.getAttribute('data-filter')==='all');}); currentPage = 1; applyFilters(); });
+  if(searchInput) searchInput.addEventListener('input',function(){ query=(searchInput.value||'').trim().toLowerCase(); currentPage = 1; applyFilters(); });
   (async function(){
     /* Populate CAT_COLOR before rendering so category badges get the right tag color */
     try{ var rc=await sb.from('blog_categories').select('name,color'); if(!rc.error){ (rc.data||[]).forEach(function(c){ CAT_COLOR[c.name]=c.color; }); } }catch(e){}
