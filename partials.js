@@ -390,13 +390,16 @@ if (currentLink) {
     const cover = document.getElementById('freebieCover');
     if (cover) {
       cover.style.background = COVER_BG[p.cover_color] || COVER_BG.sky;
-      var fmSlot = p.cover_image
-        ? '<div class="cover-image-slot"><img src="' + (p.cover_image || '') + '" alt=""></div>'
-        : ((p.cover_icon && !/^i-/.test(p.cover_icon)) ? '<span class="freebie-modal__cover-icon cover-emoji cover-emoji--lg">' + p.cover_icon + '</span>' : '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>');
-      cover.innerHTML =
-        '<div class="freebie-modal__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>' +
-        '<div class="freebie-modal__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>' +
-        fmSlot;
+      if (p.cover_image) {
+        cover.innerHTML = '<div class="cover-image-slot"><img src="' + (p.cover_image || '') + '" alt=""></div>';
+        cover.classList.add('freebie-modal__cover--image');
+      } else {
+        cover.classList.remove('freebie-modal__cover--image');
+        cover.innerHTML =
+          '<div class="freebie-modal__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>' +
+          '<div class="freebie-modal__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>' +
+          ((p.cover_icon && !/^i-/.test(p.cover_icon)) ? '<span class="freebie-modal__cover-icon cover-emoji cover-emoji--lg">' + p.cover_icon + '</span>' : '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>');
+      }
     }
     // Body side
     const tEl = document.getElementById('freebieTitle');

@@ -1708,6 +1708,16 @@ h6 { font-size: .9rem; }
 /* Hero (product page) variant — bigger slot for the big book hero */
 .cover-image-slot--hero { width: 70%; max-width: 280px; margin-top: 0; margin-bottom: 24px; border-width: var(--bw-2); border-radius: 8px; }
 
+/* Image-mode cover frames — the paper card holds ONLY the image (no title/sub).
+   Drops the inner padding so the image fills the frame edge-to-edge; the ink
+   border of the cover IS the frame. */
+.book-card__cover--image { padding: 0; overflow: hidden; }
+.book-card__cover--image .cover-image-slot { width: 100%; margin: 0; border: none; border-radius: 0; background: transparent; }
+.fc-card__cover--image { padding: 0; overflow: hidden; }
+.fc-card__cover--image .cover-image-slot { width: 100%; margin: 0; border: none; border-radius: 0; background: transparent; }
+.freebie-modal__cover--image .cover-image-slot { width: 100%; margin: 0; border: none; border-radius: inherit; background: transparent; }
+.product-cover__book--image .cover-image-slot--hero { margin-top: 0; }
+
 /* ============ BLOG PAGER ============ */
 .blog-pager { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 56px 0 24px; flex-wrap: wrap; }
 .blog-pager__info { font-family: var(--font-body); font-weight: 700; color: var(--c-ink); font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; }

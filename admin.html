@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260705" />
+  <link rel="stylesheet" href="styles.css?v=20260706" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -699,7 +699,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260705"></script>
+<script src="partials.js?v=20260706"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -857,10 +857,9 @@
   function pCard(p){
     var tags=(p.tags||[]).map(badge).join('');
     var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
-    var slotHtml = p.cover_image
-      ? '<div class="cover-image-slot"><img src="'+esc(p.cover_image)+'" alt=""></div>'
-      : '<div class="cover-icon-slot">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji">'+esc(p.cover_icon)+'</span>'):('<svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div>';
-    var coverInner = '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div>'+slotHtml+'</div>';
+    var coverInner = p.cover_image
+      ? '<div class="book-card__cover book-card__cover--image"><div class="cover-image-slot"><img src="'+esc(p.cover_image)+'" alt=""></div></div>'
+      : '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div class="cover-icon-slot">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji">'+esc(p.cover_icon)+'</span>'):('<svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div></div>';
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
