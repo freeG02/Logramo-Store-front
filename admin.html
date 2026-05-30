@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260702" />
+  <link rel="stylesheet" href="styles.css?v=20260703" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -455,7 +455,7 @@
                 <div class="field"><label for="p-covertitle">Cover title (Enter = 2 lines)</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
                 <div class="row2">
                   <div class="field"><label>Background color</label><div class="swatches" id="p-colorSwatches"></div></div>
-                  <div class="field"><label>Icon</label><div class="iconpick" id="p-iconPick"></div></div>
+                  <div class="field"><label for="p-icon">Emoji (just one)</label><input type="text" id="p-icon" class="emoji-input" placeholder="🐶" maxlength="8" autocomplete="off" /></div>
                 </div>
               </div>
               <div id="coverImageBox" hidden>
@@ -472,7 +472,6 @@
               <div class="field"><label>“¿Para quién es?” cards</label><div class="repeater" id="repAudience"></div></div>
 
               <input type="hidden" id="p-color" value="sky" />
-              <input type="hidden" id="p-icon" value="i-paw" />
               <input type="hidden" id="p-cover-image" value="" />
               <input type="hidden" id="p-pdf-url" value="" />
               <div class="field" style="margin-top:8px"><label class="check"><input type="checkbox" id="p-published" checked /> Published (visible on the site)</label></div>
@@ -700,7 +699,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260701"></script>
+<script src="partials.js?v=20260703"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -751,15 +750,12 @@
     if(up.error) throw up.error;
     return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
   }
-  // color swatches + icon picker
+  // color swatches (cover icon is now a free-form emoji input, no picker needed)
   var COVER_COLORS=['sky','peach','sage','golden','lavender','pink'];
-  var COVER_ICONS=['i-paw','i-book','i-clock','i-shield','i-target','i-heart','i-bell','i-bone','i-leaf','i-flame','i-check-circle'];
   function renderSwatches(){
     $('p-colorSwatches').innerHTML=COVER_COLORS.map(function(c){ return '<button type="button" class="swatch'+($('p-color').value===c?' active':'')+'" data-color="'+c+'" style="background:var(--c-'+c+')"></button>'; }).join('');
-    $('p-iconPick').innerHTML=COVER_ICONS.map(function(ic){ return '<button type="button" class="'+($('p-icon').value===ic?'active':'')+'" data-icon="'+ic+'"><svg class="icon"><use href="#'+ic+'"/></svg></button>'; }).join('');
   }
   $('p-colorSwatches').addEventListener('click',function(e){ var b=e.target.closest('[data-color]'); if(!b)return; $('p-color').value=b.dataset.color; renderSwatches(); pPreview(); });
-  $('p-iconPick').addEventListener('click',function(e){ var b=e.target.closest('[data-icon]'); if(!b)return; $('p-icon').value=b.dataset.icon; renderSwatches(); pPreview(); });
 
   /* ===== Repeatable list fields (problems / solutions / modules / audience) ===== */
   function asArr(v){ if(Array.isArray(v))return v.slice(); if(typeof v==='string'){try{var j=JSON.parse(v);return Array.isArray(j)?j:[];}catch(e){return [];}} return []; }
@@ -862,7 +858,7 @@
     var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">$'+Number(p.price||0).toFixed(2)+'</span>';
     var coverInner=p.cover_image
       ? '<img class="book-card__cover-img" src="'+esc(p.cover_image)+'" alt="">'
-      : '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div style="margin-top:6px"><svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg></div></div>';
+      : '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</div><div class="cover-icon-slot">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji">'+esc(p.cover_icon)+'</span>'):('<svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div></div>';
     return '<a href="producto.html" class="book-card" data-tags="'+(p.tags||[]).join(' ')+'"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+(p.is_free?'Descargar':'Ver libro')+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
@@ -945,12 +941,12 @@
     }
   });
 
-  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=p.cover_icon||'i-paw'; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-pages').value=p.pages||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=(p.cover_icon && !/^i-/.test(p.cover_icon))?p.cover_icon:''; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-pages').value=p.pages||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
   $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
-  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='i-paw';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-pages').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
+  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-pages').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
   $('pResetBtn').addEventListener('click',pReset);
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
-  ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
+  ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle','p-icon'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
   $('createTagBtn').addEventListener('click',async function(){ var n=$('newTagName').value.trim(); if(!n)return; var s=await createTag(n,$('newTagColor').value); pField.add(s); $('newTagName').value=''; });
 
   /* ===== Drag-reorder + Pin helpers (shared by products/articles/videos/reviews) ===== */

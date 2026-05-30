@@ -396,7 +396,7 @@ if (currentLink) {
         cover.innerHTML =
           '<div class="freebie-modal__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>' +
           '<div class="freebie-modal__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>' +
-          '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>';
+          ((p.cover_icon && !/^i-/.test(p.cover_icon)) ? '<span class="freebie-modal__cover-icon cover-emoji cover-emoji--lg">' + p.cover_icon + '</span>' : '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>');
       }
     }
     // Body side

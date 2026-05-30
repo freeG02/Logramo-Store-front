@@ -1689,6 +1689,16 @@ h6 { font-size: .9rem; }
   display: flex; flex-direction: column; gap: 10px;
 }
 .book-card:hover .book-card__cover { transform: rotate(0); }
+
+/* Cover icon slot — emoji sits at the bottom-center of the cover (legacy SVG icons keep their old look) */
+.cover-icon-slot { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: center; }
+.cover-emoji { display: inline-block; line-height: 1; font-size: 2.2rem; }
+.cover-emoji--lg { font-size: 2.6rem; }
+.cover-emoji--xl { font-size: 3.4rem; }
+
+/* Dashboard: single-emoji input for cover design */
+.emoji-input { width: 92px; padding: 10px 14px; font-size: 1.6rem; line-height: 1; text-align: center; border: var(--bw-1) solid var(--c-ink); border-radius: var(--radius-md); background: var(--c-cream); box-shadow: var(--shadow-xs); }
+.emoji-input:focus { outline: none; transform: translate(-1px,-1px); box-shadow: var(--shadow-sm); }
 .book-card__cover--forest { background: var(--c-forest); color: var(--c-cream); }
 .book-card__cover--terra { background: var(--c-terracotta); color: var(--c-cream); }
 .book-card__cover-title {
