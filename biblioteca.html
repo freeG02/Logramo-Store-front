@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías y libros escritos por dueños que ya pasaron por esto — algunos gratis, otros premium. Todos fáciles de leer y de verdad útiles." />
   <title>Biblioteca — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260707" />
+  <link rel="stylesheet" href="styles.css?v=20260708" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="biblioteca">
@@ -204,7 +204,7 @@ window.initFcCarousel = function(){
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260707"></script>
+<script src="partials.js?v=20260708"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -248,7 +248,8 @@ window.initFcCarousel = function(){
     var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">'+(window.LogramoCurrency?LogramoCurrency.format(p.price):'$'+Number(p.price||0).toFixed(2))+'</span>';
     var cta=p.is_free?'Descargar':'Ver libro';
     /* Free products open the download modal; paid ones go to the product page. */
-    var hrefAttr = p.is_free ? 'href="#" data-freebie="'+esc(p.id)+'"' : 'href="producto.html?id='+encodeURIComponent(p.id)+'"';
+    // Every product (paid + free) opens the unified product modal.
+    var hrefAttr = 'href="#" data-freebie="'+esc(p.id)+'"';
     return '<a '+hrefAttr+' class="book-card" data-tags="'+tags.join(' ')+'" data-cat="'+slug(p.category)+'" data-title="'+esc((p.title||'').toLowerCase())+'" data-desc="'+esc((p.description||'').toLowerCase())+'">'
       +cover(p, top?topBadge(top):'')
       +'<div class="book-card__body">'+(rest.length?'<div class="lib-tags">'+rest.map(badge).join('')+'</div>':'')
@@ -265,9 +266,7 @@ window.initFcCarousel = function(){
     var tags=cardTags(p);
     var price=p.is_free?'Gratis':(window.LogramoCurrency?LogramoCurrency.format(p.price):'$'+Number(p.price||0).toFixed(2));
     var cta=p.is_free?'Descargar gratis':'Comprar ahora';
-    var hrefAttr = p.is_free
-      ? 'href="#" data-freebie="'+esc(p.id)+'"'
-      : 'href="producto.html?id='+encodeURIComponent(p.id)+'"';
+    var hrefAttr = 'href="#" data-freebie="'+esc(p.id)+'"';
     return '<a '+hrefAttr+' class="fc-card fc-card--'+theme+'" style="text-decoration:none">'
       +'<div class="fc-card__details">'
         +(tags.length?'<div class="fc-badge"><span class="lib-tag lib-tag--'+(tagInfo(tags[0]).color||'default')+'">'+esc(tagInfo(tags[0]).label)+'</span></div>':'')
