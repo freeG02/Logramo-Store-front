@@ -225,20 +225,27 @@ const FREEBIE_HTML = `
   <div class="popup popup--freebie">
     <button class="popup__close" data-close-popup aria-label="Cerrar"><svg class="icon icon--sm"><use href="#i-close"/></svg></button>
     <div class="freebie-modal__grid">
-      <div class="freebie-modal__cover" id="freebieCover">
-        <div class="freebie-modal__cover-sub" id="freebieCoverSub">Guía PDF</div>
-        <div class="freebie-modal__cover-title" id="freebieCoverTitle">—</div>
-        <span class="emoji-icon">🐾</span>
-      </div>
+      <div class="freebie-modal__cover" id="freebieCover"></div>
       <div class="freebie-modal__body">
         <span class="eyebrow" id="freebieEyebrow">Gratis</span>
         <h2 class="freebie-modal__title" id="freebieTitle">—</h2>
         <p class="freebie-modal__meta" id="freebieMeta"></p>
         <p class="freebie-modal__desc" id="freebieDesc">—</p>
+        <div class="freebie-modal__badges">
+          <div class="trust-item"><span class="emoji-icon">✅</span> Acceso inmediato</div>
+          <div class="trust-item"><span class="emoji-icon">⏰</span> Acceso de por vida</div>
+        </div>
         <div class="freebie-modal__actions">
-          <button type="button" class="btn btn--primary btn--lg full-w" id="freebieDownloadBtn">
+          <button type="button" class="btn btn--primary btn--lg full-w" id="freebieDownloadBtn" style="display:none">
             <svg class="icon"><use href="#i-pdf"/></svg> <span id="freebieDownloadLabel">Descargar ahora</span>
           </button>
+          <div id="freebiePaypalWrap" style="display:none">
+            <div class="paypal-wrap">
+              <div class="paypal-wrap__head"><span class="emoji-icon">🛡️</span> <span>Pago seguro · Tarjeta o PayPal</span></div>
+              <div id="paypal-button-container"></div>
+              <p class="paypal-wrap__note" id="freebiePaypalNote" style="display:none"></p>
+            </div>
+          </div>
           <p class="freebie-modal__hint" id="freebieHint">El PDF se descarga al instante.</p>
         </div>
       </div>
@@ -384,15 +391,126 @@ if (currentLink) {
     document.body.classList.remove('popup-open');
   }
 
+  /* ----- Cover image carousel inside the modal (auto-advances every 6s) ----- */
+  let _coverCarouselTimer = null;
+  function stopCoverCarousel() {
+    if (_coverCarouselTimer) { clearInterval(_coverCarouselTimer); _coverCarouselTimer = null; }
+  }
+  function buildCoverCarousel(images) {
+    // Dedupe + drop empties
+    const list = []; const seen = {};
+    (images || []).forEach(function (u) { if (u && !seen[u]) { seen[u] = 1; list.push(u); } });
+    if (!list.length) return '';
+    const imgs = list.map(function (u, i) {
+      return '<img class="cover-carousel__img' + (i === 0 ? ' is-active' : '') + '" src="' + u + '" alt="" />';
+    }).join('');
+    const arrows = list.length > 1
+      ? '<button type="button" class="cover-carousel__arrow cover-carousel__arrow--prev" data-cc-prev aria-label="Anterior">‹</button>'
+      + '<button type="button" class="cover-carousel__arrow cover-carousel__arrow--next" data-cc-next aria-label="Siguiente">›</button>'
+      : '';
+    return '<div class="cover-image-slot cover-carousel" data-cover-carousel>' + imgs + arrows + '</div>';
+  }
+  function startCoverCarousel(root) {
+    const car = root.querySelector('[data-cover-carousel]'); if (!car) return;
+    const slides = Array.prototype.slice.call(car.querySelectorAll('.cover-carousel__img'));
+    if (slides.length < 2) return;
+    let idx = 0;
+    function go(n) {
+      idx = (n + slides.length) % slides.length;
+      slides.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
+    }
+    car.querySelector('[data-cc-prev]').addEventListener('click', function () { go(idx - 1); restart(); });
+    car.querySelector('[data-cc-next]').addEventListener('click', function () { go(idx + 1); restart(); });
+    function restart() { stopCoverCarousel(); _coverCarouselTimer = setInterval(function () { go(idx + 1); }, 6000); }
+    restart();
+  }
+
+  /* ----- PayPal Smart Buttons (ported from producto.html, mounted in the modal) ----- */
+  async function fetchSiteSetting(key) {
+    try {
+      const r = await fetch(SB_URL + '/rest/v1/site_settings?key=eq.' + encodeURIComponent(key) + '&select=value', {
+        headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
+      });
+      if (!r.ok) return '';
+      const arr = await r.json();
+      return (Array.isArray(arr) && arr[0] && arr[0].value) || '';
+    } catch (_) { return ''; }
+  }
+  async function paypalConfig() {
+    return { client_id: await fetchSiteSetting('paypal_client_id'), env: (await fetchSiteSetting('paypal_env')) || 'sandbox' };
+  }
+  function loadPayPalSDK(client_id) {
+    return new Promise(function (resolve, reject) {
+      if (window.paypal) { resolve(); return; }
+      const s = document.createElement('script');
+      const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+      s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(client_id) + '&currency=' + encodeURIComponent(ccy) + '&intent=capture&enable-funding=card,paylater&components=buttons';
+      s.onload = resolve; s.onerror = function () { reject(new Error('sdk load failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  async function renderPayPalButtons(p) {
+    const mount = document.getElementById('paypal-button-container'); if (!mount) return;
+    mount.innerHTML = '<p class="muted" style="text-align:center;padding:10px">Cargando pago seguro…</p>';
+    const cfg = await paypalConfig();
+    if (!cfg.client_id) { mount.innerHTML = '<p class="muted" style="text-align:center;padding:14px 16px;background:var(--c-cream-alt);border:var(--bw-1) solid var(--c-ink);border-radius:var(--radius-md)">El checkout estará disponible pronto.</p>'; return; }
+    try { await loadPayPalSDK(cfg.client_id); } catch (e) { mount.innerHTML = '<p class="muted">No se pudo cargar PayPal.</p>'; return; }
+    if (!window.paypal || !window.paypal.Buttons) { mount.innerHTML = '<p class="muted">PayPal SDK error.</p>'; return; }
+    mount.innerHTML = '';
+    const commonHandlers = {
+      createOrder: function (data, actions) {
+        const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+        const amount = (window.LogramoCurrency ? LogramoCurrency.checkoutAmount(p.price) : Number(p.price || 0).toFixed(2));
+        return actions.order.create({
+          purchase_units: [{ amount: { value: amount, currency_code: ccy }, description: (p.title || 'Producto Logramo').slice(0, 127) }]
+        });
+      },
+      onApprove: function (data, actions) {
+        mount.insertAdjacentHTML('beforeend', '<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
+        return actions.order.capture().then(async function (details) {
+          try {
+            const payer = (details && details.payer) || {};
+            const unit = (details && details.purchase_units && details.purchase_units[0]) || {};
+            const amt = (unit && unit.amount) || {};
+            const name = [(payer.name && payer.name.given_name) || '', (payer.name && payer.name.surname) || ''].filter(Boolean).join(' ').trim();
+            await fetch(SB_URL + '/rest/v1/purchases', {
+              method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+              body: JSON.stringify({
+                email: payer.email_address || '', payer_name: name || null, product_id: p.id,
+                amount: Number(amt.value || p.price || 0), currency: amt.currency_code || 'USD',
+                paypal_order_id: (details && details.id) || (data && data.orderID) || null, status: 'completed'
+              })
+            });
+          } catch (e) { /* still send buyer to gracias */ }
+          window.location.href = 'gracias.html?id=' + encodeURIComponent(p.id) + '&order=' + encodeURIComponent(details.id || '');
+        });
+      },
+      onError: function (err) { alert('Error en el pago: ' + (err && err.message ? err.message : err)); }
+    };
+    const FUNDING = window.paypal.FUNDING || {};
+    if (FUNDING.CARD) {
+      window.paypal.Buttons(Object.assign({}, commonHandlers, { fundingSource: FUNDING.CARD, style: { shape: 'rect', color: 'black', label: 'pay', height: 48 } })).render(mount);
+    }
+    if (FUNDING.PAYPAL) {
+      window.paypal.Buttons(Object.assign({}, commonHandlers, { fundingSource: FUNDING.PAYPAL, style: { shape: 'rect', color: 'gold', label: 'paypal', height: 48 } })).render(mount);
+    }
+  }
+
   function openFreebieModal(p) {
     if (!p) return;
-    // Cover side
+    stopCoverCarousel();
+    // ---------- Cover side ----------
     const cover = document.getElementById('freebieCover');
     if (cover) {
       cover.style.background = COVER_BG[p.cover_color] || COVER_BG.sky;
-      if (p.cover_image) {
-        cover.innerHTML = '<div class="cover-image-slot"><img src="' + (p.cover_image || '') + '" alt=""></div>';
+      // Build the image list: cover_image first, then gallery (deduped)
+      const imgList = []; if (p.cover_image) imgList.push(p.cover_image);
+      const gallery = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? (function(){ try { return JSON.parse(p.images); } catch(e){ return []; } })() : []);
+      (gallery || []).forEach(function (u) { if (u) imgList.push(u); });
+      if (imgList.length) {
         cover.classList.add('freebie-modal__cover--image');
+        cover.innerHTML = buildCoverCarousel(imgList);
+        startCoverCarousel(cover);
       } else {
         cover.classList.remove('freebie-modal__cover--image');
         cover.innerHTML =
@@ -401,41 +519,57 @@ if (currentLink) {
           ((p.cover_icon && !/^i-/.test(p.cover_icon)) ? '<span class="freebie-modal__cover-icon cover-emoji cover-emoji--lg">' + p.cover_icon + '</span>' : '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>');
       }
     }
-    // Body side
+    // ---------- Body side ----------
     const tEl = document.getElementById('freebieTitle');
     const dEl = document.getElementById('freebieDesc');
     const mEl = document.getElementById('freebieMeta');
     const eyebrow = document.getElementById('freebieEyebrow');
-    if (tEl) tEl.textContent = p.title || 'Tu guía gratuita';
+    if (tEl) tEl.textContent = p.title || (p.is_free ? 'Tu guía gratuita' : 'Tu guía');
     if (dEl) dEl.textContent = p.description || '';
-    if (eyebrow) eyebrow.textContent = p.is_free ? 'Gratis' : 'Tu guía';
-
-    const meta = [];
-    if (p.pages) meta.push(p.pages + ' ' + (p.pages === 1 ? 'página' : 'páginas'));
-    meta.push('PDF · Descarga inmediata');
-    if (mEl) mEl.textContent = meta.join(' · ');
-
-    // CTA
+    // Eyebrow: "Gratis" for free, formatted price for paid
+    if (eyebrow) {
+      if (p.is_free) eyebrow.textContent = 'Gratis';
+      else eyebrow.textContent = (window.LogramoCurrency ? LogramoCurrency.format(p.price) : '$' + Number(p.price || 0).toFixed(2));
+    }
+    if (mEl) mEl.textContent = p.is_free ? 'PDF · Descarga inmediata' : 'PDF · Acceso al instante';
+    // ---------- Actions: free → download; paid → PayPal ----------
     const btn = document.getElementById('freebieDownloadBtn');
     const lbl = document.getElementById('freebieDownloadLabel');
     const hint = document.getElementById('freebieHint');
-    const loggedIn = isLoggedIn();
-    if (lbl) lbl.textContent = loggedIn ? 'Descargar ahora' : 'Crear cuenta para descargar';
-    if (hint) hint.textContent = loggedIn
-      ? (p.pdf_url ? 'El PDF se descarga al instante.' : 'Aún no hay PDF cargado. Avísanos por chat.')
-      : 'Creamos tu cuenta en 30 segundos y descargas al volver. No spam.';
-    if (btn) {
-      btn.onclick = function (e) {
-        e.preventDefault();
-        if (!isLoggedIn()) {
-          // Send them to signup; on return open this modal + trigger download
-          const next = encodeURIComponent(location.pathname + location.search);
-          location.href = 'cuenta.html?next=' + next + '&download=' + encodeURIComponent(p.id);
-          return;
-        }
-        if (!p.pdf_url) return;
-        triggerDownload(p.pdf_url, suggestedFilename(p));
-      };
+    const paypalWrap = document.getElementById('freebiePaypalWrap');
+    const paypalNote = document.getElementById('freebiePaypalNote');
+    if (p.is_free) {
+      if (paypalWrap) paypalWrap.style.display = 'none';
+      if (btn) btn.style.display = '';
+      const loggedIn = isLoggedIn();
+      if (lbl) lbl.textContent = loggedIn ? 'Descargar ahora' : 'Crear cuenta para descargar';
+      if (hint) { hint.style.display = ''; hint.textContent = loggedIn
+        ? (p.pdf_url ? 'El PDF se descarga al instante.' : 'Aún no hay PDF cargado. Avísanos por chat.')
+        : 'Creamos tu cuenta en 30 segundos y descargas al volver. No spam.'; }
+      if (btn) {
+        btn.onclick = function (e) {
+          e.preventDefault();
+          if (!isLoggedIn()) {
+            const next = encodeURIComponent(location.pathname + location.search);
+            location.href = 'cuenta.html?next=' + next + '&download=' + encodeURIComponent(p.id);
+            return;
+          }
+          if (!p.pdf_url) return;
+          triggerDownload(p.pdf_url, suggestedFilename(p));
+        };
+      }
+    } else {
+      if (btn) btn.style.display = 'none';
+      if (hint) hint.style.display = 'none';
+      if (paypalWrap) paypalWrap.style.display = '';
+      // Currency-conversion note (when display ccy differs from charge ccy)
+      const note = (window.LogramoCurrency && LogramoCurrency.checkoutNote) ? LogramoCurrency.checkoutNote(p.price) : '';
+      if (paypalNote) {
+        if (note) { paypalNote.textContent = note; paypalNote.style.display = ''; }
+        else { paypalNote.style.display = 'none'; }
+      }
+      // Render PayPal buttons (handles its own loading state)
+      renderPayPalButtons(p);
     }
     showModal('popup-freebie-dl');
   }
@@ -485,18 +619,20 @@ if (currentLink) {
     openFreebieFor(id);
   });
 
-  // Close handlers (X button or backdrop)
+  // Close handlers (X button or backdrop) — also stop any cover carousel
   document.addEventListener('click', function (e) {
     const overlay = document.getElementById('popup-freebie-dl');
     if (!overlay || !overlay.classList.contains('open')) return;
     if (e.target.matches('[data-close-popup]') || e.target.closest('[data-close-popup]')) {
+      stopCoverCarousel();
       hideModal('popup-freebie-dl');
     } else if (e.target === overlay) {
+      stopCoverCarousel();
       hideModal('popup-freebie-dl');
     }
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') hideModal('popup-freebie-dl');
+    if (e.key === 'Escape') { stopCoverCarousel(); hideModal('popup-freebie-dl'); }
   });
 
   // If we just came back from cuenta.html with ?download=<id>, auto-open + download
