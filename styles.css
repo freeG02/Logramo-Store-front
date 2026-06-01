@@ -3221,13 +3221,19 @@ h1, h2, h3, h4,
 .review-card__stars svg { width: 20px; height: 20px; }
 
 /* ============ FREEBIE DOWNLOAD MODAL ============ */
-.popup--freebie { max-width: 760px; padding: 0; overflow: hidden; }
+/* Cap the popup height and scroll the body side internally so the PayPal
+   card form (when expanded) doesn't blow the popup out of the viewport. */
+.popup--freebie { max-width: 760px; padding: 0; overflow: hidden; max-height: 88vh; }
 .freebie-modal__grid {
   display: grid;
   grid-template-columns: 280px 1fr;
+  max-height: 88vh;
 }
+.freebie-modal__body { overflow-y: auto; max-height: 88vh; -webkit-overflow-scrolling: touch; }
 @media (max-width: 660px) {
-  .freebie-modal__grid { grid-template-columns: 1fr; }
+  .freebie-modal__grid { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .freebie-modal__cover { max-height: 36vh; }
+  .freebie-modal__body { max-height: none; min-height: 0; }
 }
 .freebie-modal__cover {
   background: var(--c-sky);
