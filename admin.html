@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Panel · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260709" />
+  <link rel="stylesheet" href="styles.css?v=20260710" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -464,12 +464,14 @@
               <div class="field"><label>Extra images (gallery — inside views)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
               <div class="field"><label>PDF file (product download)</label><input type="file" accept="application/pdf" id="p-pdf-file" /><div id="p-pdf-info" class="muted" style="margin-top:8px"></div></div>
 
-              <h3 class="editor-sub">Product page</h3>
-              <p class="panel__hint" style="margin-top:-6px">These build the long product page. Leave a section empty to hide it.</p>
-              <div class="field"><label>“El problema” — the pains</label><div class="repeater" id="repProblems"></div></div>
-              <div class="field"><label>“La solución” — how the guide helps</label><div class="repeater" id="repSolutions"></div></div>
-              <div class="field"><label>Contenido — modules</label><div class="repeater" id="repModules"></div></div>
-              <div class="field"><label>“¿Para quién es?” cards</label><div class="repeater" id="repAudience"></div></div>
+              <details class="legacy-fields" style="margin-top:18px">
+                <summary style="cursor:pointer;font-family:var(--font-display);font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--c-text-muted);padding:8px 0">Legacy long-page fields (not shown on the site)</summary>
+                <p class="panel__hint" style="margin:6px 0 10px">These used to power the full product page. The site now uses the unified popup, so these fields are hidden by default — data is preserved here in case you want to revive them later.</p>
+                <div class="field"><label>“El problema” — the pains</label><div class="repeater" id="repProblems"></div></div>
+                <div class="field"><label>“La solución” — how the guide helps</label><div class="repeater" id="repSolutions"></div></div>
+                <div class="field"><label>Contenido — modules</label><div class="repeater" id="repModules"></div></div>
+                <div class="field"><label>“¿Para quién es?” cards</label><div class="repeater" id="repAudience"></div></div>
+              </details>
 
               <input type="hidden" id="p-color" value="sky" />
               <input type="hidden" id="p-cover-image" value="" />
@@ -699,7 +701,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260708"></script>
+<script src="partials.js?v=20260710"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';

@@ -453,7 +453,10 @@ document.querySelectorAll('[data-popup]').forEach(btn => {
   });
 });
 document.querySelectorAll('.popup-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.classList.remove('open'); syncScrollLock(); } });
+  // The product/freebie modal must NOT close on backdrop click — only the X button.
+  if (overlay.id !== 'popup-freebie-dl') {
+    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.classList.remove('open'); syncScrollLock(); } });
+  }
   overlay.querySelectorAll('[data-close-popup], .popup__close').forEach(b => {
     b.addEventListener('click', () => { overlay.classList.remove('open'); syncScrollLock(); });
   });

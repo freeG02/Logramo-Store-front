@@ -3,496 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Guías digitales para criar un perro feliz — fáciles de leer y de verdad útiles." />
-  <title>Producto — Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260709" />
+  <meta name="description" id="prMetaDesc" content="Guía digital de Logramo." />
+  <title id="prDocTitle">Cargando… — Logramo</title>
+  <link rel="stylesheet" href="styles.css?v=20260710" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="biblioteca">
 
 <div id="partial-nav"></div>
 
-<!-- ============ BREADCRUMB ============ -->
-<div class="container" style="padding-top: 32px">
-  <nav class="breadcrumb">
-    <a href="index.html">Inicio</a><span>/</span>
-    <a href="biblioteca.html">Biblioteca</a><span>/</span>
-    <span id="bcTitle">Producto</span>
-  </nav>
-</div>
-
-<!-- ============ PRODUCT HERO ============ -->
-<section class="product-hero">
+<!-- Backdrop while the product modal opens on top. Mirrors biblioteca's hero so
+     the shared URL feels intentional and offers a way back to the library. -->
+<section class="library-hero">
   <div class="container">
-    <div class="product-hero__inner">
-      <div data-reveal>
-        <div id="phBadge"></div>
-        <h1 class="product-hero__title" id="phTitle">Cargando…</h1>
-        <p class="product-hero__desc" id="phDesc"></p>
-        <div class="product-hero__price-row" id="phPriceRow"></div>
-        <div class="product-hero__trust" style="margin-bottom:36px">
-          <div class="trust-item"><span class="emoji-icon">✅</span> Acceso inmediato</div>
-          <div class="trust-item"><span class="emoji-icon">🛡️</span> Garantía 30 días</div>
-          <div class="trust-item"><span class="emoji-icon">⏰</span> Acceso de por vida</div>
-        </div>
-        <div class="product-hero__ctas" id="phCtas"></div>
-      </div>
-      <div id="productMedia" data-reveal="scale"></div>
+    <span class="eyebrow" data-reveal>Biblioteca</span>
+    <h1 data-reveal id="prHeroTitle">Abriendo este libro…</h1>
+    <p class="lead" data-reveal id="prHeroDesc">Te lo mostramos en un segundo 🐾</p>
+    <div data-reveal style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="biblioteca.html" class="btn btn--primary btn--lg">Ver toda la biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+      <a href="index.html" class="btn btn--cream btn--lg">Inicio</a>
     </div>
   </div>
 </section>
-
-<!-- ============ PROBLEM / SOLUTION ============ -->
-<section class="problem-solution" data-reveal id="secProblemSolution" style="display:none">
-  <div class="problem-solution__head">
-    <span class="eyebrow">¿Te suena esto?</span>
-    <h2>Si tienes un perro, esto te va a sonar mucho 😅</h2>
-  </div>
-  <div class="problem-solution__grid">
-    <div class="problems-col">
-      <h3>El problema</h3>
-      <div class="problems-list" data-stagger id="psProblems"></div>
-    </div>
-    <div class="solutions-col">
-      <h3>La solución</h3>
-      <div class="solutions-list" data-stagger id="psSolutions"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ WHAT'S INSIDE ============ -->
-<section class="modules-section" id="contenido" style="display:none">
-  <div class="container">
-    <div class="modules-section__head" data-reveal>
-      <span class="eyebrow">Contenido</span>
-      <h2>¿Qué incluye?</h2>
-      <p class="lead" style="margin-top:16px">Todo lo que necesitas, en el orden en que lo necesitas 🐾 Paso a paso, sin saltos.</p>
-    </div>
-    <div class="modules-grid" data-stagger data-stack-mobile id="modulesGrid"></div>
-  </div>
-</section>
-
-<!-- ============ WHO IT'S FOR ============ -->
-<section class="for-section" style="background: var(--c-cream-alt);display:none" id="secAudience">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:56px" data-reveal>
-      <span class="eyebrow">¿Para quién es?</span>
-      <h2 style="margin-top:8px">Esta guía es para ti si…</h2>
-    </div>
-    <div class="for-grid" data-stagger data-stack-mobile id="audienceGrid"></div>
-  </div>
-</section>
-
-<!-- ============ REVIEWS (estáticas por ahora) ============ -->
-<section class="reviews">
-  <div class="container">
-    <div class="reviews__head" data-reveal>
-      <span class="eyebrow">Lo que dicen los lectores</span>
-      <div class="reviews__stars">
-        <span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span>
-      </div>
-      <h2 style="margin-bottom:16px">+340 valoraciones reales</h2>
-      <p class="reviews__avg"><strong>4.9</strong> de media</p>
-    </div>
-    <div class="reviews-grid" data-stagger data-h-drag id="prodReviews">
-      <div class="review-card review-card--terra">
-        <div class="review-card__stars"><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span></div>
-        <p class="review-card__quote">"Tres semanas sin dormir. En cuatro días siguiendo el plan, silencio. Lloré de alivio."</p>
-        <div class="review-card__author"><div class="review-card__avatar"><img src="https://i.pravatar.cc/100?img=47" alt=""></div><div><div class="review-card__name">María L.</div><div class="review-card__loc">Madrid · Border collie</div></div></div>
-      </div>
-      <div class="review-card review-card--peach">
-        <div class="review-card__stars"><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span></div>
-        <p class="review-card__quote">"Pensé que mi perro tenía un problema. Era yo. Me lo explicaron sin hacerme sentir mal."</p>
-        <div class="review-card__author"><div class="review-card__avatar">JG</div><div><div class="review-card__name">Javier G.</div><div class="review-card__loc">Barcelona · Labrador</div></div></div>
-      </div>
-      <div class="review-card review-card--golden">
-        <div class="review-card__stars"><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span><span class="emoji-icon">⭐</span></div>
-        <p class="review-card__quote">"$30 bien invertidos. Camina sin tirar, duerme de noche, no ladra a todo. En serio."</p>
-        <div class="review-card__author"><div class="review-card__avatar"><img src="https://i.pravatar.cc/100?img=32" alt=""></div><div><div class="review-card__name">Ana S.</div><div class="review-card__loc">Valencia · Mestizo</div></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section class="faq-section" style="background: var(--c-cream-alt)">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:48px" data-reveal>
-      <span class="eyebrow">Preguntas frecuentes</span>
-      <h2 style="margin-top:8px">Lo que nos suelen preguntar</h2>
-    </div>
-    <div class="faq-list" data-stagger>
-      <details class="faq-item"><summary>¿Es libro físico o digital?</summary><p>100% digital. Al comprar recibes acceso inmediato a un PDF que puedes leer en móvil, tablet u ordenador. Acceso al instante.</p></details>
-      <details class="faq-item"><summary>¿Sirve para perros adultos también?</summary><p>Sí. Aunque hay secciones específicas para cachorros, la mayor parte del contenido — educación, conducta, vínculo — aplica a cualquier edad.</p></details>
-      <details class="faq-item"><summary>¿Cuánto tiempo hay que dedicarle al día?</summary><p>Con 10-15 minutos diarios es suficiente para ver resultados. Está pensada para gente con vida real, no para entrenadores profesionales.</p></details>
-      <details class="faq-item"><summary>¿Y si no funciona para mi perro?</summary><p>Tienes 30 días de garantía de devolución sin preguntas. Si no te ayuda, te devolvemos el dinero al momento. Sin dramas.</p></details>
-      <details class="faq-item"><summary>¿Cuánto tiempo tengo acceso?</summary><p>Acceso de por vida 🐶 Y todas las actualizaciones futuras también, sin coste adicional. Una vez, para siempre.</p></details>
-    </div>
-  </div>
-</section>
-
-<!-- ============ RELATED BOOKS ============ -->
-<section class="related-books" id="secRelated" style="display:none">
-  <div class="container">
-    <div class="related-books__head" data-reveal>
-      <span class="eyebrow">Sigue explorando</span>
-      <h2 style="margin-top:8px">Libros relacionados</h2>
-      <p class="lead" style="margin-top:12px">Otros libros y guías que podrían interesarte.</p>
-    </div>
-    <div class="library-grid" data-stagger data-h-drag id="relatedGrid"></div>
-    <div style="text-align:center;margin-top:48px">
-      <a href="biblioteca.html" class="btn btn--cream btn--lg">Ver biblioteca completa <svg class="icon"><use href="#i-arrow-right"/></svg></a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ STICKY CTA ============ -->
-<div class="product-cta-sticky" id="stickyCta">
-  <div class="container product-cta-sticky__inner">
-    <div class="product-cta-sticky__info">
-      <h4 id="stickyTitle">Producto</h4>
-      <div class="product-cta-sticky__price" id="stickyPrice"></div>
-    </div>
-    <button class="btn btn--primary btn--lg js-buy"><svg class="icon"><use href="#i-cart"/></svg> <span class="js-buy-label">Comprar ahora</span></button>
-  </div>
-</div>
-
-<!-- Image lightbox -->
-<div class="lightbox" id="imgLightbox" aria-hidden="true">
-  <button type="button" class="lightbox__close" id="lbClose" aria-label="Cerrar">✕</button>
-  <button type="button" class="lightbox__nav lightbox__nav--prev" id="lbPrev" aria-label="Anterior">‹</button>
-  <button type="button" class="lightbox__nav lightbox__nav--next" id="lbNext" aria-label="Siguiente">›</button>
-  <img id="lbImg" alt="">
-  <div class="lightbox__count" id="lbCount"></div>
-</div>
 
 <div id="partial-footer"></div>
 <div id="partial-cart"></div>
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260708"></script>
+<script src="partials.js?v=20260710"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=20260704"></script>
+<script src="script.js?v=20260710"></script>
 <script src="animations.js?v=20260623"></script>
-
 <script>
-/* ============ PRODUCTO — live from Supabase by ?id ============ */
-(function(){
-  var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
-  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function asList(v){ if(Array.isArray(v))return v; if(typeof v==='string'){ try{var j=JSON.parse(v); return Array.isArray(j)?j:[];}catch(e){return [];} } return []; }
-  function money(n){ return window.LogramoCurrency ? LogramoCurrency.format(n) : '$'+Number(n||0).toFixed(2); }
-  var TAG_PRIORITY=['bestseller','caliente','nuevo','popular','recomendado','gratis'];
-  var TAG_LABEL={gratis:'Gratis',caliente:'Caliente',nuevo:'Nuevo',popular:'Popular',recomendado:'Recomendado',bestseller:'Más vendido'};
-  function isNew(p){return p.created_at && (Date.now()-new Date(p.created_at).getTime())<30*864e5;}
-  function allTags(p){ var t=(p.tags||[]).slice(); if(p.is_free&&t.indexOf('gratis')===-1)t.unshift('gratis'); if(isNew(p)&&t.indexOf('nuevo')===-1)t.push('nuevo'); return t; }
-  function topTag(p){ var t=allTags(p); for(var i=0;i<TAG_PRIORITY.length;i++){ if(t.indexOf(TAG_PRIORITY[i])>-1) return TAG_PRIORITY[i]; } return t[0]||null; }
-
-  async function downloadPdf(url, filename){
-    if(!url){alert('Este producto aún no tiene archivo para descargar.');return;}
-    var nameGuess=(filename||'logramo.pdf').replace(/[^a-z0-9\-_. áéíóúñÁÉÍÓÚÑ]/gi,'').trim()||'logramo.pdf';
-    if(!/\.pdf$/i.test(nameGuess)) nameGuess+='.pdf';
-    try{
-      var res=await fetch(url,{mode:'cors'});
-      if(!res.ok) throw new Error('fetch failed');
-      var blob=await res.blob();
-      var blobUrl=URL.createObjectURL(blob);
-      var a=document.createElement('a'); a.href=blobUrl; a.download=nameGuess; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function(){URL.revokeObjectURL(blobUrl);},2000);
-    }catch(e){
-      var a=document.createElement('a'); a.href=url; a.download=nameGuess; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove();
-    }
+/* Auto-open the product modal from ?id=…
+   producto.html is now a thin shell that exists only to preserve old shared
+   URLs (SEO, WhatsApp, Google) — the actual product experience is the modal.
+   The hero behind invites the visitor to browse the library if they close it. */
+(function () {
+  var id = (new URLSearchParams(location.search)).get('id');
+  if (!id) { location.replace('biblioteca.html'); return; }
+  function ready(cb) {
+    if (typeof window.openFreebieFor === 'function') cb();
+    else setTimeout(function () { ready(cb); }, 50);
   }
-  function buyAction(p){
-    if(p.is_free){ downloadPdf(p.pdf_url, p.title); return; }
-    var el=document.getElementById('paypal-button-container')||document.getElementById('phCtas');
-    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
-  }
-  /* PayPal: load client_id from site_settings, inject SDK, render Smart Buttons */
-  async function paypalConfig(){
-    var out={client_id:'',env:'sandbox'};
-    try{ var r1=await sb.from('site_settings').select('value').eq('key','paypal_client_id').maybeSingle(); if(r1&&r1.data) out.client_id=r1.data.value||''; }catch(e){}
-    try{ var r2=await sb.from('site_settings').select('value').eq('key','paypal_env').maybeSingle(); if(r2&&r2.data) out.env=r2.data.value||'sandbox'; }catch(e){}
-    return out;
-  }
-  function loadPayPalSDK(client_id){
-    return new Promise(function(resolve,reject){
-      if(window.paypal){ resolve(); return; }
-      var s=document.createElement('script');
-      var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-      s.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(client_id)+'&currency='+encodeURIComponent(ccy)+'&intent=capture&enable-funding=card,paylater&components=buttons';
-      s.onload=resolve; s.onerror=function(){ reject(new Error('sdk load failed')); };
-      document.head.appendChild(s);
-    });
-  }
-  async function renderPayPalButtons(p){
-    var mount=document.getElementById('paypal-button-container'); if(!mount) return;
-    var cfg=await paypalConfig();
-    if(!cfg.client_id){ mount.innerHTML='<p class="muted" style="text-align:center;padding:14px 16px;background:var(--c-cream-alt);border:var(--bw-1) solid var(--c-ink);border-radius:var(--radius-md)">El checkout estará disponible pronto.</p>'; return; }
-    try{ await loadPayPalSDK(cfg.client_id); }catch(e){ mount.innerHTML='<p class="muted">No se pudo cargar PayPal.</p>'; return; }
-    if(!window.paypal||!window.paypal.Buttons){ mount.innerHTML='<p class="muted">PayPal SDK error.</p>'; return; }
-    mount.innerHTML='';
-    var commonHandlers={
-      createOrder:function(data,actions){
-        var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-        var amount = (window.LogramoCurrency ? LogramoCurrency.checkoutAmount(p.price) : Number(p.price||0).toFixed(2));
-        return actions.order.create({
-          purchase_units:[{ amount:{ value:amount, currency_code:ccy }, description:(p.title||'Producto Logramo').slice(0,127) }]
-        });
-      },
-      onApprove:function(data,actions){
-        mount.insertAdjacentHTML('beforeend','<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
-        return actions.order.capture().then(async function(details){
-          /* Record the purchase so every email flow knows who bought what.
-             Failures here MUST NOT block the buyer from getting their PDF —
-             we still redirect to gracias.html either way. */
-          try{
-            var payer = (details && details.payer) || {};
-            var unit  = (details && details.purchase_units && details.purchase_units[0]) || {};
-            var amt   = (unit && unit.amount) || {};
-            var name  = [(payer.name && payer.name.given_name)||'', (payer.name && payer.name.surname)||''].filter(Boolean).join(' ').trim();
-            await sb.from('purchases').insert({
-              email:           payer.email_address || '',
-              payer_name:      name || null,
-              product_id:      p.id,
-              amount:          Number(amt.value || p.price || 0),
-              currency:        amt.currency_code || 'USD',
-              paypal_order_id: (details && details.id) || (data && data.orderID) || null,
-              status:          'completed'
-            });
-          }catch(e){ /* swallow — buyer still gets the PDF below */ }
-          window.location.href='gracias.html?id='+encodeURIComponent(p.id)+'&order='+encodeURIComponent(details.id||'');
-        });
-      },
-      onError:function(err){ alert('Error en el pago: '+(err&&err.message?err.message:err)); }
-    };
-    var FUNDING=window.paypal.FUNDING||{};
-    // 1) Debit/Credit card on top
-    if(FUNDING.CARD){
-      window.paypal.Buttons(Object.assign({}, commonHandlers, {
-        fundingSource:FUNDING.CARD,
-        style:{ shape:'rect', color:'black', label:'pay', height:48 }
-      })).render(mount);
-    }
-    // 2) PayPal underneath
-    if(FUNDING.PAYPAL){
-      window.paypal.Buttons(Object.assign({}, commonHandlers, {
-        fundingSource:FUNDING.PAYPAL,
-        style:{ shape:'rect', color:'gold', label:'paypal', height:48 }
-      })).render(mount);
-    }
-  }
-
-  function renderHero(p){
-    document.getElementById('bcTitle').textContent=p.title||'Producto';
-    document.title=(p.title||'Producto')+' — Logramo';
-    var tt=topTag(p);
-    document.getElementById('phBadge').innerHTML = tt ? '<span class="tag tag--golden" style="margin-bottom:20px"><span class="emoji-icon">🔥</span> '+esc(TAG_LABEL[tt]||tt)+'</span>' : '';
-    document.getElementById('phTitle').textContent=p.title||'';
-    document.getElementById('phDesc').textContent=p.description||'';
-    var price=p.is_free?'<span class="product-hero__price">Gratis</span>':'<span class="product-hero__price">'+money(p.price)+'</span>';
-    var orig = (!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)) ? '<span class="product-hero__original">'+money(p.original_price)+'</span>' : '';
-    var disc='';
-    if(!p.is_free && p.original_price && Number(p.original_price)>Number(p.price)){ var pct=Math.round((1-Number(p.price)/Number(p.original_price))*100); disc='<span class="tag tag--terra"><span class="emoji-icon">🔥</span> '+pct+'% off</span>'; }
-    document.getElementById('phPriceRow').innerHTML=price+orig+disc;
-    var label=p.is_free?'Descargar gratis':'Comprar ahora';
-    var icon=p.is_free?'i-pdf':'i-cart';
-    if(p.is_free){
-      document.getElementById('phCtas').innerHTML='<button class="btn btn--primary btn--lg js-buy"><svg class="icon"><use href="#'+icon+'"/></svg> <span class="js-buy-label">'+label+'</span></button>';
-    } else {
-      var ppNote = (window.LogramoCurrency && LogramoCurrency.checkoutNote) ? LogramoCurrency.checkoutNote(p.price) : '';
-      var ppNoteHtml = ppNote ? '<p class="paypal-wrap__note">'+esc(ppNote)+'</p>' : '';
-      document.getElementById('phCtas').innerHTML='<div class="paypal-wrap"><div class="paypal-wrap__head"><span class="emoji-icon">🛡️</span> <span>Pago seguro · Tarjeta o PayPal</span></div><div id="paypal-button-container"></div>'+ppNoteHtml+'</div>';
-    }
-    // sticky
-    document.getElementById('stickyTitle').textContent=p.title||'';
-    document.getElementById('stickyPrice').innerHTML = p.is_free ? 'Gratis' : money(p.price)+(orig?' <span style="font-size:.85rem;color:var(--c-text-muted);text-decoration:line-through;font-weight:500">'+money(p.original_price)+'</span>':'');
-    document.querySelectorAll('.js-buy-label').forEach(function(el){ el.textContent=label; });
-    document.querySelectorAll('.js-buy').forEach(function(b){ b.addEventListener('click',function(){ buyAction(p); }); });
-  }
-
-  /* ===== Image lightbox ===== */
-  var LB_IMGS=[], LB_IDX=0;
-  function lbRender(){
-    var img=document.getElementById('lbImg'); var count=document.getElementById('lbCount');
-    if(!LB_IMGS.length || !img) return;
-    LB_IDX=((LB_IDX%LB_IMGS.length)+LB_IMGS.length)%LB_IMGS.length;
-    img.src=LB_IMGS[LB_IDX]; img.alt='';
-    if(count) count.textContent=(LB_IDX+1)+' / '+LB_IMGS.length;
-    var prev=document.getElementById('lbPrev'), next=document.getElementById('lbNext');
-    if(prev) prev.style.display=LB_IMGS.length>1?'flex':'none';
-    if(next) next.style.display=LB_IMGS.length>1?'flex':'none';
-  }
-  function openLightbox(imgs, idx){
-    LB_IMGS=(imgs||[]).slice(); LB_IDX=idx||0;
-    var box=document.getElementById('imgLightbox'); if(!box) return;
-    lbRender(); box.classList.add('is-open'); box.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-  }
-  function closeLightbox(){
-    var box=document.getElementById('imgLightbox'); if(!box) return;
-    box.classList.remove('is-open'); box.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
-  }
-  (function setupLightbox(){
-    var box=document.getElementById('imgLightbox'); if(!box) return;
-    document.getElementById('lbClose').addEventListener('click',closeLightbox);
-    document.getElementById('lbPrev').addEventListener('click',function(){LB_IDX--;lbRender();});
-    document.getElementById('lbNext').addEventListener('click',function(){LB_IDX++;lbRender();});
-    box.addEventListener('click',function(e){ if(e.target===box) closeLightbox(); });
-    document.addEventListener('keydown',function(e){
-      if(!box.classList.contains('is-open')) return;
-      if(e.key==='Escape') closeLightbox();
-      else if(e.key==='ArrowLeft'){ LB_IDX--; lbRender(); }
-      else if(e.key==='ArrowRight'){ LB_IDX++; lbRender(); }
-    });
-  })();
-
-  function renderMedia(p){
-    var el=document.getElementById('productMedia');
-    // Remove the reveal hook so the gallery is always visible after JS render
-    el.removeAttribute('data-reveal');
-    el.style.opacity=''; el.style.transform=''; el.style.transition='';
-    var imgs=asList(p.images).filter(Boolean);
-    if(p.cover_image && imgs.indexOf(p.cover_image)===-1) imgs.unshift(p.cover_image);
-    imgs=imgs.slice(0,3); // exactly up to 3
-    if(imgs.length){
-      el.className='product-grid in';
-      function tile(src, idx, big){
-        return '<button type="button" class="product-grid__tile'+(big?' product-grid__tile--main':'')+'" data-idx="'+idx+'"><div class="product-grid__paper"><img src="'+esc(src)+'" alt="'+esc(p.title)+'" loading="lazy"></div></button>';
-      }
-      var html='';
-      html += tile(imgs[0], 0, true);
-      html += imgs[1] ? tile(imgs[1], 1, false) : '<div class="product-grid__tile product-grid__tile--ghost"></div>';
-      html += imgs[2] ? tile(imgs[2], 2, false) : '<div class="product-grid__tile product-grid__tile--ghost"></div>';
-      el.innerHTML=html;
-      // Wire lightbox open on click
-      el.querySelectorAll('[data-idx]').forEach(function(b){
-        b.addEventListener('click', function(){ openLightbox(imgs, parseInt(b.dataset.idx,10)||0); });
+  ready(async function () {
+    var p = null;
+    try {
+      var SB_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co';
+      var SB_KEY = 'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
+      var r = await fetch(SB_URL + '/rest/v1/products?id=eq.' + encodeURIComponent(id) + '&select=*', {
+        headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
       });
-    } else {
-      el.className='product-cover in';
-      var heroSlot = p.cover_image
-        ? '<div class="cover-image-slot cover-image-slot--hero"><img src="'+esc(p.cover_image)+'" alt=""></div>'
-        : '<div style="display:flex;justify-content:center;margin-bottom:24px">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji cover-emoji--xl">'+esc(p.cover_icon)+'</span>'):('<svg width="64" height="64" style="color:var(--c-golden)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div>';
-      el.innerHTML='<div class="product-cover__book'+(p.cover_image?' product-cover__book--image':'')+'" style="background:var(--c-'+(p.cover_color||'terracotta')+')">'
-        +'<div class="product-cover__badge"><span class="emoji-icon">⭐</span> Guía Digital · PDF</div>'
-        +heroSlot
-        + (p.cover_image ? '' :
-            '<div class="product-cover__title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div>'
-            +'<p class="product-cover__sub">'+esc(p.cover_sub||'Guía digital en PDF.')+'</p>')
-        +'<div class="product-cover__price">'+(p.is_free?'Gratis':money(p.price))+((!p.is_free&&p.original_price&&Number(p.original_price)>Number(p.price))?' <span>'+money(p.original_price)+'</span>':'')+'</div>'
-        +'<div class="product-cover__note">'+(p.is_free?'Descarga gratuita':'Pago único')+'</div>'
-      +'</div>';
-    }
-  }
-
-  function renderProblemsSolutions(p){
-    var probs=asList(p.problems), sols=asList(p.solutions);
-    if(!probs.length && !sols.length) return;
-    document.getElementById('secProblemSolution').style.display='';
-    document.getElementById('psProblems').innerHTML=probs.map(function(it){
-      return '<div class="problem-item"><div class="problem-item__icon"><svg class="icon"><use href="#'+(it.icon||'i-flame')+'"/></svg></div><div class="problem-item__text"><strong>'+esc(it.title)+'</strong>'+esc(it.text)+'</div></div>';
-    }).join('');
-    document.getElementById('psSolutions').innerHTML=sols.map(function(it){
-      return '<div class="solution-item"><div class="solution-item__icon"><svg class="icon"><use href="#'+(it.icon||'i-check-circle')+'"/></svg></div><div class="solution-item__text"><strong>'+esc(it.title)+'</strong>'+esc(it.text)+'</div></div>';
-    }).join('');
-  }
-
-  function renderModules(p){
-    var mods=asList(p.modules);
-    if(!mods.length) return;
-    document.getElementById('contenido').style.display='';
-    document.getElementById('modulesGrid').innerHTML=mods.map(function(m,i){
-      var n=String(i+1); if(n.length<2)n='0'+n;
-      return '<div class="module-card module-card--'+((i%6)+1)+'"><div class="module-card__num">MÓDULO '+n+'</div><h3 class="module-card__title">'+esc(m.title)+'</h3><p class="module-card__desc">'+esc(m.desc||m.description||'')+'</p></div>';
-    }).join('');
-  }
-
-  function renderAudience(p){
-    var aud=asList(p.audience);
-    if(!aud.length) return;
-    document.getElementById('secAudience').style.display='';
-    document.getElementById('audienceGrid').innerHTML=aud.map(function(a){
-      return '<div class="for-card"><div class="for-card__icon"><svg class="icon icon--lg"><use href="#'+(a.icon||'i-paw')+'"/></svg></div><h3 class="for-card__title">'+esc(a.title)+'</h3><p class="for-card__desc">'+esc(a.desc||a.description||'')+'</p></div>';
-    }).join('');
-  }
-
-  function relCard(p){
-    var price=p.is_free?'<span class="book-card__price book-card__price--free">Gratis</span>':'<span class="book-card__price">'+money(p.price)+'</span>';
-    var cta=p.is_free?'Descargar':'Ver libro';
-    var coverInner = p.cover_image
-      ? '<div class="book-card__cover book-card__cover--image"><div class="cover-image-slot"><img src="'+esc(p.cover_image)+'" alt=""></div></div>'
-      : '<div class="book-card__cover"><div class="book-card__cover-sub">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="book-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div class="cover-icon-slot">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji">'+esc(p.cover_icon)+'</span>'):('<svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div></div>';
-    return '<a href="#" data-freebie="'+esc(p.id)+'" class="book-card"><div class="book-card__cover-wrap book-card__cover-wrap--'+(p.cover_color||'sky')+'">'+coverInner+'</div><div class="book-card__body"><span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'')+'</h3><p class="book-card__desc">'+esc(p.description||'')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
-  }
-  async function renderRelated(p){
-    try{
-      var r=await sb.from('products').select('*').neq('id',p.id).limit(8);
-      if(r.error||!r.data) return;
-      var others=r.data.filter(function(x){return x.published!==false;});
-      var same=others.filter(function(x){return x.category===p.category;});
-      var pick=same.concat(others.filter(function(x){return same.indexOf(x)===-1;})).slice(0,3);
-      if(!pick.length) return;
-      document.getElementById('secRelated').style.display='';
-      document.getElementById('relatedGrid').innerHTML=pick.map(relCard).join('');
-    }catch(e){}
-  }
-
-  function initials(n){return String(n||'').trim().split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join('').toUpperCase()||'•';}
-  async function renderReviews(){
-    try{
-      var grid=document.getElementById('prodReviews'); if(!grid) return;
-      var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
-      if(r.error||!r.data||!r.data.length) return;
-      var skins=['terra','peach','golden','sky','sage','lavender'];
-      grid.innerHTML=r.data.map(function(rv,i){
-        var n=rv.rating||5, stars=''; for(var s=0;s<n;s++)stars+='<span class="emoji-icon">⭐</span>';
-        var av=rv.avatar?'<div class="review-card__avatar"><img src="'+esc(rv.avatar)+'" alt=""></div>':'<div class="review-card__avatar">'+esc(initials(rv.name))+'</div>';
-        var dogTag=rv.dog_name?'<span class="review-card__dog"><span class="emoji-icon">🐾</span> '+esc(rv.dog_name)+'</span>':'';
-        return '<div class="review-card review-card--'+skins[i%skins.length]+'"><div class="review-card__top"><div class="review-card__stars">'+stars+'</div>'+dogTag+'</div><p class="review-card__quote">"'+esc(rv.quote)+'"</p><div class="review-card__author">'+av+'<div><div class="review-card__name">'+esc(rv.name)+'</div><div class="review-card__loc">'+esc(rv.location||'')+'</div></div></div></div>';
-      }).join('');
-      if(window.refreshScrollAffordances) window.refreshScrollAffordances(grid);
-    }catch(e){}
-  }
-
-  function notFound(msg){
-    document.getElementById('phTitle').textContent='Producto no encontrado';
-    document.getElementById('phDesc').textContent=msg||'No pudimos encontrar este libro. Puede que ya no esté disponible.';
-    document.getElementById('phCtas').innerHTML='<a href="biblioteca.html" class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-arrow-right"/></svg> Ver la biblioteca</a>';
-    document.getElementById('productMedia').style.display='none';
-    var s=document.getElementById('stickyCta'); if(s)s.style.display='none';
-  }
-
-  (async function(){
-    var id=new URLSearchParams(location.search).get('id');
-    if(!id){ notFound('Falta el identificador del producto.'); return; }
-    var r;
-    try{ r=await sb.from('products').select('*').eq('id',id).single(); }catch(e){ notFound(); return; }
-    if(!r || r.error || !r.data || r.data.published===false){ notFound(); return; }
-    var p=r.data;
-    /* Render everything except prices + PayPal first */
-    renderHero(p);
-    renderMedia(p);
-    renderProblemsSolutions(p);
-    renderModules(p);
-    renderAudience(p);
-    renderRelated(p);
-    renderReviews();
-    /* Wait for currency to settle (instant if USD fallback) THEN load PayPal
-       so the SDK has the correct currency and the buttons render into the
-       live DOM mount (not one we're about to replace). */
-    function loadPriceDependent(){
-      renderHero(p);
-      renderRelated(p);
-      if(!p.is_free) renderPayPalButtons(p);
-    }
-    if(window.LogramoCurrency) LogramoCurrency.onReady(loadPriceDependent);
-    else loadPriceDependent();
-  })();
+      if (r.ok) { var arr = await r.json(); p = Array.isArray(arr) && arr[0]; }
+    } catch (e) {}
+    if (!p) { location.replace('biblioteca.html'); return; }
+    document.title = (p.title || 'Producto') + ' — Logramo';
+    var meta = document.getElementById('prMetaDesc'); if (meta) meta.setAttribute('content', p.description || ('Logramo · ' + p.title));
+    var ht = document.getElementById('prHeroTitle'); if (ht) ht.textContent = p.title || 'Producto';
+    var hd = document.getElementById('prHeroDesc'); if (hd) hd.textContent = p.description || 'Abre la guía para más detalles 🐾';
+    window.openFreebieModal(p);
+  });
 })();
 </script>
 </body>

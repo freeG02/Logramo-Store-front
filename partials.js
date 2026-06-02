@@ -231,6 +231,8 @@ const FREEBIE_HTML = `
         <h2 class="freebie-modal__title" id="freebieTitle">—</h2>
         <p class="freebie-modal__meta" id="freebieMeta"></p>
         <p class="freebie-modal__desc" id="freebieDesc">—</p>
+        <hr class="freebie-modal__sep" />
+        <div class="freebie-modal__price" id="freebiePrice" style="display:none"></div>
         <div class="freebie-modal__badges">
           <div class="trust-item"><span class="emoji-icon">✅</span> Acceso inmediato</div>
           <div class="trust-item"><span class="emoji-icon">⏰</span> Acceso de por vida</div>
@@ -404,23 +406,37 @@ if (currentLink) {
     const imgs = list.map(function (u, i) {
       return '<img class="cover-carousel__img' + (i === 0 ? ' is-active' : '') + '" src="' + u + '" alt="" />';
     }).join('');
-    const arrows = list.length > 1
-      ? '<button type="button" class="cover-carousel__arrow cover-carousel__arrow--prev" data-cc-prev aria-label="Anterior">‹</button>'
-      + '<button type="button" class="cover-carousel__arrow cover-carousel__arrow--next" data-cc-next aria-label="Siguiente">›</button>'
-      : '';
-    return '<div class="cover-image-slot cover-carousel" data-cover-carousel>' + imgs + arrows + '</div>';
+    // Controls row (arrows + dots) BELOW the image — only when >1 image
+    let controls = '';
+    if (list.length > 1) {
+      const dots = list.map(function (_, i) {
+        return '<button type="button" class="cover-carousel__dot' + (i === 0 ? ' is-active' : '') + '" data-cc-dot="' + i + '" aria-label="Ir a imagen ' + (i + 1) + '"></button>';
+      }).join('');
+      controls = '<div class="cover-carousel__controls">'
+        + '<button type="button" class="cover-carousel__arrow cover-carousel__arrow--prev" data-cc-prev aria-label="Anterior">‹</button>'
+        + '<div class="cover-carousel__dots">' + dots + '</div>'
+        + '<button type="button" class="cover-carousel__arrow cover-carousel__arrow--next" data-cc-next aria-label="Siguiente">›</button>'
+        + '</div>';
+    }
+    return '<div class="cover-carousel" data-cover-carousel>'
+      + '<div class="cover-image-slot cover-carousel__viewport">' + imgs + '</div>'
+      + controls
+      + '</div>';
   }
   function startCoverCarousel(root) {
     const car = root.querySelector('[data-cover-carousel]'); if (!car) return;
     const slides = Array.prototype.slice.call(car.querySelectorAll('.cover-carousel__img'));
+    const dots = Array.prototype.slice.call(car.querySelectorAll('.cover-carousel__dot'));
     if (slides.length < 2) return;
     let idx = 0;
     function go(n) {
       idx = (n + slides.length) % slides.length;
       slides.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
     }
-    car.querySelector('[data-cc-prev]').addEventListener('click', function () { go(idx - 1); restart(); });
-    car.querySelector('[data-cc-next]').addEventListener('click', function () { go(idx + 1); restart(); });
+    const prev = car.querySelector('[data-cc-prev]'); if (prev) prev.addEventListener('click', function () { go(idx - 1); restart(); });
+    const next = car.querySelector('[data-cc-next]'); if (next) next.addEventListener('click', function () { go(idx + 1); restart(); });
+    dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); restart(); }); });
     function restart() { stopCoverCarousel(); _coverCarouselTimer = setInterval(function () { go(idx + 1); }, 6000); }
     restart();
   }
@@ -509,14 +525,19 @@ if (currentLink) {
       (gallery || []).forEach(function (u) { if (u) imgList.push(u); });
       if (imgList.length) {
         cover.classList.add('freebie-modal__cover--image');
-        cover.innerHTML = buildCoverCarousel(imgList);
+        cover.innerHTML = '<div class="book-card__cover book-card__cover--image">' + buildCoverCarousel(imgList) + '</div>';
         startCoverCarousel(cover);
       } else {
         cover.classList.remove('freebie-modal__cover--image');
+        const iconHtml = (p.cover_icon && !/^i-/.test(p.cover_icon))
+          ? '<span class="cover-emoji">' + p.cover_icon + '</span>'
+          : '<svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>';
         cover.innerHTML =
-          '<div class="freebie-modal__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>' +
-          '<div class="freebie-modal__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>' +
-          ((p.cover_icon && !/^i-/.test(p.cover_icon)) ? '<span class="freebie-modal__cover-icon cover-emoji cover-emoji--lg">' + p.cover_icon + '</span>' : '<svg class="freebie-modal__cover-icon" width="40" height="40"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>');
+          '<div class="book-card__cover">'
+            + '<div class="book-card__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>'
+            + '<div class="book-card__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>'
+            + '<div class="cover-icon-slot">' + iconHtml + '</div>'
+          + '</div>';
       }
     }
     // ---------- Body side ----------
@@ -526,10 +547,16 @@ if (currentLink) {
     const eyebrow = document.getElementById('freebieEyebrow');
     if (tEl) tEl.textContent = p.title || (p.is_free ? 'Tu guía gratuita' : 'Tu guía');
     if (dEl) dEl.textContent = p.description || '';
-    // Eyebrow: "Gratis" for free, formatted price for paid
+    // Eyebrow: "Gratis" for free; hidden for paid (price now shown below description, in bold)
     if (eyebrow) {
-      if (p.is_free) eyebrow.textContent = 'Gratis';
-      else eyebrow.textContent = (window.LogramoCurrency ? LogramoCurrency.format(p.price) : '$' + Number(p.price || 0).toFixed(2));
+      if (p.is_free) { eyebrow.textContent = 'Gratis'; eyebrow.style.display = ''; }
+      else { eyebrow.textContent = ''; eyebrow.style.display = 'none'; }
+    }
+    // Price under the description separator — bold for paid; hidden for free
+    const priceEl = document.getElementById('freebiePrice');
+    if (priceEl) {
+      if (p.is_free) { priceEl.textContent = ''; priceEl.style.display = 'none'; }
+      else { priceEl.textContent = (window.LogramoCurrency ? LogramoCurrency.format(p.price) : '$' + Number(p.price || 0).toFixed(2)); priceEl.style.display = ''; }
     }
     if (mEl) mEl.textContent = p.is_free ? 'PDF · Descarga inmediata' : 'PDF · Acceso al instante';
     // ---------- Actions: free → download; paid → PayPal ----------
@@ -619,20 +646,15 @@ if (currentLink) {
     openFreebieFor(id);
   });
 
-  // Close handlers (X button or backdrop) — also stop any cover carousel
+  // Close only via the X button — backdrop click & Escape are ignored on purpose
+  // so the buyer doesn't lose their checkout state accidentally.
   document.addEventListener('click', function (e) {
     const overlay = document.getElementById('popup-freebie-dl');
     if (!overlay || !overlay.classList.contains('open')) return;
     if (e.target.matches('[data-close-popup]') || e.target.closest('[data-close-popup]')) {
       stopCoverCarousel();
       hideModal('popup-freebie-dl');
-    } else if (e.target === overlay) {
-      stopCoverCarousel();
-      hideModal('popup-freebie-dl');
     }
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { stopCoverCarousel(); hideModal('popup-freebie-dl'); }
   });
 
   // If we just came back from cuenta.html with ?download=<id>, auto-open + download
