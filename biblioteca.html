@@ -102,20 +102,20 @@
   @media(max-width:760px){
     .fc-card { grid-template-columns:1fr; }
     .fc-card__cover-wrap{ order:-1; min-height:300px; padding:40px 36px; }
-    .fc-card__details{ order:1; padding:32px 28px 36px; text-align:center; align-items:center; }
-    .fc-card__desc, .fc-cover-sub { display:none; }
-    .fc-badge { align-self:center; }
-    .fc-price-row { justify-content:center; }
-    /* "Ver detalles" becomes a plain text link; "Comprar" stays a big button */
+    /* Mobile destacados: cover on top, then below it just tag + category + price + CTA.
+       Title and long description are hidden — title lives on the cover image already. */
+    .fc-card__details { order:1; padding:24px 28px 32px; text-align:center; align-items:center; display:flex; flex-direction:column; gap:8px; }
+    .fc-card__details .fc-card__title,
+    .fc-card__details .fc-card__desc { display:none; }
+    .fc-card__details .fc-badge { align-self:center; margin-bottom:4px; }
+    .fc-card__details .book-card__category { color:var(--c-cream); opacity:.7; }
+    .fc-price-row { justify-content:center; margin:6px 0 12px; }
     .fc-cta-row { align-items:center; justify-content:center; gap:18px; }
-    .fc-btn-primary {
-      background:transparent !important; border:none !important; box-shadow:none !important;
-      padding:6px 2px !important; min-height:0 !important;
-      text-decoration:underline; text-underline-offset:4px;
-    }
-    .fc-btn-primary:hover { transform:none !important; box-shadow:none !important; }
-    .fc-card--1 .fc-btn-primary { color:var(--c-golden) !important; }
-    .fc-card--2 .fc-btn-primary { color:var(--c-sky) !important; }
+  }
+  /* Mobile library cards (the regular grid below destacados): keep the category
+     tag + title + price + CTA, hide only the long description. */
+  @media (max-width: 720px) {
+    #libDynamic .book-card__desc { display: none; }
   }
 </style>
 
@@ -204,7 +204,7 @@ window.initFcCarousel = function(){
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260710"></script>
+<script src="partials.js?v=20260711"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -515,6 +515,15 @@ if (currentLink) {
   function openFreebieModal(p) {
     if (!p) return;
     stopCoverCarousel();
+    // Sync the address bar to producto.html?id=… so the visitor can copy it.
+    // Skipped when we're already on that URL (e.g. producto.html shell auto-opened the modal).
+    try {
+      var currentPath = location.pathname.split('/').pop() || 'index.html';
+      var currentId = new URLSearchParams(location.search).get('id');
+      if (currentPath !== 'producto.html' || currentId !== p.id) {
+        history.pushState({ logramoModal: true, productId: p.id }, '', 'producto.html?id=' + encodeURIComponent(p.id));
+      }
+    } catch (_) {}
     // ---------- Cover side ----------
     const cover = document.getElementById('freebieCover');
     if (cover) {
@@ -646,12 +655,29 @@ if (currentLink) {
     openFreebieFor(id);
   });
 
-  // Close only via the X button — backdrop click & Escape are ignored on purpose
-  // so the buyer doesn't lose their checkout state accidentally.
+  // Closes the modal AND pops the URL back to where the visitor came from
+  // (only if we pushed a history entry when opening it).
+  function closeProductModal() {
+    stopCoverCarousel();
+    hideModal('popup-freebie-dl');
+    try {
+      if (history.state && history.state.logramoModal) history.back();
+    } catch (_) {}
+  }
+  // X button closes — backdrop & Escape do nothing (avoid accidental dismissal).
+  // We don't check the .open class here because the global handler in script.js
+  // strips it first; we just check that the click is on a close-button inside
+  // THIS overlay specifically.
   document.addEventListener('click', function (e) {
+    const closeBtn = e.target.closest('[data-close-popup]');
+    if (!closeBtn) return;
+    if (!closeBtn.closest('#popup-freebie-dl')) return;
+    closeProductModal();
+  });
+  // Browser back button closes the modal too — feels natural since the URL changed when it opened.
+  window.addEventListener('popstate', function () {
     const overlay = document.getElementById('popup-freebie-dl');
-    if (!overlay || !overlay.classList.contains('open')) return;
-    if (e.target.matches('[data-close-popup]') || e.target.closest('[data-close-popup]')) {
+    if (overlay && overlay.classList.contains('open')) {
       stopCoverCarousel();
       hideModal('popup-freebie-dl');
     }
