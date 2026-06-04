@@ -687,7 +687,52 @@
         <p class="panel__hint">Import the 12 products and 6 articles currently on the site into the database (once). Then edit them from Content.</p>
         <div class="actions"><button type="button" class="btn btn--primary" id="importBtn">Import sample content</button><span class="muted" id="importStatus"></span></div>
       </div>
+      <div class="panel" style="max-width:460px;margin-top:24px;border-color:#c0392b">
+        <h2 style="color:#c0392b">Danger zone</h2>
+        <p class="panel__hint">Reset operational data back to zero: <strong>subscribers</strong>, <strong>purchases</strong> (sales &amp; revenue) and <strong>visit analytics</strong>. Products, articles, videos, reviews and messages are kept. This cannot be undone.</p>
+        <div class="actions"><button type="button" class="btn" id="resetDataBtn" style="background:#c0392b;color:#fff;border-color:#c0392b">Reset all data</button></div>
+      </div>
     </section>
+
+    <!-- ===== RESET DATA MODAL (3-step friction: confirm → password → wipe) ===== -->
+    <style>
+      .reset-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+      .reset-modal[hidden]{display:none}
+      .reset-modal__backdrop{position:absolute;inset:0;background:rgba(17,26,23,.6)}
+      .reset-modal__card{position:relative;background:#FEFAE8;border:2px solid #111A17;border-radius:14px;box-shadow:6px 6px 0 #111A17;max-width:440px;width:100%;padding:24px}
+      .reset-modal__card ul{margin:0 0 16px;padding-left:20px;line-height:1.6}
+      .reset-modal__card .field{margin:12px 0}
+      .reset-modal__card input[type=password]{width:100%;padding:10px 12px;border:2px solid #111A17;border-radius:10px;font:inherit}
+    </style>
+    <div id="resetModal" class="reset-modal" hidden>
+      <div class="reset-modal__backdrop" data-reset-cancel></div>
+      <div class="reset-modal__card" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle">
+        <div id="resetStage1">
+          <h2 id="resetModalTitle" style="color:#c0392b;margin-top:0">⚠️ Reset all data?</h2>
+          <p>This permanently deletes:</p>
+          <ul>
+            <li><strong>Subscribers</strong> — the whole email list</li>
+            <li><strong>Purchases</strong> — all sales &amp; revenue records</li>
+            <li><strong>Visit analytics</strong> — pageviews / traffic stats</li>
+          </ul>
+          <p class="panel__hint">Products, articles, videos, reviews and messages are <strong>not</strong> touched. This cannot be undone.</p>
+          <div class="actions" style="justify-content:flex-end;gap:8px">
+            <button type="button" class="btn" data-reset-cancel>Cancelar</button>
+            <button type="button" class="btn" id="resetToStep2" style="background:#c0392b;color:#fff;border-color:#c0392b">Sí, continuar</button>
+          </div>
+        </div>
+        <div id="resetStage2" hidden>
+          <h2 style="color:#c0392b;margin-top:0">Confirma con tu contraseña</h2>
+          <p class="panel__hint">Escribe la contraseña de <strong id="resetAdminEmail"></strong> para borrar todo.</p>
+          <div class="field"><input type="password" id="resetPass" placeholder="Tu contraseña de admin" autocomplete="current-password" /></div>
+          <div class="actions" style="justify-content:flex-end;gap:8px;align-items:center">
+            <span class="muted" id="resetStatus"></span>
+            <button type="button" class="btn" data-reset-cancel>Cancelar</button>
+            <button type="button" class="btn" id="resetConfirmBtn" style="background:#c0392b;color:#fff;border-color:#c0392b">Borrar todo</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="site-nav-hint" id="siteNavHint" aria-hidden="true">
       <svg class="icon"><use href="#i-arrow-down"/></svg>
@@ -701,7 +746,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260711"></script>
+<script src="partials.js?v=20260712"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1842,6 +1887,45 @@
 
   /* ===== AJUSTES ===== */
   $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('At least 6 characters.');return;} $('passStatus').textContent='Saving…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Changed'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
+
+  /* ===== DANGER ZONE — reset all data (3-step friction) ===== */
+  (function(){
+    var modal=$('resetModal'); if(!modal) return;
+    var s1=$('resetStage1'), s2=$('resetStage2');
+    function open(){ s1.hidden=false; s2.hidden=true; $('resetPass').value=''; $('resetStatus').textContent=''; $('resetAdminEmail').textContent=$('setEmail').value||'tu cuenta'; modal.hidden=false; }
+    function close(){ modal.hidden=true; }
+    var rb=$('resetDataBtn'); if(rb) rb.addEventListener('click',open);
+    document.querySelectorAll('[data-reset-cancel]').forEach(function(el){ el.addEventListener('click',close); });
+    var to2=$('resetToStep2'); if(to2) to2.addEventListener('click',function(){ s1.hidden=true; s2.hidden=false; setTimeout(function(){ $('resetPass').focus(); },50); });
+    var cb=$('resetConfirmBtn');
+    if(cb) cb.addEventListener('click',async function(){
+      var email=$('setEmail').value||''; var pass=$('resetPass').value||'';
+      if(!pass){ $('resetStatus').textContent='Escribe tu contraseña.'; return; }
+      cb.disabled=true; $('resetStatus').textContent='Verificando…';
+      // Step 3a: verify the password against the EXACT logged-in admin account.
+      var auth=await sb.auth.signInWithPassword({email:email,password:pass});
+      if(auth.error){ cb.disabled=false; $('resetStatus').textContent='Contraseña incorrecta.'; return; }
+      var token=auth.data&&auth.data.session?auth.data.session.access_token:null;
+      // Step 3b: only now call the server-side wipe, with the fresh admin token.
+      $('resetStatus').textContent='Borrando…';
+      try{
+        var r=await fetch(SUPABASE_URL+'/functions/v1/reset-data',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+          body:JSON.stringify({confirm:'RESET'})
+        });
+        var data=await r.json().catch(function(){return {};});
+        if(!r.ok||!data.ok) throw new Error(data.reason||('HTTP '+r.status));
+        var d=data.deleted||{};
+        close();
+        alert('Datos borrados:\n• Suscriptores: '+(d.subscribers||0)+'\n• Compras: '+(d.purchases||0)+'\n• Visitas: '+(d.pageviews||0));
+        if(typeof loadInicio==='function') loadInicio();
+      }catch(err){
+        $('resetStatus').textContent='Error: '+(err.message||err);
+      }
+      cb.disabled=false;
+    });
+  })();
 
   /* ===== IMPORT SAMPLE CONTENT ===== */
   var SAMPLE_PRODUCTS=[

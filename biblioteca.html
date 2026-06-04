@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Guías y libros escritos por dueños que ya pasaron por esto — algunos gratis, otros premium. Todos fáciles de leer y de verdad útiles." />
-  <title>Biblioteca — Logramo</title>
+  <meta name="description" content="Guías y libros escritos por dueños que ya pasaron por esto: algunos gratis, otros premium. Todos fáciles de leer y muy útiles." />
+  <title>Biblioteca · Logramo</title>
   <link rel="stylesheet" href="styles.css?v=20260710" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
@@ -17,14 +17,14 @@
   <div class="container">
     <span class="eyebrow" data-reveal>La biblioteca de Logramo</span>
     <h1 data-reveal>Todo lo que<br><em>nadie te explica</em><br>en un solo lugar</h1>
-    <p class="lead" data-reveal>Guías y libros escritos por dueños que ya pasaron por esto — algunos gratis, otros premium. Todos fáciles de leer y con mucho cariño 🐶</p>
+    <p class="lead" data-reveal>Guías y libros escritos por dueños que ya pasaron por esto: algunos gratis, otros premium. Todos fáciles de leer y hechos con mucho cariño 🐶</p>
   </div>
 </section>
 
 <!-- ============ FILTERS ============ -->
 <div class="container">
   <form class="blog-search" onsubmit="event.preventDefault()" data-reveal style="margin-bottom:20px">
-    <input type="search" id="libSearch" placeholder="Buscar libros — ej. 'cachorro', 'gratis'" aria-label="Buscar">
+    <input type="search" id="libSearch" placeholder="Buscar libros (ej. 'cachorro', 'gratis')" aria-label="Buscar">
     <button type="submit" aria-label="Buscar"><svg class="icon icon--sm"><use href="#i-search"/></svg></button>
   </form>
   <div class="filter-row" data-reveal data-library-filter style="justify-content:center;flex-wrap:wrap">
@@ -204,7 +204,7 @@ window.initFcCarousel = function(){
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260711"></script>
+<script src="partials.js?v=20260712"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -343,7 +343,11 @@ window.initFcCarousel = function(){
     })();
     if(window.LogramoCurrency) LogramoCurrency.onReady(function(){ render(products); renderFeatured(products); applyFilters(); });
     var initial=new URLSearchParams(location.search).get('filter');
-    if(initial&&row&&row.querySelector('[data-filter="'+initial+'"]')) setFilter(initial,true); else applyFilters();
+    var initialBtn=initial&&row?row.querySelector('[data-filter="'+initial+'"]'):null;
+    /* Only honor the ?filter= deep-link if that chip actually has products
+       (pruneFilters above hides empty chips). Otherwise fall back to "Todos"
+       so a homepage card never lands on an empty library view. */
+    if(initialBtn&&initialBtn.style.display!=='none') setFilter(initial,true); else applyFilters();
   })();
 })();
 </script>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow" />
   <meta name="description" content="Comparte tu experiencia con tu guía Logramo." />
-  <title>Tu reseña — Logramo</title>
+  <title>Tu reseña · Logramo</title>
   <link rel="stylesheet" href="styles.css?v=20260710" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
@@ -147,7 +147,7 @@
         <span class="eyebrow" id="eyebrowText">Tu reseña</span>
         <h1 id="heroHeadline">¿Cómo te <em>fue?</em></h1>
         <p class="lede" id="ledeText">
-          Tu opinión nos ayuda — y le sirve a otros dueños como tú que están decidiendo si vale la pena.
+          Tu opinión nos ayuda mucho y le sirve a otros dueños como tú que están decidiendo si vale la pena.
         </p>
 
         <form id="reviewForm" novalidate>
@@ -169,7 +169,7 @@
           </div>
 
           <div class="field">
-            <label class="lbl" for="dogNameInput">El nombre de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">— opcional</span></label>
+            <label class="lbl" for="dogNameInput">El nombre de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">(opcional)</span></label>
             <input id="dogNameInput" type="text" maxlength="40" placeholder="Ej. Lola, Toby, Coco…">
             <span class="hint">Si lo añades, aparecerá junto a tu reseña en la web.</span>
           </div>
@@ -206,7 +206,7 @@
           <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-ink)"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 17h.01"/></svg>
         </div>
         <h2 id="errTitle">Este enlace ya no funciona</h2>
-        <p id="errMsg">El enlace de reseña ya fue usado o expiró. Si todavía quieres contarnos tu experiencia, respóndenos al email — leemos cada respuesta.</p>
+        <p id="errMsg">El enlace de reseña ya fue usado o expiró. Si todavía quieres contarnos tu experiencia, respóndenos al email. Leemos cada respuesta.</p>
         <a class="btn-link" id="errCta" href="mailto:ayuda@logramo.com?subject=Mi%20experiencia%20con%20Logramo">Escríbenos →</a>
       </div>
     </div>
@@ -219,7 +219,7 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260711"></script>
+<script src="partials.js?v=20260712"></script>
 <script>
 (function () {
   var FUNCTION_URL = 'https://eopobchvkfvkkrtrzeyu.supabase.co/functions/v1/submit-review';
@@ -286,7 +286,7 @@
         $('errMsg').textContent = 'Recibimos tu reseña antes. ¡Gracias! Si quieres editarla o agregar algo, respóndenos al email.';
       } else if (reason === 'expired') {
         $('errTitle').textContent = 'Este enlace expiró';
-        $('errMsg').textContent = 'El enlace tenía 90 días. Si todavía quieres contarnos cómo te fue, respóndenos al email — leemos cada palabra.';
+        $('errMsg').textContent = 'El enlace tenía 90 días. Si todavía quieres contarnos cómo te fue, respóndenos al email. Leemos cada palabra.';
       } else {
         $('errTitle').textContent = 'Enlace no válido';
         $('errMsg').textContent = 'No encontramos este enlace. Asegúrate de copiarlo entero desde el email, o respóndenos directamente y te ayudamos.';
@@ -303,7 +303,7 @@
       $('ledeText').innerHTML =
         'Hace un par de semanas descargaste <strong>' +
         escapeHtml(data.productTitle) +
-        '</strong>. Cuéntanos cómo te fue — tu reseña le sirve a otros dueños como tú.';
+        '</strong>. Cuéntanos cómo te fue. Tu reseña le sirve a otros dueños como tú.';
       $('eyebrowText').textContent = 'Tu reseña · ' + data.productTitle;
     }
     show('state-form');
@@ -330,7 +330,7 @@
     var dogName = $('dogNameInput').value.trim();
 
     if (!rating) { showFormError('Elige una valoración del 1 al 5.'); return; }
-    if (quote.length < 10) { showFormError('Cuéntanos un poco más — mínimo 10 caracteres.'); return; }
+    if (quote.length < 10) { showFormError('Cuéntanos un poco más (mínimo 10 caracteres).'); return; }
     if (quote.length > 280) { showFormError('La reseña es muy larga. Máximo 280 caracteres.'); return; }
 
     var btn = $('submitBtn');
@@ -376,7 +376,7 @@
         }
         return;
       }
-      if (reason === 'quote_too_short') { showFormError('Cuéntanos un poco más — mínimo 10 caracteres.'); return; }
+      if (reason === 'quote_too_short') { showFormError('Cuéntanos un poco más (mínimo 10 caracteres).'); return; }
       if (reason === 'quote_too_long') { showFormError('La reseña es muy larga. Máximo 800 caracteres.'); return; }
       if (reason === 'bad_rating') { showFormError('Elige una valoración del 1 al 5.'); return; }
       showFormError('No pudimos enviar tu reseña. Intenta de nuevo en un momento.');

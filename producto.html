@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" id="prMetaDesc" content="Guía digital de Logramo." />
-  <title id="prDocTitle">Cargando… — Logramo</title>
+  <title id="prDocTitle">Cargando… · Logramo</title>
   <link rel="stylesheet" href="styles.css?v=20260710" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
@@ -31,7 +31,7 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260711"></script>
+<script src="partials.js?v=20260712"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="script.js?v=20260710"></script>
@@ -59,7 +59,7 @@
       if (r.ok) { var arr = await r.json(); p = Array.isArray(arr) && arr[0]; }
     } catch (e) {}
     if (!p) { location.replace('biblioteca.html'); return; }
-    document.title = (p.title || 'Producto') + ' — Logramo';
+    document.title = (p.title || 'Producto') + ' · Logramo';
     var meta = document.getElementById('prMetaDesc'); if (meta) meta.setAttribute('content', p.description || ('Logramo · ' + p.title));
     var ht = document.getElementById('prHeroTitle'); if (ht) ht.textContent = p.title || 'Producto';
     var hd = document.getElementById('prHeroDesc'); if (hd) hd.textContent = p.description || 'Abre la guía para más detalles 🐾';

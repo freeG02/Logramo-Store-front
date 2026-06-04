@@ -114,7 +114,7 @@ const FOOTER_HTML = `
     <div class="footer__inner">
       <div>
         <div class="footer__brand-logo"><svg width="150" height="24" viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-        <p class="footer__brand-desc">El sitio que ojalá hubiéramos encontrado nosotros cuando empezamos. Guías reales, consejos honestos y cero tecnicismos — para dueños como tú.</p>
+        <p class="footer__brand-desc">El sitio que ojalá hubiéramos encontrado nosotros cuando empezamos. Guías claras, sin tecnicismos y escritas para dueños como tú.</p>
         <div class="footer__social">
           <a href="#" class="footer__social-link" aria-label="Facebook"><svg class="icon"><use href="#i-facebook"/></svg></a>
           <a href="#" class="footer__social-link" aria-label="YouTube"><svg class="icon"><use href="#i-youtube"/></svg></a>
