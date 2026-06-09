@@ -259,6 +259,7 @@ const FREEBIE_HTML = `
   <button type="button" class="lightbox__nav lightbox__nav--prev" id="lbPrev" aria-label="Anterior">‹</button>
   <button type="button" class="lightbox__nav lightbox__nav--next" id="lbNext" aria-label="Siguiente">›</button>
   <img id="lbImg" alt="">
+  <div class="lightbox__dots" id="lbDots" aria-hidden="true"></div>
   <div class="lightbox__count" id="lbCount"></div>
 </div>`;
 
@@ -488,10 +489,23 @@ if (currentLink) {
     var prev = document.getElementById('lbPrev'), next = document.getElementById('lbNext');
     if (prev) prev.style.display = LB_IMGS.length > 1 ? 'flex' : 'none';
     if (next) next.style.display = LB_IMGS.length > 1 ? 'flex' : 'none';
+    var dots = document.getElementById('lbDots');
+    if (dots) { var ds = dots.children; for (var i = 0; i < ds.length; i++) ds[i].classList.toggle('is-active', i === LB_IDX); }
   }
   function openLightbox(imgs, idx) {
     LB_IMGS = (imgs || []).slice(); LB_IDX = idx || 0;
     var box = document.getElementById('imgLightbox'); if (!box) return;
+    var dots = document.getElementById('lbDots');
+    if (dots) {
+      dots.innerHTML = '';
+      if (LB_IMGS.length > 1) {
+        for (var i = 0; i < LB_IMGS.length; i++) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.setAttribute('data-lb-dot', i); b.setAttribute('aria-label', 'Imagen ' + (i + 1));
+          dots.appendChild(b);
+        }
+      }
+    }
     lbRender(); box.classList.add('is-open'); box.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
@@ -505,6 +519,12 @@ if (currentLink) {
     var c = document.getElementById('lbClose'); if (c) c.addEventListener('click', closeLightbox);
     var pv = document.getElementById('lbPrev'); if (pv) pv.addEventListener('click', function () { LB_IDX--; lbRender(); });
     var nx = document.getElementById('lbNext'); if (nx) nx.addEventListener('click', function () { LB_IDX++; lbRender(); });
+    var dots = document.getElementById('lbDots');
+    if (dots) dots.addEventListener('click', function (e) { var d = e.target.closest('[data-lb-dot]'); if (d) { LB_IDX = parseInt(d.getAttribute('data-lb-dot'), 10) || 0; lbRender(); } });
+    // Swipe to change image (mobile).
+    var lbX = null;
+    box.addEventListener('touchstart', function (e) { lbX = e.touches[0].clientX; }, { passive: true });
+    box.addEventListener('touchend', function (e) { if (lbX === null) return; var dx = e.changedTouches[0].clientX - lbX; lbX = null; if (Math.abs(dx) > 40) { LB_IDX += (dx < 0 ? 1 : -1); lbRender(); } });
     box.addEventListener('click', function (e) { if (e.target === box) closeLightbox(); });
     document.addEventListener('keydown', function (e) {
       if (!box.classList.contains('is-open')) return;
