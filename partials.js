@@ -253,6 +253,13 @@ const FREEBIE_HTML = `
       </div>
     </div>
   </div>
+</div>
+<div class="lightbox" id="imgLightbox" aria-hidden="true">
+  <button type="button" class="lightbox__close" id="lbClose" aria-label="Cerrar">✕</button>
+  <button type="button" class="lightbox__nav lightbox__nav--prev" id="lbPrev" aria-label="Anterior">‹</button>
+  <button type="button" class="lightbox__nav lightbox__nav--next" id="lbNext" aria-label="Siguiente">›</button>
+  <img id="lbImg" alt="">
+  <div class="lightbox__count" id="lbCount"></div>
 </div>`;
 
 /* ============ STANDARD POPUPS ============ */
@@ -299,6 +306,7 @@ injectPartial('partial-cart', CART_HTML);
 injectPartial('partial-chat', CHAT_HTML);
 injectPartial('partial-popups', POPUPS_HTML);
 document.body.insertAdjacentHTML('beforeend', FREEBIE_HTML);
+setupLightbox();
 
 /* Mark active nav link */
 const linkMap = { home: 'home', biblioteca: 'biblioteca', blog: 'blog', sobre: 'sobre' };
@@ -448,6 +456,10 @@ if (currentLink) {
         if (moved) { moved = false; return; }
         if (it.classList.contains('is-prev')) go(idx - 1);
         else if (it.classList.contains('is-next')) go(idx + 1);
+        else { // centre image -> open it full screen
+          var srcs = items.map(function (x) { var im = x.querySelector('img'); return im ? im.src : ''; }).filter(Boolean);
+          if (srcs.length) openLightbox(srcs, idx);
+        }
       });
     });
     dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); }); });
@@ -464,6 +476,43 @@ if (currentLink) {
     flow.addEventListener('mouseup', function (e) { up(e.clientX); });
     flow.addEventListener('mouseleave', function () { startX = null; });
     go(0);
+  }
+
+  /* ----- Full-screen image lightbox (opens from the modal cover) ----- */
+  var LB_IMGS = [], LB_IDX = 0;
+  function lbRender() {
+    var img = document.getElementById('lbImg'); var count = document.getElementById('lbCount');
+    if (!LB_IMGS.length || !img) return;
+    LB_IDX = ((LB_IDX % LB_IMGS.length) + LB_IMGS.length) % LB_IMGS.length;
+    img.src = LB_IMGS[LB_IDX]; img.alt = '';
+    if (count) count.textContent = (LB_IDX + 1) + ' / ' + LB_IMGS.length;
+    var prev = document.getElementById('lbPrev'), next = document.getElementById('lbNext');
+    if (prev) prev.style.display = LB_IMGS.length > 1 ? 'flex' : 'none';
+    if (next) next.style.display = LB_IMGS.length > 1 ? 'flex' : 'none';
+  }
+  function openLightbox(imgs, idx) {
+    LB_IMGS = (imgs || []).slice(); LB_IDX = idx || 0;
+    var box = document.getElementById('imgLightbox'); if (!box) return;
+    lbRender(); box.classList.add('is-open'); box.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    var box = document.getElementById('imgLightbox'); if (!box) return;
+    box.classList.remove('is-open'); box.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  function setupLightbox() {
+    var box = document.getElementById('imgLightbox'); if (!box) return;
+    var c = document.getElementById('lbClose'); if (c) c.addEventListener('click', closeLightbox);
+    var pv = document.getElementById('lbPrev'); if (pv) pv.addEventListener('click', function () { LB_IDX--; lbRender(); });
+    var nx = document.getElementById('lbNext'); if (nx) nx.addEventListener('click', function () { LB_IDX++; lbRender(); });
+    box.addEventListener('click', function (e) { if (e.target === box) closeLightbox(); });
+    document.addEventListener('keydown', function (e) {
+      if (!box.classList.contains('is-open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') { LB_IDX--; lbRender(); }
+      else if (e.key === 'ArrowRight') { LB_IDX++; lbRender(); }
+    });
   }
 
   /* ----- PayPal Smart Buttons (ported from producto.html, mounted in the modal) ----- */
@@ -574,8 +623,9 @@ if (currentLink) {
       if (list.length) {
         cover.classList.add('freebie-modal__cover--image');
         if (list.length === 1) {
-          // Single image: just the book, no carousel.
-          cover.innerHTML = '<span class="book3d book3d--shadow book3d--fill"><span class="cover"><img src="' + list[0] + '" alt="" />' + topTagHtml + bannerHtml + '</span></span>';
+          // Single image: just the book, no carousel. Tap to open full screen.
+          cover.innerHTML = '<span class="book3d book3d--shadow book3d--fill" style="cursor:zoom-in"><span class="cover"><img src="' + list[0] + '" alt="" />' + topTagHtml + bannerHtml + '</span></span>';
+          var _sb = cover.querySelector('.book3d'); if (_sb) _sb.addEventListener('click', function () { openLightbox(list, 0); });
         } else {
           // Multiple images: coverflow — active book centered, neighbors peeking on each
           // side, dots below. Each image is its own book frame; tags show on the centre one.

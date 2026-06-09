@@ -1297,6 +1297,14 @@ h6 { font-size: .9rem; }
 .lightbox__nav--prev:hover { transform: translate(-1px, calc(-50% - 1px)); }
 .lightbox__nav--next:hover { transform: translate(-1px, calc(-50% - 1px)); }
 .lightbox__count { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: var(--c-cream); font-family: var(--font-display); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; opacity: .8; }
+/* The active coverflow image opens full screen — hint it. */
+.cover-flow .cover-flow__item.is-active { cursor: zoom-in; }
+/* Mobile: true full-screen image (no frame). Desktop keeps the framed card above. */
+@media (max-width: 660px) {
+  .lightbox { padding: 0; }
+  .lightbox img { max-width: 100vw; max-height: 100vh; border: none; border-radius: 0; box-shadow: none; padding: 0; background: transparent; }
+  .lightbox__close { top: 14px; right: 14px; }
+}
 
 /* Branded PayPal wrapper around the SDK buttons */
 .paypal-wrap {
@@ -3327,7 +3335,10 @@ h1, h2, h3, h4,
   .freebie-modal__grid { grid-template-columns: 1fr; grid-template-rows: auto auto; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .freebie-modal__cover { min-height: 0; padding: 22px 18px 16px; }
   .freebie-modal__cover .book-card__cover { max-width: 200px; }
-  .freebie-modal__body { max-height: none; min-height: 0; overflow-y: visible; padding: 24px 24px 40px; }
+  /* More specific than the base .freebie-modal__body rule below so it actually wins:
+     tighter side padding (wider PayPal buttons so the card label isn't squeezed to
+     an icon) + real bottom margin under the checkout. */
+  .popup--freebie .freebie-modal__body { max-height: none; min-height: 0; overflow-y: visible; padding: 22px 18px 44px; }
 }
 .freebie-modal__cover {
   background: var(--c-sky);
