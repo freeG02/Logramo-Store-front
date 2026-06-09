@@ -116,9 +116,9 @@ const FOOTER_HTML = `
         <div class="footer__brand-logo"><svg width="150" height="24" viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
         <p class="footer__brand-desc">El sitio que ojalá hubiéramos encontrado nosotros cuando empezamos. Guías claras, sin tecnicismos y escritas para dueños como tú.</p>
         <div class="footer__social">
-          <a href="#" class="footer__social-link" aria-label="Facebook"><svg class="icon"><use href="#i-facebook"/></svg></a>
-          <a href="#" class="footer__social-link" aria-label="YouTube"><svg class="icon"><use href="#i-youtube"/></svg></a>
-          <a href="#" class="footer__social-link" aria-label="Pinterest"><svg class="icon"><use href="#i-pinterest"/></svg></a>
+          <a href="https://www.facebook.com/profile.php?id=61590239832119" target="_blank" rel="noopener" class="footer__social-link footer__social-link--fb" aria-label="Facebook"><svg class="icon"><use href="#i-facebook"/></svg></a>
+          <a href="https://youtube.com/@megusta_logramo" target="_blank" rel="noopener" class="footer__social-link footer__social-link--yt" aria-label="YouTube"><svg class="icon"><use href="#i-youtube"/></svg></a>
+          <a href="https://pin.it/4WgVTqM4j" target="_blank" rel="noopener" class="footer__social-link footer__social-link--pin" aria-label="Pinterest"><svg class="icon"><use href="#i-pinterest"/></svg></a>
         </div>
       </div>
       <div class="footer__col">
@@ -529,6 +529,18 @@ if (currentLink) {
     const cover = document.getElementById('freebieCover');
     if (cover) {
       cover.style.background = 'var(--c-cream-alt)';
+      // Tag + banner so the modal cover matches the library card (NUEVO / OFERTA, etc.)
+      var _esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+      var _TAG_PRIORITY = ['bestseller', 'caliente', 'nuevo', 'popular', 'recomendado', 'gratis'];
+      var _TAGLABELS = { gratis: 'Gratis', nuevo: 'Nuevo', recomendado: 'Recomendado', popular: 'Popular', caliente: 'Caliente', bestseller: 'Más vendido' };
+      var _ptags = Array.isArray(p.tags) ? p.tags.slice() : (typeof p.tags === 'string' ? (function () { try { return JSON.parse(p.tags); } catch (e) { return String(p.tags).split(/[,\s]+/).filter(Boolean); } })() : []);
+      if (p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 864e5 && _ptags.indexOf('nuevo') === -1) _ptags.unshift('nuevo');
+      var _top = null; for (var _i = 0; _i < _TAG_PRIORITY.length; _i++) { if (_ptags.indexOf(_TAG_PRIORITY[_i]) > -1) { _top = _TAG_PRIORITY[_i]; break; } } if (!_top) _top = _ptags[0] || null;
+      var _k = String(_top || '').toLowerCase();
+      var _trLabel = _top ? (_TAGLABELS[_k] || (_k.charAt(0).toUpperCase() + _k.slice(1))) : '';
+      var _trClass = (_k === 'nuevo' || _k === 'caliente') ? 'gtag gtag--terra gtag--tr' : 'gtag gtag--tr';
+      var topTagHtml = _trLabel ? ('<span class="' + _trClass + '">' + _esc(_trLabel) + '</span>') : '';
+      var bannerHtml = (p.original_price && Number(p.original_price) > Number(p.price)) ? '<span class="gbanner gbanner--terra">Oferta</span>' : '';
       // Build the image list: cover_image first, then gallery (deduped)
       const imgList = []; if (p.cover_image) imgList.push(p.cover_image);
       const gallery = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? (function(){ try { return JSON.parse(p.images); } catch(e){ return []; } })() : []);
@@ -542,7 +554,7 @@ if (currentLink) {
           const dots = list.map(function(_,i){ return '<button type="button" class="cover-carousel__dot' + (i===0?' is-active':'') + '" data-cc-dot="' + i + '" aria-label="Ir a imagen ' + (i+1) + '"></button>'; }).join('');
           controls = '<div class="cover-carousel__controls"><button type="button" class="cover-carousel__arrow cover-carousel__arrow--prev" data-cc-prev aria-label="Anterior">‹</button><div class="cover-carousel__dots">' + dots + '</div><button type="button" class="cover-carousel__arrow cover-carousel__arrow--next" data-cc-next aria-label="Siguiente">›</button></div>';
         }
-        cover.innerHTML = '<div class="cover-carousel" data-cover-carousel><span class="book3d book3d--shadow book3d--fill"><span class="cover">' + imgsHtml + '</span></span>' + controls + '</div>';
+        cover.innerHTML = '<div class="cover-carousel" data-cover-carousel><span class="book3d book3d--shadow book3d--fill"><span class="cover">' + imgsHtml + topTagHtml + bannerHtml + '</span></span>' + controls + '</div>';
         startCoverCarousel(cover);
       } else {
         cover.classList.remove('freebie-modal__cover--image');
@@ -550,8 +562,10 @@ if (currentLink) {
         const sizeStyle = p.cover_title_size ? ('font-size:' + p.cover_title_size + 'cqw;') : '';
         cover.innerHTML =
           '<span class="book3d book3d--shadow book3d--fill"><span class="cover gcover" style="background:' + cc[0] + ';color:' + cc[1] + '">'
+            + topTagHtml
             + '<span class="gcover__top"><span class="gsub">' + (p.cover_sub || 'Guía PDF') + '</span></span>'
             + '<span class="gtitle" style="' + sizeStyle + '">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</span>'
+            + bannerHtml
           + '</span></span>';
       }
     }

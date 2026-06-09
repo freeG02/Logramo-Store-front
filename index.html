@@ -14,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías para dueños primerizos que están sobreviviendo el caos de tener un perro (y amándolo). Claras, al grano y escritas por gente que ya pasó por ahí." />
   <title>Cría un perro feliz · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260714" />
+  <link rel="stylesheet" href="styles.css?v=20260715" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -334,7 +334,7 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260712"></script>
+<script src="partials.js?v=20260715"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -414,20 +414,22 @@
           +banner
           +'</span>';
       }
-      var visual='<span class="book3d book3d--shadow" style="--w:min(300px,72vw)">'+coverInner+'</span>';
+      var visual='<span class="book3d book3d--shadow" style="--w:min(300px,52vw)">'+coverInner+'</span>';
 
       var priceHtml = p.is_free ? '<span class="product-hero__price">Gratis</span>'
         : '<span class="product-hero__price">'+money(p.price)+'</span>'+((p.original_price&&Number(p.original_price)>Number(p.price))?' <span class="product-hero__original">'+money(p.original_price)+'</span>':'');
       var cta = p.is_free ? 'Descargar gratis' : 'Comprar ahora';
 
       mount.innerHTML =
-        '<div>'
-        +'<span class="eyebrow">Lo más vendido</span>'
+        '<div class="freebie__copy">'
+        +'<span class="eyebrow freebie__eyebrow">Lo más vendido</span>'
+        +'<div class="freebie__details">'
         +'<h2 class="freebie__title">'+esc(p.title||'')+'</h2>'
         +'<p class="freebie__desc">'+esc(p.description||'')+'</p>'
         +(bullets?'<div class="freebie__bullets" data-stagger>'+bullets+'</div>':'')
         +'<div class="product-hero__price-row" style="margin:8px 0 24px">'+priceHtml+'</div>'
         +'<a href="#" data-freebie="'+esc(p.id)+'" class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-'+(p.is_free?'pdf':'cart')+'"/></svg> '+cta+'</a>'
+        +'</div>'
         +'</div>'
         +'<div class="freebie__image-wrap" style="display:flex;justify-content:center">'
           + visual

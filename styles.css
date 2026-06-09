@@ -2049,10 +2049,9 @@ h6 { font-size: .9rem; }
   transform: translate(-3px,-3px);
   box-shadow: var(--shadow-sm);
 }
-.footer__social-link:nth-child(1):hover { background: var(--c-terracotta); color: var(--c-cream); }
-.footer__social-link:nth-child(2):hover { background: var(--c-forest); color: var(--c-cream); }
-.footer__social-link:nth-child(3):hover { background: var(--c-golden); }
-.footer__social-link:nth-child(4):hover { background: var(--c-burgundy); color: var(--c-cream); }
+.footer__social-link--fb:hover  { background: #1877F2; color: #fff; }
+.footer__social-link--yt:hover  { background: #FF0000; color: #fff; }
+.footer__social-link--pin:hover { background: #E60023; color: #fff; }
 .footer__col h4 {
   font-family: var(--font-heading-sm); font-weight: 700;
   font-size: .82rem; letter-spacing: .08em; text-transform: uppercase;
@@ -2912,6 +2911,13 @@ h6 { font-size: .9rem; }
   .reviews-grid { grid-template-columns: 1fr; }
   .freebie__inner, .product-soft__inner, .product-hero__inner, .about-hero__inner { grid-template-columns: 1fr; gap: 48px; }
   .product-hero__inner .product-cover, .product-hero__inner #productMedia { order: -1; }
+  /* Homepage "Lo más vendido": eyebrow → book → details on mobile.
+     Copy becomes display:contents so its children join the grid and can reorder. */
+  .freebie__inner { gap: 28px; }
+  .freebie__copy { display: contents; }
+  .freebie__eyebrow { order: 1; margin-bottom: 0; }
+  .freebie__image-wrap { order: 2; }
+  .freebie__details { order: 3; }
   .freebie, .mission, .newsletter-section, .stats-block, .product-soft, .problem-solution, .bonuses-section, .story-section { padding: 56px 28px; }
   .modules-grid, .for-grid, .bonuses-grid, .values-grid, .team-grid { grid-template-columns: 1fr; }
   .problem-solution__grid { grid-template-columns: 1fr; gap: 32px; }
@@ -3538,8 +3544,8 @@ h1, h2, h3, h4,
       rgba(255,255,255,.5) calc(100% - 1px), rgba(0,0,0,.04) 100%),
     linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 22%); }
 /* no border · hard offset + soft contact shadow */
-.book3d--shadow{ box-shadow:5px 6px 0 var(--c-ink), 0 10px 12px -7px rgba(17,26,23,.45); }
-.book3d--shadow:hover{ transform:translate(-2px,-2px); box-shadow:7px 8px 0 var(--c-ink), 0 16px 18px -8px rgba(17,26,23,.45); }
+.book3d--shadow{ box-shadow:5px 6px 0 var(--c-ink); }
+.book3d--shadow:hover{ transform:translate(-2px,-2px); box-shadow:7px 8px 0 var(--c-ink); }
 
 /* generated cover: subtitle TOP, title CENTERED */
 .gcover{ color:#fff; }
@@ -3597,4 +3603,4 @@ h1, h2, h3, h4,
 
 /* book frame inside the product modal — capped + centered */
 .freebie-modal__cover .book3d--fill,
-.freebie-modal__cover .cover-carousel{ width:100%; max-width:230px; margin:0 auto; }
+.freebie-modal__cover .cover-carousel{ width:100%; max-width:180px; margin:0 auto; }
