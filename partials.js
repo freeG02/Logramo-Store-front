@@ -306,7 +306,6 @@ injectPartial('partial-cart', CART_HTML);
 injectPartial('partial-chat', CHAT_HTML);
 injectPartial('partial-popups', POPUPS_HTML);
 document.body.insertAdjacentHTML('beforeend', FREEBIE_HTML);
-setupLightbox();
 
 /* Mark active nav link */
 const linkMap = { home: 'home', biblioteca: 'biblioteca', blog: 'blog', sobre: 'sobre' };
@@ -749,6 +748,9 @@ if (currentLink) {
     const p = await fetchProduct(productId);
     if (p) openFreebieModal(p);
   }
+
+  // Wire the full-screen image lightbox (modal cover images open it).
+  setupLightbox();
 
   // Intercept clicks on any element marked data-freebie="<productId>"
   document.addEventListener('click', function (e) {
