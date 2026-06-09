@@ -3386,6 +3386,23 @@ h1, h2, h3, h4,
 .freebie-modal__actions { margin-top: auto; }
 .freebie-modal__hint { font-size: .78rem; color: var(--c-text-muted); text-align: center; margin: 10px 0 0; }
 
+/* Modal "more details" — Lo que aprenderás / Para ti si… */
+.freebie-modal__details { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 18px; margin: 2px 0 6px; }
+.fb-detail__h { font-family: var(--font-display); font-weight: 800; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--c-ink); margin: 0 0 10px; }
+.fb-detail__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.fb-detail__list li { position: relative; padding-left: 24px; font-size: .9rem; line-height: 1.4; color: var(--c-text); }
+.fb-detail__list li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--c-terracotta); font-weight: 900; }
+.fb-detail__list li strong { display: block; color: var(--c-ink); font-weight: 700; }
+.fb-detail__list li span { color: var(--c-text-muted); font-size: .84rem; }
+/* Recommended (same-category) books at the bottom of the modal */
+.freebie-modal__related { width: 100%; margin-top: 22px; padding-top: 18px; border-top: var(--bw-1) solid rgba(17,26,23,.15); }
+.fb-related__h { text-align: left; margin-bottom: 14px; }
+.fb-related__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.fb-related__item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }
+.fb-related__item .book3d { width: 100%; }
+.fb-related__title { font-size: .76rem; font-weight: 600; color: var(--c-ink); line-height: 1.25; text-align: center; }
+@media (max-width: 660px) { .fb-related__row { gap: 10px; } }
+
 /* Reviews — always-horizontal carousel (mobile + desktop).
    Overrides the default 3-column grid + the generic [data-h-drag] mobile rules. */
 .reviews-grid {

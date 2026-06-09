@@ -231,6 +231,7 @@ const FREEBIE_HTML = `
         <h2 class="freebie-modal__title" id="freebieTitle">—</h2>
         <p class="freebie-modal__meta" id="freebieMeta"></p>
         <p class="freebie-modal__desc" id="freebieDesc">—</p>
+        <div class="freebie-modal__details" id="freebieDetails" style="display:none"></div>
         <hr class="freebie-modal__sep" />
         <div class="freebie-modal__price" id="freebiePrice" style="display:none"></div>
         <div class="freebie-modal__badges">
@@ -250,6 +251,7 @@ const FREEBIE_HTML = `
           </div>
           <p class="freebie-modal__hint" id="freebieHint">El PDF se descarga al instante.</p>
         </div>
+        <div class="freebie-modal__related" id="freebieRelated" style="display:none"></div>
       </div>
     </div>
   </div>
@@ -605,6 +607,59 @@ if (currentLink) {
     }
   }
 
+  /* ----- Modal "more details" + recommended (same-category) books ----- */
+  var FB_CCOLOR = {sky:['#ADCBEF','#111A17'],peach:['#FFCDB8','#111A17'],sage:['#B5C1AB','#111A17'],golden:['#F6D055','#111A17'],lavender:['#C9C2EC','#111A17'],pink:['#F3C7D6','#111A17'],cream:['#FEFAE8','#111A17'],terracotta:['#C55932','#fff'],terra:['#C55932','#fff'],forest:['#3C4824','#FEFAE8'],ink:['#111A17','#FEFAE8']};
+  function fbEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function fbAsList(v) { if (Array.isArray(v)) return v; if (typeof v === 'string') { try { var j = JSON.parse(v); return Array.isArray(j) ? j : []; } catch (e) { return []; } } return []; }
+  function renderModalDetails(p) {
+    var el = document.getElementById('freebieDetails'); if (!el) return;
+    var mods = fbAsList(p.modules), aud = fbAsList(p.audience);
+    var block = function (title, items) {
+      if (!items.length) return '';
+      return '<div class="fb-detail"><h4 class="fb-detail__h">' + title + '</h4><ul class="fb-detail__list">'
+        + items.map(function (m) {
+            var d = m.desc || m.description || '';
+            return '<li><strong>' + fbEsc(m.title || '') + '</strong>' + (d ? '<span>' + fbEsc(d) + '</span>' : '') + '</li>';
+          }).join('')
+        + '</ul></div>';
+    };
+    var html = block('Lo que aprenderás', mods) + block('Para ti si…', aud);
+    el.innerHTML = html;
+    el.style.display = html ? '' : 'none';
+  }
+  function relMiniCard(rp) {
+    var cc = FB_CCOLOR[String(rp.cover_color || 'sky').toLowerCase()] || FB_CCOLOR.sky;
+    var inner = rp.cover_image
+      ? '<span class="cover"><img src="' + fbEsc(rp.cover_image) + '" alt="" loading="lazy"></span>'
+      : '<span class="cover gcover" style="background:' + cc[0] + ';color:' + cc[1] + '"><span class="gcover__top"><span class="gsub">' + fbEsc(rp.cover_sub || 'Guía') + '</span></span><span class="gtitle">' + fbEsc(rp.cover_title || rp.title || '').replace(/\n/g, '<br>') + '</span></span>';
+    return '<a href="#" class="fb-related__item" data-freebie="' + fbEsc(rp.id) + '" aria-label="' + fbEsc(rp.title || '') + '"><span class="book3d book3d--shadow book3d--fill">' + inner + '</span><span class="fb-related__title">' + fbEsc(rp.title || '') + '</span></a>';
+  }
+  async function renderRelated(p) {
+    var el = document.getElementById('freebieRelated'); if (!el) return;
+    el.style.display = 'none'; el.innerHTML = '';
+    var sel = 'select=id,title,category,cover_color,cover_sub,cover_title,cover_image,is_free';
+    var hdr = { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY };
+    var rows = [];
+    try {
+      if (p.category) {
+        var r = await fetch(SB_URL + '/rest/v1/products?' + sel + '&published=eq.true&category=eq.' + encodeURIComponent(p.category) + '&id=neq.' + encodeURIComponent(p.id) + '&limit=8', { headers: hdr });
+        if (r.ok) rows = await r.json();
+      }
+      if (rows.length < 4) {
+        var r2 = await fetch(SB_URL + '/rest/v1/products?' + sel + '&published=eq.true&id=neq.' + encodeURIComponent(p.id) + '&order=created_at.desc&limit=8', { headers: hdr });
+        if (r2.ok) {
+          var more = await r2.json(); var seen = {};
+          rows.forEach(function (x) { seen[x.id] = 1; });
+          more.forEach(function (x) { if (!seen[x.id]) { seen[x.id] = 1; rows.push(x); } });
+        }
+      }
+    } catch (e) { return; }
+    rows = (rows || []).slice(0, 4);
+    if (!rows.length) return;
+    el.innerHTML = '<h4 class="fb-detail__h fb-related__h">También te puede servir</h4><div class="fb-related__row">' + rows.map(relMiniCard).join('') + '</div>';
+    el.style.display = '';
+  }
+
   function openFreebieModal(p) {
     if (!p) return;
     stopCoverCarousel();
@@ -680,6 +735,9 @@ if (currentLink) {
     const eyebrow = document.getElementById('freebieEyebrow');
     if (tEl) tEl.textContent = p.title || (p.is_free ? 'Tu guía gratuita' : 'Tu guía');
     if (dEl) dEl.textContent = p.description || '';
+    // After the description: "Lo que aprenderás" + "Para ti si…", then same-category recommendations.
+    renderModalDetails(p);
+    renderRelated(p);
     // Eyebrow: "Gratis" for free; hidden for paid (price now shown below description, in bold)
     if (eyebrow) {
       if (p.is_free) { eyebrow.textContent = 'Gratis'; eyebrow.style.display = ''; }
