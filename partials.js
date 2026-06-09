@@ -133,10 +133,10 @@ const FOOTER_HTML = `
       <div class="footer__col">
         <h4>Temas</h4>
         <ul>
-          <li><a href="biblioteca.html#educacion">Educación</a></li>
-          <li><a href="biblioteca.html#salud">Salud</a></li>
-          <li><a href="biblioteca.html#conducta">Conducta</a></li>
-          <li><a href="biblioteca.html#cachorros">Cachorros</a></li>
+          <li><a href="biblioteca.html?filter=educacion">Educación</a></li>
+          <li><a href="biblioteca.html?filter=salud">Salud</a></li>
+          <li><a href="biblioteca.html?filter=conducta">Conducta</a></li>
+          <li><a href="biblioteca.html?filter=cachorros">Cachorros</a></li>
         </ul>
       </div>
       <div class="footer__col">
@@ -524,29 +524,35 @@ if (currentLink) {
         history.pushState({ logramoModal: true, productId: p.id }, '', 'producto.html?id=' + encodeURIComponent(p.id));
       }
     } catch (_) {}
-    // ---------- Cover side ----------
+    // ---------- Cover side (new 3D book frame) ----------
+    const MODAL_CCOLOR = {sky:['#ADCBEF','#111A17'],peach:['#FFCDB8','#111A17'],sage:['#B5C1AB','#111A17'],golden:['#F6D055','#111A17'],lavender:['#C9C2EC','#111A17'],pink:['#F3C7D6','#111A17'],cream:['#FEFAE8','#111A17'],terracotta:['#C55932','#fff'],terra:['#C55932','#fff'],forest:['#3C4824','#FEFAE8'],ink:['#111A17','#FEFAE8']};
     const cover = document.getElementById('freebieCover');
     if (cover) {
-      cover.style.background = COVER_BG[p.cover_color] || COVER_BG.sky;
+      cover.style.background = 'var(--c-cream-alt)';
       // Build the image list: cover_image first, then gallery (deduped)
       const imgList = []; if (p.cover_image) imgList.push(p.cover_image);
       const gallery = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? (function(){ try { return JSON.parse(p.images); } catch(e){ return []; } })() : []);
       (gallery || []).forEach(function (u) { if (u) imgList.push(u); });
-      if (imgList.length) {
+      const seen = {}; const list = []; imgList.forEach(function(u){ if(u && !seen[u]){ seen[u]=1; list.push(u); } });
+      if (list.length) {
         cover.classList.add('freebie-modal__cover--image');
-        cover.innerHTML = '<div class="book-card__cover book-card__cover--image">' + buildCoverCarousel(imgList) + '</div>';
+        const imgsHtml = list.map(function(u,i){ return '<img class="cover-carousel__img' + (i===0?' is-active':'') + '" src="' + u + '" alt="" />'; }).join('');
+        let controls = '';
+        if (list.length > 1) {
+          const dots = list.map(function(_,i){ return '<button type="button" class="cover-carousel__dot' + (i===0?' is-active':'') + '" data-cc-dot="' + i + '" aria-label="Ir a imagen ' + (i+1) + '"></button>'; }).join('');
+          controls = '<div class="cover-carousel__controls"><button type="button" class="cover-carousel__arrow cover-carousel__arrow--prev" data-cc-prev aria-label="Anterior">‹</button><div class="cover-carousel__dots">' + dots + '</div><button type="button" class="cover-carousel__arrow cover-carousel__arrow--next" data-cc-next aria-label="Siguiente">›</button></div>';
+        }
+        cover.innerHTML = '<div class="cover-carousel" data-cover-carousel><span class="book3d book3d--shadow book3d--fill"><span class="cover">' + imgsHtml + '</span></span>' + controls + '</div>';
         startCoverCarousel(cover);
       } else {
         cover.classList.remove('freebie-modal__cover--image');
-        const iconHtml = (p.cover_icon && !/^i-/.test(p.cover_icon))
-          ? '<span class="cover-emoji">' + p.cover_icon + '</span>'
-          : '<svg width="32" height="32" style="color:var(--c-terracotta)"><use href="#' + (p.cover_icon || 'i-paw') + '"/></svg>';
+        const cc = MODAL_CCOLOR[String(p.cover_color||'sky').toLowerCase()] || MODAL_CCOLOR.sky;
+        const sizeStyle = p.cover_title_size ? ('font-size:' + p.cover_title_size + 'cqw;') : '';
         cover.innerHTML =
-          '<div class="book-card__cover">'
-            + '<div class="book-card__cover-sub">' + (p.cover_sub || 'Guía PDF') + '</div>'
-            + '<div class="book-card__cover-title">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</div>'
-            + '<div class="cover-icon-slot">' + iconHtml + '</div>'
-          + '</div>';
+          '<span class="book3d book3d--shadow book3d--fill"><span class="cover gcover" style="background:' + cc[0] + ';color:' + cc[1] + '">'
+            + '<span class="gcover__top"><span class="gsub">' + (p.cover_sub || 'Guía PDF') + '</span></span>'
+            + '<span class="gtitle" style="' + sizeStyle + '">' + ((p.cover_title || p.title || 'Guía').replace(/\n/g, '<br>')) + '</span>'
+          + '</span></span>';
       }
     }
     // ---------- Body side ----------

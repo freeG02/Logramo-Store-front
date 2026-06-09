@@ -1634,7 +1634,7 @@ h6 { font-size: .9rem; }
 .featured-book__cover-title { font-family: var(--font-body); font-weight: 900; font-size: 1.4rem; line-height: 1; text-transform: uppercase; letter-spacing: -.02em; }
 
 /* Library book grid */
-.library-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.library-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 30px 24px; align-items: start; }
 .book-card {
   background: var(--c-cream);
   border: var(--bw-1) solid var(--c-ink);
@@ -2913,7 +2913,7 @@ h6 { font-size: .9rem; }
   .freebie__inner, .product-soft__inner, .product-hero__inner, .about-hero__inner { grid-template-columns: 1fr; gap: 48px; }
   .product-hero__inner .product-cover, .product-hero__inner #productMedia { order: -1; }
   .freebie, .mission, .newsletter-section, .stats-block, .product-soft, .problem-solution, .bonuses-section, .story-section { padding: 56px 28px; }
-  .modules-grid, .for-grid, .bonuses-grid, .values-grid, .team-grid, .library-grid { grid-template-columns: 1fr; }
+  .modules-grid, .for-grid, .bonuses-grid, .values-grid, .team-grid { grid-template-columns: 1fr; }
   .problem-solution__grid { grid-template-columns: 1fr; gap: 32px; }
   .featured-post { grid-template-columns: 1fr; }
   .featured-post__img { border-right: none; border-bottom: var(--bw-1) solid var(--c-ink); }
@@ -3256,10 +3256,12 @@ h1, h2, h3, h4,
   /* Mobile: popup keeps its rounded-corner clipping (overflow:hidden), but the
      BODY side scrolls internally so PayPal's expanded card form has room. */
   .popup--freebie { max-width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; }
-  .freebie-modal__grid { grid-template-columns: 1fr; grid-template-rows: auto 1fr; max-height: 92vh; flex: 1; min-height: 0; }
+  /* Whole modal scrolls as one piece — so a swipe that starts on the cover
+     image scrolls too (no more "dead" top area). */
+  .freebie-modal__grid { grid-template-columns: 1fr; grid-template-rows: auto auto; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .freebie-modal__cover { min-height: 0; padding: 22px 18px 16px; }
   .freebie-modal__cover .book-card__cover { max-width: 200px; }
-  .freebie-modal__body { max-height: none; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 24px 24px 32px; }
+  .freebie-modal__body { max-height: none; min-height: 0; overflow-y: visible; padding: 24px 24px 32px; }
 }
 .freebie-modal__cover {
   background: var(--c-sky);
@@ -3287,7 +3289,7 @@ h1, h2, h3, h4,
 .freebie-modal__cover-icon { color: var(--c-terracotta); }
 .freebie-modal__body { padding: 32px 32px 28px; display: flex; flex-direction: column; text-align: center; align-items: center; }
 .freebie-modal__sep { width: 100%; height: 0; border: 0; border-top: var(--bw-1) solid var(--c-ink); margin: 4px 0 18px; opacity: .5; }
-.freebie-modal__price { font-family: var(--font-body); font-weight: 900; font-size: 1.8rem; line-height: 1; letter-spacing: -.02em; color: var(--c-ink); margin: 0 0 18px; }
+.freebie-modal__price { font-family: var(--font-body); font-weight: 900; font-size: 1.8rem; line-height: 1; letter-spacing: -.02em; color: var(--c-terracotta); margin: 0 0 18px; }
 .freebie-modal__body .freebie-modal__badges { justify-content: center; }
 .freebie-modal__body .freebie-modal__actions { width: 100%; }
 .freebie-modal__title {
@@ -3501,3 +3503,98 @@ h1, h2, h3, h4,
 }
 /* image-based cover fills the cover area */
 .book-card__cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ============================================================
+   BOOK FRAME (.book3d) — "real book" 5:7 cover treatment.
+   Wrap any cover (an <img> OR a .gcover) in it.
+   ============================================================ */
+.book3d{ position:relative; display:inline-block; border-radius:2px 4px 4px 2px;
+  transition:transform .25s ease, box-shadow .25s ease; }
+.book3d > .cover{
+  display:block; position:relative; overflow:hidden;
+  width:var(--w,200px); height:calc(var(--w,200px) * 1.4);   /* 5:7 */
+  border-radius:inherit; background:#cfc9b8 center/cover no-repeat;
+  container-type:inline-size;
+}
+.book3d > .cover > img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* spine fold (left) */
+.book3d::before{ content:""; position:absolute; top:0; bottom:0; left:0; width:11px;
+  border-radius:inherit; pointer-events:none; z-index:3;
+  background:linear-gradient(to right,
+    rgba(0,0,0,.22) 0px, rgba(0,0,0,.05) 1.5px, rgba(255,255,255,.70) 3px,
+    rgba(255,255,255,.12) 4.5px, rgba(0,0,0,.18) 6px, rgba(0,0,0,.04) 8px, rgba(0,0,0,0) 11px); }
+/* corner glow + bottom depth shadow + fore-edge page lines + sheen.
+   Overlays children below z-index:2 (e.g. the bottom banner). */
+.book3d::after{ content:""; position:absolute; inset:0; pointer-events:none; z-index:2; border-radius:inherit;
+  background:
+    radial-gradient(28px 28px at top left, rgba(255,255,255,.40), rgba(255,255,255,0) 72%),
+    radial-gradient(28px 28px at top right, rgba(255,255,255,.34), rgba(255,255,255,0) 72%),
+    radial-gradient(24px 24px at bottom left, rgba(255,255,255,.18), rgba(255,255,255,0) 72%),
+    radial-gradient(24px 24px at bottom right, rgba(255,255,255,.18), rgba(255,255,255,0) 72%),
+    linear-gradient(to top, rgba(0,0,0,.30) 0, rgba(0,0,0,.10) 3%, rgba(0,0,0,.02) 6.5%, rgba(0,0,0,0) 10%),
+    linear-gradient(to right,
+      rgba(0,0,0,0) calc(100% - 7px), rgba(0,0,0,.06) calc(100% - 6px), rgba(255,255,255,.55) calc(100% - 5px),
+      rgba(0,0,0,.05) calc(100% - 4px), rgba(255,255,255,.6) calc(100% - 3px), rgba(0,0,0,.05) calc(100% - 2px),
+      rgba(255,255,255,.5) calc(100% - 1px), rgba(0,0,0,.04) 100%),
+    linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 22%); }
+/* no border · hard offset + soft contact shadow */
+.book3d--shadow{ box-shadow:5px 6px 0 var(--c-ink), 0 10px 12px -7px rgba(17,26,23,.45); }
+.book3d--shadow:hover{ transform:translate(-2px,-2px); box-shadow:7px 8px 0 var(--c-ink), 0 16px 18px -8px rgba(17,26,23,.45); }
+
+/* generated cover: subtitle TOP, title CENTERED */
+.gcover{ color:#fff; }
+.gcover__top{ position:absolute; top:8%; left:8%; right:8%; z-index:1; display:flex; align-items:center; justify-content:flex-start; gap:7px; }
+.gcover .gemoji{ font-size:13cqw; line-height:1; display:inline-flex; }
+.gcover .gemoji .icon{ width:1em; height:1em; }
+.gcover .gsub{ font-size:4.4cqw; letter-spacing:.13em; text-transform:uppercase; opacity:.92; font-weight:700; }
+.gcover .gtitle{ position:absolute; top:46%; left:8%; right:8%; transform:translateY(-50%); z-index:1; text-align:left;
+  font-weight:900; font-size:15.5cqw; line-height:1.02; letter-spacing:-.02em; overflow-wrap:break-word; hyphens:none; }
+
+/* secondary tag — top-right corner (stays inside frame) */
+.gtag{ position:absolute; z-index:4; display:inline-flex; align-items:center; gap:1.2cqw;
+  background:var(--c-golden); color:var(--c-ink); border:1.5px solid var(--c-ink); border-radius:999px;
+  padding:1.4cqw 3.2cqw; font-weight:800; font-size:4cqw; text-transform:uppercase; letter-spacing:.05em;
+  white-space:nowrap; box-shadow:1.5px 1.5px 0 var(--c-ink); }
+.gtag--terra{ background:var(--c-terracotta); color:#fff; }
+.gtag--tr{ top:7%; right:7%; transform:rotate(4deg); transform-origin:center; }
+
+/* OPTIONAL integrated bottom banner — z-index:1 so the cover's bottom
+   shadow/glow (::after, z2) passes over it. No top stroke. */
+.gbanner{ position:absolute; left:0; right:0; bottom:0; z-index:1;
+  display:flex; align-items:center; justify-content:center; gap:1.5cqw;
+  padding:3.4cqw; font-weight:800; font-size:4.2cqw; letter-spacing:.1em;
+  text-transform:uppercase; white-space:nowrap;
+  background:rgba(17,26,23,.62); color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35);
+  -webkit-backdrop-filter:saturate(1.1) brightness(.95); backdrop-filter:saturate(1.1) brightness(.95); }
+.gbanner--solid{ background:var(--c-forest); color:var(--c-cream); text-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.gbanner--terra{ background:var(--c-terracotta); color:#fff; text-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+
+/* book frame that fills its container width (used in the biblioteca list) */
+.book3d--fill{ display:block; width:100%; }
+.book3d--fill > .cover{ width:100%; height:auto; aspect-ratio:5/7; }
+
+/* biblioteca: just the book + a price/button bar (no card chrome) */
+.book-card--bare{ background:transparent; border:0; border-radius:0; box-shadow:none; overflow:visible; }
+.book-card--bare:hover{ transform:none; box-shadow:none; }
+.book-card__coverlink{ display:block; text-decoration:none; }
+.book-card__bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:18px; }
+.book-card__bar .book-card__price{ font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:900; font-size:1.1rem; }
+.book-card__bar .book-card__price--free{ color:var(--c-terracotta); }
+
+/* biblioteca on phones: each category row becomes a horizontal swipe —
+   ~2 books + a peek of the 3rd so it's clearly scrollable. */
+@media (max-width: 640px){
+  .library-grid{
+    display:flex; grid-template-columns:none;
+    overflow-x:auto; gap:14px; padding-bottom:10px;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .library-grid::-webkit-scrollbar{ display:none; }
+  .library-grid > .book-card{ flex:0 0 42%; scroll-snap-align:start; }
+  .library-section__head h2{ font-size:1.35rem; }
+}
+
+/* book frame inside the product modal — capped + centered */
+.freebie-modal__cover .book3d--fill,
+.freebie-modal__cover .cover-carousel{ width:100%; max-width:230px; margin:0 auto; }

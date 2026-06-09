@@ -185,3 +185,27 @@ The user is working through Phase 4: customer accounts + content. Specifically:
 4. Check the Supabase dashboard if needed (functions list, table contents).
 5. **Never** introduce any phrasing the brand voice section forbids.
 6. Default to NOT pushing to GitHub until explicitly told.
+
+---
+
+## 🚧 Work in progress (handoff — 2026-06-09, NOT yet pushed)
+
+All of the below is **committed locally but NOT pushed** (GitHub Pages only deploys on push). See the latest WIP commit with `git log --oneline -3`; full delta vs live with `git diff origin/main`. Last pushed/live commit is `33083b1`.
+
+**Done this session (staged in worktree):**
+- **Copy de-AI pass**: removed em-dash tic + "real/honest/auténtico" self-claiming across all customer pages + footer. Brand-voice rule lives in user memory (`feedback_logramo_copy_voice.md`).
+- **"Book frame" cover system** (`.book3d` in `styles.css`): 5:7, no border, brutalist hard shadow + soft contact shadow, left spine fold, corner glow, bottom inner depth shadow. Generated cover = `.gcover` (subtitle top, title centered via `cover_title_size`cqw), top-right tilted tag `.gtag--tr`, optional integrated glass bottom banner `.gbanner`. Applied in: homepage highlight (`index.html`), biblioteca grid (`biblioteca.html`), product modal (`partials.js` renderFreebie).
+- **biblioteca**: cards are now JUST the book (clickable → modal), no price/button, no category icons. Grid `minmax(205px,1fr)`. Phones (≤640px) = horizontal swipe rows (`flex`, 42% cards, ~2+peek). `?demo` URL param injects 16 fictive books for layout preview (no DB writes).
+- **Product modal**: cover uses the new frame; price is terracotta; whole modal scrolls on mobile (was a dead cover area).
+- **Dashboard**: "Title size on cover" slider (`p-covertitlesize`) → `products.cover_title_size`. Migration **already applied** by user (`supabase/migrations/20260608_cover_title_size.sql`). Save is resilient if column missing.
+- **Homepage "Empieza aquí" cards** deep-link to `biblioteca.html?filter=…` with empty-filter fallback. Footer "Temas" links fixed to `?filter=`. Cache tokens bumped: `styles.css?v=20260714`, `partials.js?v=20260712`.
+- **Admin "Danger zone" reset** + `supabase/functions/reset-data/index.ts` (wipes subscribers + purchases + pageviews via admin-gated edge fn). **NOT deployed yet** — needs `Copy-Item` mirror + `supabase functions deploy reset-data --use-api --no-verify-jwt`.
+
+**Open items / TODO:**
+- [ ] Footer **social links** still `href="#"` — need real FB/YT/Pinterest URLs from user.
+- [ ] biblioteca **"Destacados" featured carousel** still uses OLD cover style — apply the frame there too (`fcCover`/`fcSlide` in biblioteca.html).
+- [ ] Deploy the **reset-data** edge function (above) — UI is live but button errors until deployed.
+- [ ] User to eyeball biblioteca sizing/spacing + demo fill (Claude's screenshot tool was down this session — verify visually).
+- [ ] When approved: **push** (copy + book frames + biblioteca redesign + reset tool + footer fixes + slider).
+
+**Gotcha:** Claude's local screenshot/preview navigation was flaky this session (URL params getting pinned). Verify visually in a real browser at `localhost:8099`.

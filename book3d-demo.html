@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Logramo · book frame — integrated banner</title>
+<style>
+  :root{
+    --c-cream:#FEFAE8; --c-cream-alt:#F8F3D9; --c-ink:#111A17;
+    --c-terracotta:#C55932; --c-golden:#F6D055; --c-forest:#3C4824; --c-sky:#ADCBEF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--c-cream-alt);font-family:Inter,system-ui,Arial,sans-serif;color:var(--c-ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:40px 24px 100px}
+  h1{font-weight:900;letter-spacing:-.02em;margin:0 0 4px}
+  .sub{color:#6b6b5f;margin:0 0 8px;max-width:660px}
+  h2{margin:50px 0 6px;font-size:1.05rem;text-transform:uppercase;letter-spacing:.08em}
+  .h2note{color:#6b6b5f;margin:0 0 24px;font-size:.9rem}
+  .shelf{display:flex;gap:44px;flex-wrap:wrap;align-items:flex-start}
+  .item{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+  .label{font-size:.82rem;font-weight:700;color:#444}
+
+  /* ===== .book3d — 5:7 frame ===== */
+  .book3d{position:relative;display:inline-block;border-radius:2px 4px 4px 2px;
+    transition:transform .25s ease, box-shadow .25s ease;}
+  .book3d > .cover{display:block;position:relative;overflow:hidden;
+    width:var(--w,200px); height:calc(var(--w,200px) * 1.4);
+    border-radius:inherit;background:#cfc9b8 center/cover no-repeat;container-type:inline-size;}
+  .book3d > .cover img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .book3d::before{content:"";position:absolute;top:0;bottom:0;left:0;width:11px;
+    border-radius:inherit;pointer-events:none;z-index:3;
+    background:linear-gradient(to right,
+      rgba(0,0,0,.22) 0px, rgba(0,0,0,.05) 1.5px, rgba(255,255,255,.70) 3px,
+      rgba(255,255,255,.12) 4.5px, rgba(0,0,0,.18) 6px, rgba(0,0,0,.04) 8px, rgba(0,0,0,0) 11px);}
+
+  /* ::after overlays EVERYTHING below it (incl. the banner at z-index:1),
+     so the bottom depth-shadow + page edges + corner glow pass through the banner. */
+  .book3d::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:inherit;
+    background:
+      radial-gradient(28px 28px at top left, rgba(255,255,255,.40), rgba(255,255,255,0) 72%),
+      radial-gradient(28px 28px at top right, rgba(255,255,255,.34), rgba(255,255,255,0) 72%),
+      radial-gradient(24px 24px at bottom left, rgba(255,255,255,.18), rgba(255,255,255,0) 72%),
+      radial-gradient(24px 24px at bottom right, rgba(255,255,255,.18), rgba(255,255,255,0) 72%),
+      /* BOTTOM depth shadow — tighter to the edge (closer to Apple) */
+      linear-gradient(to top, rgba(0,0,0,.30) 0, rgba(0,0,0,.10) 3%, rgba(0,0,0,.02) 6.5%, rgba(0,0,0,0) 10%),
+      linear-gradient(to right,
+        rgba(0,0,0,0) calc(100% - 7px), rgba(0,0,0,.06) calc(100% - 6px), rgba(255,255,255,.55) calc(100% - 5px),
+        rgba(0,0,0,.05) calc(100% - 4px), rgba(255,255,255,.6) calc(100% - 3px), rgba(0,0,0,.05) calc(100% - 2px),
+        rgba(255,255,255,.5) calc(100% - 1px), rgba(0,0,0,.04) 100%),
+      linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 22%);}
+
+  .book3d--shadow{box-shadow:5px 6px 0 var(--c-ink), 0 10px 12px -7px rgba(17,26,23,.45);}
+  .book3d--shadow:hover{transform:translate(-2px,-2px);box-shadow:7px 8px 0 var(--c-ink), 0 16px 18px -8px rgba(17,26,23,.45);}
+
+  /* ===== generated cover: subtitle top, title centered ===== */
+  .gcover{color:#fff}
+  .gcover__top{position:absolute;top:8%;left:8%;right:8%;z-index:1;display:flex;align-items:center;gap:7px}
+  .gemoji{font-size:13cqw;line-height:1}
+  .gsub{font-size:4.4cqw;letter-spacing:.13em;text-transform:uppercase;opacity:.92;font-weight:700}
+  .gtitle{position:absolute;top:46%;left:8%;right:8%;transform:translateY(-50%);z-index:1;
+    font-weight:900;font-size:15.5cqw;line-height:1.02;letter-spacing:-.02em;overflow-wrap:break-word;hyphens:auto;}
+  .g-golden{background:var(--c-golden);color:var(--c-ink)}
+  .g-forest{background:var(--c-forest)}
+  .g-terra{background:var(--c-terracotta)}
+  .g-sky{background:var(--c-sky);color:var(--c-ink)}
+
+  /* ============================================================
+     .gbanner — INTEGRATED bottom banner.
+     z-index:1 → sits UNDER ::after, so the cover's bottom shadow,
+     page edge and corner glow render over it (shadow "goes through").
+     No top stroke. Two looks: solid + glass (see-through).
+     ============================================================ */
+  .gbanner{position:absolute;left:0;right:0;bottom:0;z-index:1;
+    display:flex;align-items:center;justify-content:center;gap:1.5cqw;
+    padding:3.4cqw;font-weight:800;font-size:4.2cqw;letter-spacing:.1em;
+    text-transform:uppercase;white-space:nowrap;}
+  .gbanner--solid{background:var(--c-forest);color:var(--c-cream);}
+  .gbanner--solidterra{background:var(--c-terracotta);color:#fff;}
+  .gbanner--glass{background:rgba(17,26,23,.62);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);backdrop-filter:saturate(1.1) brightness(.95);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Banner inferior integrado en la portada</h1>
+  <p class="sub">Sin borde arriba · la sombra inferior de la portada pasa por encima del banner para que se vea integrado, no pegado. Título centrado, subtítulo arriba.</p>
+
+  <h2>Banner — ¿sólido o "glass"?</h2>
+  <p class="h2note">La sombra del fondo de la portada cruza el banner en los dos casos.</p>
+  <div class="shelf">
+    <div class="item">
+      <span class="book3d book3d--shadow"><span class="cover gcover g-golden">
+        <span class="gcover__top"><span class="gsub">Guía PDF</span></span>
+        <span class="gtitle">Los primeros 30 días</span>
+        <span class="gbanner gbanner--solid">★ Más vendido</span>
+      </span></span>
+      <span class="label">Sólido (forest)</span>
+    </div>
+    <div class="item">
+      <span class="book3d book3d--shadow"><span class="cover gcover g-forest">
+        <span class="gcover__top"><span class="gsub">Manual</span></span>
+        <span class="gtitle">Alimentación sana</span>
+        <span class="gbanner gbanner--solidterra">Nuevo</span>
+      </span></span>
+      <span class="label">Sólido (terracotta)</span>
+    </div>
+    <div class="item">
+      <span class="book3d book3d--shadow"><span class="cover gcover g-terra">
+        <span class="gcover__top"><span class="gsub">Libro digital</span></span>
+        <span class="gtitle">Cría un perro feliz</span>
+        <span class="gbanner gbanner--glass">★ Recomendado</span>
+      </span></span>
+      <span class="label">Glass (se transparenta)</span>
+    </div>
+  </div>
+
+  <h2>Sobre imagen de portada real</h2>
+  <div class="shelf">
+    <div class="item">
+      <span class="book3d book3d--shadow"><span class="cover">
+        <img src="https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=700&q=80&fit=crop" alt="portada">
+        <span class="gbanner gbanner--solid">★ Más vendido</span>
+      </span></span>
+      <span class="label">Imagen + banner sólido</span>
+    </div>
+    <div class="item">
+      <span class="book3d book3d--shadow"><span class="cover">
+        <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=700&q=80&fit=crop" alt="portada">
+        <span class="gbanner gbanner--glass">Nuevo</span>
+      </span></span>
+      <span class="label">Imagen + banner glass</span>
+    </div>
+  </div>
+
+  <h2>Detalle (zoom) — mira la sombra cruzar el banner</h2>
+  <div class="shelf">
+    <span class="book3d book3d--shadow"><span class="cover gcover g-forest" style="--w:340px">
+      <span class="gcover__top"><span class="gsub">Manual</span></span>
+      <span class="gtitle">Alimentación sana</span>
+      <span class="gbanner gbanner--solidterra">★ Más vendido</span>
+    </span></span>
+  </div>
+</div>
+</body>
+</html>

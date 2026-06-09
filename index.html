@@ -14,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías para dueños primerizos que están sobreviviendo el caos de tener un perro (y amándolo). Claras, al grano y escritas por gente que ya pasó por ahí." />
   <title>Cría un perro feliz · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260710" />
+  <link rel="stylesheet" href="styles.css?v=20260714" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -388,9 +388,33 @@
       var bullets=bulletSrc.slice(0,4).map(function(it){ return '<div class="freebie__bullet"><span class="freebie__bullet-icon"><svg class="icon icon--sm"><use href="#i-check"/></svg></span><span>'+esc(it.title||'')+'</span></div>'; }).join('');
 
       var imgs=Array.isArray(p.images)?p.images.filter(Boolean):[];
-      var DEFAULT_IMG='https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=700&q=85&fit=crop';
-      var imgSrc=p.cover_image||imgs[0]||DEFAULT_IMG;
-      var visual='<div class="freebie__img-wrap"><img src="'+esc(imgSrc)+'" alt="'+esc(p.title)+'" loading="lazy"></div>';
+      // ---- Real book cover inside the 3D frame (no stock photo) ----
+      function cap(s){s=String(s||'');return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+      var TAGLABELS={gratis:'Gratis',nuevo:'Nuevo',recomendado:'Recomendado',popular:'Popular',caliente:'Caliente',bestseller:'Más vendido'};
+      var CCOLOR={sky:['#ADCBEF','#111A17'],peach:['#FFCDB8','#111A17'],sage:['#B5C1AB','#111A17'],golden:['#F6D055','#111A17'],lavender:['#C9C2EC','#111A17'],pink:['#F3C7D6','#111A17'],cream:['#FEFAE8','#111A17'],terracotta:['#C55932','#fff'],terra:['#C55932','#fff'],forest:['#3C4824','#FEFAE8'],ink:['#111A17','#FEFAE8']};
+      var ptags=Array.isArray(p.tags)?p.tags:asList(p.tags);
+      // secondary tag (top-right): Gratis if free, else first tag
+      var trKey=p.is_free?'gratis':String(ptags[0]||'').toLowerCase();
+      var trLabel=TAGLABELS[trKey]||cap(trKey);
+      var trClass=(trKey==='nuevo'||trKey==='caliente')?'gtag gtag--terra gtag--tr':'gtag gtag--tr';
+      var topTag=trLabel?'<span class="'+trClass+'">'+esc(trLabel)+'</span>':'';
+      // optional bottom banner: only when on sale
+      var onSale=p.original_price&&Number(p.original_price)>Number(p.price);
+      var banner=onSale?'<span class="gbanner gbanner--terra">Oferta</span>':'';
+      var coverImg=p.cover_image||imgs[0]||'';
+      var coverInner;
+      if(coverImg){
+        coverInner='<span class="cover"><img src="'+esc(coverImg)+'" alt="'+esc(p.title)+'" loading="lazy">'+topTag+banner+'</span>';
+      } else {
+        var cc=CCOLOR[String(p.cover_color||'forest').toLowerCase()]||CCOLOR.forest;
+        coverInner='<span class="cover gcover" style="background:'+cc[0]+';color:'+cc[1]+'">'
+          +topTag
+          +'<span class="gcover__top"><span class="gsub">'+esc(p.cover_sub||'Guía')+'</span></span>'
+          +'<span class="gtitle"'+(p.cover_title_size?(' style="font-size:'+p.cover_title_size+'cqw"'):'')+'>'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</span>'
+          +banner
+          +'</span>';
+      }
+      var visual='<span class="book3d book3d--shadow" style="--w:min(300px,72vw)">'+coverInner+'</span>';
 
       var priceHtml = p.is_free ? '<span class="product-hero__price">Gratis</span>'
         : '<span class="product-hero__price">'+money(p.price)+'</span>'+((p.original_price&&Number(p.original_price)>Number(p.price))?' <span class="product-hero__original">'+money(p.original_price)+'</span>':'');
@@ -405,12 +429,8 @@
         +'<div class="product-hero__price-row" style="margin:8px 0 24px">'+priceHtml+'</div>'
         +'<a href="#" data-freebie="'+esc(p.id)+'" class="btn btn--primary btn--lg"><svg class="icon"><use href="#i-'+(p.is_free?'pdf':'cart')+'"/></svg> '+cta+'</a>'
         +'</div>'
-        +'<div class="freebie__image-wrap">'
+        +'<div class="freebie__image-wrap" style="display:flex;justify-content:center">'
           + visual
-          +'<div class="freebie__pdf-card">'
-            +'<div class="freebie__pdf-icon"><svg class="icon icon--md"><use href="#i-pdf"/></svg></div>'
-            +'<div><div class="freebie__pdf-title">'+esc(p.title||'')+'</div><div class="freebie__pdf-sub">'+esc(p.cover_sub||'PDF · Descarga inmediata')+'</div></div>'
-          +'</div>'
         +'</div>';
       sec.style.display='';
     }catch(e){}
