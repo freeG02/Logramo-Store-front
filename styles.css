@@ -700,6 +700,7 @@ h6 { font-size: .9rem; }
    EMPIEZA AQUÍ
    ============================================================ */
 .start-here { padding: var(--section-py) 0; }
+#empieza { scroll-margin-top: 90px; }  /* clear the sticky nav when the hero button jumps here */
 .start-here__head {
   display: grid; grid-template-columns: 1.6fr 1fr; gap: 60px;
   align-items: end; margin-bottom: 56px;
@@ -972,6 +973,7 @@ h6 { font-size: .9rem; }
    BLOG / ARTICLE CARDS
    ============================================================ */
 .blog-preview { padding: var(--section-py) 0; background: var(--c-cream); }
+.blog-more { text-align: center; margin-top: 48px; }
 .blog-preview__head {
   display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px;
   align-items: end; margin-bottom: 56px;
@@ -1742,6 +1744,46 @@ h6 { font-size: .9rem; }
   transition: background .2s var(--ease), width .25s var(--ease-out);
 }
 .cover-carousel__dot.is-active { background: var(--c-ink); width: 22px; border-radius: 9999px; }
+
+/* ===== Coverflow (product modal, multiple images) =====
+   Active book centred & in front; previous/next books peek smaller on each side. */
+.cover-carousel--flow { display: flex; flex-direction: column; align-items: center; gap: 22px; width: 100%; padding-top: 12px; }
+.cover-flow {
+  position: relative; width: 100%; aspect-ratio: 1 / 1.14; margin: 0 auto;
+  cursor: grab; touch-action: pan-y; user-select: none;
+}
+.cover-flow:active { cursor: grabbing; }
+.cover-flow .cover-flow__item {
+  position: absolute; top: 50%; left: 50%; width: 62%; margin: 0;
+  transform: translate(-50%, -50%) scale(.72); opacity: 0; z-index: 1; pointer-events: none;
+  transition: transform .42s cubic-bezier(.22,.61,.36,1), opacity .42s var(--ease);
+  -webkit-user-drag: none;
+}
+/* Pages grow to the SAME size as the cover. The cover keeps its width from the
+   modal's `.freebie-modal__cover .book3d--fill { width:100%; max-width:180px }`,
+   so pages mirror that exact sizing. */
+.cover-flow .cover-flow__item--page { width: 100%; max-width: 180px; }
+.cover-flow .cover-flow__item.is-prev,
+.cover-flow .cover-flow__item.is-next { opacity: .5; z-index: 2; pointer-events: auto; cursor: pointer; }
+.cover-flow .cover-flow__item.is-prev   { transform: translate(calc(-50% - 60%), -50%) scale(.78); }
+.cover-flow .cover-flow__item.is-next   { transform: translate(calc(-50% + 60%), -50%) scale(.78); }
+.cover-flow .cover-flow__item.is-active {
+  transform: translate(-50%, -50%) scale(1); opacity: 1; z-index: 3; pointer-events: auto;
+}
+/* hard book shadow only on the cover (image 0), not on the pages */
+.cover-flow .cover-flow__item--cover.is-active { box-shadow: 5px 6px 0 var(--c-ink); }
+.cover-flow .cover-flow__item img { pointer-events: none; -webkit-user-drag: none; }
+/* tag + banner only on the centred cover */
+.cover-flow__item:not(.is-active) .gtag,
+.cover-flow__item:not(.is-active) .gbanner { display: none; }
+
+/* Non-cover images render as plain photos with a folded (dog-eared) bottom-right
+   corner, like a turned page. No frame, border or brutalist shadow. */
+.cover-flow__item--page .page {
+  display: block; position: relative; width: 100%; aspect-ratio: 5 / 7; overflow: hidden;
+  border-radius: 5px;
+}
+.cover-flow__item--page .page img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Modal trust badges (Acceso inmediato + Acceso de por vida) */
 .freebie-modal__badges { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 14px 0 18px; }
@@ -2897,9 +2939,10 @@ h6 { font-size: .9rem; }
   :root { --section-py: 72px; }
   .nav__links { display: none; }
   .nav__hamburger { display: flex; }
-  .hero__inner { grid-template-columns: 1fr; gap: 56px; }
+  .hero { padding-top: 32px; }
+  .hero__inner { grid-template-columns: 1fr; gap: 32px; }
   .hero__image { order: -1; }
-  .start-here__head { grid-template-columns: 1fr; gap: 24px; }
+  .start-here__head { grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px; }
   .start-here__grid { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .stat { border-right: none; border-bottom: var(--bw-1) solid rgba(254,250,232,.15); }
@@ -2907,7 +2950,7 @@ h6 { font-size: .9rem; }
   .blog-grid { grid-template-columns: 1fr; }
   .blog-preview__head { grid-template-columns: 1fr; gap: 20px; }
   .video-grid { grid-template-columns: 1fr 1fr; }
-  .videos__inner { padding: 56px 28px; }
+  .videos__inner { padding: 28px 28px; }
   .reviews-grid { grid-template-columns: 1fr; }
   .freebie__inner, .product-soft__inner, .product-hero__inner, .about-hero__inner { grid-template-columns: 1fr; gap: 48px; }
   .product-hero__inner .product-cover, .product-hero__inner #productMedia { order: -1; }
@@ -2915,9 +2958,25 @@ h6 { font-size: .9rem; }
      Copy becomes display:contents so its children join the grid and can reorder. */
   .freebie__inner { gap: 28px; }
   .freebie__copy { display: contents; }
-  .freebie__eyebrow { order: 1; margin-bottom: 0; }
+  .freebie__eyebrow { order: 1; margin-bottom: 0; justify-self: center; }
   .freebie__image-wrap { order: 2; }
   .freebie__details { order: 3; }
+  /* Center everything in the "Lo más vendido" card on mobile — content
+     centered to the container, not just text-aligned. */
+  .freebie__inner { text-align: center; }
+  .freebie__details { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .freebie__details > * { max-width: 100%; }
+  .freebie__bullets { align-items: center; }
+  .freebie__details .product-hero__price-row { justify-content: center; }
+  /* The book's generated cover already prints the title, so drop the duplicate
+     title below it on mobile. (Image covers have no title on them → keep it.) */
+  .freebie__inner:has(.gcover) .freebie__title { display: none; }
+  /* Mobile spacing pass: snap the homepage vertical gaps to a uniform ~32px.
+     Section-to-section gaps = 16px (bottom of one) + 16px (top of next). */
+  .blog-more { margin-top: 6px; }               /* hugs the last article (button belongs to the blog) */
+  .blog-preview { padding-bottom: 16px; }
+  .videos { padding: 64px 0; }                  /* generous room above & below the video card */
+  .reviews { padding-top: 16px; }               /* video card -> "Lo que dicen" */
   .freebie, .mission, .newsletter-section, .stats-block, .product-soft, .problem-solution, .bonuses-section, .story-section { padding: 56px 28px; }
   .modules-grid, .for-grid, .bonuses-grid, .values-grid, .team-grid { grid-template-columns: 1fr; }
   .problem-solution__grid { grid-template-columns: 1fr; gap: 32px; }
@@ -3297,6 +3356,7 @@ h1, h2, h3, h4,
 .freebie-modal__sep { width: 100%; height: 0; border: 0; border-top: var(--bw-1) solid var(--c-ink); margin: 4px 0 18px; opacity: .5; }
 .freebie-modal__price { font-family: var(--font-body); font-weight: 900; font-size: 1.8rem; line-height: 1; letter-spacing: -.02em; color: var(--c-terracotta); margin: 0 0 18px; }
 .freebie-modal__body .freebie-modal__badges { justify-content: center; }
+.freebie-modal__body .paypal-wrap__head { justify-content: center; }
 .freebie-modal__body .freebie-modal__actions { width: 100%; }
 .freebie-modal__title {
   font-family: var(--font-display); font-weight: 900;
@@ -3604,3 +3664,5 @@ h1, h2, h3, h4,
 /* book frame inside the product modal — capped + centered */
 .freebie-modal__cover .book3d--fill,
 .freebie-modal__cover .cover-carousel{ width:100%; max-width:180px; margin:0 auto; }
+.freebie-modal__cover .cover-carousel--flow{ max-width:240px; }  /* room for the side peeks */
+.freebie-modal__cover--image{ background: var(--c-cream-alt); }  /* offwhite behind the coverflow */

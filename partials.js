@@ -425,20 +425,45 @@ if (currentLink) {
   }
   function startCoverCarousel(root) {
     const car = root.querySelector('[data-cover-carousel]'); if (!car) return;
-    const slides = Array.prototype.slice.call(car.querySelectorAll('.cover-carousel__img'));
+    const flow = car.querySelector('[data-cover-flow]');
+    const items = Array.prototype.slice.call(car.querySelectorAll('.cover-flow__item'));
     const dots = Array.prototype.slice.call(car.querySelectorAll('.cover-carousel__dot'));
-    if (slides.length < 2) return;
+    const n = items.length;
+    if (!flow || n < 2) return;
     let idx = 0;
-    function go(n) {
-      idx = (n + slides.length) % slides.length;
-      slides.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
+    function go(to) {
+      idx = (to % n + n) % n;
+      const p = (idx - 1 + n) % n, nx = (idx + 1) % n;
+      items.forEach(function (it, i) {
+        it.classList.remove('is-active', 'is-prev', 'is-next');
+        if (i === idx) it.classList.add('is-active');
+        else if (i === p) it.classList.add('is-prev');
+        else if (i === nx) it.classList.add('is-next');
+      });
       dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
     }
-    const prev = car.querySelector('[data-cc-prev]'); if (prev) prev.addEventListener('click', function () { go(idx - 1); restart(); });
-    const next = car.querySelector('[data-cc-next]'); if (next) next.addEventListener('click', function () { go(idx + 1); restart(); });
-    dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); restart(); }); });
-    function restart() { stopCoverCarousel(); _coverCarouselTimer = setInterval(function () { go(idx + 1); }, 6000); }
-    restart();
+    // Tap a side book -> bring it to centre. Dots -> jump directly.
+    items.forEach(function (it) {
+      it.addEventListener('click', function () {
+        if (moved) { moved = false; return; }
+        if (it.classList.contains('is-prev')) go(idx - 1);
+        else if (it.classList.contains('is-next')) go(idx + 1);
+      });
+    });
+    dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); }); });
+    // Swipe / drag (manual only — no auto-advance).
+    let startX = null, moved = false;
+    function down(x) { startX = x; moved = false; }
+    function move(x) { if (startX !== null && Math.abs(x - startX) > 8) moved = true; }
+    function up(x) { if (startX === null) return; const dx = x - startX; startX = null; if (Math.abs(dx) > 30) go(dx < 0 ? idx + 1 : idx - 1); }
+    flow.addEventListener('touchstart', function (e) { down(e.touches[0].clientX); }, { passive: true });
+    flow.addEventListener('touchmove', function (e) { move(e.touches[0].clientX); }, { passive: true });
+    flow.addEventListener('touchend', function (e) { up(e.changedTouches[0].clientX); });
+    flow.addEventListener('mousedown', function (e) { down(e.clientX); });
+    flow.addEventListener('mousemove', function (e) { move(e.clientX); });
+    flow.addEventListener('mouseup', function (e) { up(e.clientX); });
+    flow.addEventListener('mouseleave', function () { startX = null; });
+    go(0);
   }
 
   /* ----- PayPal Smart Buttons (ported from producto.html, mounted in the modal) ----- */
@@ -548,14 +573,24 @@ if (currentLink) {
       const seen = {}; const list = []; imgList.forEach(function(u){ if(u && !seen[u]){ seen[u]=1; list.push(u); } });
       if (list.length) {
         cover.classList.add('freebie-modal__cover--image');
-        const imgsHtml = list.map(function(u,i){ return '<img class="cover-carousel__img' + (i===0?' is-active':'') + '" src="' + u + '" alt="" />'; }).join('');
-        let controls = '';
-        if (list.length > 1) {
+        if (list.length === 1) {
+          // Single image: just the book, no carousel.
+          cover.innerHTML = '<span class="book3d book3d--shadow book3d--fill"><span class="cover"><img src="' + list[0] + '" alt="" />' + topTagHtml + bannerHtml + '</span></span>';
+        } else {
+          // Multiple images: coverflow — active book centered, neighbors peeking on each
+          // side, dots below. Each image is its own book frame; tags show on the centre one.
+          const items = list.map(function(u,i){
+            if (i === 0) {
+              // Cover image → book frame (carries the product tag + banner).
+              return '<span class="cover-flow__item cover-flow__item--cover book3d book3d--fill" data-cf-item="0"><span class="cover"><img src="' + u + '" alt="" />' + topTagHtml + bannerHtml + '</span></span>';
+            }
+            // Other images → paper "page" look.
+            return '<span class="cover-flow__item cover-flow__item--page" data-cf-item="' + i + '"><span class="page"><img src="' + u + '" alt="" /></span></span>';
+          }).join('');
           const dots = list.map(function(_,i){ return '<button type="button" class="cover-carousel__dot' + (i===0?' is-active':'') + '" data-cc-dot="' + i + '" aria-label="Ir a imagen ' + (i+1) + '"></button>'; }).join('');
-          controls = '<div class="cover-carousel__controls"><button type="button" class="cover-carousel__arrow cover-carousel__arrow--prev" data-cc-prev aria-label="Anterior">‹</button><div class="cover-carousel__dots">' + dots + '</div><button type="button" class="cover-carousel__arrow cover-carousel__arrow--next" data-cc-next aria-label="Siguiente">›</button></div>';
+          cover.innerHTML = '<div class="cover-carousel cover-carousel--flow" data-cover-carousel><div class="cover-flow" data-cover-flow>' + items + '</div><div class="cover-carousel__dots">' + dots + '</div></div>';
+          startCoverCarousel(cover);
         }
-        cover.innerHTML = '<div class="cover-carousel" data-cover-carousel><span class="book3d book3d--shadow book3d--fill"><span class="cover">' + imgsHtml + topTagHtml + bannerHtml + '</span></span>' + controls + '</div>';
-        startCoverCarousel(cover);
       } else {
         cover.classList.remove('freebie-modal__cover--image');
         const cc = MODAL_CCOLOR[String(p.cover_color||'sky').toLowerCase()] || MODAL_CCOLOR.sky;

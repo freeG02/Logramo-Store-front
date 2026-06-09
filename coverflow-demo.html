@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coverflow demo · Logramo</title>
+  <link rel="stylesheet" href="styles.css?v=20260727" />
+  <style>
+    body { margin: 0; background: var(--c-cream); font-family: var(--font-body, system-ui, sans-serif); }
+    .demo-wrap { max-width: 420px; margin: 0 auto; padding: 28px 16px 80px; }
+    .demo-h { text-align: center; font-weight: 900; letter-spacing: -.02em; margin: 0 0 6px; }
+    .demo-sub { text-align: center; color: #6b6b5e; font-size: .8rem; margin: 0 0 22px; }
+    .demo-bar { display: flex; gap: 8px; justify-content: center; margin-bottom: 22px; }
+    .demo-bar button {
+      padding: 8px 14px; border: 2px solid var(--c-ink); border-radius: 9999px;
+      background: var(--c-cream-alt); font-weight: 800; font-size: .8rem; cursor: pointer;
+    }
+    .demo-bar button.active { background: var(--c-golden); }
+    /* Reuse the real modal cover container so the coverflow inherits identical sizing. */
+    #stage.freebie-modal__cover { border: 2px solid var(--c-ink); border-radius: 20px; box-shadow: 4px 4px 0 var(--c-ink); min-height: 380px; padding: 40px 24px 32px; }
+    .demo-note { text-align: center; color: #6b6b5e; font-size: .78rem; margin-top: 18px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="demo-wrap">
+    <h1 class="demo-h">Coverflow</h1>
+    <p class="demo-sub">Vista previa del carrusel de imágenes del modal de producto</p>
+    <div class="demo-bar">
+      <button data-n="2">2 imágenes</button>
+      <button data-n="3">3 imágenes</button>
+      <button data-n="4" class="active">4 imágenes</button>
+    </div>
+    <div class="freebie-modal__cover freebie-modal__cover--image" id="stage"></div>
+    <p class="demo-note">Desliza / arrastra · toca una imagen lateral · o usa los puntos<br>(no hay flechas; sin auto-avance)</p>
+  </div>
+
+  <script>
+    var IMAGES = [
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=700&fit=crop',
+      'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=500&h=700&fit=crop',
+      'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=500&h=700&fit=crop',
+      'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=500&h=700&fit=crop'
+    ];
+
+    function buildFlow(n) {
+      var list = IMAGES.slice(0, n);
+      var tag = '<span class="gtag gtag--terra gtag--tr">Caliente</span>';
+      var banner = '<span class="gbanner gbanner--terra">Oferta</span>';
+      var items = list.map(function (u, i) {
+        if (i === 0) {
+          return '<span class="cover-flow__item cover-flow__item--cover book3d book3d--fill" data-cf-item="0">'
+            + '<span class="cover"><img src="' + u + '" alt="">' + tag + banner + '</span></span>';
+        }
+        return '<span class="cover-flow__item cover-flow__item--page" data-cf-item="' + i + '">'
+          + '<span class="page"><img src="' + u + '" alt=""></span></span>';
+      }).join('');
+      var dots = list.map(function (_, i) {
+        return '<button type="button" class="cover-carousel__dot' + (i === 0 ? ' is-active' : '')
+          + '" data-cc-dot="' + i + '" aria-label="Imagen ' + (i + 1) + '"></button>';
+      }).join('');
+      return '<div class="cover-carousel cover-carousel--flow" data-cover-carousel>'
+        + '<div class="cover-flow" data-cover-flow>' + items + '</div>'
+        + '<div class="cover-carousel__dots">' + dots + '</div></div>';
+    }
+
+    // Same logic as partials.js startCoverCarousel().
+    function startCoverCarousel(root) {
+      var car = root.querySelector('[data-cover-carousel]'); if (!car) return;
+      var flow = car.querySelector('[data-cover-flow]');
+      var items = Array.prototype.slice.call(car.querySelectorAll('.cover-flow__item'));
+      var dots = Array.prototype.slice.call(car.querySelectorAll('.cover-carousel__dot'));
+      var n = items.length;
+      if (!flow || n < 2) return;
+      var idx = 0;
+      function go(to) {
+        idx = (to % n + n) % n;
+        var p = (idx - 1 + n) % n, nx = (idx + 1) % n;
+        items.forEach(function (it, i) {
+          it.classList.remove('is-active', 'is-prev', 'is-next');
+          if (i === idx) it.classList.add('is-active');
+          else if (i === p) it.classList.add('is-prev');
+          else if (i === nx) it.classList.add('is-next');
+        });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+      }
+      var startX = null, moved = false;
+      function down(x) { startX = x; moved = false; }
+      function move(x) { if (startX !== null && Math.abs(x - startX) > 8) moved = true; }
+      function up(x) { if (startX === null) return; var dx = x - startX; startX = null; if (Math.abs(dx) > 30) go(dx < 0 ? idx + 1 : idx - 1); }
+      items.forEach(function (it) {
+        it.addEventListener('click', function () {
+          if (moved) { moved = false; return; }
+          if (it.classList.contains('is-prev')) go(idx - 1);
+          else if (it.classList.contains('is-next')) go(idx + 1);
+        });
+      });
+      dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); }); });
+      flow.addEventListener('touchstart', function (e) { down(e.touches[0].clientX); }, { passive: true });
+      flow.addEventListener('touchmove', function (e) { move(e.touches[0].clientX); }, { passive: true });
+      flow.addEventListener('touchend', function (e) { up(e.changedTouches[0].clientX); });
+      flow.addEventListener('mousedown', function (e) { down(e.clientX); });
+      flow.addEventListener('mousemove', function (e) { move(e.clientX); });
+      flow.addEventListener('mouseup', function (e) { up(e.clientX); });
+      flow.addEventListener('mouseleave', function () { startX = null; });
+      go(0);
+    }
+
+    var stage = document.getElementById('stage');
+    function render(n) { stage.innerHTML = buildFlow(n); startCoverCarousel(stage); }
+    Array.prototype.slice.call(document.querySelectorAll('.demo-bar button')).forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('.demo-bar button').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        render(parseInt(b.getAttribute('data-n'), 10));
+      });
+    });
+    render(4);
+  </script>
+</body>
+</html>
