@@ -928,7 +928,7 @@ h6 { font-size: .9rem; }
 .popup--terra h3, .popup--terra p { color: var(--c-cream); }
 @keyframes popIn { from { opacity: 0; transform: translateY(20px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .popup__close {
-  position: absolute; top: 16px; right: 16px;
+  position: absolute; top: 16px; right: 16px; z-index: 20;
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--c-cream); color: var(--c-ink);
   border: var(--bw-1) solid var(--c-ink);
@@ -1751,6 +1751,7 @@ h6 { font-size: .9rem; }
 .cover-flow {
   position: relative; width: 100%; aspect-ratio: 1 / 1.14; margin: 0 auto;
   cursor: grab; touch-action: pan-y; user-select: none;
+  overflow: hidden;   /* keep the side peeks inside the frame */
 }
 .cover-flow:active { cursor: grabbing; }
 .cover-flow .cover-flow__item {
@@ -3326,7 +3327,7 @@ h1, h2, h3, h4,
   .freebie-modal__grid { grid-template-columns: 1fr; grid-template-rows: auto auto; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .freebie-modal__cover { min-height: 0; padding: 22px 18px 16px; }
   .freebie-modal__cover .book-card__cover { max-width: 200px; }
-  .freebie-modal__body { max-height: none; min-height: 0; overflow-y: visible; padding: 24px 24px 32px; }
+  .freebie-modal__body { max-height: none; min-height: 0; overflow-y: visible; padding: 24px 24px 40px; }
 }
 .freebie-modal__cover {
   background: var(--c-sky);

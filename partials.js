@@ -485,7 +485,7 @@ if (currentLink) {
       if (window.paypal) { resolve(); return; }
       const s = document.createElement('script');
       const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-      s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(client_id) + '&currency=' + encodeURIComponent(ccy) + '&intent=capture&enable-funding=card,paylater&components=buttons';
+      s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(client_id) + '&currency=' + encodeURIComponent(ccy) + '&intent=capture&enable-funding=card&disable-funding=paylater&components=buttons';
       s.onload = resolve; s.onerror = function () { reject(new Error('sdk load failed')); };
       document.head.appendChild(s);
     });
