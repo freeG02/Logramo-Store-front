@@ -1321,6 +1321,7 @@ h6 { font-size: .9rem; }
   padding: 14px;
   width: 100%;
   max-width: 380px;
+  margin-left: auto; margin-right: auto;   /* centre the checkout box */
   display: flex; flex-direction: column; gap: 10px;
 }
 .paypal-wrap__head {
@@ -1763,13 +1764,13 @@ h6 { font-size: .9rem; }
    Active book centred & in front; previous/next books peek smaller on each side. */
 .cover-carousel--flow { display: flex; flex-direction: column; align-items: center; gap: 22px; width: 100%; padding-top: 12px; }
 .cover-flow {
-  position: relative; width: 100%; aspect-ratio: 1 / 1.14; margin: 0 auto;
+  position: relative; width: 100%; height: 300px; margin: 0 auto;
   cursor: grab; touch-action: pan-y; user-select: none;
-  overflow: hidden;   /* keep the side peeks inside the frame */
+  overflow: hidden;   /* safety; the stage is wide enough that side books aren't clipped */
 }
 .cover-flow:active { cursor: grabbing; }
 .cover-flow .cover-flow__item {
-  position: absolute; top: 50%; left: 50%; width: 62%; margin: 0;
+  position: absolute; top: 50%; left: 50%; width: 100%; max-width: 180px; margin: 0;
   transform: translate(-50%, -50%) scale(.72); opacity: 0; z-index: 1; pointer-events: none;
   transition: transform .42s cubic-bezier(.22,.61,.36,1), opacity .42s var(--ease);
   -webkit-user-drag: none;
@@ -1780,8 +1781,15 @@ h6 { font-size: .9rem; }
 .cover-flow .cover-flow__item--page { width: 100%; max-width: 180px; }
 .cover-flow .cover-flow__item.is-prev,
 .cover-flow .cover-flow__item.is-next { opacity: .5; z-index: 2; pointer-events: auto; cursor: pointer; }
-.cover-flow .cover-flow__item.is-prev   { transform: translate(calc(-50% - 60%), -50%) scale(.78); }
-.cover-flow .cover-flow__item.is-next   { transform: translate(calc(-50% + 60%), -50%) scale(.78); }
+.cover-flow .cover-flow__item.is-prev   { transform: translate(calc(-50% - 50%), -50%) scale(.78); }
+.cover-flow .cover-flow__item.is-next   { transform: translate(calc(-50% + 50%), -50%) scale(.78); }
+/* Mobile: smaller books so the full side books fit on a narrow phone stage. */
+@media (max-width: 660px) {
+  .freebie-modal__cover .book3d--fill,
+  .cover-flow .cover-flow__item--page,
+  .cover-flow .cover-flow__item { max-width: 150px; }
+  .cover-flow { height: 264px; }
+}
 .cover-flow .cover-flow__item.is-active {
   transform: translate(-50%, -50%) scale(1); opacity: 1; z-index: 3; pointer-events: auto;
 }
@@ -3310,13 +3318,13 @@ h1, h2, h3, h4,
 /* ============ FREEBIE / PRODUCT MODAL ============ */
 /* Cap the popup height and scroll the body side internally so the PayPal
    card form (when expanded) doesn't blow the popup out of the viewport. */
-.popup--freebie { max-width: 820px; padding: 0; overflow: hidden; max-height: 88vh; }
+.popup--freebie { max-width: 560px; padding: 0; overflow: hidden; max-height: 90vh; display: flex; flex-direction: column; }
 .freebie-modal__grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  max-height: 88vh;
+  grid-template-columns: 1fr;        /* single column everywhere: images on top, content below */
+  max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
-.freebie-modal__body { overflow-y: auto; max-height: 88vh; -webkit-overflow-scrolling: touch; }
+.freebie-modal__body { overflow-y: visible; }
 /* Framed paper-card inside the modal cover.
    Design mode (only sub + title + emoji) — narrower, book-shaped (5:7 portrait).
    Image mode — wider, the image dictates its own ratio. */
@@ -3348,11 +3356,12 @@ h1, h2, h3, h4,
 }
 .freebie-modal__cover {
   background: var(--c-sky);
-  border-right: var(--bw-1) solid var(--c-ink);
+  border-bottom: var(--bw-1) solid var(--c-ink);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px;
-  padding: 32px 24px;
-  min-height: 360px;
+  padding: 30px 24px 24px;
+  min-height: 0;
+  overflow: hidden;   /* a book can never spill past the cover into the title */
   text-align: center;
 }
 @media (max-width: 660px) {
@@ -3400,7 +3409,6 @@ h1, h2, h3, h4,
 .fb-related__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .fb-related__item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }
 .fb-related__item .book3d { width: 100%; }
-.fb-related__title { font-size: .76rem; font-weight: 600; color: var(--c-ink); line-height: 1.25; text-align: center; }
 @media (max-width: 660px) { .fb-related__row { gap: 10px; } }
 
 /* Reviews — always-horizontal carousel (mobile + desktop).
@@ -3699,5 +3707,5 @@ h1, h2, h3, h4,
 /* book frame inside the product modal — capped + centered */
 .freebie-modal__cover .book3d--fill,
 .freebie-modal__cover .cover-carousel{ width:100%; max-width:180px; margin:0 auto; }
-.freebie-modal__cover .cover-carousel--flow{ max-width:240px; }  /* room for the side peeks */
+.freebie-modal__cover .cover-carousel--flow{ max-width:400px; }  /* wide enough to show the full side books */
 .freebie-modal__cover--image{ background: var(--c-cream-alt); }  /* offwhite behind the coverflow */

@@ -632,7 +632,7 @@ if (currentLink) {
     var inner = rp.cover_image
       ? '<span class="cover"><img src="' + fbEsc(rp.cover_image) + '" alt="" loading="lazy"></span>'
       : '<span class="cover gcover" style="background:' + cc[0] + ';color:' + cc[1] + '"><span class="gcover__top"><span class="gsub">' + fbEsc(rp.cover_sub || 'Guía') + '</span></span><span class="gtitle">' + fbEsc(rp.cover_title || rp.title || '').replace(/\n/g, '<br>') + '</span></span>';
-    return '<a href="#" class="fb-related__item" data-freebie="' + fbEsc(rp.id) + '" aria-label="' + fbEsc(rp.title || '') + '"><span class="book3d book3d--shadow book3d--fill">' + inner + '</span><span class="fb-related__title">' + fbEsc(rp.title || '') + '</span></a>';
+    return '<a href="#" class="fb-related__item" data-freebie="' + fbEsc(rp.id) + '" aria-label="' + fbEsc(rp.title || '') + '"><span class="book3d book3d--shadow book3d--fill">' + inner + '</span></a>';
   }
   async function renderRelated(p) {
     var el = document.getElementById('freebieRelated'); if (!el) return;
