@@ -14,7 +14,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías y libros escritos por dueños que ya pasaron por esto: algunos gratis, otros premium. Todos fáciles de leer y muy útiles." />
   <title>Biblioteca · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260735" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="styles.css?v=20260736" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="biblioteca">
@@ -67,6 +72,7 @@
   .fc-card__title { font-family:var(--font-body); font-weight:900; font-size:clamp(1.8rem,3.4vw,2.8rem); line-height:1; letter-spacing:-.03em; text-transform:uppercase; margin:18px 0; color:var(--c-cream); }
   .fc-card__desc { line-height:1.65; margin-bottom:28px; }
   .fc-card__cover-wrap { display:flex; align-items:center; justify-content:center; padding:48px; min-height:440px; }
+  .fc-card__cover-wrap .book3d { width:100%; max-width:240px; }
   .fc-card__cover { background:var(--c-cream); color:var(--c-ink); border:var(--bw-2) solid var(--c-ink); border-radius:var(--radius-md); padding:36px 28px; text-align:center; max-width:280px; box-shadow:var(--shadow-lg); transform:rotate(-3deg); transition:transform .4s var(--ease-out); }
   .fc-card__cover:hover { transform:rotate(0); }
   .fc-card__cover-tag { font-family:var(--font-body); font-weight:800; font-size:.65rem; text-transform:uppercase; letter-spacing:.12em; margin-bottom:12px; color:var(--c-terracotta); }
@@ -277,10 +283,8 @@ window.initFcCarousel = function(){
     return '<a href="#" data-freebie="'+esc(p.id)+'" class="book-card book-card--bare" data-tags="'+tags.join(' ')+'" data-cat="'+slug(p.category)+'" data-title="'+esc((p.title||'').toLowerCase())+'" data-desc="'+esc((p.description||'').toLowerCase())+'" aria-label="'+esc(p.title||'')+'">'+cover(p, top)+'</a>';
   }
   function fcCover(p){
-    var fcInner = p.cover_image
-      ? '<div class="fc-card__cover fc-card__cover--image"><div class="cover-image-slot"><img src="'+esc(p.cover_image)+'" alt=""></div></div>'
-      : '<div class="fc-card__cover"><div class="fc-card__cover-tag">'+esc(p.cover_sub||'Guía PDF')+'</div><div class="fc-card__cover-title">'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</div><div class="fc-cover-icon">'+((p.cover_icon && !/^i-/.test(p.cover_icon))?('<span class="cover-emoji cover-emoji--lg">'+esc(p.cover_icon)+'</span>'):('<svg width="40" height="40"><use href="#'+(p.cover_icon||'i-paw')+'"/></svg>'))+'</div></div>';
-    return '<div class="fc-card__cover-wrap">'+fcInner+'</div>';
+    // Use the same 3D book frame as the grid + homepage highlight (replaces the old flat paper cover).
+    return '<div class="fc-card__cover-wrap">'+cover(p, topTag(cardTags(p)))+'</div>';
   }
   function fcSlide(p,theme){
     var tags=cardTags(p);

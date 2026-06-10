@@ -6,7 +6,8 @@
    · ALL CAPS labels, bold geometric system
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Inter is loaded via <link rel="preconnect"> + <link rel="stylesheet"> in each page's <head>
+   (moved out of @import to avoid the render-blocking font waterfall). */
 
 /* ---------- Helvetica Neue (local files) ---------- */
 @font-face {

@@ -14,7 +14,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías para dueños primerizos que están sobreviviendo el caos de tener un perro (y amándolo). Claras, al grano y escritas por gente que ya pasó por ahí." />
   <title>Cría un perro feliz · Logramo</title>
-  <link rel="stylesheet" href="styles.css?v=20260735" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="styles.css?v=20260736" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -54,8 +59,8 @@
       </div>
       <div class="hero__image">
         <div class="hero__img-wrap">
-          <img class="hero__img is-active" src="https://images.pexels.com/photos/33715594/pexels-photo-33715594.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Momento alegre en un parque de Montevideo con un perro" />
-          <img class="hero__img" src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=900&q=85&fit=crop" alt="Perro feliz jugando" />
+          <img class="hero__img is-active" fetchpriority="high" src="https://images.pexels.com/photos/33715594/pexels-photo-33715594.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Momento alegre en un parque de Montevideo con un perro" />
+          <img class="hero__img" fetchpriority="low" decoding="async" src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=900&q=85&fit=crop" alt="Perro feliz jugando" />
         </div>
         <div class="hero__stickers is-active" data-stickers="0">
           <div class="hero__sticker hero__sticker--1"><span class="emoji-icon">⭐</span> 4.9/5</div>
@@ -370,7 +375,7 @@
   function asList(v){ if(Array.isArray(v))return v; if(typeof v==='string'){try{var j=JSON.parse(v);return Array.isArray(j)?j:[];}catch(e){return [];}} return []; }
   (async function(){
     try{
-      var r=await sb.from('products').select('*').order('created_at',{ascending:false});
+      var r=await sb.from('products').select('id,published,featured,is_free,price,original_price,tags,cover_color,cover_sub,cover_title,cover_title_size,cover_image,images,modules,audience,title,description').order('created_at',{ascending:false});
       if(r.error) return;
       var pub=(r.data||[]).filter(function(p){return p.published!==false;});
       // chosen in dashboard → else 1st featured → else newest paid → else newest
