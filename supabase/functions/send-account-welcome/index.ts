@@ -41,17 +41,17 @@ function buildHtml(opts: { name: string; email: string }): string {
   </td></tr>
   <tr><td style="background:#3C4824;padding:40px 32px;color:#FEFAE8;margin-top:24px">
     <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#F6D055;margin-bottom:14px;">Empieza por aquí</div>
-    <h2 style="margin:0 0 16px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:30px;line-height:1.05;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">La guía gratuita es <em style="color:#F6D055;">para ti.</em></h2>
-    <p style="margin:0 0 22px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.55;color:rgba(254,250,232,.85);">"Los primeros 30 días con tu perro" — lo que ojalá alguien te hubiera contado antes del primer día. Gratis, sin trampa.</p>
+    <h2 style="margin:0 0 16px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:30px;line-height:1.05;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">Toda la biblioteca, <em style="color:#F6D055;">para ti.</em></h2>
+    <p style="margin:0 0 22px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.55;color:rgba(254,250,232,.85);">Guías de educación, conducta, salud y mucho más. Entra cuando quieras y empieza por la que más te haga falta hoy.</p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
       <td style="background:#F6D055;border:2px solid #111A17;border-radius:12px;box-shadow:4px 4px 0 #111A17;">
-        <a href="${SITE_URL}/biblioteca.html?filter=gratis" style="display:inline-block;padding:14px 26px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#111A17;text-decoration:none;">Ver guías gratis &nbsp;→</a>
+        <a href="${SITE_URL}/biblioteca.html" style="display:inline-block;padding:14px 26px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#111A17;text-decoration:none;">Ver la biblioteca &nbsp;→</a>
       </td>
     </tr></table>
   </td></tr>
   <tr><td style="padding:32px 32px 12px;">
     <p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.55;color:#5A6857;">
-      ¿Dudas con tu perro? Abre el chat en <a href="${SITE_URL}" style="color:#C55932;text-decoration:underline;">logramo.com</a> o responde a este email — estamos del otro lado.
+      ¿Dudas con tu perro? Abre el chat en <a href="${SITE_URL}" style="color:#C55932;text-decoration:underline;">logramo.com</a> o responde a este email. Estamos del otro lado.
     </p>
   </td></tr>
   <tr><td style="background:#ADCBEF;padding:18px 32px;text-align:center;border-top:2px solid #111A17;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#3C4824;">
