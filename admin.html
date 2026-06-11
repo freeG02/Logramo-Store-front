@@ -665,7 +665,40 @@
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0">Email list</h2><button class="icon-btn" id="exportCsvBtn">Export CSV</button></div>
         <div id="subBox"><p class="muted">Loading…</p></div>
-        <p class="panel__hint" style="margin-top:18px">To <strong>send</strong> campaigns to this list we connect <em>Resend</em> (free up to a limit) — we'll enable it whenever you want.</p>
+      </div>
+
+      <!-- Where subscribers & buyers come from -->
+      <div class="panel">
+        <h2 style="margin:0 0 4px">Where they come from</h2>
+        <p class="panel__hint" style="margin-top:0">Acquisition channel captured when someone lands on the site (utm_source on the link, or the referring site). Emails we send are tagged <code>email</code>.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <div><h3 style="margin:0 0 8px;font-size:.9rem">Subscribers</h3><div id="acqSubBox"><p class="muted">—</p></div></div>
+          <div><h3 style="margin:0 0 8px;font-size:.9rem">Buyers</h3><div id="acqBuyBox"><p class="muted">—</p></div></div>
+        </div>
+      </div>
+
+      <!-- Sale / urgency email composer -->
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px"><h2 style="margin:0">Send a sale email</h2><span class="muted" id="saleCount"></span></div>
+        <p class="panel__hint" style="margin-top:0">Goes to every subscriber who hasn't unsubscribed. Each email greets the person by name. Tip: put <code>{name}</code> in the subject to insert their first name.</p>
+        <div class="field"><label for="saleSubject">Subject</label><input type="text" id="saleSubject" placeholder="{name}, oferta por tiempo limitado 🐾" /></div>
+        <div class="field"><label for="saleHeadline">Offer headline</label><input type="text" id="saleHeadline" placeholder="30% en todas las guías" /></div>
+        <div class="field"><label for="saleSubtitle">Intro line</label><input type="text" id="saleSubtitle" placeholder="Tenemos algo especial por tiempo limitado y queríamos que te enteraras primero." /></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div class="field"><label for="saleDiscount">Big number</label><input type="text" id="saleDiscount" placeholder="-30%" /></div>
+          <div class="field"><label for="saleCode">Coupon code</label><input type="text" id="saleCode" placeholder="PERRO30" /></div>
+          <div class="field"><label for="saleExpiry">Expires</label><input type="text" id="saleExpiry" placeholder="el domingo a medianoche" /></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field"><label for="saleCtaLabel">Button text</label><input type="text" id="saleCtaLabel" placeholder="Ver la oferta" /></div>
+          <div class="field"><label for="saleCtaTarget">Button goes to</label><select id="saleCtaTarget"></select></div>
+        </div>
+        <div class="field" id="saleCtaCustomWrap" hidden><label for="saleCtaCustom">Custom URL</label><input type="text" id="saleCtaCustom" placeholder="https://logramo.com/..." /></div>
+        <div class="actions" style="gap:10px;flex-wrap:wrap">
+          <button type="button" class="icon-btn" id="saleTestBtn">Send test to me</button>
+          <button type="button" class="btn btn--primary" id="saleSendBtn">Send to all subscribers</button>
+          <span class="muted" id="saleStatus"></span>
+        </div>
       </div>
     </section>
 
@@ -761,7 +794,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260733"></script>
+<script src="partials.js?v=20260740"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1761,15 +1794,63 @@
 
   /* ===== SUSCRIPTORES ===== */
   var SUBS=[];
+  function chanLabel(c){ return c?String(c):'direct'; }
   async function loadSubs(){
     try{
       var r=await sb.from('subscribers').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error;
       SUBS=r.data||[]; var now=Date.now(), day=864e5;
-      $('subStats').innerHTML=stat(SUBS.length,'Subscribers')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length,'Today');
-      $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Email</th><th>Source</th><th>Date</th></tr>'+SUBS.map(function(s){return '<tr><td>'+esc(s.email)+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('en-US')+'</td></tr>';}).join('')+'</table>':'<p class="muted">No subscribers yet. When someone signs up on the site, they appear here.</p>';
+      var active=SUBS.filter(function(s){return !s.unsubscribed_at;});
+      $('subStats').innerHTML=stat(active.length,'Active')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return x.unsubscribed_at;}).length,'Unsubscribed');
+      $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Email</th><th>Channel</th><th>Source</th><th>Date</th><th>Status</th></tr>'+SUBS.map(function(s){return '<tr'+(s.unsubscribed_at?' style="opacity:.5"':'')+'><td>'+esc(s.email)+'</td><td>'+esc(chanLabel(s.channel))+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('en-US')+'</td><td>'+(s.unsubscribed_at?'Unsubscribed':'Active')+'</td></tr>';}).join('')+'</table>':'<p class="muted">No subscribers yet. When someone signs up on the site, they appear here.</p>';
+      if($('saleCount')) $('saleCount').textContent=active.length+' active subscribers';
+      saleCtaOptions(); loadAcquisition();
     }catch(e){ $('subStats').innerHTML=''; $('subBox').innerHTML='<p class="muted">Subscribers table missing. Run the extra SQL. ('+esc(e.message||'')+')</p>'; }
   }
-  $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,source,date\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+(s.source||'')+'","'+s.created_at+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='subscribers-logramo.csv'; a.click(); });
+  $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,channel,source,date,status\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+chanLabel(s.channel)+'","'+(s.source||'')+'","'+s.created_at+'","'+(s.unsubscribed_at?'unsubscribed':'active')+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='subscribers-logramo.csv'; a.click(); });
+
+  /* ===== ACQUISITION (where they come from) ===== */
+  function acqTally(rows){ var m={}; (rows||[]).forEach(function(r){ var c=r.channel||'direct'; m[c]=(m[c]||0)+1; }); return m; }
+  function acqBox(m){
+    var e=Object.keys(m).map(function(k){return [k,m[k]];}).sort(function(a,b){return b[1]-a[1];});
+    var total=e.reduce(function(s,x){return s+x[1];},0);
+    if(!total) return '<p class="muted">No data yet.</p>';
+    return '<table class="tbl"><tr><th>Channel</th><th>#</th><th>%</th></tr>'+e.map(function(x){return '<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/total*100)+'%</td></tr>';}).join('')+'</table>';
+  }
+  async function loadAcquisition(){
+    try{ if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally(SUBS)); }catch(e){}
+    try{ var r=await sb.from('purchases').select('channel'); if($('acqBuyBox')) $('acqBuyBox').innerHTML=acqBox(acqTally((r&&!r.error&&r.data)||[])); }catch(e){ if($('acqBuyBox')) $('acqBuyBox').innerHTML='<p class="muted">—</p>'; }
+  }
+
+  /* ===== SALE EMAIL COMPOSER ===== */
+  function saleCtaOptions(){
+    var sel=$('saleCtaTarget'); if(!sel) return;
+    var SITE='https://logramo.com'; var cur=sel.value;
+    var html='<option value="'+SITE+'/biblioteca.html">Library (all guides)</option><option value="'+SITE+'/index.html">Homepage</option>';
+    (typeof PRODUCTS!=='undefined'?(PRODUCTS||[]):[]).filter(function(p){return p.published!==false;}).forEach(function(p){ html+='<option value="'+SITE+'/producto.html?id='+esc(p.id)+'">'+esc(p.title||'Product')+'</option>'; });
+    html+='<option value="__custom">Custom URL…</option>';
+    sel.innerHTML=html; if(cur) sel.value=cur;
+  }
+  function saleGather(){
+    var t=$('saleCtaTarget').value; var url=t==='__custom'?($('saleCtaCustom').value||'').trim():t;
+    return { subject:$('saleSubject').value.trim(), headline:$('saleHeadline').value.trim(), subtitle:$('saleSubtitle').value.trim(), discount:$('saleDiscount').value.trim(), code:$('saleCode').value.trim(), expiry:$('saleExpiry').value.trim(), ctaLabel:$('saleCtaLabel').value.trim(), ctaUrl:url };
+  }
+  async function saleSend(testTo){
+    var f=saleGather();
+    if(!f.headline&&!f.subject){ $('saleStatus').textContent='Add a headline first.'; return; }
+    var s=await sb.auth.getSession(); var token=s&&s.data&&s.data.session?s.data.session.access_token:null;
+    if(!token){ $('saleStatus').textContent='Not logged in.'; return; }
+    if(testTo) f.testTo=testTo;
+    $('saleStatus').textContent=testTo?'Sending test…':'Sending…';
+    try{
+      var r=await fetch(SUPABASE_URL+'/functions/v1/send-sale',{ method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(f) });
+      var d=await r.json().catch(function(){return {};});
+      if(!r.ok||!d.ok) throw new Error(d.reason||('HTTP '+r.status));
+      $('saleStatus').textContent=testTo?('✓ Test sent to '+testTo):('✓ Sent to '+(d.sent||0)+' subscribers');
+    }catch(err){ $('saleStatus').textContent='Error: '+(err.message||err); }
+  }
+  if($('saleCtaTarget')) $('saleCtaTarget').addEventListener('change',function(){ $('saleCtaCustomWrap').hidden=this.value!=='__custom'; });
+  if($('saleTestBtn')) $('saleTestBtn').addEventListener('click',async function(){ var s=await sb.auth.getSession(); var email=s&&s.data&&s.data.session&&s.data.session.user?s.data.session.user.email:''; if(!email){ $('saleStatus').textContent='Not logged in.'; return; } saleSend(email); });
+  if($('saleSendBtn')) $('saleSendBtn').addEventListener('click',function(){ var f=saleGather(); if(!f.headline&&!f.subject){ $('saleStatus').textContent='Add a headline first.'; return; } if(!confirm('Send this sale email to ALL active subscribers? This cannot be undone.')) return; saleSend(null); });
 
   /* ===== MESSAGES (conversations) ===== */
   var CONVS = [], CONV_MSGS = {}, CONV_OPEN = null;

@@ -216,9 +216,9 @@ function buildHtml(opts: {
     <td style="background:#ADCBEF;padding:34px 32px;text-align:center;border-top:2px solid #111A17;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 20px;">
         <tr>
-          <td style="padding:0 10px;"><a href="https://facebook.com/logramo" style="text-decoration:none;display:inline-block;"><img src="https://cdn.simpleicons.org/facebook/111A17" alt="Facebook" width="26" height="26" style="display:block;border:0;"></a></td>
-          <td style="padding:0 10px;"><a href="https://youtube.com/@logramo" style="text-decoration:none;display:inline-block;"><img src="https://cdn.simpleicons.org/youtube/111A17" alt="YouTube" width="26" height="26" style="display:block;border:0;"></a></td>
-          <td style="padding:0 10px;"><a href="https://pinterest.com/logramo" style="text-decoration:none;display:inline-block;"><img src="https://cdn.simpleicons.org/pinterest/111A17" alt="Pinterest" width="26" height="26" style="display:block;border:0;"></a></td>
+          <td style="padding:0 10px;"><a href="https://www.facebook.com/profile.php?id=61590239832119" style="text-decoration:none;display:inline-block;"><img src="https://cdn.simpleicons.org/facebook/111A17" alt="Facebook" width="26" height="26" style="display:block;border:0;"></a></td>
+          <td style="padding:0 10px;"><a href="https://youtube.com/@megusta_logramo" style="text-decoration:none;display:inline-block;"><img src="https://cdn.simpleicons.org/youtube/111A17" alt="YouTube" width="26" height="26" style="display:block;border:0;"></a></td>
+          <td style="padding:0 10px;"><a href="https://pin.it/4WgVTqM4j" style="text-decoration:none;display:inline-block;"><img src="https://cdn.simpleicons.org/pinterest/111A17" alt="Pinterest" width="26" height="26" style="display:block;border:0;"></a></td>
         </tr>
       </table>
       <div style="margin-bottom:12px;line-height:0;">${logo(110, 16, "#C55932")}</div>

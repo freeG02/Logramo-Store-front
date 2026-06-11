@@ -584,14 +584,21 @@ if (currentLink) {
             const unit = (details && details.purchase_units && details.purchase_units[0]) || {};
             const amt = (unit && unit.amount) || {};
             const name = [(payer.name && payer.name.given_name) || '', (payer.name && payer.name.surname) || ''].filter(Boolean).join(' ').trim();
-            await fetch(SB_URL + '/rest/v1/purchases', {
-              method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-              body: JSON.stringify({
-                email: payer.email_address || '', payer_name: name || null, product_id: p.id,
-                amount: Number(amt.value || p.price || 0), currency: amt.currency_code || 'USD',
-                paypal_order_id: (details && details.id) || (data && data.orderID) || null, status: 'completed'
-              })
-            });
+            const purchase = {
+              email: payer.email_address || '', payer_name: name || null, product_id: p.id,
+              amount: Number(amt.value || p.price || 0), currency: amt.currency_code || 'USD',
+              paypal_order_id: (details && details.id) || (data && data.orderID) || null, status: 'completed',
+              channel: (typeof getChannel === 'function' ? getChannel() : null)
+            };
+            const postPurchase = function (row) {
+              return fetch(SB_URL + '/rest/v1/purchases', {
+                method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+                body: JSON.stringify(row)
+              });
+            };
+            const resp = await postPurchase(purchase);
+            // If the channel column isn't there yet, retry without it — never lose a purchase row.
+            if (resp && !resp.ok) { const fallback = Object.assign({}, purchase); delete fallback.channel; await postPurchase(fallback); }
           } catch (e) { /* still send buyer to gracias */ }
           window.location.href = 'gracias.html?id=' + encodeURIComponent(p.id) + '&order=' + encodeURIComponent(details.id || '');
         });

@@ -10,9 +10,24 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") ?? "";
+const UNSUB_SECRET = Deno.env.get("UNSUB_SECRET") ?? "";
+const FUNCTIONS_BASE = (Deno.env.get("SUPABASE_URL") ?? "https://eopobchvkfvkkrtrzeyu.supabase.co") + "/functions/v1";
 const FROM = "Logramo <ayuda@logramo.com>";
 const REPLY_TO = "ayuda@logramo.com";
 const SITE_URL = "https://logramo.com";
+
+// One-click unsubscribe link, signed so it validates without a DB lookup.
+// Token MUST match the unsubscribe function: HMAC-SHA256(lowercased email, UNSUB_SECRET).
+async function unsubUrl(email: string): Promise<string> {
+  const norm = String(email ?? "").trim().toLowerCase();
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(UNSUB_SECRET),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(norm));
+  const token = Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${FUNCTIONS_BASE}/unsubscribe?email=${encodeURIComponent(email.trim())}&token=${token}`;
+}
 
 const GENERIC_PREFIXES = new Set([
   "info","hola","contacto","admin","test","soporte","support","no-reply",
@@ -157,7 +172,7 @@ function buildHtml(firstName: string): string {
           </a>
         </td></tr>
         <tr><td style="padding:14px 0;">
-          <a href="https://facebook.com/logramo" style="text-decoration:none;color:inherit;display:block;">
+          <a href="https://www.facebook.com/profile.php?id=61590239832119" style="text-decoration:none;color:inherit;display:block;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
               <td valign="top" style="width:32px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:14px;color:#C55932;">03</td>
               <td>
@@ -176,17 +191,17 @@ function buildHtml(firstName: string): string {
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 20px;">
         <tr>
           <td style="padding:0 10px;">
-            <a href="https://facebook.com/logramo" style="text-decoration:none;display:inline-block;">
+            <a href="https://www.facebook.com/profile.php?id=61590239832119" style="text-decoration:none;display:inline-block;">
               <img src="https://cdn.simpleicons.org/facebook/111A17" alt="Facebook" width="26" height="26" style="display:block;border:0;">
             </a>
           </td>
           <td style="padding:0 10px;">
-            <a href="https://youtube.com/@logramo" style="text-decoration:none;display:inline-block;">
+            <a href="https://youtube.com/@megusta_logramo" style="text-decoration:none;display:inline-block;">
               <img src="https://cdn.simpleicons.org/youtube/111A17" alt="YouTube" width="26" height="26" style="display:block;border:0;">
             </a>
           </td>
           <td style="padding:0 10px;">
-            <a href="https://pinterest.com/logramo" style="text-decoration:none;display:inline-block;">
+            <a href="https://pin.it/4WgVTqM4j" style="text-decoration:none;display:inline-block;">
               <img src="https://cdn.simpleicons.org/pinterest/111A17" alt="Pinterest" width="26" height="26" style="display:block;border:0;">
             </a>
           </td>
@@ -195,7 +210,7 @@ function buildHtml(firstName: string): string {
       <div style="margin-bottom:12px;line-height:0;">${logo(110, 16, "#C55932")}</div>
       <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.6;color:#3C4824;">
         Te llegó este email porque te apuntaste a las guías en ${esc(SITE_URL.replace("https://", ""))}.<br>
-        ¿No eras tú? <a href="${SITE_URL}/unsubscribe?email={{EMAIL}}" style="color:#C55932;text-decoration:underline;">Cancela la suscripción</a>
+        ¿No eras tú? <a href="{{UNSUB_URL}}" style="color:#C55932;text-decoration:underline;">Cancela la suscripción</a>
       </div>
       <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:rgba(60,72,36,.55);margin-top:14px;">© Logramo · Hecho para perros y los humanos que los adoran</div>
     </td>
@@ -250,8 +265,9 @@ serve(async (req: Request) => {
   }
 
   const firstName = smartFirstName(email, name);
+  const unsubscribeUrl = await unsubUrl(email);
   let html = buildHtml(firstName);
-  html = html.replace("{{EMAIL}}", encodeURIComponent(email));
+  html = html.split("{{UNSUB_URL}}").join(unsubscribeUrl);
 
   const subject = firstName
     ? `${firstName}, bienvenida a Logramo`
@@ -269,7 +285,10 @@ serve(async (req: Request) => {
       subject,
       html,
       reply_to: REPLY_TO,
-      headers: { "List-Unsubscribe": `<${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}>` },
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
     }),
   });
 

@@ -256,8 +256,57 @@ function sbInsert(table, row) {
     }).catch(function () {});
   } catch (e) {}
 }
+/* ---- Acquisition channel ("where did they come from") ----
+   First/last-touch capture from utm_source or the referring host. Stored in
+   localStorage so a later signup/purchase carries the channel that brought
+   them. Persistence is gated on cookie consent like trackPageview; without
+   consent we still attribute the current session (just not persisted). */
+function lgConsent() { try { return localStorage.getItem('lg_cookie_consent') === 'accepted'; } catch (e) { return false; } }
+function lgClassify(s) {
+  s = (s || '').toLowerCase();
+  if (/face|fb\b|fb\.|^fb$/.test(s) || s.indexOf('facebook') !== -1) return 'facebook';
+  if (s.indexOf('insta') !== -1 || s === 'ig') return 'instagram';
+  if (s.indexOf('you') !== -1 || s === 'yt' || s.indexOf('youtu') !== -1) return 'youtube';
+  if (s.indexOf('pin') !== -1) return 'pinterest';
+  if (s.indexOf('tik') !== -1) return 'tiktok';
+  if (s.indexOf('goog') !== -1) return 'google';
+  if (s.indexOf('bing') !== -1 || s.indexOf('duckduck') !== -1 || s.indexOf('yahoo') !== -1) return 'google';
+  if (s.indexOf('twitter') !== -1 || s === 't.co' || s === 'x.com') return 'twitter';
+  if (s.indexOf('mail') !== -1 || s.indexOf('newsletter') !== -1 || s === 'email') return 'email';
+  return '';
+}
+function lgCurrentSignal() {
+  try {
+    var u = (new URLSearchParams(location.search).get('utm_source') || '').trim();
+    if (u) return lgClassify(u) || u.toLowerCase().slice(0, 24);
+    var ref = document.referrer || '';
+    if (!ref) return '';
+    var h = new URL(ref).hostname.replace(/^www\./, '');
+    if (h === location.hostname) return '';
+    return lgClassify(h) || 'other';
+  } catch (e) { return ''; }
+}
+function getChannel() {
+  var sig = lgCurrentSignal();
+  if (lgConsent()) {
+    try {
+      if (sig) localStorage.setItem('lg_channel', sig);
+      return localStorage.getItem('lg_channel') || sig || 'direct';
+    } catch (e) {}
+  }
+  return sig || 'direct';
+}
+// Capture channel as early as possible on every load (cheap, no network).
+try { getChannel(); } catch (e) {}
+
 function trackSubscriber(email, source) {
-  if (email && /\S+@\S+\.\S+/.test(email)) sbInsert('subscribers', { email: email.trim(), source: source || '' });
+  if (!(email && /\S+@\S+\.\S+/.test(email))) return;
+  var row = { email: email.trim(), source: source || '', channel: getChannel() };
+  var p = sbInsert('subscribers', row);
+  // If the channel column isn't there yet, retry without it so the signup still saves.
+  if (p && p.then) p.then(function (res) {
+    if (res && !res.ok) sbInsert('subscribers', { email: row.email, source: row.source });
+  }).catch(function () {});
 }
 function trackPageview(opts) {
   opts = opts || {};
