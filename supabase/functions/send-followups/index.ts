@@ -301,6 +301,18 @@ serve(async (req: Request) => {
   const url = new URL(req.url);
   const dryRun = url.searchParams.get("dryRun") === "1";
 
+  // Preview: send a sample check-in + review to a single address, no DB scan.
+  const testTo = url.searchParams.get("testTo");
+  if (testTo) {
+    const fn = "Gerby";
+    const productTitle = "Cría un Perro Feliz";
+    const c = await resendSend(testTo, `${fn}, ¿cómo va todo con tu perro?`, buildCheckinHtml({ firstName: fn, productTitle }));
+    const v = await resendSend(testTo, `${fn}, ¿nos cuentas cómo te fue?`, buildReviewHtml({ firstName: fn, productTitle, reviewUrl: `${SITE_URL}/review.html?token=preview` }));
+    return new Response(JSON.stringify({ preview: true, to: testTo, checkin_sent: c.ok, review_sent: v.ok }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const summary = await runFollowups({ dryRun });
     return new Response(JSON.stringify(summary), {

@@ -109,11 +109,35 @@ async function run(dryRun: boolean): Promise<any> {
   return summary;
 }
 
+// Preview: send ONE blog announcement (newest live article, or a sample) to a
+// single address. Does not touch announced_at or the subscriber list.
+async function sendPreview(testTo: string): Promise<any> {
+  let a: any = null;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/articles?select=id,title,excerpt,image_url,read_time&published=eq.true&order=created_at.desc&limit=1`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
+    const rows = r.ok ? await r.json() : [];
+    a = Array.isArray(rows) && rows.length ? rows[0] : null;
+  } catch (_e) { /* fall back to sample */ }
+  if (!a) a = { id: "preview", title: "Cómo enseñar a tu perro a quedarse solo en casa", excerpt: "Sin dramas ni culpa: un plan corto para que tu perro aprenda a estar tranquilo cuando sales.", image_url: "", read_time: 6 };
+  const res = await broadcast({
+    recipients: [{ email: testTo }],
+    title: `${a.title} · Logramo`,
+    eyebrow: "Nuevo en el blog",
+    reasonLine: "Te llegó este email porque te apuntaste a las guías en logramo.com.",
+    subject: (fn) => fn ? `${fn}, nuevo en el blog: ${a.title}` : `Nuevo en el blog: ${a.title}`,
+    buildInner: (fn) => blogInner(a, fn),
+  });
+  return { preview: true, to: testTo, article: a.title, ...res };
+}
+
 serve(async (req: Request) => {
   if (!RESEND_API_KEY) return new Response(JSON.stringify({ error: "RESEND_API_KEY not configured" }), { status: 500 });
-  const dryRun = new URL(req.url).searchParams.get("dryRun") === "1";
+  const url = new URL(req.url);
+  const testTo = url.searchParams.get("testTo");
+  const dryRun = url.searchParams.get("dryRun") === "1";
   try {
-    const summary = await run(dryRun);
+    const summary = testTo ? await sendPreview(testTo) : await run(dryRun);
     return new Response(JSON.stringify(summary), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
