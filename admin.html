@@ -643,6 +643,14 @@
         <div class="panel"><h2>Countries by traffic</h2><p class="panel__hint">Fills up as people visit the site.</p><div id="trafCountries"></div></div>
         <div class="panel"><h2>Most visited pages</h2><div id="trafTop"><p class="muted">Loading…</p></div></div>
       </div>
+      <div class="panel" style="margin-top:24px">
+        <h2 style="margin:0 0 4px">Where they come from</h2>
+        <p class="panel__hint" style="margin-top:0">Acquisition channel captured when someone lands on the site (utm_source on the link, or the referring site). Emails we send are tagged <code>email</code>.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <div><h3 style="margin:0 0 8px;font-size:.9rem">Subscribers</h3><div id="acqSubBox"><p class="muted">—</p></div></div>
+          <div><h3 style="margin:0 0 8px;font-size:.9rem">Buyers</h3><div id="acqBuyBox"><p class="muted">—</p></div></div>
+        </div>
+      </div>
     </section>
 
     <!-- ===== SALES ===== -->
@@ -665,16 +673,6 @@
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0">Email list</h2><button class="icon-btn" id="exportCsvBtn">Export CSV</button></div>
         <div id="subBox"><p class="muted">Loading…</p></div>
-      </div>
-
-      <!-- Where subscribers & buyers come from -->
-      <div class="panel">
-        <h2 style="margin:0 0 4px">Where they come from</h2>
-        <p class="panel__hint" style="margin-top:0">Acquisition channel captured when someone lands on the site (utm_source on the link, or the referring site). Emails we send are tagged <code>email</code>.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-          <div><h3 style="margin:0 0 8px;font-size:.9rem">Subscribers</h3><div id="acqSubBox"><p class="muted">—</p></div></div>
-          <div><h3 style="margin:0 0 8px;font-size:.9rem">Buyers</h3><div id="acqBuyBox"><p class="muted">—</p></div></div>
-        </div>
       </div>
 
       <!-- Sale / urgency email composer -->
@@ -1709,6 +1707,7 @@
       CHARTS.traf(activeTf('traf'));
       renderTrafCountries(activeTf('traf'));
       $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Page</th><th>Visits</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">No visits recorded yet.</p>';
+      loadAcquisition();
     }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Traffic table missing. ('+esc(e.message||'')+')</p>'; }
   }
 
@@ -1803,7 +1802,7 @@
       $('subStats').innerHTML=stat(active.length,'Active')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return x.unsubscribed_at;}).length,'Unsubscribed');
       $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Email</th><th>Channel</th><th>Source</th><th>Date</th><th>Status</th></tr>'+SUBS.map(function(s){return '<tr'+(s.unsubscribed_at?' style="opacity:.5"':'')+'><td>'+esc(s.email)+'</td><td>'+esc(chanLabel(s.channel))+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('en-US')+'</td><td>'+(s.unsubscribed_at?'Unsubscribed':'Active')+'</td></tr>';}).join('')+'</table>':'<p class="muted">No subscribers yet. When someone signs up on the site, they appear here.</p>';
       if($('saleCount')) $('saleCount').textContent=active.length+' active subscribers';
-      saleCtaOptions(); loadAcquisition();
+      saleCtaOptions();
     }catch(e){ $('subStats').innerHTML=''; $('subBox').innerHTML='<p class="muted">Subscribers table missing. Run the extra SQL. ('+esc(e.message||'')+')</p>'; }
   }
   $('exportCsvBtn').addEventListener('click',function(){ if(!SUBS.length)return; var csv='email,channel,source,date,status\n'+SUBS.map(function(s){return '"'+(s.email||'')+'","'+chanLabel(s.channel)+'","'+(s.source||'')+'","'+s.created_at+'","'+(s.unsubscribed_at?'unsubscribed':'active')+'"';}).join('\n'); var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='subscribers-logramo.csv'; a.click(); });
@@ -1817,7 +1816,7 @@
     return '<table class="tbl"><tr><th>Channel</th><th>#</th><th>%</th></tr>'+e.map(function(x){return '<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/total*100)+'%</td></tr>';}).join('')+'</table>';
   }
   async function loadAcquisition(){
-    try{ if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally(SUBS)); }catch(e){}
+    try{ var s=await sb.from('subscribers').select('channel'); if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally((s&&!s.error&&s.data)||[])); }catch(e){ if($('acqSubBox')) $('acqSubBox').innerHTML='<p class="muted">—</p>'; }
     try{ var r=await sb.from('purchases').select('channel'); if($('acqBuyBox')) $('acqBuyBox').innerHTML=acqBox(acqTally((r&&!r.error&&r.data)||[])); }catch(e){ if($('acqBuyBox')) $('acqBuyBox').innerHTML='<p class="muted">—</p>'; }
   }
 
