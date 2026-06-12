@@ -792,7 +792,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260740"></script>
+<script src="partials.js?v=20260741"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1764,7 +1764,7 @@
   /* ===== VENTAS ===== */
   async function loadVentas(){
     var purchases = [];
-    try{ var pr = await sb.from('purchases').select('email,payer_name,product_id,amount,currency,status,paypal_order_id,created_at').order('created_at',{ascending:false}); if(!pr.error) purchases = pr.data || []; }catch(e){}
+    try{ var pr = await sb.from('purchases').select('email,payer_name,product_id,amount,currency,status,paypal_order_id,country,created_at').order('created_at',{ascending:false}); if(!pr.error) purchases = pr.data || []; }catch(e){}
 
     var paid = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='' || s==='paid' || s==='captured' || s==='completed'; });
     var pending = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='pending' || s==='processing'; });
@@ -1787,8 +1787,10 @@
       $('ordersBox').innerHTML = '<p class="muted">No orders yet. When PayPal captures a payment, it appears here.</p>';
     }
 
-    // Sales by country isn't tracked on purchases yet — empty for now.
-    $('salesCountries').innerHTML = '<p class="muted">Country breakdown will appear here once we capture buyer geo on each purchase.</p>';
+    // Sales by country, from the buyer geo captured on each purchase.
+    var byC={}; purchases.forEach(function(p){ if(p.country) byC[p.country]=(byC[p.country]||0)+1; });
+    var salesCty=Object.keys(byC).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byC[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
+    $('salesCountries').innerHTML = salesCty.length ? miniRows(salesCty) : '<p class="muted">No country data yet. New orders will show the buyer\'s country here.</p>';
   }
 
   /* ===== SUSCRIPTORES ===== */

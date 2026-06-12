@@ -299,6 +299,15 @@ function getChannel() {
 // Capture channel as early as possible on every load (cheap, no network).
 try { getChannel(); } catch (e) {}
 
+// Buyer country (2-letter code) for sales-by-country. Reuses the geo the
+// currency module already detected and cached this session ('logramo_geo').
+function getBuyerCountry() {
+  try {
+    var g = JSON.parse(sessionStorage.getItem('logramo_geo') || '{}');
+    return (g.country_code || '').toUpperCase();
+  } catch (e) { return ''; }
+}
+
 function trackSubscriber(email, source) {
   if (!(email && /\S+@\S+\.\S+/.test(email))) return;
   var row = { email: email.trim(), source: source || '', channel: getChannel() };
