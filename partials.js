@@ -573,34 +573,46 @@ if (currentLink) {
         const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
         const amount = (window.LogramoCurrency ? LogramoCurrency.checkoutAmount(p.price) : Number(p.price || 0).toFixed(2));
         return actions.order.create({
-          purchase_units: [{ amount: { value: amount, currency_code: ccy }, description: (p.title || 'Producto Logramo').slice(0, 127) }]
+          purchase_units: [{ amount: { value: amount, currency_code: ccy }, description: (p.title || 'Producto Logramo').slice(0, 127), custom_id: String(p.id || '') }]
         });
       },
       onApprove: function (data, actions) {
         mount.insertAdjacentHTML('beforeend', '<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
         return actions.order.capture().then(async function (details) {
+          const orderId = (details && details.id) || (data && data.orderID) || null;
+          const channel = (typeof getChannel === 'function' ? getChannel() : null);
+          const country = (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null);
+          let recorded = false;
+          // Preferred: the server verifies the PayPal order, then records it (service role).
           try {
-            const payer = (details && details.payer) || {};
-            const unit = (details && details.purchase_units && details.purchase_units[0]) || {};
-            const amt = (unit && unit.amount) || {};
-            const name = [(payer.name && payer.name.given_name) || '', (payer.name && payer.name.surname) || ''].filter(Boolean).join(' ').trim();
-            const purchase = {
-              email: payer.email_address || '', payer_name: name || null, product_id: p.id,
-              amount: Number(amt.value || p.price || 0), currency: amt.currency_code || 'USD',
-              paypal_order_id: (details && details.id) || (data && data.orderID) || null, status: 'completed',
-              channel: (typeof getChannel === 'function' ? getChannel() : null),
-              country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null)
-            };
-            const postPurchase = function (row) {
-              return fetch(SB_URL + '/rest/v1/purchases', {
-                method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-                body: JSON.stringify(row)
-              });
-            };
-            const resp = await postPurchase(purchase);
-            // If the channel column isn't there yet, retry without it — never lose a purchase row.
-            if (resp && !resp.ok) { const fallback = Object.assign({}, purchase); delete fallback.channel; delete fallback.country; await postPurchase(fallback); }
-          } catch (e) { /* still send buyer to gracias */ }
+            const rr = await fetch(SB_URL + '/functions/v1/record-purchase', {
+              method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ order_id: orderId, channel: channel, country: country })
+            });
+            recorded = !!(rr && rr.ok);
+          } catch (e) {}
+          // Fallback: direct insert (works while the open insert policy still exists).
+          if (!recorded) {
+            try {
+              const payer = (details && details.payer) || {};
+              const unit = (details && details.purchase_units && details.purchase_units[0]) || {};
+              const amt = (unit && unit.amount) || {};
+              const name = [(payer.name && payer.name.given_name) || '', (payer.name && payer.name.surname) || ''].filter(Boolean).join(' ').trim();
+              const purchase = {
+                email: payer.email_address || '', payer_name: name || null, product_id: p.id,
+                amount: Number(amt.value || p.price || 0), currency: amt.currency_code || 'USD',
+                paypal_order_id: orderId, status: 'completed', channel: channel, country: country
+              };
+              const postPurchase = function (row) {
+                return fetch(SB_URL + '/rest/v1/purchases', {
+                  method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+                  body: JSON.stringify(row)
+                });
+              };
+              const resp = await postPurchase(purchase);
+              if (resp && !resp.ok) { const fb = Object.assign({}, purchase); delete fb.channel; delete fb.country; await postPurchase(fb); }
+            } catch (e) {}
+          }
           window.location.href = 'gracias.html?id=' + encodeURIComponent(p.id) + '&order=' + encodeURIComponent(details.id || '');
         });
       },
