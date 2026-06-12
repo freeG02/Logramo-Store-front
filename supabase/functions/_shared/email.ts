@@ -189,3 +189,101 @@ export async function broadcast(o: BroadcastOpts): Promise<{ recipients: number;
   }
   return result;
 }
+
+// ---------- Book "3D frame" cover (email-safe approximation of .book3d) ----------
+// cover_color -> [background, ink] (kept in sync with partials.js FB_CCOLOR).
+export const COVER_COLORS: Record<string, [string, string]> = {
+  sky: ["#ADCBEF", "#111A17"], peach: ["#FFCDB8", "#111A17"], sage: ["#B5C1AB", "#111A17"],
+  golden: ["#F6D055", "#111A17"], lavender: ["#C9C2EC", "#111A17"], pink: ["#F3C7D6", "#111A17"],
+  cream: ["#FEFAE8", "#111A17"], terracotta: ["#C55932", "#ffffff"], terra: ["#C55932", "#ffffff"],
+  forest: ["#3C4824", "#FEFAE8"], ink: ["#111A17", "#FEFAE8"],
+};
+
+// A small brutalist book: 2px ink border, thick left "spine", hard 6px shadow.
+// Renders a photo cover when coverImage is set, else a generated colored cover.
+export function bookFrame(o: { coverImage?: string; coverColor?: string; coverSub?: string; coverTitle?: string; width?: number; href?: string }): string {
+  const w = o.width ?? 150;
+  const h = Math.round(w * 7 / 5);
+  const cc = COVER_COLORS[String(o.coverColor || "sky").toLowerCase()] || COVER_COLORS.sky;
+  const frame = "border:2px solid #111A17;border-left:6px solid #111A17;border-radius:6px;box-shadow:6px 6px 0 #111A17;";
+  let cell: string;
+  if (o.coverImage) {
+    cell = `<td style="${frame}background:#FEFAE8;padding:0;width:${w}px;"><img src="${esc(o.coverImage)}" width="${w - 8}" alt="${esc(o.coverTitle || "")}" style="display:block;width:${w - 8}px;height:auto;border-radius:3px;"></td>`;
+  } else {
+    cell = `<td style="${frame}background:${cc[0]};width:${w}px;height:${h}px;vertical-align:top;text-align:center;">
+      <div style="padding:14px 12px;color:${cc[1]};">
+        <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.75;">${esc(o.coverSub || "Guía")}</div>
+        <div style="margin-top:${Math.round(h * 0.2)}px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:20px;line-height:1.04;letter-spacing:-.01em;text-transform:uppercase;">${esc(o.coverTitle || "").replace(/\n/g, "<br>")}</div>
+      </div></td>`;
+  }
+  const table = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;"><tr>${cell}</tr></table>`;
+  return o.href ? `<a href="${esc(o.href)}" style="text-decoration:none;">${table}</a>` : table;
+}
+
+// Fetch a product (for "related" recommendations) by id.
+export async function fetchProduct(id?: string): Promise<any> {
+  if (!id) return null;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${encodeURIComponent(id)}&select=id,title,cover_color,cover_sub,cover_title,cover_image,price,is_free,published&limit=1`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows.length ? rows[0] : null;
+  } catch (_e) { return null; }
+}
+
+// Read the CURRENT homepage hero image so the welcome email stays in sync with
+// whatever is live on logramo.com. Falls back to the known default.
+export async function fetchHeroImage(): Promise<string> {
+  const fallback = "https://images.pexels.com/photos/33715594/pexels-photo-33715594.jpeg?auto=compress&cs=tinysrgb&w=900";
+  try {
+    const r = await fetch(`${SITE_URL}/index.html`, { headers: { "cache-control": "no-cache" } });
+    if (!r.ok) return fallback;
+    const html = await r.text();
+    const m = html.match(/hero__img is-active[^>]*?src="([^"]+)"/i);
+    return (m && m[1]) ? m[1] : fallback;
+  } catch (_e) { return fallback; }
+}
+
+// The single Welcome email, shared by send-welcome (newsletter) and
+// send-account-welcome (account signup). Greets by name, pulls the live hero
+// image, one "Ver la biblioteca" CTA + a blog nudge.
+export async function buildWelcomeHtml(o: { firstName: string; unsub: string }): Promise<string> {
+  const hero = await fetchHeroImage();
+  const greet = o.firstName
+    ? `${esc(o.firstName)},<br>bienvenida a la <span style="color:#C55932;font-style:italic;">manada.</span>`
+    : `Bienvenida a la <span style="color:#C55932;font-style:italic;">manada.</span>`;
+  const inner = `
+    <tr><td style="padding:52px 32px 30px;">
+      <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#C55932;margin-bottom:18px;">Ya eres de las nuestras</div>
+      <h1 style="margin:0;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:58px;line-height:.92;letter-spacing:-.035em;text-transform:uppercase;color:#111A17;">${greet}</h1>
+      <p style="margin:28px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.55;color:#3C4824;max-width:450px;">
+        Si llegaste hasta aquí es porque tu perro te importa de verdad. Y eso, para nosotros, lo dice todo. 🐶 En Logramo nos hace mucha ilusión acompañarte en este viaje: las madrugadas, los zapatos mordidos y esos momentos que te derriten el corazón sin avisar.
+      </p>
+    </td></tr>
+    <tr><td style="padding:0;"><img src="${esc(hero)}" width="600" alt="Tu perro y tú, el mejor equipo" style="display:block;width:100%;height:auto;border:0;"></td></tr>
+    <tr><td style="background:#3C4824;padding:46px 32px;color:#FEFAE8;">
+      <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#F6D055;margin-bottom:16px;">Por dónde empezar</div>
+      <h2 style="margin:0 0 14px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:32px;line-height:1.02;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">Toda la biblioteca, <em style="color:#F6D055;">para ti.</em></h2>
+      <p style="margin:0 0 26px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.55;color:rgba(254,250,232,.82);">Guías claras de educación, conducta y salud. Cero relleno, cero culpa, cero tecnicismos raros. Entra y empieza por la que más te haga falta hoy.</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="background:#F6D055;border:2px solid #111A17;border-radius:12px;box-shadow:4px 4px 0 #111A17;">
+          <a href="${SITE_URL}/biblioteca.html?utm_source=email&utm_campaign=welcome" style="display:inline-block;padding:14px 26px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#111A17;text-decoration:none;">Ver la biblioteca &nbsp;→</a>
+        </td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="background:#F8F3D9;padding:30px 32px;">
+      <a href="${SITE_URL}/blog.html?utm_source=email&utm_campaign=welcome" style="text-decoration:none;color:inherit;display:block;">
+        <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#C55932;margin-bottom:6px;">Mientras tanto</div>
+        <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:20px;letter-spacing:-.01em;color:#111A17;">Pásate por el blog &nbsp;→</div>
+        <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3C4824;margin-top:4px;">Historias reales, consejos cortos y algún que otro fail canino de manual. 😅</div>
+      </a>
+    </td></tr>`;
+  return wrap({
+    title: "Bienvenida a Logramo",
+    eyebrow: "Bienvenida",
+    reasonLine: "Te llegó este email porque te uniste a Logramo en logramo.com.",
+    unsub: o.unsub,
+    inner,
+  });
+}

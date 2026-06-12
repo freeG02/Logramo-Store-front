@@ -8,6 +8,19 @@
 //   WEBHOOK_SECRET   (optional shared secret for the webhook header; if unset, skipped)
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { bookFrame } from "../_shared/email.ts";
+
+// HEAD the PDF to show its size next to the download link (e.g. "PDF · 2.4 MB").
+async function pdfSize(url: string): Promise<string> {
+  if (!url) return "";
+  try {
+    const r = await fetch(url, { method: "HEAD" });
+    const len = Number(r.headers.get("content-length") || 0);
+    if (!len) return "";
+    if (len >= 1048576) return (Math.round(len / 104857.6) / 10).toString().replace(/\.0$/, "") + " MB";
+    return Math.max(1, Math.round(len / 1024)) + " KB";
+  } catch { return ""; }
+}
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") ?? "";
@@ -99,7 +112,10 @@ function buildHtml(opts: {
   productTitle: string;
   productSub: string;
   productCover: string;
+  coverColor: string;
+  coverTitle: string;
   pdfUrl: string;
+  fileSize: string;
   invoiceUrl: string;
   amount: string;
   date: string;
@@ -131,45 +147,39 @@ function buildHtml(opts: {
       <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#C55932;margin-bottom:18px;">¡Gracias por confiar en nosotros!</div>
       <h1 style="margin:0;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:60px;line-height:.92;letter-spacing:-.035em;text-transform:uppercase;color:#111A17;">${heroLine}</h1>
       <p style="margin:28px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.5;color:#3C4824;max-width:440px;">
-        Acabas de comprar <strong>${esc(opts.productTitle)}</strong>. Aquí tienes el acceso — guárdate este email por si quieres descargarla otra vez en el futuro.
+        Acabas de llevarte <strong>${esc(opts.productTitle)}</strong>. Ya es tuya para siempre. 🎉 Guárdate este email y descárgala las veces que quieras, sin tener que buscar nada.
       </p>
     </td>
   </tr>
 
-  <!-- PRODUCT COVER PHOTO -->
-  ${opts.productCover ? `<tr><td style="padding:0;"><img src="${esc(opts.productCover)}" alt="${esc(opts.productTitle)}" width="600" style="display:block;width:100%;height:auto;border:0;"></td></tr>` : ""}
-
   <!-- DELIVERY BLOCK (forest green) -->
   <tr>
-    <td style="background:#3C4824;padding:48px 32px;color:#FEFAE8;">
-      <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#F6D055;margin-bottom:18px;">Tu guía</div>
-      <h2 style="margin:0 0 8px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:34px;line-height:1;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">${esc(opts.productTitle)}</h2>
-      <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:rgba(254,250,232,.65);margin-bottom:24px;">${esc(opts.productSub)}</div>
-
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
-        <tr>
-          <td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.7);padding:6px 0;width:120px;">Pagado</td>
-          <td style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:15px;color:#FEFAE8;padding:6px 0;">${esc(opts.amount)}</td>
-        </tr>
-        <tr>
-          <td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.7);padding:6px 0;">Fecha</td>
-          <td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#FEFAE8;padding:6px 0;">${esc(opts.date)}</td>
-        </tr>
-      </table>
-
-      ${opts.pdfUrl ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td style="background:#F6D055;border:2px solid #111A17;border-radius:12px;box-shadow:4px 4px 0 #111A17;">
-            <a href="${esc(opts.pdfUrl)}" style="display:inline-block;padding:14px 26px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#111A17;text-decoration:none;">Descargar el PDF &nbsp;↓</a>
-          </td>
-        </tr>
-      </table>
-      <p style="margin:14px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.5);">Guarda este email. El botón funcionará en cualquier momento.</p>`
-      : `<p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:rgba(254,250,232,.7);">Te enviaremos el archivo en un momento. Si no llega en 10 minutos, escríbenos a <a href="mailto:ayuda@logramo.com" style="color:#F6D055;text-decoration:underline;">ayuda@logramo.com</a>.</p>`}
-
-      <p style="margin:22px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.7);">
-        <a href="${esc(opts.invoiceUrl)}" style="color:#F6D055;text-decoration:underline;">Ver / descargar la factura</a>
-      </p>
+    <td style="background:#3C4824;padding:44px 32px;color:#FEFAE8;">
+      <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#F6D055;margin-bottom:22px;">Tu guía</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td valign="top" style="width:150px;padding-right:22px;">
+          ${bookFrame({ coverImage: opts.productCover, coverColor: opts.coverColor, coverSub: opts.productSub, coverTitle: opts.coverTitle || opts.productTitle, width: 130 })}
+        </td>
+        <td valign="top">
+          <h2 style="margin:0 0 6px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:26px;line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">${esc(opts.productTitle)}</h2>
+          <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.6);margin-bottom:18px;">${esc(opts.productSub)}</div>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+            <tr><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.7);padding:3px 14px 3px 0;">Pagado</td><td style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:14px;color:#FEFAE8;padding:3px 0;">${esc(opts.amount)}</td></tr>
+            <tr><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.7);padding:3px 14px 3px 0;">Fecha</td><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#FEFAE8;padding:3px 0;">${esc(opts.date)}</td></tr>
+          </table>
+          ${opts.pdfUrl ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td style="background:#F6D055;border:2px solid #111A17;border-radius:11px;box-shadow:4px 4px 0 #111A17;">
+              <a href="${esc(opts.pdfUrl)}" style="display:inline-block;padding:13px 22px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#111A17;text-decoration:none;">Descargar el PDF &nbsp;↓</a>
+            </td>
+            <td style="padding-left:14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.6);white-space:nowrap;">${opts.fileSize ? `PDF · ${esc(opts.fileSize)}` : "PDF"}</td>
+          </tr></table>
+          <p style="margin:12px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.5);">El botón funciona cuando quieras, hoy o dentro de un año. 😌</p>`
+          : `<p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:rgba(254,250,232,.7);">Te enviamos el archivo en un momento. Si no llega en 10 minutos, responde a este email y lo solucionamos al toque.</p>`}
+          <p style="margin:18px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;">
+            <a href="${esc(opts.invoiceUrl)}" style="color:#F6D055;text-decoration:underline;">Ver o descargar la factura</a>
+          </p>
+        </td>
+      </tr></table>
     </td>
   </tr>
 
@@ -202,7 +212,7 @@ function buildHtml(opts: {
               <td valign="top" style="width:32px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:14px;color:#C55932;">03</td>
               <td>
                 <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:18px;letter-spacing:-.01em;color:#111A17;">Cuéntanos &nbsp;→</div>
-                <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3C4824;margin-top:4px;">¿Te ayudó? ¿Quedó alguna duda? Responde a este email — leemos cada respuesta.</div>
+                <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3C4824;margin-top:4px;">¿Te ayudó? ¿Quedó alguna duda? Responde a este email. Leemos cada uno. 💬</div>
               </td>
             </tr></table>
           </a>
@@ -259,12 +269,26 @@ serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "invalid email" }), { status: 400 });
   }
 
-  // Fetch the product so we can include title, cover, PDF link
-  const product = await fetchProduct(productId);
+  // Fetch the product so we can include title, cover, PDF link.
+  // preview:true uses a sample product (cover image + real PDF) so the new
+  // book-frame + download-link + size design can be reviewed without live data.
+  const product = payload?.preview
+    ? {
+        title: "Cría un perro feliz: la guía completa",
+        cover_sub: "Guía digital · PDF",
+        cover_image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&q=80",
+        cover_color: "golden",
+        cover_title: "Cría un\nPerro Feliz",
+        pdf_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      }
+    : await fetchProduct(productId);
   const productTitle = product?.title ?? "Tu guía Logramo";
   const productSub = product?.cover_sub ?? "Guía digital en PDF";
   const productCover = product?.cover_image ?? "";
+  const coverColor = product?.cover_color ?? "sky";
+  const coverTitle = product?.cover_title ?? "";
   const pdfUrl = product?.pdf_url ?? "";
+  const fileSize = await pdfSize(pdfUrl);
 
   const firstName = firstNameFromPayer(payerName);
   const paypalOrderId: string = record.paypal_order_id ?? "";
@@ -286,7 +310,10 @@ serve(async (req: Request) => {
     productTitle,
     productSub,
     productCover,
+    coverColor,
+    coverTitle,
     pdfUrl,
+    fileSize,
     invoiceUrl,
     amount: amountStr,
     date: dateStr,
