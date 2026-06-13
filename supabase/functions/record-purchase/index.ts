@@ -141,6 +141,7 @@ serve(async (req: Request) => {
   const recorded: string[] = [];
   const skipped: string[] = [];
   const failed: { product: string | null; detail: string }[] = [];
+  const emailItems: { product_id: string | null; amount: number }[] = [];
   for (const line of lines) {
     if (already.has(String(line.productId ?? ""))) { skipped.push(line.productId ?? ""); continue; }
     const row: any = {
@@ -156,12 +157,33 @@ serve(async (req: Request) => {
       },
       body: JSON.stringify(row),
     });
-    if (ins.ok) { recorded.push(line.productId ?? ""); already.add(String(line.productId ?? "")); }
-    else { failed.push({ product: line.productId, detail: await ins.text().catch(() => "") }); }
+    if (ins.ok) {
+      recorded.push(line.productId ?? "");
+      already.add(String(line.productId ?? ""));
+      emailItems.push({ product_id: line.productId, amount: line.amount });
+    } else {
+      failed.push({ product: line.productId, detail: await ins.text().catch(() => "") });
+    }
   }
 
   if (failed.length && !recorded.length && !skipped.length) {
     return json({ ok: false, reason: "insert_failed", failed }, 500);
   }
-  return json({ ok: true, recorded, skipped, failed, currency });
+
+  // ONE confirmation email for the whole order (a link per guide). Sent here
+  // rather than from a per-row DB trigger, so a cart of N guides = 1 email,
+  // not N. Fire-and-forget: a slow/failed email must never fail the purchase.
+  let emailed = false;
+  if (emailItems.length) {
+    try {
+      const er = await fetch(`${SUPABASE_URL}/functions/v1/send-purchase`, {
+        method: "POST",
+        headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ order: { email, payer_name: name, currency, paypal_order_id: orderId, items: emailItems } }),
+      });
+      emailed = er.ok;
+    } catch (_e) { /* swallow — purchase is already recorded */ }
+  }
+
+  return json({ ok: true, recorded, skipped, failed, emailed, currency });
 });

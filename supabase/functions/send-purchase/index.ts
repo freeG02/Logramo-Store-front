@@ -107,22 +107,62 @@ async function fetchProduct(productId: string): Promise<any> {
   } catch (e) { return null; }
 }
 
-function buildHtml(opts: {
-  firstName: string;
-  productTitle: string;
-  productSub: string;
-  productCover: string;
+interface EmailProduct {
+  title: string;
+  sub: string;
+  cover: string;
   coverColor: string;
   coverTitle: string;
   pdfUrl: string;
   fileSize: string;
+}
+
+// One guide's row inside the forest delivery block: cover + title + its own
+// download button. Used once per guide so a cart order shows a link per PDF.
+function deliveryRow(p: EmailProduct): string {
+  const dl = p.pdfUrl
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="background:#F6D055;border:2px solid #111A17;border-radius:11px;box-shadow:4px 4px 0 #111A17;">
+          <a href="${esc(p.pdfUrl)}" style="display:inline-block;padding:12px 20px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#111A17;text-decoration:none;">Descargar el PDF &nbsp;↓</a>
+        </td>
+        <td style="padding-left:12px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.6);white-space:nowrap;">${p.fileSize ? `PDF · ${esc(p.fileSize)}` : "PDF"}</td>
+      </tr></table>`
+    : `<p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.7);">Te enviamos este archivo en un momento. Si no llega en 10 minutos, responde a este email.</p>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+    <td valign="top" style="width:118px;padding-right:20px;">
+      ${bookFrame({ coverImage: p.cover, coverColor: p.coverColor, coverSub: p.sub, coverTitle: p.coverTitle || p.title, width: 102 })}
+    </td>
+    <td valign="top">
+      <h2 style="margin:0 0 5px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:21px;line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">${esc(p.title)}</h2>
+      <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.6);margin-bottom:14px;">${esc(p.sub)}</div>
+      ${dl}
+    </td>
+  </tr></table>`;
+}
+
+function buildHtml(opts: {
+  firstName: string;
+  products: EmailProduct[];
   invoiceUrl: string;
   amount: string;
   date: string;
 }): string {
-  const heroLine = opts.firstName
-    ? `${esc(opts.firstName)},<br>tu guía<br>está <span style="color:#C55932;font-style:italic;">lista.</span>`
-    : `Tu guía<br>está <span style="color:#C55932;font-style:italic;">lista.</span>`;
+  const multi = opts.products.length > 1;
+  const first = opts.products[0] || { title: "tu guía" } as EmailProduct;
+  const heroLine = multi
+    ? (opts.firstName
+        ? `${esc(opts.firstName)},<br>tus guías<br>están <span style="color:#C55932;font-style:italic;">listas.</span>`
+        : `Tus guías<br>están <span style="color:#C55932;font-style:italic;">listas.</span>`)
+    : (opts.firstName
+        ? `${esc(opts.firstName)},<br>tu guía<br>está <span style="color:#C55932;font-style:italic;">lista.</span>`
+        : `Tu guía<br>está <span style="color:#C55932;font-style:italic;">lista.</span>`);
+  const intro = multi
+    ? `Acabas de llevarte <strong>${opts.products.length} guías</strong>. Ya son tuyas para siempre. 🎉 Guárdate este email y descárgalas las veces que quieras, sin tener que buscar nada.`
+    : `Acabas de llevarte <strong>${esc(first.title)}</strong>. Ya es tuya para siempre. 🎉 Guárdate este email y descárgala las veces que quieras, sin tener que buscar nada.`;
+  const deliveryDivider = `<tr><td style="padding:22px 0 0;"><div style="border-top:1px solid rgba(254,250,232,.18);padding-top:22px;"></div></td></tr>`;
+  const deliveryRows = opts.products
+    .map((p) => `<tr><td>${deliveryRow(p)}</td></tr>`)
+    .join(deliveryDivider);
 
   return `<!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Compra confirmada · Logramo</title></head>
@@ -147,7 +187,7 @@ function buildHtml(opts: {
       <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#C55932;margin-bottom:18px;">¡Gracias por confiar en nosotros!</div>
       <h1 style="margin:0;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:60px;line-height:.92;letter-spacing:-.035em;text-transform:uppercase;color:#111A17;">${heroLine}</h1>
       <p style="margin:28px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.5;color:#3C4824;max-width:440px;">
-        Acabas de llevarte <strong>${esc(opts.productTitle)}</strong>. Ya es tuya para siempre. 🎉 Guárdate este email y descárgala las veces que quieras, sin tener que buscar nada.
+        ${intro}
       </p>
     </td>
   </tr>
@@ -155,31 +195,18 @@ function buildHtml(opts: {
   <!-- DELIVERY BLOCK (forest green) -->
   <tr>
     <td style="background:#3C4824;padding:44px 32px;color:#FEFAE8;">
-      <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#F6D055;margin-bottom:22px;">Tu guía</div>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td valign="top" style="width:150px;padding-right:22px;">
-          ${bookFrame({ coverImage: opts.productCover, coverColor: opts.coverColor, coverSub: opts.productSub, coverTitle: opts.coverTitle || opts.productTitle, width: 130 })}
-        </td>
-        <td valign="top">
-          <h2 style="margin:0 0 6px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:26px;line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;color:#FEFAE8;">${esc(opts.productTitle)}</h2>
-          <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(254,250,232,.6);margin-bottom:18px;">${esc(opts.productSub)}</div>
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
-            <tr><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.7);padding:3px 14px 3px 0;">Pagado</td><td style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:14px;color:#FEFAE8;padding:3px 0;">${esc(opts.amount)}</td></tr>
-            <tr><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.7);padding:3px 14px 3px 0;">Fecha</td><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#FEFAE8;padding:3px 0;">${esc(opts.date)}</td></tr>
-          </table>
-          ${opts.pdfUrl ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-            <td style="background:#F6D055;border:2px solid #111A17;border-radius:11px;box-shadow:4px 4px 0 #111A17;">
-              <a href="${esc(opts.pdfUrl)}" style="display:inline-block;padding:13px 22px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#111A17;text-decoration:none;">Descargar el PDF &nbsp;↓</a>
-            </td>
-            <td style="padding-left:14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.6);white-space:nowrap;">${opts.fileSize ? `PDF · ${esc(opts.fileSize)}` : "PDF"}</td>
-          </tr></table>
-          <p style="margin:12px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.5);">El botón funciona cuando quieras, hoy o dentro de un año. 😌</p>`
-          : `<p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:rgba(254,250,232,.7);">Te enviamos el archivo en un momento. Si no llega en 10 minutos, responde a este email y lo solucionamos al toque.</p>`}
-          <p style="margin:18px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;">
-            <a href="${esc(opts.invoiceUrl)}" style="color:#F6D055;text-decoration:underline;">Ver o descargar la factura</a>
-          </p>
-        </td>
-      </tr></table>
+      <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#F6D055;margin-bottom:22px;">${multi ? "Tus guías" : "Tu guía"}</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        ${deliveryRows}
+      </table>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;border-top:1px solid rgba(254,250,232,.18);">
+        <tr><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.7);padding:16px 14px 3px 0;">${multi ? "Pagado (total)" : "Pagado"}</td><td style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:14px;color:#FEFAE8;padding:16px 0 3px;">${esc(opts.amount)}</td></tr>
+        <tr><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.7);padding:3px 14px 3px 0;">Fecha</td><td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#FEFAE8;padding:3px 0;">${esc(opts.date)}</td></tr>
+      </table>
+      <p style="margin:14px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(254,250,232,.5);">${multi ? "Los botones funcionan" : "El botón funciona"} cuando quieras, hoy o dentro de un año. 😌</p>
+      <p style="margin:18px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;">
+        <a href="${esc(opts.invoiceUrl)}" style="color:#F6D055;text-decoration:underline;">Ver o descargar la factura</a>
+      </p>
     </td>
   </tr>
 
@@ -257,71 +284,82 @@ serve(async (req: Request) => {
   try { payload = await req.json(); }
   catch { return new Response(JSON.stringify({ error: "invalid JSON" }), { status: 400 }); }
 
-  // Supabase Database Webhook shape: { type, table, schema, record, old_record }
-  const record = payload?.record ?? payload ?? {};
-  const email: string = (record.email ?? "").trim();
-  const payerName: string = record.payer_name ?? "";
-  const productId: string = record.product_id ?? "";
-  const amountVal = record.amount ?? 0;
-  const currency: string = record.currency ?? "USD";
+  // Two accepted shapes:
+  //   • { order: { email, payer_name, currency, paypal_order_id, items:[{product_id, amount}] } }
+  //     — sent ONCE per order by record-purchase (cart = several guides, one email).
+  //   • { record: {...purchases row...} } — legacy single-row webhook/trigger shape.
+  const order = payload?.order;
+  const legacy = payload?.record ?? (order ? null : payload) ?? {};
+  const email: string = String((order?.email ?? legacy?.email) ?? "").trim();
+  const payerName: string = (order?.payer_name ?? legacy?.payer_name) ?? "";
+  const currency: string = (order?.currency ?? legacy?.currency) ?? "USD";
+  const paypalOrderId: string = (order?.paypal_order_id ?? legacy?.paypal_order_id) ?? "";
+  const items: { product_id: string; amount: number }[] =
+    order && Array.isArray(order.items)
+      ? order.items.map((i: any) => ({ product_id: String(i?.product_id ?? ""), amount: Number(i?.amount ?? 0) }))
+      : [{ product_id: String(legacy?.product_id ?? ""), amount: Number(legacy?.amount ?? 0) }];
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return new Response(JSON.stringify({ error: "invalid email" }), { status: 400 });
   }
 
-  // Fetch the product so we can include title, cover, PDF link.
-  // preview:true uses a sample product (cover image + real PDF) so the new
-  // book-frame + download-link + size design can be reviewed without live data.
-  const product = payload?.preview
-    ? {
-        title: "Cría un perro feliz: la guía completa",
-        cover_sub: "Guía digital · PDF",
-        cover_image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&q=80",
-        cover_color: "golden",
-        cover_title: "Cría un\nPerro Feliz",
-        pdf_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-      }
-    : await fetchProduct(productId);
-  const productTitle = product?.title ?? "Tu guía Logramo";
-  const productSub = product?.cover_sub ?? "Guía digital en PDF";
-  const productCover = product?.cover_image ?? "";
-  const coverColor = product?.cover_color ?? "sky";
-  const coverTitle = product?.cover_title ?? "";
-  const pdfUrl = product?.pdf_url ?? "";
-  const fileSize = await pdfSize(pdfUrl);
+  // preview:true renders two sample guides (cover + real PDF) so the multi-link
+  // layout can be reviewed without live data. preview_single:true -> one sample.
+  const sample = (n: number) => ({
+    title: n === 1 ? "Cría un perro feliz: la guía completa" : "Adiós a la ansiedad por separación",
+    cover_sub: "Guía digital · PDF",
+    cover_image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&q=80",
+    cover_color: n === 1 ? "golden" : "sky",
+    cover_title: n === 1 ? "Cría un\nPerro Feliz" : "Adiós a la\nAnsiedad",
+    pdf_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+  });
 
+  // Resolve each line item into an email-ready product (title, cover, PDF, size).
+  let totalAmount = 0;
+  const products: EmailProduct[] = [];
+  const previewProducts = payload?.preview
+    ? (payload?.preview_single ? [sample(1)] : [sample(1), sample(2)])
+    : null;
+  const source = previewProducts
+    ? previewProducts.map((p, idx) => ({ product: p, amount: idx === 0 ? 29.99 : 19.99 }))
+    : await Promise.all(items.map(async (it) => ({ product: await fetchProduct(it.product_id), amount: it.amount })));
+
+  for (const { product, amount } of source) {
+    totalAmount += Number(amount || 0);
+    const pdfUrl = product?.pdf_url ?? "";
+    products.push({
+      title: product?.title ?? "Tu guía Logramo",
+      sub: product?.cover_sub ?? "Guía digital en PDF",
+      cover: product?.cover_image ?? "",
+      coverColor: product?.cover_color ?? "sky",
+      coverTitle: product?.cover_title ?? "",
+      pdfUrl,
+      fileSize: await pdfSize(pdfUrl),
+    });
+  }
+
+  const multi = products.length > 1;
   const firstName = firstNameFromPayer(payerName);
-  const paypalOrderId: string = record.paypal_order_id ?? "";
   const dateStr = spanishDate();
-  const amountStr = money(amountVal, currency);
+  const amountStr = money(totalAmount, currency);
+  const invoiceLabel = multi ? `${products.length} guías Logramo` : products[0].title;
 
   // Self-contained invoice URL — all data the page needs is in the query string.
   const invoiceUrl = `${SITE_URL}/invoice.html`
     + `?order=${encodeURIComponent(paypalOrderId)}`
     + `&email=${encodeURIComponent(email)}`
     + `&name=${encodeURIComponent(payerName || "")}`
-    + `&product=${encodeURIComponent(productTitle)}`
-    + `&amount=${encodeURIComponent(String(amountVal))}`
+    + `&product=${encodeURIComponent(invoiceLabel)}`
+    + `&amount=${encodeURIComponent(String(totalAmount))}`
     + `&currency=${encodeURIComponent(currency)}`
     + `&date=${encodeURIComponent(dateStr)}`;
 
-  const html = buildHtml({
-    firstName,
-    productTitle,
-    productSub,
-    productCover,
-    coverColor,
-    coverTitle,
-    pdfUrl,
-    fileSize,
-    invoiceUrl,
-    amount: amountStr,
-    date: dateStr,
-  });
+  const html = buildHtml({ firstName, products, invoiceUrl, amount: amountStr, date: dateStr });
 
+  const subjectWhat = multi ? `tus ${products.length} guías` : products[0].title;
   const subject = firstName
-    ? `${firstName}, ya puedes descargar ${productTitle}`
-    : `Ya puedes descargar ${productTitle}`;
+    ? `${firstName}, ya puedes descargar ${subjectWhat}`
+    : `Ya puedes descargar ${subjectWhat}`;
 
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -344,7 +382,7 @@ serve(async (req: Request) => {
   }
 
   const data = await r.json();
-  return new Response(JSON.stringify({ ok: true, id: data?.id, to: email, productTitle, hasPdf: !!pdfUrl }), {
+  return new Response(JSON.stringify({ ok: true, id: data?.id, to: email, count: products.length, withPdf: products.filter((p) => p.pdfUrl).length }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
