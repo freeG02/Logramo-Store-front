@@ -3690,6 +3690,8 @@ h1, h2, h3, h4,
 .book-card__bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:18px; }
 .book-card__bar .book-card__price{ font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:900; font-size:1.1rem; }
 .book-card__bar .book-card__price--free{ color:var(--c-terracotta); }
+.book-card__add{ flex:0 0 auto; gap:7px; padding:8px 14px; white-space:nowrap; }
+.book-card__add .icon{ width:16px; height:16px; }
 
 /* biblioteca on phones: each category row becomes a horizontal swipe —
    ~2 books + a peek of the 3rd so it's clearly scrollable. */
@@ -3703,6 +3705,10 @@ h1, h2, h3, h4,
   .library-grid::-webkit-scrollbar{ display:none; }
   .library-grid > .book-card{ flex:0 0 42%; scroll-snap-align:start; }
   .library-section__head h2{ font-size:1.35rem; }
+  .book-card__bar{ gap:8px; margin-top:14px; }
+  .book-card__bar .book-card__price{ font-size:1rem; }
+  .book-card__add{ padding:8px 11px; }
+  .book-card__add-label{ display:none; }
 }
 
 /* book frame inside the product modal — capped + centered */

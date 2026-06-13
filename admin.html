@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260736" />
+  <link rel="stylesheet" href="styles.css?v=20260743" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -663,6 +663,10 @@
       <div class="ov-grid" style="margin-top:24px">
         <div class="panel"><h2>Recent orders</h2><div id="ordersBox"><p class="muted">Loading…</p></div></div>
         <div class="panel"><h2>Countries by sales</h2><div id="salesCountries"></div></div>
+      </div>
+      <div class="panel" style="margin-top:24px"><h2>Most added to cart</h2>
+        <p class="panel__hint">Which guides people add to their cart the most. Tracked automatically when a visitor taps “Añadir al carrito” in the library.</p>
+        <div id="cartTop"><p class="muted">Loading…</p></div>
       </div>
     </section>
 
@@ -1791,6 +1795,23 @@
     var byC={}; purchases.forEach(function(p){ if(p.country) byC[p.country]=(byC[p.country]||0)+1; });
     var salesCty=Object.keys(byC).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byC[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
     $('salesCountries').innerHTML = salesCty.length ? miniRows(salesCty) : '<p class="muted">No country data yet. New orders will show the buyer\'s country here.</p>';
+
+    // Most added to cart — ranked by how often each product is added (intent).
+    try{
+      var ce = await sb.from('cart_events').select('product_id,product_title'); if(ce.error) throw ce.error;
+      var crows = ce.data || [];
+      if(!crows.length){
+        $('cartTop').innerHTML = '<p class="muted">No add-to-cart activity yet. When visitors add a guide to their cart, it shows up here.</p>';
+      } else {
+        var byCart = {};
+        crows.forEach(function(r){ var k = r.product_id || ('t:'+(r.product_title||'')); if(!byCart[k]) byCart[k]={id:r.product_id||null,title:r.product_title||'',count:0}; byCart[k].count++; });
+        var cIds = Object.keys(byCart).map(function(k){return byCart[k].id;}).filter(Boolean);
+        var ctitleMap = {};
+        if(cIds.length){ try{ var cpq = await sb.from('products').select('id,title').in('id', cIds); (cpq.data||[]).forEach(function(p){ ctitleMap[p.id]=p.title; }); }catch(e){} }
+        var cartRows = Object.keys(byCart).map(function(k){ var c=byCart[k]; return { title:(c.id&&ctitleMap[c.id])||c.title||'(deleted product)', count:c.count }; }).sort(function(a,b){return b.count-a.count;}).slice(0,10);
+        $('cartTop').innerHTML = '<table class="tbl"><tr><th>Product</th><th>Times added</th></tr>' + cartRows.map(function(r){ return '<tr><td>'+esc(r.title)+'</td><td>'+r.count+'</td></tr>'; }).join('') + '</table>';
+      }
+    }catch(e){ $('cartTop').innerHTML = '<p class="muted">Cart tracking not set up yet. Apply the cart_events migration. ('+esc(e.message||'')+')</p>'; }
   }
 
   /* ===== SUSCRIPTORES ===== */

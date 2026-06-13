@@ -579,7 +579,19 @@ function addToCart(product) {
   if (existing) existing.qty = (existing.qty || 1) + 1;
   else cartItems.push({ ...product, qty: 1 });
   saveCart(); renderCart(); openCart();
+  trackCartAdd(product);
   showToast(`"${product.name}" añadido al carrito`);
+}
+// Log an add-to-cart so the dashboard can rank products by intent. Non-essential
+// analytics: only runs if the visitor accepted cookies, same gate as trackPageview.
+function trackCartAdd(product) {
+  if (!product || !product.id) return;
+  if (String(product.id).indexOf('demo-') === 0) return; // ?demo preview books
+  try { if (localStorage.getItem('lg_cookie_consent') !== 'accepted') return; } catch (e) { return; }
+  var row = { product_id: product.id, product_title: product.name || '', price: Number(product.price || 0), country: getBuyerCountry() || '' };
+  var p = sbInsert('cart_events', row);
+  // If the country column isn't there yet, retry without it so the log still saves.
+  if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('cart_events', { product_id: row.product_id, product_title: row.product_title, price: row.price }); }).catch(function () {});
 }
 function removeFromCart(id) { cartItems = cartItems.filter(i => i.id !== id); saveCart(); renderCart(); }
 function renderCart() {
