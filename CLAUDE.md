@@ -84,7 +84,7 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 
 **subscribers** — newsletter signups. `email`, `source`, `created_at`. Trigger sends welcome email on insert.
 
-**purchases** — every successful PayPal capture lands here. `email`, `payer_name`, `product_id`, `amount`, `currency`, `paypal_order_id`, `status`, `checkin_sent_at`, `review_sent_at`, `created_at`. Trigger sends purchase-confirmation email on insert. The daily cron picks up rows that are +7d (sends check-in) and +14d (sends review request).
+**purchases** — every successful PayPal capture lands here. `email`, `payer_name`, `product_id`, `amount`, `currency`, `paypal_order_id`, `status`, `channel`, `country`, `checkin_sent_at`, `review_sent_at`, `created_at`. A **cart order writes one row per guide, all sharing the same `paypal_order_id`** (the `record-purchase` function reads PayPal's verified line items). The confirmation email is sent **once per order by `record-purchase`** (NOT by a DB trigger — that was dropped in `20260622`). The daily cron picks up rows that are +7d (sends check-in) and +14d (sends review request) — note these are still per-row, so a multi-guide order gets a check-in/review request per guide.
 
 **review_tokens** — one-use tokens for tokenized review links sent in email. `token (pk)`, `purchase_id (fk)`, `used_at`, `expires_at` (default +90 days), `created_at`.
 
@@ -100,7 +100,8 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 | `biblioteca.html` | Product library. Filter chips that auto-hide if empty. Featured carousel (Destacados, max 2 cards, fully clickable). |
 | `blog.html` | Article list. Multi-select category filter chips that auto-hide if empty. |
 | `producto.html?id=...` | Product detail page. 2×2 image grid where each tile holds an A4-portrait paper-shaped wrapper. Clickable images open a lightbox with prev/next arrow nav. PayPal Smart Buttons (Card on top, PayPal below, brand-styled wrapper). |
-| `gracias.html?id=...&order=...` | Post-purchase thank-you page. Confetti animation. Auto-downloads PDF. |
+| `gracias.html?id=...&order=...` | Post-purchase thank-you page. Confetti animation. Auto-downloads PDF. Cart orders land here as `?ids=a,b,c&order=...` — it lists every guide and auto-downloads each PDF; single `?id=` still works. |
+| **Cart sidebar** (`partials.js`) | Real multi-item PayPal checkout: "Ir al pago" swaps to PayPal Smart Buttons in the footer, builds ONE order with an `items[]` breakdown (single capture = one fee), captures, calls `record-purchase`, then → `gracias.html?ids=...`. `script.js` → `checkout()` / `buildCartOrder()`. |
 | `invoice.html?order=...&email=...&...` | Branded printable invoice. "Imprimir / Guardar PDF" button → browser print → save as PDF. URL params: `order`, `email`, `name`, `product`, `amount`, `currency`, `date`. |
 | `coming-soon.html` | Standalone "we'll launch soon" page (currently NOT gated; redirect was removed). |
 | `admin.html` | Dashboard (auth-gated via Supabase Auth). Subtabs: Products, Articles, Homepage Videos, Reviews, Highlight (homepage product picker). Drag-reorder via SortableJS on every list. Pin (max 3) on products/articles/videos/reviews. |
@@ -125,7 +126,7 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 | Email | Trigger | Status | File |
 |---|---|---|---|
 | **Welcome** | New row in `subscribers` (via Database Webhook) | ✅ Deployed | `supabase/functions/send-welcome/index.ts` |
-| **Purchase confirmation + PDF + invoice link** | New row in `purchases` (via Database Webhook) | ✅ Deployed | `supabase/functions/send-purchase/index.ts` |
+| **Purchase confirmation + PDF + invoice link** | Called once per order by `record-purchase` after it inserts the rows. **One email per order with a download link per guide** (a cart of N guides = 1 email, not N). Accepts `{ order: { items:[...] } }`; legacy `{ record }` single-row shape still works. | ✅ Deployed | `supabase/functions/send-purchase/index.ts` |
 | **+7d "How's it going?"** | Daily cron, finds purchases where `created_at < now() - 7d AND checkin_sent_at IS NULL` | ✅ Deployed (cron scheduled) | `supabase/functions/send-followups/index.ts` |
 | **+14d Review request** | Daily cron, same function, finds `created_at < now() - 14d AND review_sent_at IS NULL`. Creates tokenized review link. | ✅ Deployed (same function) | `supabase/functions/send-followups/index.ts` |
 
@@ -141,7 +142,7 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 
 **Cron schedule**
 - `0 14 * * *` UTC daily (pg_cron + pg_net), calls `send-followups`.
-- Optionally also a Database Webhook for instant Welcome + Purchase.
+- Welcome still fires from the `trg_subscriber_email` pg_net trigger on `subscribers` insert. Purchase confirmation does NOT use a trigger/webhook — `record-purchase` calls `send-purchase` directly (see Email system table).
 
 ---
 
