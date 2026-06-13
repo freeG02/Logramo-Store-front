@@ -26,7 +26,7 @@ begin
       and t.relname = 'purchases'
       and c.contype = 'u'
       and (
-        select array_agg(a.attname order by a.attname)
+        select array_agg(a.attname::text order by a.attname::text)
         from unnest(c.conkey) k
         join pg_attribute a on a.attrelid = c.conrelid and a.attnum = k
       ) = array['paypal_order_id']
@@ -48,7 +48,7 @@ begin
       and ix.indisunique
       and not exists (select 1 from pg_constraint c where c.conindid = ix.indexrelid)
       and (
-        select array_agg(a.attname order by a.attname)
+        select array_agg(a.attname::text order by a.attname::text)
         from pg_attribute a
         where a.attrelid = ix.indrelid and a.attnum = any(ix.indkey)
       ) = array['paypal_order_id']
