@@ -3368,6 +3368,14 @@ h1, h2, h3, h4,
 @media (max-width: 660px) {
   .freebie-modal__cover { border-right: none; border-bottom: var(--bw-1) solid var(--c-ink); min-height: 220px; padding: 28px 20px; }
 }
+/* Desktop: the cover is a grid item with overflow:hidden, so its automatic
+   minimum size is 0 and the grid collapses it to just its padding — clipping
+   the top of the book / coverflow. Reserve height (mobile already does this
+   via the 220px rule above). Image products use the taller coverflow stage. */
+@media (min-width: 661px) {
+  .freebie-modal__cover { min-height: 280px; }
+  .freebie-modal__cover--image { min-height: 360px; }
+}
 .freebie-modal__cover-sub {
   font-family: var(--font-body); font-weight: 700;
   font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
