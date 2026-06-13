@@ -2374,6 +2374,14 @@ h6 { font-size: .9rem; }
   text-decoration: underline; text-underline-offset: 2px;
 }
 .cart-pay__back:hover { color: var(--c-ink); }
+/* While the PayPal checkout is open, the form (card fields + billing address)
+   can be taller than the sidebar. Hide the item list and let the footer take
+   the remaining height and scroll, so the whole form (incl. the pay button) is
+   reachable. */
+.cart-sidebar--paying .cart-sidebar__items { display: none; }
+.cart-sidebar--paying .cart-sidebar__footer {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
 
 /* ============================================================
    BLOG POST

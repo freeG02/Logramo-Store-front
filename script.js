@@ -692,10 +692,14 @@ function startCartCheckout() {
   var pay = document.getElementById('cartPay');
   var btn = document.getElementById('cartCheckoutBtn');
   if (!pay || !btn) return;
+  var sidebar = document.getElementById('cartSidebar');
+  // Paying mode: the PayPal form (card fields + billing address) can be taller
+  // than the sidebar, so hand the footer the remaining height + scroll.
+  if (sidebar) sidebar.classList.add('cart-sidebar--paying');
   btn.style.display = 'none';
   pay.style.display = '';
   var back = document.getElementById('cartPayBack');
-  if (back) back.onclick = function () { pay.style.display = 'none'; btn.style.display = ''; };
+  if (back) back.onclick = function () { pay.style.display = 'none'; btn.style.display = ''; if (sidebar) sidebar.classList.remove('cart-sidebar--paying'); };
   // Currency note when display ccy != charge ccy (e.g. ARS shown, USD charged).
   var note = document.getElementById('cartPayNote');
   if (note && window.LogramoCurrency) {
