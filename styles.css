@@ -2352,6 +2352,28 @@ h6 { font-size: .9rem; }
   margin-bottom: 18px;
   text-transform: uppercase;
 }
+/* Cart checkout panel (PayPal Smart Buttons), swapped in over "Ir al pago" */
+.cart-pay {
+  background: var(--c-cream); border: var(--bw-2) solid var(--c-ink);
+  border-radius: var(--radius-md); box-shadow: 4px 4px 0 var(--c-ink);
+  padding: 14px;
+}
+.cart-pay__head {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--c-ink); padding-bottom: 10px; margin-bottom: 12px;
+  border-bottom: 1px dashed rgba(17,26,23,.15);
+}
+#cartPayButtons { display: flex; flex-direction: column; gap: 8px; }
+.cart-pay__note { margin: 8px 2px 0; font-size: .75rem; color: var(--c-text-muted); text-align: center; line-height: 1.4; }
+.cart-pay__back {
+  display: block; width: 100%; margin-top: 12px; padding: 8px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body); font-size: .82rem; color: var(--c-text-muted);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.cart-pay__back:hover { color: var(--c-ink); }
 
 /* ============================================================
    BLOG POST

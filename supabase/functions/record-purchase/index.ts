@@ -45,13 +45,16 @@ async function getSetting(key: string): Promise<string> {
   return rows?.[0]?.value ?? "";
 }
 
-async function alreadyRecorded(orderId: string): Promise<boolean> {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/purchases?paypal_order_id=eq.${encodeURIComponent(orderId)}&select=id&limit=1`, {
+// Returns the product ids already recorded for this order, so re-running this
+// function (PayPal retry, double webhook) never double-inserts or double-emails.
+// A single-product order with no product_id records the empty-string key.
+async function recordedProductIds(orderId: string): Promise<Set<string>> {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/purchases?paypal_order_id=eq.${encodeURIComponent(orderId)}&select=product_id`, {
     headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
   });
-  if (!r.ok) return false;
+  if (!r.ok) return new Set();
   const rows = await r.json().catch(() => []);
-  return Array.isArray(rows) && rows.length > 0;
+  return new Set((Array.isArray(rows) ? rows : []).map((x: any) => String(x?.product_id ?? "")));
 }
 
 async function paypalToken(base: string, clientId: string): Promise<string> {
@@ -78,8 +81,8 @@ serve(async (req: Request) => {
   const country = body.country ? String(body.country) : null;
   if (!orderId) return json({ ok: false, reason: "missing_order_id" }, 400);
 
-  // Idempotent: if we already recorded this order, do nothing (no double email).
-  if (await alreadyRecorded(orderId)) return json({ ok: true, already: true });
+  // Which products from this order are already on file (idempotency, per item).
+  const already = await recordedProductIds(orderId);
 
   // PayPal config (client id + env from site_settings, secret from env).
   const clientId = await getSetting("paypal_client_id");
@@ -108,33 +111,57 @@ serve(async (req: Request) => {
   }
 
   // Everything below is from PayPal's verified response, not the client.
-  const amount = Number(pu?.amount?.value ?? pu?.payments?.captures?.[0]?.amount?.value ?? 0);
   const currency = pu?.amount?.currency_code ?? pu?.payments?.captures?.[0]?.amount?.currency_code ?? "USD";
-  const productId = (pu?.custom_id ?? "").trim() || null;
   const payer = order?.payer ?? {};
   const email = (payer?.email_address ?? "").trim();
   const name = [payer?.name?.given_name, payer?.name?.surname].filter(Boolean).join(" ").trim() || null;
 
   if (!email) return json({ ok: false, reason: "no_payer_email" }, 400);
 
-  const row: any = {
-    email, payer_name: name, product_id: productId,
-    amount, currency, paypal_order_id: orderId, status: "completed",
-    channel, country,
-  };
-
-  const ins = await fetch(`${SUPABASE_URL}/rest/v1/purchases`, {
-    method: "POST",
-    headers: {
-      apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`,
-      "Content-Type": "application/json", Prefer: "return=minimal",
-    },
-    body: JSON.stringify(row),
-  });
-  if (!ins.ok) {
-    const detail = await ins.text().catch(() => "");
-    return json({ ok: false, reason: "insert_failed", detail }, 500);
+  // Build the list of (product_id, amount) to record. A cart order carries
+  // line items (sku = product id, set in script.js buildCartOrder); a single
+  // product page order carries none, so fall back to the order's custom_id +
+  // total. Either way the figures come from PayPal's verified response.
+  const items = Array.isArray(pu?.items) ? pu.items : [];
+  let lines: { productId: string | null; amount: number }[] = [];
+  if (items.length) {
+    lines = items.map((it: any) => {
+      const sku = String(it?.sku ?? "").trim();
+      const unit = Number(it?.unit_amount?.value ?? 0);
+      const qty = Math.max(1, parseInt(String(it?.quantity ?? "1"), 10) || 1);
+      return { productId: sku || null, amount: Math.round(unit * qty * 100) / 100 };
+    });
+  } else {
+    const amount = Number(pu?.amount?.value ?? pu?.payments?.captures?.[0]?.amount?.value ?? 0);
+    lines = [{ productId: (pu?.custom_id ?? "").trim() || null, amount }];
   }
 
-  return json({ ok: true, recorded: true, productId, amount, currency });
+  // Insert one row per not-yet-recorded product. Each insert fires its own
+  // confirmation email + PDF via the purchases INSERT trigger.
+  const recorded: string[] = [];
+  const skipped: string[] = [];
+  const failed: { product: string | null; detail: string }[] = [];
+  for (const line of lines) {
+    if (already.has(String(line.productId ?? ""))) { skipped.push(line.productId ?? ""); continue; }
+    const row: any = {
+      email, payer_name: name, product_id: line.productId,
+      amount: line.amount, currency, paypal_order_id: orderId, status: "completed",
+      channel, country,
+    };
+    const ins = await fetch(`${SUPABASE_URL}/rest/v1/purchases`, {
+      method: "POST",
+      headers: {
+        apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`,
+        "Content-Type": "application/json", Prefer: "return=minimal",
+      },
+      body: JSON.stringify(row),
+    });
+    if (ins.ok) { recorded.push(line.productId ?? ""); already.add(String(line.productId ?? "")); }
+    else { failed.push({ product: line.productId, detail: await ins.text().catch(() => "") }); }
+  }
+
+  if (failed.length && !recorded.length && !skipped.length) {
+    return json({ ok: false, reason: "insert_failed", failed }, 500);
+  }
+  return json({ ok: true, recorded, skipped, failed, currency });
 });

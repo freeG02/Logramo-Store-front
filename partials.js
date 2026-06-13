@@ -168,7 +168,13 @@ const CART_HTML = `
   <div class="cart-sidebar__items" id="cartItems"></div>
   <div class="cart-sidebar__footer">
     <div class="cart-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
-    <button class="btn btn--primary btn--lg full-w" onclick="checkout()">Ir al pago <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+    <button class="btn btn--primary btn--lg full-w" id="cartCheckoutBtn" onclick="checkout()">Ir al pago <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+    <div id="cartPay" class="cart-pay" style="display:none">
+      <div class="cart-pay__head"><span class="emoji-icon">🛡️</span> <span>Pago seguro · Tarjeta o PayPal</span></div>
+      <div id="cartPayButtons"></div>
+      <p class="cart-pay__note" id="cartPayNote" style="display:none"></p>
+      <button type="button" class="cart-pay__back" id="cartPayBack">← Volver al carrito</button>
+    </div>
   </div>
 </div>`;
 

@@ -626,9 +626,122 @@ function closeCart() {
   document.getElementById('cartOverlay')?.classList.remove('open');
   syncScrollLock();
 }
+/* ----- Cart checkout: real multi-item PayPal Smart Buttons -----
+   One PayPal order with an items[] breakdown (single capture = one PayPal fee).
+   Each line item carries sku = product id; record-purchase reads those server-side
+   and writes one purchases row per guide, so every guide fires its own
+   confirmation email + PDF. Mirrors the single-product flow in partials.js. */
+var cartPayRendered = false;
 function checkout() {
   if (cartItems.length === 0) return;
-  alert('¡Gracias por tu compra!\n\nEn un proyecto real esto abriría el checkout de pago seguro.');
+  startCartCheckout();
+}
+function cartPayConfig() {
+  function getSetting(key) {
+    return fetch(LOGRAMO_SB_URL + '/rest/v1/site_settings?key=eq.' + encodeURIComponent(key) + '&select=value', {
+      headers: { apikey: LOGRAMO_SB_KEY, Authorization: 'Bearer ' + LOGRAMO_SB_KEY }
+    }).then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (a) { return (Array.isArray(a) && a[0] && a[0].value) || ''; })
+      .catch(function () { return ''; });
+  }
+  return Promise.all([getSetting('paypal_client_id'), getSetting('paypal_env')])
+    .then(function (v) { return { client_id: v[0], env: v[1] || 'sandbox' }; });
+}
+function loadCartPayPalSDK(clientId) {
+  return new Promise(function (resolve, reject) {
+    if (window.paypal) { resolve(); return; }
+    var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+    var s = document.createElement('script');
+    s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(clientId) + '&currency=' + encodeURIComponent(ccy) + '&intent=capture&enable-funding=card&disable-funding=paylater&components=buttons';
+    s.onload = resolve; s.onerror = function () { reject(new Error('sdk load failed')); };
+    document.head.appendChild(s);
+  });
+}
+// Build PayPal line items + a breakdown total that EXACTLY equals their sum
+// (PayPal rejects the order otherwise). Done in integer minor units to dodge
+// floating-point drift, using the same per-item rounding as the product page.
+function buildCartOrder() {
+  var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+  var unitStr = function (usd) { return window.LogramoCurrency ? LogramoCurrency.checkoutAmount(usd) : Number(usd || 0).toFixed(2); };
+  var sample = unitStr(0);
+  var decimals = (String(sample).split('.')[1] || '').length; // 0 for whole-unit ccys, else 2
+  var factor = Math.pow(10, decimals);
+  var totalMinor = 0;
+  var items = cartItems.map(function (it) {
+    var qty = Math.max(1, parseInt(it.qty || 1, 10));
+    var unit = unitStr(it.price);
+    totalMinor += Math.round(Number(unit) * factor) * qty;
+    return {
+      name: String(it.name || 'Guía Logramo').slice(0, 127),
+      quantity: String(qty),
+      sku: String(it.id || '').slice(0, 127),
+      unit_amount: { value: unit, currency_code: ccy }
+    };
+  });
+  var total = (totalMinor / factor).toFixed(decimals);
+  return {
+    purchase_units: [{
+      amount: { value: total, currency_code: ccy, breakdown: { item_total: { value: total, currency_code: ccy } } },
+      description: ('Logramo · ' + cartItems.length + (cartItems.length === 1 ? ' guía' : ' guías')).slice(0, 127),
+      custom_id: 'cart',
+      items: items
+    }]
+  };
+}
+function startCartCheckout() {
+  var pay = document.getElementById('cartPay');
+  var btn = document.getElementById('cartCheckoutBtn');
+  if (!pay || !btn) return;
+  btn.style.display = 'none';
+  pay.style.display = '';
+  var back = document.getElementById('cartPayBack');
+  if (back) back.onclick = function () { pay.style.display = 'none'; btn.style.display = ''; };
+  // Currency note when display ccy != charge ccy (e.g. ARS shown, USD charged).
+  var note = document.getElementById('cartPayNote');
+  if (note && window.LogramoCurrency) {
+    var totalUsd = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
+    var msg = LogramoCurrency.checkoutNote ? LogramoCurrency.checkoutNote(totalUsd) : '';
+    if (msg) { note.textContent = msg; note.style.display = ''; } else { note.style.display = 'none'; }
+  }
+  renderCartPayPalButtons();
+}
+function renderCartPayPalButtons() {
+  var mount = document.getElementById('cartPayButtons');
+  if (!mount) return;
+  if (cartPayRendered && window.paypal) { return; } // buttons persist across open/close
+  mount.innerHTML = '<p class="muted" style="text-align:center;padding:10px">Cargando pago seguro…</p>';
+  cartPayConfig().then(function (cfg) {
+    if (!cfg.client_id) { mount.innerHTML = '<p class="muted" style="text-align:center;padding:12px">El checkout estará disponible pronto.</p>'; return; }
+    loadCartPayPalSDK(cfg.client_id).then(function () {
+      if (!window.paypal || !window.paypal.Buttons) { mount.innerHTML = '<p class="muted">PayPal SDK error.</p>'; return; }
+      mount.innerHTML = '';
+      var handlers = {
+        createOrder: function (data, actions) { return actions.order.create(buildCartOrder()); },
+        onApprove: function (data, actions) {
+          mount.insertAdjacentHTML('beforeend', '<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
+          return actions.order.capture().then(function (details) {
+            var orderId = (details && details.id) || (data && data.orderID) || '';
+            var channel = (typeof getChannel === 'function' ? getChannel() : null);
+            var country = (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null);
+            var ids = cartItems.map(function (i) { return i.id; });
+            // Server verifies the order with PayPal and records one row per item.
+            return fetch(LOGRAMO_SB_URL + '/functions/v1/record-purchase', {
+              method: 'POST', headers: { apikey: LOGRAMO_SB_KEY, Authorization: 'Bearer ' + LOGRAMO_SB_KEY, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ order_id: orderId, channel: channel, country: country })
+            }).catch(function () {}).then(function () {
+              cartItems = []; saveCart();
+              window.location.href = 'gracias.html?ids=' + encodeURIComponent(ids.join(',')) + '&order=' + encodeURIComponent(orderId);
+            });
+          });
+        },
+        onError: function (err) { alert('Error en el pago: ' + (err && err.message ? err.message : err)); }
+      };
+      var FUNDING = window.paypal.FUNDING || {};
+      if (FUNDING.CARD) window.paypal.Buttons(Object.assign({}, handlers, { fundingSource: FUNDING.CARD, style: { shape: 'rect', color: 'black', label: 'pay', height: 48 } })).render(mount);
+      if (FUNDING.PAYPAL) window.paypal.Buttons(Object.assign({}, handlers, { fundingSource: FUNDING.PAYPAL, style: { shape: 'rect', color: 'gold', label: 'paypal', height: 48 } })).render(mount);
+      cartPayRendered = true;
+    }).catch(function () { mount.innerHTML = '<p class="muted">No se pudo cargar PayPal.</p>'; });
+  });
 }
 document.getElementById('cartBtn')?.addEventListener('click', openCart);
 renderCart();

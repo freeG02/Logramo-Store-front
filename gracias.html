@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260744" />
+  <link rel="stylesheet" href="styles.css?v=20260745" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     .gracias-section { min-height: calc(100vh - 80px); display:flex; align-items:center; justify-content:center; padding:32px 0; }
@@ -50,10 +50,10 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260742"></script>
+<script src="partials.js?v=20260745"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script src="script.js?v=20260743"></script>
+<script src="script.js?v=20260745"></script>
 <script>
 (function(){
   var sb=window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
@@ -88,23 +88,49 @@
   }
 
   (async function(){
-    var id=new URLSearchParams(location.search).get('id');
+    var params=new URLSearchParams(location.search);
+    // ?ids=a,b,c for a cart order; ?id=a for a single product-page purchase.
+    var ids=(params.get('ids')||params.get('id')||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
     var msg=document.getElementById('gMsg'), act=document.getElementById('gActions');
     // Fire confetti for everyone who lands here after paying
     celebrate();
-    if(!id){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; return; }
-    var r; try{ r=await sb.from('products').select('title,pdf_url').eq('id',id).single(); }catch(e){}
-    if(!r || r.error || !r.data){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; return; }
-    var p=r.data;
-    if(p.pdf_url){
-      msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está lista. La descarga empieza automáticamente.';
-      act.innerHTML='<button class="btn btn--primary" id="gDl"><svg class="icon"><use href="#i-pdf"/></svg> Descargar de nuevo</button><a href="biblioteca.html" class="btn btn--cream">Seguir explorando</a>';
-      document.getElementById('gDl').addEventListener('click',function(){ downloadPdf(p.pdf_url, p.title); });
-      setTimeout(function(){ downloadPdf(p.pdf_url, p.title); }, 800);
-    } else {
-      msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está confirmada. Recibirás un email con el archivo en breve. <br><small style="opacity:.7">(El vendedor aún no ha subido el PDF, pero estará disponible muy pronto.)</small>';
-      act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Seguir explorando</a>';
+    var fallback=function(){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; };
+    if(!ids.length){ fallback(); return; }
+    var r; try{ r=await sb.from('products').select('id,title,pdf_url').in('id',ids); }catch(e){}
+    if(!r || r.error || !r.data || !r.data.length){ fallback(); return; }
+    // Keep the order the buyer added them in.
+    var prods=ids.map(function(id){ return r.data.find(function(p){return p.id===id;}); }).filter(Boolean);
+    var withPdf=prods.filter(function(p){return p.pdf_url;});
+    var single=prods.length===1;
+
+    if(single){
+      var p=prods[0];
+      if(p.pdf_url){
+        msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está lista. La descarga empieza automáticamente.';
+        act.innerHTML='<button class="btn btn--primary" id="gDl"><svg class="icon"><use href="#i-pdf"/></svg> Descargar de nuevo</button><a href="biblioteca.html" class="btn btn--cream">Seguir explorando</a>';
+        document.getElementById('gDl').addEventListener('click',function(){ downloadPdf(p.pdf_url, p.title); });
+        setTimeout(function(){ downloadPdf(p.pdf_url, p.title); }, 800);
+      } else {
+        msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está confirmada. Recibirás un email con el archivo en breve. <br><small style="opacity:.7">(El vendedor aún no ha subido el PDF, pero estará disponible muy pronto.)</small>';
+        act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Seguir explorando</a>';
+      }
+      return;
     }
+
+    // Multi-guide cart order: list every guide with its own download button.
+    msg.innerHTML='Tus <strong>'+prods.length+' guías</strong> están listas. Las descargas empiezan automáticamente.';
+    var rows=prods.map(function(p,i){
+      if(p.pdf_url){
+        return '<button class="btn btn--primary" data-pdf="'+esc(p.pdf_url)+'" data-name="'+esc(p.title)+'"><svg class="icon"><use href="#i-pdf"/></svg> '+esc(p.title)+'</button>';
+      }
+      return '<span class="btn btn--cream" style="opacity:.7;cursor:default">'+esc(p.title)+' · llega por email</span>';
+    }).join('');
+    act.innerHTML='<div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:420px;margin:0 auto">'+rows+'<a href="biblioteca.html" class="btn btn--cream">Seguir explorando</a></div>';
+    Array.prototype.forEach.call(act.querySelectorAll('button[data-pdf]'),function(b){
+      b.addEventListener('click',function(){ downloadPdf(b.getAttribute('data-pdf'), b.getAttribute('data-name')); });
+    });
+    // Stagger the auto-downloads so the browser doesn't block them as a burst.
+    withPdf.forEach(function(p,i){ setTimeout(function(){ downloadPdf(p.pdf_url, p.title); }, 800+i*1200); });
   })();
 })();
 </script>
