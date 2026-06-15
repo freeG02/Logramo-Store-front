@@ -342,7 +342,11 @@ window.initFcCarousel = function(){
   }
   function render(products){
     if(!products.length){ mount.innerHTML='<p class="muted" style="text-align:center;padding:50px;color:var(--c-text-muted)">Aún no hay libros publicados.</p>'; return; }
-    mount.innerHTML='<div class="library-grid">'+products.map(card).join('')+'</div>';
+    var byCat={}; products.forEach(function(p){var c=p.category||'Otros';(byCat[c]=byCat[c]||[]).push(p);});
+    var cats=CAT_ORDER.filter(function(c){return byCat[c];}).concat(Object.keys(byCat).filter(function(c){return CAT_ORDER.indexOf(c)===-1;}));
+    mount.innerHTML=cats.map(function(c){
+      return '<div class="library-section" style="margin-bottom:56px"><div class="library-section__head"><h2>'+esc(c)+'</h2></div><div class="library-grid">'+byCat[c].map(card).join('')+'</div></div>';
+    }).join('');
   }
   function applyFilters(){
     var anyVisible=false;
@@ -351,6 +355,10 @@ window.initFcCarousel = function(){
       var mf=activeFilter==='todos'||kws.indexOf(activeFilter)>-1;
       var ms=!query||(cd.getAttribute('data-title')||'').indexOf(query)>-1||(cd.getAttribute('data-desc')||'').indexOf(query)>-1;
       var show=mf&&ms; cd.style.display=show?'':'none'; if(show)anyVisible=true;
+    });
+    document.querySelectorAll('#libDynamic .library-section').forEach(function(sec){
+      var vis=Array.prototype.some.call(sec.querySelectorAll('.book-card'),function(c){return c.style.display!=='none';});
+      sec.style.display=vis?'':'none';
     });
     var filtering=activeFilter!=='todos'||!!query;
     document.body.classList.toggle('lib-filtering', filtering);
