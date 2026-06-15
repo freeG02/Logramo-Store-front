@@ -1652,7 +1652,7 @@ h6 { font-size: .9rem; }
 .featured-book__cover-title { font-family: var(--font-body); font-weight: 900; font-size: 1.4rem; line-height: 1; text-transform: uppercase; letter-spacing: -.02em; }
 
 /* Library book grid */
-.library-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 30px 24px; align-items: start; }
+.library-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 30px 40px; align-items: start; }
 .book-card {
   background: var(--c-cream);
   border: var(--bw-1) solid var(--c-ink);
@@ -3735,8 +3735,8 @@ h1, h2, h3, h4,
    ~2 books + a peek of the 3rd so it's clearly scrollable. */
 @media (max-width: 640px){
   .library-grid{
-    grid-template-columns:repeat(4, 1fr);
-    gap:16px 12px;
+    grid-template-columns:repeat(2, 1fr);
+    gap:24px 20px;
   }
   .book-card__bar{ gap:6px; margin-top:10px; }
   .book-card__bar .book-card__price{ font-size:.8rem; }
