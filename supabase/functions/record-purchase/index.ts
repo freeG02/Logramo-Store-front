@@ -26,6 +26,59 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "https://eopobchvkfvkkrtrze
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const PAYPAL_CLIENT_SECRET = Deno.env.get("PAYPAL_CLIENT_SECRET") ?? "";
 
+// Meta Conversions API (server-side Purchase). Stays dormant until META_CAPI_TOKEN
+// is set as a Supabase secret. The browser fires the same Purchase with the same
+// event_id (the PayPal order id), so Meta dedupes the pair into one conversion.
+const META_PIXEL_ID = Deno.env.get("META_PIXEL_ID") ?? "4357191121163003";
+const META_CAPI_TOKEN = Deno.env.get("META_CAPI_TOKEN") ?? "";
+const META_API_VERSION = "v19.0";
+
+// SHA-256 hex of a normalized (trimmed, lowercased) string — Meta requires all
+// PII (email, name) be hashed before it leaves our server.
+async function sha256(s: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s.trim().toLowerCase()));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Fire-and-forget Purchase to the Conversions API. Never throws into the caller:
+// a failed analytics call must not affect a recorded purchase.
+async function sendCapiPurchase(opts: {
+  email: string; name: string | null; value: number; currency: string;
+  orderId: string; contentIds: string[]; ip: string; ua: string;
+}): Promise<void> {
+  if (!META_CAPI_TOKEN) return;
+  try {
+    const em = opts.email ? [await sha256(opts.email)] : undefined;
+    const parts = (opts.name ?? "").trim().split(/\s+/).filter(Boolean);
+    const fn = parts.length ? [await sha256(parts[0])] : undefined;
+    const ln = parts.length > 1 ? [await sha256(parts[parts.length - 1])] : undefined;
+    const user_data: Record<string, unknown> = { em, fn, ln };
+    if (opts.ip) user_data.client_ip_address = opts.ip;
+    if (opts.ua) user_data.client_user_agent = opts.ua;
+    const payload = {
+      data: [{
+        event_name: "Purchase",
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: opts.orderId,            // dedup key, shared with the browser event
+        action_source: "website",
+        event_source_url: "https://logramo.com/gracias.html",
+        user_data,
+        custom_data: {
+          currency: opts.currency,
+          value: Math.round(opts.value * 100) / 100,
+          content_type: "product",
+          content_ids: opts.contentIds,
+        },
+      }],
+    };
+    await fetch(`https://graph.facebook.com/${META_API_VERSION}/${META_PIXEL_ID}/events?access_token=${encodeURIComponent(META_CAPI_TOKEN)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (_e) { /* swallow — purchase is already recorded */ }
+}
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -183,6 +236,20 @@ serve(async (req: Request) => {
       });
       emailed = er.ok;
     } catch (_e) { /* swallow — purchase is already recorded */ }
+  }
+
+  // Server-side Purchase to Meta (only on the run that actually recorded rows,
+  // so a PayPal retry can't double-count). value = the verified order total; the
+  // browser sends the same value + event_id, and Meta dedupes the pair.
+  if (recorded.length) {
+    const orderTotal = Number(pu?.amount?.value ?? pu?.payments?.captures?.[0]?.amount?.value ?? 0)
+      || lines.reduce((s, l) => s + (l.amount || 0), 0);
+    const contentIds = lines.map((l) => l.productId).filter((x): x is string => !!x);
+    await sendCapiPurchase({
+      email, name, value: orderTotal, currency, orderId, contentIds,
+      ip: (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
+      ua: req.headers.get("user-agent") ?? "",
+    });
   }
 
   return json({ ok: true, recorded, skipped, failed, emailed, currency });

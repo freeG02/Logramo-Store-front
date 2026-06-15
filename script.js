@@ -308,6 +308,22 @@ function getBuyerCountry() {
   } catch (e) { return ''; }
 }
 
+/* ---------- Meta Pixel: code-defined standard events ----------
+   The Pixel base code (in every page <head>) defines fbq globally, so these are
+   always safe to call. We fire events here in code — NOT via Meta's Event Setup
+   Tool — so each carries real value/currency and never breaks on a layout change.
+   value/currency use the buyer's CHARGE currency so they match what PayPal bills
+   and the server-side Conversions API event. */
+function fbCcy() { return (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD'); }
+function fbAmt(usd) { return window.LogramoCurrency ? Number(LogramoCurrency.checkoutAmount(usd)) : Number(usd || 0); }
+function fbTrack(event, params, eventId) {
+  try {
+    if (typeof fbq !== 'function') return;
+    if (eventId) fbq('track', event, params || {}, { eventID: eventId });
+    else fbq('track', event, params || {});
+  } catch (e) {}
+}
+
 function trackSubscriber(email, source) {
   if (!(email && /\S+@\S+\.\S+/.test(email))) return;
   var row = { email: email.trim(), source: source || '', channel: getChannel() };
@@ -316,6 +332,8 @@ function trackSubscriber(email, source) {
   if (p && p.then) p.then(function (res) {
     if (res && !res.ok) sbInsert('subscribers', { email: row.email, source: row.source });
   }).catch(function () {});
+  // Newsletter signup = a Lead in Meta's standard-event vocabulary.
+  fbTrack('Lead', { content_name: source || 'newsletter' });
 }
 function trackPageview(opts) {
   opts = opts || {};
@@ -580,6 +598,12 @@ function addToCart(product) {
   else cartItems.push({ ...product, qty: 1 });
   saveCart(); renderCart(); openCart();
   trackCartAdd(product);
+  if (product && product.id && String(product.id).indexOf('demo-') !== 0) {
+    fbTrack('AddToCart', {
+      content_ids: [product.id], content_type: 'product',
+      content_name: product.name || '', value: fbAmt(product.price), currency: fbCcy()
+    });
+  }
   showToast(`"${product.name}" añadido al carrito`);
 }
 // Log an add-to-cart so the dashboard can rank products by intent. Non-essential
@@ -720,7 +744,15 @@ function renderCartPayPalButtons() {
       if (!window.paypal || !window.paypal.Buttons) { mount.innerHTML = '<p class="muted">PayPal SDK error.</p>'; return; }
       mount.innerHTML = '';
       var handlers = {
-        createOrder: function (data, actions) { return actions.order.create(buildCartOrder()); },
+        createOrder: function (data, actions) {
+          var totalUsd = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
+          fbTrack('InitiateCheckout', {
+            content_ids: cartItems.map(function (i) { return i.id; }), content_type: 'product',
+            num_items: cartItems.reduce(function (s, i) { return s + (i.qty || 1); }, 0),
+            value: fbAmt(totalUsd), currency: fbCcy()
+          });
+          return actions.order.create(buildCartOrder());
+        },
         onApprove: function (data, actions) {
           mount.insertAdjacentHTML('beforeend', '<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
           return actions.order.capture().then(function (details) {
@@ -734,7 +766,12 @@ function renderCartPayPalButtons() {
               body: JSON.stringify({ order_id: orderId, channel: channel, country: country })
             }).catch(function () {}).then(function () {
               cartItems = []; saveCart();
-              window.location.href = 'gracias.html?ids=' + encodeURIComponent(ids.join(',')) + '&order=' + encodeURIComponent(orderId);
+              // Pass the real captured total + currency so gracias.html can fire a
+              // Purchase event with the exact value PayPal charged.
+              var unit = (details && details.purchase_units && details.purchase_units[0]) || {};
+              var amt = (unit && unit.amount) || {};
+              window.location.href = 'gracias.html?ids=' + encodeURIComponent(ids.join(',')) + '&order=' + encodeURIComponent(orderId)
+                + '&val=' + encodeURIComponent(amt.value || '') + '&cur=' + encodeURIComponent(amt.currency_code || '');
             });
           });
         },

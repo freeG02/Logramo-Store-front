@@ -71,10 +71,10 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260745"></script>
+<script src="partials.js?v=20260747"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script src="script.js?v=20260746"></script>
+<script src="script.js?v=20260747"></script>
 <script>
 (function(){
   var sb=window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
@@ -115,6 +115,17 @@
     var msg=document.getElementById('gMsg'), act=document.getElementById('gActions');
     // Fire confetti for everyone who lands here after paying
     celebrate();
+    // Meta Pixel: Purchase. eventID = PayPal order id, which the server-side
+    // Conversions API event also uses, so Meta dedupes the two into one. val/cur
+    // are the exact amount PayPal charged (passed through from checkout).
+    try {
+      var _order=params.get('order')||'';
+      var _val=parseFloat(params.get('val')||'0')||0;
+      var _cur=params.get('cur')||'USD';
+      if(typeof fbTrack==='function' && _val>0){
+        fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: _val, currency: _cur }, _order||undefined);
+      }
+    } catch(e){}
     var fallback=function(){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; };
     if(!ids.length){ fallback(); return; }
     var r; try{ r=await sb.from('products').select('id,title,pdf_url').in('id',ids); }catch(e){}

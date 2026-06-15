@@ -578,6 +578,12 @@ if (currentLink) {
       createOrder: function (data, actions) {
         const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
         const amount = (window.LogramoCurrency ? LogramoCurrency.checkoutAmount(p.price) : Number(p.price || 0).toFixed(2));
+        if (typeof fbTrack === 'function') {
+          fbTrack('InitiateCheckout', {
+            content_ids: [p.id], content_type: 'product', num_items: 1,
+            value: Number(amount), currency: ccy
+          });
+        }
         return actions.order.create({
           purchase_units: [{ amount: { value: amount, currency_code: ccy }, description: (p.title || 'Producto Logramo').slice(0, 127), custom_id: String(p.id || '') }]
         });
@@ -619,7 +625,12 @@ if (currentLink) {
               if (resp && !resp.ok) { const fb = Object.assign({}, purchase); delete fb.channel; delete fb.country; await postPurchase(fb); }
             } catch (e) {}
           }
-          window.location.href = 'gracias.html?id=' + encodeURIComponent(p.id) + '&order=' + encodeURIComponent(details.id || '');
+          // Carry the real captured total + currency so gracias.html can fire a
+          // Purchase event with the exact value PayPal charged.
+          var _u = (details && details.purchase_units && details.purchase_units[0]) || {};
+          var _a = (_u && _u.amount) || {};
+          window.location.href = 'gracias.html?id=' + encodeURIComponent(p.id) + '&order=' + encodeURIComponent(details.id || '')
+            + '&val=' + encodeURIComponent(_a.value || '') + '&cur=' + encodeURIComponent(_a.currency_code || '');
         });
       },
       onError: function (err) { alert('Error en el pago: ' + (err && err.message ? err.message : err)); }
@@ -689,6 +700,14 @@ if (currentLink) {
   function openFreebieModal(p) {
     if (!p) return;
     stopCoverCarousel();
+    // Meta Pixel: viewing a product's detail = ViewContent (fed in code, not the
+    // Event Setup Tool, so it carries the price). fbTrack lives in script.js.
+    if (typeof fbTrack === 'function' && p.id && String(p.id).indexOf('demo-') !== 0) {
+      fbTrack('ViewContent', {
+        content_ids: [p.id], content_type: 'product',
+        content_name: p.title || '', value: fbAmt(p.price), currency: fbCcy()
+      });
+    }
     // Sync the address bar to producto.html?id=… so the visitor can copy it.
     // Skipped when we're already on that URL (e.g. producto.html shell auto-opened the modal).
     try {
