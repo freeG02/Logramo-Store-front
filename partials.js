@@ -660,7 +660,12 @@ if (currentLink) {
           }).join('')
         + '</ul></div>';
     };
-    var html = block('Lo que aprenderás', mods) + block('Para ti si…', aud);
+    var inner = block('Lo que aprenderás', mods) + block('Para ti si…', aud);
+    // Collapse the detail blocks behind a "Más información" disclosure so the
+    // buy button sits closer to the top (less scroll). Closed by default.
+    var html = inner
+      ? '<details class="fb-more"><summary class="fb-more__summary"><span>Más información</span><span class="fb-more__chevron" aria-hidden="true"></span></summary><div class="fb-more__body">' + inner + '</div></details>'
+      : '';
     el.innerHTML = html;
     el.style.display = html ? '' : 'none';
   }
@@ -791,8 +796,14 @@ if (currentLink) {
     // Price under the description separator — bold for paid; hidden for free
     const priceEl = document.getElementById('freebiePrice');
     if (priceEl) {
-      if (p.is_free) { priceEl.textContent = ''; priceEl.style.display = 'none'; }
-      else { priceEl.textContent = (window.LogramoCurrency ? LogramoCurrency.format(p.price) : '$' + Number(p.price || 0).toFixed(2)); priceEl.style.display = ''; }
+      if (p.is_free) { priceEl.innerHTML = ''; priceEl.style.display = 'none'; }
+      else {
+        var fmtPrice = function (v) { return window.LogramoCurrency ? LogramoCurrency.format(v) : '$' + Number(v || 0).toFixed(2); };
+        var onSale = p.original_price && Number(p.original_price) > Number(p.price);
+        priceEl.innerHTML = '<span class="freebie-modal__price-now">' + fbEsc(fmtPrice(p.price)) + '</span>'
+          + (onSale ? '<span class="freebie-modal__price-was">' + fbEsc(fmtPrice(p.original_price)) + '</span>' : '');
+        priceEl.style.display = '';
+      }
     }
     if (mEl) mEl.textContent = p.is_free ? 'PDF · Descarga inmediata' : 'PDF · Acceso al instante';
     // ---------- Actions: free → download; paid → PayPal ----------
