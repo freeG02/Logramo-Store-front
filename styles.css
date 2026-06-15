@@ -3024,7 +3024,7 @@ h6 { font-size: .9rem; }
   .freebie__details .product-hero__price-row { justify-content: center; }
   .freebie__title { display: none; }
   .freebie__desc { display: none; }
-  .freebie .book3d { --w: min(300px, 68vw); }
+  .freebie .book3d { --w: min(300px, 60vw) !important; }
   /* Mobile spacing pass: snap the homepage vertical gaps to a uniform ~32px.
      Section-to-section gaps = 16px (bottom of one) + 16px (top of next). */
   .blog-more { margin-top: 6px; }               /* hugs the last article (button belongs to the blog) */
