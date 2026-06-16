@@ -316,6 +316,26 @@
     .bell__item-cta { margin-top:6px; font-family:var(--font-display); font-weight:800; font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--c-terracotta); }
     .bell__panel { max-height:480px; overflow-y:auto; }
 
+    /* live "online now" pill (topbar) */
+    .live-now { display:inline-flex; align-items:center; gap:8px; padding:9px 14px; border:var(--bw-1) solid var(--c-ink); background:var(--c-cream); border-radius:9999px; box-shadow:var(--shadow-xs); font-family:var(--font-display); font-weight:800; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+    .live-now__dot { width:9px; height:9px; border-radius:50%; background:#9aa0a6; flex-shrink:0; }
+    .live-now.is-live .live-now__dot { background:#2e7d32; animation:livePulse 1.6s ease-out infinite; }
+    .live-now__n { font-size:1rem; }
+    @keyframes livePulse { 0%{ box-shadow:0 0 0 0 rgba(46,125,50,.55);} 70%{ box-shadow:0 0 0 7px rgba(46,125,50,0);} 100%{ box-shadow:0 0 0 0 rgba(46,125,50,0);} }
+    /* "online right now" list (Home) */
+    .online-list { display:flex; flex-direction:column; gap:8px; }
+    .online-row { display:flex; align-items:center; gap:10px; padding:9px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-cream); font-size:.85rem; }
+    .online-row__path { font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .online-row__meta { margin-left:auto; font-size:.72rem; color:var(--c-text-muted); white-space:nowrap; }
+    .online-row.has-cart { box-shadow:3px 3px 0 var(--c-golden); }
+    .online-cart { font-family:var(--font-display); font-weight:800; font-size:.7rem; padding:2px 9px; border-radius:9999px; background:var(--c-golden); color:var(--c-ink); border:var(--bw-1) solid var(--c-ink); white-space:nowrap; }
+    .online-summary { padding:10px 12px; margin-bottom:6px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-golden); font-family:var(--font-display); font-weight:800; font-size:.78rem; animation:cartPulse 1.4s ease-in-out infinite; }
+    @keyframes cartPulse { 0%,100%{ box-shadow:4px 4px 0 var(--c-ink); } 50%{ box-shadow:4px 4px 0 var(--c-terracotta); transform:translate(-1px,-1px); } }
+    .online-h2 { display:flex; align-items:center; gap:10px; }
+    .live-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); border:var(--bw-1) solid var(--c-ink); font-family:var(--font-display); font-weight:900; font-size:.58rem; letter-spacing:.12em; animation:liveFlash 1.3s ease-in-out infinite; }
+    .live-badge__dot { width:7px; height:7px; border-radius:50%; background:var(--c-cream); }
+    @keyframes liveFlash { 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+
     /* overview cards */
     .cards3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
     @media(max-width:760px){ .cards3 { grid-template-columns:1fr; } }
@@ -408,6 +428,7 @@
     <div class="topbar">
       <div class="topbar__greet"><h1 id="greetTitle">Welcome back! 🐾</h1><p>Here's what's happening at Logramo today</p></div>
       <div class="topbar__right">
+        <div class="live-now" id="liveNow" title="Visitors active on the site in the last minute"><span class="live-now__dot"></span><span class="live-now__n" id="liveNowN">0</span> online</div>
         <div class="bell" id="bellWrap">
           <button class="bell__btn" id="bellBtn" aria-label="Notificaciones"><span class="emoji-icon">🔔</span><span class="bell__dot" id="bellDot" hidden>0</span></button>
           <div class="bell__panel" id="bellPanel" hidden>
@@ -433,6 +454,7 @@
           <div class="panel"><h2>Top selling products</h2><div id="topProducts"><p class="muted">Loading…</p></div></div>
         </div>
         <div>
+          <div class="panel"><h2 class="online-h2">Online right now <span class="live-badge"><span class="live-badge__dot"></span>LIVE</span></h2><p class="panel__hint">Visitors active in the last minute. Updates automatically.</p><div id="onlineList" class="online-list"><p class="muted">Nobody on the site right now.</p></div></div>
           <div class="panel"><h2>Top customers</h2><div id="topCustomers"></div></div>
           <div class="panel"><h2>Recent orders</h2><div id="recentOrders"></div></div>
         </div>
@@ -1708,6 +1730,37 @@
     }
   }
 
+  /* ===== LIVE PRESENCE — who's on the site right now ===== */
+  var PRESENCE_TIMER=null;
+  async function loadPresence(){
+    try{
+      var since=new Date(Date.now()-60000).toISOString(); // active in the last 60s
+      var r=await sb.from('presence').select('session_id,path,country,last_seen,cart_count,cart_value').gt('last_seen',since).order('last_seen',{ascending:false});
+      if(r.error) throw r.error;
+      var seen={}, list=[];
+      (r.data||[]).forEach(function(x){ if(!seen[x.session_id]){ seen[x.session_id]=1; list.push(x); } });
+      var n=list.length;
+      var pill=$('liveNow'); if(pill) pill.classList.toggle('is-live', n>0);
+      if($('liveNowN')) $('liveNowN').textContent=n;
+      try{ document.title = n>0 ? ('🟢 '+n+' · Panel · Logramo') : 'Panel · Logramo'; }catch(e){}
+      if($('onlineList')){
+        if(!n){ $('onlineList').innerHTML='<p class="muted">Nobody on the site right now.</p>'; return; }
+        var carts=list.filter(function(x){ return (x.cart_count||0)>0; });
+        var cartTotal=carts.reduce(function(s,x){ return s+Number(x.cart_value||0); },0);
+        var summary=carts.length ? '<div class="online-summary">🛒 '+carts.length+' '+(carts.length===1?'visitor has':'visitors have')+' a cart going — '+money0(cartTotal)+' in play right now</div>' : '';
+        $('onlineList').innerHTML = summary + list.map(function(x){
+          var flag=(typeof countryFlag==='function'&&x.country)?countryFlag(x.country):'';
+          var cart=(x.cart_count||0)>0 ? '<span class="online-cart">🛒 '+x.cart_count+(Number(x.cart_value)>0?(' · '+money0(x.cart_value)):'')+'</span>' : '';
+          return '<div class="online-row'+((x.cart_count||0)>0?' has-cart':'')+'">'+flag+'<span class="online-row__path">'+esc(x.path||'/')+'</span>'+cart+'<span class="online-row__meta">'+esc(timeAgo(x.last_seen))+'</span></div>';
+        }).join('');
+      }
+    }catch(e){
+      var pill=$('liveNow'); if(pill) pill.classList.remove('is-live');
+      if($('onlineList')) $('onlineList').innerHTML='<p class="muted">Live presence not set up yet — apply the presence migration. ('+esc(e.message||'')+')</p>';
+    }
+  }
+  function startPresence(){ if(PRESENCE_TIMER) return; loadPresence(); PRESENCE_TIMER=setInterval(loadPresence,15000); }
+
   /* ===== TRÁFICO ===== */
   var TRAF_ROWS=[];
   function renderTrafCountries(tf){
@@ -2206,7 +2259,7 @@
     $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
-    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); cmLoad(); loadMessages();
+    await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); cmLoad(); loadMessages(); startPresence();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
   $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });

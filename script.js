@@ -337,8 +337,16 @@ function trackSubscriber(email, source) {
 }
 function trackPageview(opts) {
   opts = opts || {};
-  // Non-essential analytics: only run if the visitor accepted cookies.
-  try { if (localStorage.getItem('lg_cookie_consent') !== 'accepted') return; } catch (e) { return; }
+  // Count ONE visit per browser session, not per page load: a visitor who opens
+  // several pages is a single visit. We mark the session in sessionStorage —
+  // ephemeral (cleared when the tab closes), per-tab, sets no cookie and stores
+  // no identifier, so it needs no cookie consent and still counts ad visitors
+  // who never touch the banner. Leaving and returning later = a new visit (a new
+  // session), which is the standard meaning of "visits".
+  try {
+    if (sessionStorage.getItem('lg_visit_counted') === '1') return;
+    sessionStorage.setItem('lg_visit_counted', '1');
+  } catch (e) { /* storage blocked (private mode): fall through and count it */ }
   var base = { path: location.pathname || '/', referrer: document.referrer || '' };
   if (opts.article_id) base.article_id = opts.article_id;
   fetch('https://ipapi.co/json/').then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (geo) {
@@ -349,6 +357,59 @@ function trackPageview(opts) {
     if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('pageviews', base); }).catch(function () {});
   });
 }
+
+/* ---- Live presence: powers the dashboard's "who's on the site right now".
+   Cookieless — a random per-tab id in sessionStorage (no cookie, no cross-site
+   identifier) is upserted with a fresh last_seen every ~25s while the tab is
+   visible. The dashboard counts sessions seen in the last minute; when the tab
+   closes the heartbeats stop and the visitor drops off within ~a minute. */
+function lgSessionId() {
+  try {
+    var id = sessionStorage.getItem('lg_session_id');
+    if (!id) { id = Date.now().toString(36) + Math.random().toString(36).slice(2, 10); sessionStorage.setItem('lg_session_id', id); }
+    return id;
+  } catch (e) { return 'tmp-' + Math.random().toString(36).slice(2, 10); }
+}
+function presenceBeat() {
+  // Read the cart straight from localStorage (the source of truth) so we can show
+  // active carts live on the dashboard without depending on load order.
+  var cartCount = 0, cartValue = 0;
+  try {
+    var c = JSON.parse(localStorage.getItem('logramo_cart') || '[]');
+    if (c && c.length) {
+      cartCount = c.length;
+      cartValue = c.reduce(function (s, i) { return s + (Number(i.price) || 0) * (i.qty || 1); }, 0);
+    }
+  } catch (e) {}
+  var body = {
+    p_session: lgSessionId(),
+    p_path: location.pathname || '/',
+    p_country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : '') || '',
+    p_referrer: document.referrer || '',
+    p_cart_count: cartCount,
+    p_cart_value: Math.round(cartValue * 100) / 100
+  };
+  try {
+    // Writes go through a SECURITY DEFINER function (rpc/presence_beat): the
+    // table itself stays locked (admins read, nobody writes directly), and the
+    // function does the upsert so each tab keeps one live row.
+    fetch(LOGRAMO_SB_URL + '/rest/v1/rpc/presence_beat', {
+      method: 'POST',
+      headers: {
+        'apikey': LOGRAMO_SB_KEY,
+        'Authorization': 'Bearer ' + LOGRAMO_SB_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }).catch(function () {});
+  } catch (e) {}
+}
+(function () {
+  var beat = function () { if (document.visibilityState !== 'hidden') presenceBeat(); };
+  beat();
+  setInterval(beat, 25000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') beat(); });
+})();
 
 /* Scroll Reveal — IntersectionObserver with a safety fallback.
    On very tall elements (long blog posts) the 0.12 threshold can fail to
@@ -606,12 +667,12 @@ function addToCart(product) {
   }
   showToast(`"${product.name}" añadido al carrito`);
 }
-// Log an add-to-cart so the dashboard can rank products by intent. Non-essential
-// analytics: only runs if the visitor accepted cookies, same gate as trackPageview.
+// Log an add-to-cart so the dashboard can rank products by intent. First-party
+// and cookieless (same model as trackPageview): fires for all visitors so the
+// ad funnel is measurable. Stores only product + price + coarse country.
 function trackCartAdd(product) {
   if (!product || !product.id) return;
   if (String(product.id).indexOf('demo-') === 0) return; // ?demo preview books
-  try { if (localStorage.getItem('lg_cookie_consent') !== 'accepted') return; } catch (e) { return; }
   var row = { product_id: product.id, product_title: product.name || '', price: Number(product.price || 0), country: getBuyerCountry() || '' };
   var p = sbInsert('cart_events', row);
   // If the country column isn't there yet, retry without it so the log still saves.
@@ -1299,10 +1360,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { localStorage.setItem(KEY, v); } catch (e) {}
       bar.classList.remove('is-in');
       setTimeout(function () { if (bar.parentNode) bar.parentNode.removeChild(bar); }, 400);
-      // If accepted, count this visit now (blog-post tracks itself on next load)
-      if (v === 'accepted' && typeof trackPageview === 'function' && location.pathname.indexOf('blog-post') === -1) {
-        trackPageview();
-      }
+      // Visits are already counted on page load (cookieless first-party), so no
+      // need to re-fire trackPageview here — that would double-count this view.
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show);
