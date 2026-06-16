@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -29,14 +29,14 @@
   <!-- End Meta Pixel Code -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Consejos sobre perros que sí sirven, contados como te los daría un amigo que ya pasó por lo mismo." />
-  <title>Blog · Logramo</title>
+  <meta name="description" content="Consejos sobre perros que sÃ­ sirven, contados como te los darÃ­a un amigo que ya pasÃ³ por lo mismo." />
+  <title>Blog Â· Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260748" />
+  <link rel="stylesheet" href="styles.css?v=20260749" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="blog">
@@ -48,9 +48,9 @@
   <div class="container">
     <span class="eyebrow" data-reveal>El blog de Logramo</span>
     <h1 data-reveal>Consejos<br><em>que sirven.</em></h1>
-    <p class="lead" data-reveal>Directo y al grano. Solo lo que te sirve de verdad sobre tu perro, contado como te lo diría alguien que ya pasó por lo mismo 🐶</p>
+    <p class="lead" data-reveal>Directo y al grano. Solo lo que te sirve de verdad sobre tu perro, contado como te lo dirÃ­a alguien que ya pasÃ³ por lo mismo ðŸ¶</p>
     <form class="blog-search" onsubmit="event.preventDefault()" data-reveal>
-      <input type="search" id="blogSearch" placeholder="Buscar artículos (ej. 'ladridos', 'cachorro')" aria-label="Buscar">
+      <input type="search" id="blogSearch" placeholder="Buscar artÃ­culos (ej. 'ladridos', 'cachorro')" aria-label="Buscar">
       <button type="submit" aria-label="Buscar"><svg class="icon icon--sm"><use href="#i-search"/></svg></button>
     </form>
   </div>
@@ -60,15 +60,15 @@
 <div class="container">
   <div class="filter-row" data-reveal data-blog-filter style="justify-content:center;flex-wrap:wrap">
     <button class="filter-btn active" data-filter="all">Todos</button>
-    <button class="filter-btn filter-btn--hot" data-filter="caliente">🔥 Caliente</button>
+    <button class="filter-btn filter-btn--hot" data-filter="caliente">ðŸ”¥ Caliente</button>
     <button class="filter-btn" data-filter="cachorros">Cachorros</button>
-    <button class="filter-btn" data-filter="educacion">Educación</button>
+    <button class="filter-btn" data-filter="educacion">EducaciÃ³n</button>
     <button class="filter-btn" data-filter="conducta">Conducta</button>
     <button class="filter-btn" data-filter="salud">Salud</button>
-    <button class="filter-btn" data-filter="alimentacion">Alimentación</button>
+    <button class="filter-btn" data-filter="alimentacion">AlimentaciÃ³n</button>
     <button class="filter-btn" data-filter="historias">Historias reales</button>
   </div>
-  <p class="filter-hint" data-reveal>Toca varios filtros para combinar temas · <button class="filter-clear" id="filterClear" type="button">Limpiar</button></p>
+  <p class="filter-hint" data-reveal>Toca varios filtros para combinar temas Â· <button class="filter-clear" id="filterClear" type="button">Limpiar</button></p>
 </div>
 
 <!-- ============ BLOG MAIN ============ -->
@@ -78,17 +78,17 @@
 
       <!-- Articles -->
       <div>
-        <!-- Featured (most-read article — filled by JS) -->
+        <!-- Featured (most-read article â€” filled by JS) -->
         <div id="featuredHeadWrap" style="margin-bottom:24px;display:none" data-reveal>
-          <span class="eyebrow">Artículo destacado</span>
+          <span class="eyebrow">ArtÃ­culo destacado</span>
         </div>
         <a id="featuredPost" class="featured-post" data-reveal style="display:none"></a>
 
         <!-- Grid -->
         <div style="margin-bottom:24px;margin-top:8px" data-reveal>
-          <span class="eyebrow">Últimos artículos</span>
+          <span class="eyebrow">Ãšltimos artÃ­culos</span>
         </div>
-        <div class="posts-grid" id="blogDynamic"><p class="muted" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">Cargando artículos…</p></div>
+        <div class="posts-grid" id="blogDynamic"><p class="muted" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">Cargando artÃ­culosâ€¦</p></div>
       </div>
 
       <!-- Sidebar -->
@@ -97,7 +97,7 @@
         <div class="widget widget--terra" id="sidebarNewsletter">
           <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40"><use href="#i-mail"/></svg></div>
           <h3 style="text-align:center">Una vez por semana en tu correo</h3>
-          <p style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55;text-align:center">Consejos útiles, artículos nuevos y algún fail canino épico 🐶 Cero spam.</p>
+          <p style="color:rgba(254,250,232,.85);font-size:.85rem;margin-bottom:16px;line-height:1.55;text-align:center">Consejos Ãºtiles, artÃ­culos nuevos y algÃºn fail canino Ã©pico ðŸ¶ Cero spam.</p>
           <form onsubmit="handleSimpleNewsletter(event)" style="display:flex;flex-direction:column;gap:10px">
             <input type="email" class="popup__input" placeholder="Tu correo" required style="background:var(--c-cream);color:var(--c-ink)">
             <button type="submit" class="btn btn--golden full-w">Suscribirme</button>
@@ -125,14 +125,14 @@
         </div>
 
         <div class="widget" id="topReadWidget" hidden>
-          <h3 id="topReadTitle">Más leídos</h3>
+          <h3 id="topReadTitle">MÃ¡s leÃ­dos</h3>
           <div class="sidebar-articles" id="topReadList"></div>
         </div>
 
         <div class="widget widget--forest" style="text-align:center">
           <div style="margin-bottom:12px;display:flex;justify-content:center"><svg width="40" height="40" style="color:var(--c-golden)"><use href="#i-cart"/></svg></div>
-          <h3>¿Buscas más guías?</h3>
-          <p style="color:rgba(254,250,232,.7);font-size:.85rem;margin-bottom:16px;line-height:1.55">Están todas en la biblioteca, ordenadas por tema para que encuentres justo lo que tú y tu perro necesitan. 🐾</p>
+          <h3>Â¿Buscas mÃ¡s guÃ­as?</h3>
+          <p style="color:rgba(254,250,232,.7);font-size:.85rem;margin-bottom:16px;line-height:1.55">EstÃ¡n todas en la biblioteca, ordenadas por tema para que encuentres justo lo que tÃº y tu perro necesitan. ðŸ¾</p>
           <a href="biblioteca.html" class="btn btn--golden full-w">Ir a la biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
         </div>
 
@@ -146,14 +146,14 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260748"></script>
+<script src="partials.js?v=20260749"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=20260747"></script>
 <script src="animations.js?v=20260623"></script>
 <script>
-/* ============ BLOG — live articles from Supabase ============ */
+/* ============ BLOG â€” live articles from Supabase ============ */
 (function(){
   var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
   var mount=document.getElementById('blogDynamic');
@@ -170,7 +170,7 @@
   pager.id = 'blogPager'; pager.className = 'blog-pager';
   if(mount.parentNode) mount.parentNode.insertBefore(pager, mount.nextSibling);
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+  function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[Ì€-Í¯]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   /* CAT_COLOR is built from blog_categories at load time (see IIFE below);
      unknown categories fall back to 'sage'. */
   var CAT_COLOR={};
@@ -179,20 +179,20 @@
     var cats=[slug(a.category)]; if(a.hot)cats.push('caliente'); if(isNew(a))cats.push('nuevo');
     var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="" loading="lazy">':'<div class="article-card__img" style="background:var(--c-sage)"></div>';
     var catTag='<span class="tag tag--'+(CAT_COLOR[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>';
-    var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">🔥 Caliente</span>':(isNew(a)?'<span class="tag article-card__tag article-card__tag--nuevo">Nuevo</span>':'');
+    var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">ðŸ”¥ Caliente</span>':(isNew(a)?'<span class="tag article-card__tag article-card__tag--nuevo">Nuevo</span>':'');
     return '<a href="blog-post.html?id='+encodeURIComponent(a.id)+'" class="article-card" data-cat="'+cats.join(' ')+'" data-title="'+esc((a.title||'').toLowerCase())+'" data-ex="'+esc((a.excerpt||'').toLowerCase())+'">'
       +'<div class="article-card__img-wrap">'+catTag+hot+img+'</div>'
       +'<div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'')+'</p>'
-      +'<div class="article-card__meta"><span><span class="emoji-icon">⏰</span> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
+      +'<div class="article-card__meta"><span><span class="emoji-icon">â°</span> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>';
   }
   function render(arts){
-    if(!arts.length){ mount.innerHTML='<p class="muted" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-muted)">Aún no hay artículos publicados.</p>'; pager.innerHTML=''; return; }
+    if(!arts.length){ mount.innerHTML='<p class="muted" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-muted)">AÃºn no hay artÃ­culos publicados.</p>'; pager.innerHTML=''; return; }
     mount.innerHTML=arts.map(card).join('');
     currentPage = 1;
     applyFilters();
   }
   function applyFilters(){
-    // 1) filter — collect cards that pass the active filters + search
+    // 1) filter â€” collect cards that pass the active filters + search
     var passing = [];
     document.querySelectorAll('#blogDynamic .article-card').forEach(function(cd){
       var cats=(cd.getAttribute('data-cat')||'').split(' ');
@@ -201,7 +201,7 @@
       if(mf&&ms){ passing.push(cd); }
       else { cd.style.display='none'; }
     });
-    // 2) paginate — only show the slice for the current page
+    // 2) paginate â€” only show the slice for the current page
     var totalPages = Math.max(1, Math.ceil(passing.length / PAGE_SIZE));
     if(currentPage > totalPages) currentPage = totalPages;
     var start = (currentPage-1)*PAGE_SIZE, end = start + PAGE_SIZE;
@@ -210,9 +210,9 @@
     if(passing.length <= PAGE_SIZE){ pager.innerHTML=''; return; }
     var prevDis = currentPage<=1 ? 'disabled' : '';
     var nextDis = currentPage>=totalPages ? 'disabled' : '';
-    pager.innerHTML = '<button type="button" class="btn btn--cream" data-page-prev '+prevDis+'>← Anterior</button>'
-      + '<span class="blog-pager__info">Página '+currentPage+' de '+totalPages+'</span>'
-      + '<button type="button" class="btn btn--primary" data-page-next '+nextDis+'>Siguiente →</button>';
+    pager.innerHTML = '<button type="button" class="btn btn--cream" data-page-prev '+prevDis+'>â† Anterior</button>'
+      + '<span class="blog-pager__info">PÃ¡gina '+currentPage+' de '+totalPages+'</span>'
+      + '<button type="button" class="btn btn--primary" data-page-next '+nextDis+'>Siguiente â†’</button>';
   }
   function goToPage(n){
     currentPage = Math.max(1, n);
@@ -282,7 +282,7 @@
       });
     })();
 
-    /* ---- Featured post + "Más leídos" sidebar (ranked by pageview count) ---- */
+    /* ---- Featured post + "MÃ¡s leÃ­dos" sidebar (ranked by pageview count) ---- */
     if(!arts.length) return;
     var counts = {};
     try{
@@ -293,7 +293,7 @@
     var ranked = arts.slice().sort(function(a,b){
       var ca = counts[a.id] || 0, cb = counts[b.id] || 0;
       if(ca !== cb) return cb - ca;
-      // Tiebreaker: keep DB order (which is pinned → sort_order → created_at)
+      // Tiebreaker: keep DB order (which is pinned â†’ sort_order â†’ created_at)
       return arts.indexOf(a) - arts.indexOf(b);
     });
     var featured = ranked[0];
@@ -309,8 +309,8 @@
       /* Fit the badge to its content (align-self prevents the flex parent
          from stretching it to full width). Golden background + terracotta icon. */
       var fpBadge = hasViewData
-        ? '<span class="tag tag--golden" style="align-self:flex-start;font-size:.6rem;padding:4px 10px;gap:4px"><span class="emoji-icon">🔥</span> Más leído</span>'
-        : '<span class="tag tag--golden" style="align-self:flex-start;font-size:.6rem;padding:4px 10px;gap:4px"><span class="emoji-icon">⭐</span> Destacado</span>';
+        ? '<span class="tag tag--golden" style="align-self:flex-start;font-size:.6rem;padding:4px 10px;gap:4px"><span class="emoji-icon">ðŸ”¥</span> MÃ¡s leÃ­do</span>'
+        : '<span class="tag tag--golden" style="align-self:flex-start;font-size:.6rem;padding:4px 10px;gap:4px"><span class="emoji-icon">â­</span> Destacado</span>';
       fp.href = 'blog-post.html?id=' + encodeURIComponent(featured.id);
       fp.innerHTML =
         '<div class="featured-post__img">' + fpImg + '</div>' +
@@ -318,13 +318,13 @@
           fpBadge +
           '<h2 class="featured-post__title">'+esc(featured.title||'')+'</h2>' +
           '<p class="featured-post__excerpt">'+esc(featured.excerpt||'')+'</p>' +
-          '<span class="btn btn--primary">Leer artículo <svg class="icon"><use href="#i-arrow-right"/></svg></span>' +
+          '<span class="btn btn--primary">Leer artÃ­culo <svg class="icon"><use href="#i-arrow-right"/></svg></span>' +
         '</div>';
       fp.style.display = '';
       if(fpHead) fpHead.style.display = '';
     }
 
-    /* Sidebar "Más leídos" widget */
+    /* Sidebar "MÃ¡s leÃ­dos" widget */
     if(sidebarList.length){
       function timeAgoSp(iso){
         var d = new Date(iso), now = Date.now();
@@ -333,8 +333,8 @@
         if(s < 3600) return 'Hace '+Math.floor(s/60)+' min';
         if(s < 86400) return 'Hace '+Math.floor(s/3600)+' h';
         var days = Math.floor(s/86400);
-        if(days === 1) return 'Hace 1 día';
-        if(days < 7) return 'Hace '+days+' días';
+        if(days === 1) return 'Hace 1 dÃ­a';
+        if(days < 7) return 'Hace '+days+' dÃ­as';
         var weeks = Math.floor(days/7);
         if(weeks === 1) return 'Hace 1 semana';
         if(weeks < 5) return 'Hace '+weeks+' semanas';
@@ -343,7 +343,7 @@
       var widget = document.getElementById('topReadWidget');
       var titleEl = document.getElementById('topReadTitle');
       var listEl = document.getElementById('topReadList');
-      titleEl.textContent = hasViewData ? 'Más leídos' : 'Recientes';
+      titleEl.textContent = hasViewData ? 'MÃ¡s leÃ­dos' : 'Recientes';
       listEl.innerHTML = sidebarList.map(function(a){
         var img = a.image_url
           ? '<img class="sidebar-article__img" src="'+esc(a.image_url)+'" alt="" loading="lazy">'
@@ -352,7 +352,7 @@
           img +
           '<div>' +
             '<div class="sidebar-article__title">'+esc(a.title||'')+'</div>' +
-            '<div class="sidebar-article__date">'+timeAgoSp(a.created_at)+' · '+(a.read_time||5)+' min</div>' +
+            '<div class="sidebar-article__date">'+timeAgoSp(a.created_at)+' Â· '+(a.read_time||5)+' min</div>' +
           '</div>' +
         '</a>';
       }).join('');

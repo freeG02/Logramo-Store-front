@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Logramo · book frame — integrated banner</title>
+<title>Logramo Â· book frame â€” integrated banner</title>
 <style>
   :root{
     --c-cream:#FEFAE8; --c-cream-alt:#F8F3D9; --c-ink:#111A17;
@@ -20,7 +20,7 @@
   .item{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
   .label{font-size:.82rem;font-weight:700;color:#444}
 
-  /* ===== .book3d — 5:7 frame ===== */
+  /* ===== .book3d â€” 5:7 frame ===== */
   .book3d{position:relative;display:inline-block;border-radius:2px 4px 4px 2px;
     transition:transform .25s ease, box-shadow .25s ease;}
   .book3d > .cover{display:block;position:relative;overflow:hidden;
@@ -42,7 +42,7 @@
       radial-gradient(28px 28px at top right, rgba(255,255,255,.34), rgba(255,255,255,0) 72%),
       radial-gradient(24px 24px at bottom left, rgba(255,255,255,.18), rgba(255,255,255,0) 72%),
       radial-gradient(24px 24px at bottom right, rgba(255,255,255,.18), rgba(255,255,255,0) 72%),
-      /* BOTTOM depth shadow — tighter to the edge (closer to Apple) */
+      /* BOTTOM depth shadow â€” tighter to the edge (closer to Apple) */
       linear-gradient(to top, rgba(0,0,0,.30) 0, rgba(0,0,0,.10) 3%, rgba(0,0,0,.02) 6.5%, rgba(0,0,0,0) 10%),
       linear-gradient(to right,
         rgba(0,0,0,0) calc(100% - 7px), rgba(0,0,0,.06) calc(100% - 6px), rgba(255,255,255,.55) calc(100% - 5px),
@@ -66,8 +66,8 @@
   .g-sky{background:var(--c-sky);color:var(--c-ink)}
 
   /* ============================================================
-     .gbanner — INTEGRATED bottom banner.
-     z-index:1 → sits UNDER ::after, so the cover's bottom shadow,
+     .gbanner â€” INTEGRATED bottom banner.
+     z-index:1 â†’ sits UNDER ::after, so the cover's bottom shadow,
      page edge and corner glow render over it (shadow "goes through").
      No top stroke. Two looks: solid + glass (see-through).
      ============================================================ */
@@ -83,32 +83,32 @@
 <body>
 <div class="wrap">
   <h1>Banner inferior integrado en la portada</h1>
-  <p class="sub">Sin borde arriba · la sombra inferior de la portada pasa por encima del banner para que se vea integrado, no pegado. Título centrado, subtítulo arriba.</p>
+  <p class="sub">Sin borde arriba Â· la sombra inferior de la portada pasa por encima del banner para que se vea integrado, no pegado. TÃ­tulo centrado, subtÃ­tulo arriba.</p>
 
-  <h2>Banner — ¿sólido o "glass"?</h2>
+  <h2>Banner â€” Â¿sÃ³lido o "glass"?</h2>
   <p class="h2note">La sombra del fondo de la portada cruza el banner en los dos casos.</p>
   <div class="shelf">
     <div class="item">
       <span class="book3d book3d--shadow"><span class="cover gcover g-golden">
-        <span class="gcover__top"><span class="gsub">Guía PDF</span></span>
-        <span class="gtitle">Los primeros 30 días</span>
-        <span class="gbanner gbanner--solid">★ Más vendido</span>
+        <span class="gcover__top"><span class="gsub">GuÃ­a PDF</span></span>
+        <span class="gtitle">Los primeros 30 dÃ­as</span>
+        <span class="gbanner gbanner--solid">â˜… MÃ¡s vendido</span>
       </span></span>
-      <span class="label">Sólido (forest)</span>
+      <span class="label">SÃ³lido (forest)</span>
     </div>
     <div class="item">
       <span class="book3d book3d--shadow"><span class="cover gcover g-forest">
         <span class="gcover__top"><span class="gsub">Manual</span></span>
-        <span class="gtitle">Alimentación sana</span>
+        <span class="gtitle">AlimentaciÃ³n sana</span>
         <span class="gbanner gbanner--solidterra">Nuevo</span>
       </span></span>
-      <span class="label">Sólido (terracotta)</span>
+      <span class="label">SÃ³lido (terracotta)</span>
     </div>
     <div class="item">
       <span class="book3d book3d--shadow"><span class="cover gcover g-terra">
         <span class="gcover__top"><span class="gsub">Libro digital</span></span>
-        <span class="gtitle">Cría un perro feliz</span>
-        <span class="gbanner gbanner--glass">★ Recomendado</span>
+        <span class="gtitle">CrÃ­a un perro feliz</span>
+        <span class="gbanner gbanner--glass">â˜… Recomendado</span>
       </span></span>
       <span class="label">Glass (se transparenta)</span>
     </div>
@@ -119,9 +119,9 @@
     <div class="item">
       <span class="book3d book3d--shadow"><span class="cover">
         <img src="https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=700&q=80&fit=crop" alt="portada">
-        <span class="gbanner gbanner--solid">★ Más vendido</span>
+        <span class="gbanner gbanner--solid">â˜… MÃ¡s vendido</span>
       </span></span>
-      <span class="label">Imagen + banner sólido</span>
+      <span class="label">Imagen + banner sÃ³lido</span>
     </div>
     <div class="item">
       <span class="book3d book3d--shadow"><span class="cover">
@@ -132,12 +132,12 @@
     </div>
   </div>
 
-  <h2>Detalle (zoom) — mira la sombra cruzar el banner</h2>
+  <h2>Detalle (zoom) â€” mira la sombra cruzar el banner</h2>
   <div class="shelf">
     <span class="book3d book3d--shadow"><span class="cover gcover g-forest" style="--w:340px">
       <span class="gcover__top"><span class="gsub">Manual</span></span>
-      <span class="gtitle">Alimentación sana</span>
-      <span class="gbanner gbanner--solidterra">★ Más vendido</span>
+      <span class="gtitle">AlimentaciÃ³n sana</span>
+      <span class="gbanner gbanner--solidterra">â˜… MÃ¡s vendido</span>
     </span></span>
   </div>
 </div>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -30,13 +30,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Tu cuenta de Logramo. Entra o crea una cuenta en segundos." />
-  <title>Mi cuenta · Logramo</title>
+  <title>Mi cuenta Â· Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260748" />
+  <link rel="stylesheet" href="styles.css?v=20260749" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     /* ============ AUTH PAGE ============ */
@@ -138,7 +138,7 @@
     .pw-toggle .pw-eye { width: 20px; height: 20px; display: block; }
     .pw-toggle.is-on { color: var(--c-terracotta); }
 
-    /* Newsletter opt-in checkbox — fits its content + centered in the card */
+    /* Newsletter opt-in checkbox â€” fits its content + centered in the card */
     .auth-toggle {
       display: inline-flex;
       align-self: center;
@@ -308,7 +308,7 @@
       <div class="auth__head">
         <span class="eyebrow">Tu cuenta</span>
         <h1 class="auth__title">Bienvenido<br>a <em>Logramo</em></h1>
-        <p class="auth__sub">Entra para guardar tus guías favoritas y tener todo tu historial en un solo sitio.</p>
+        <p class="auth__sub">Entra para guardar tus guÃ­as favoritas y tener todo tu historial en un solo sitio.</p>
       </div>
 
       <div class="auth-card">
@@ -322,37 +322,37 @@
         <!-- LOGIN -->
         <form class="auth-form active" id="loginForm" data-form="login" onsubmit="return handleLogin(event)">
           <div class="auth-field">
-            <label for="loginEmail">Correo electrónico</label>
+            <label for="loginEmail">Correo electrÃ³nico</label>
             <input class="auth-input" id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email" required />
           </div>
           <div class="auth-field">
-            <label for="loginPassword">Contraseña</label>
+            <label for="loginPassword">ContraseÃ±a</label>
             <div class="pw-wrap">
-              <input class="auth-input" id="loginPassword" type="password" placeholder="Tu contraseña" autocomplete="current-password" required />
-              <button type="button" class="pw-toggle" data-pw-toggle="loginPassword" aria-label="Mostrar contraseña">
+              <input class="auth-input" id="loginPassword" type="password" placeholder="Tu contraseÃ±a" autocomplete="current-password" required />
+              <button type="button" class="pw-toggle" data-pw-toggle="loginPassword" aria-label="Mostrar contraseÃ±a">
                 <svg class="pw-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
           </div>
           <button type="submit" class="btn btn--dark btn--lg">Entrar <svg class="icon"><use href="#i-arrow-right"/></svg></button>
-          <p class="auth-note">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('signup');return false;">Crea una en 10 segundos</a></p>
+          <p class="auth-note">Â¿AÃºn no tienes cuenta? <a href="#" onclick="switchTab('signup');return false;">Crea una en 10 segundos</a></p>
         </form>
 
         <!-- SIGN UP -->
         <form class="auth-form" id="signupForm" data-form="signup" onsubmit="return handleSignup(event)">
           <div class="auth-field">
             <label for="signupName">Nombre de usuario</label>
-            <input class="auth-input" id="signupName" type="text" placeholder="¿Cómo te llamamos?" autocomplete="username" required minlength="2" />
+            <input class="auth-input" id="signupName" type="text" placeholder="Â¿CÃ³mo te llamamos?" autocomplete="username" required minlength="2" />
           </div>
           <div class="auth-field">
-            <label for="signupEmail">Correo electrónico</label>
+            <label for="signupEmail">Correo electrÃ³nico</label>
             <input class="auth-input" id="signupEmail" type="email" placeholder="tu@correo.com" autocomplete="email" required />
           </div>
           <div class="auth-field">
-            <label for="signupPassword">Contraseña</label>
+            <label for="signupPassword">ContraseÃ±a</label>
             <div class="pw-wrap">
-              <input class="auth-input" id="signupPassword" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
-              <button type="button" class="pw-toggle" data-pw-toggle="signupPassword" aria-label="Mostrar contraseña">
+              <input class="auth-input" id="signupPassword" type="password" placeholder="MÃ­nimo 6 caracteres" autocomplete="new-password" required minlength="6" />
+              <button type="button" class="pw-toggle" data-pw-toggle="signupPassword" aria-label="Mostrar contraseÃ±a">
                 <svg class="pw-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -362,8 +362,8 @@
             <span class="auth-toggle__box" aria-hidden="true"></span>
             <span class="auth-toggle__text">Recibir novedades</span>
           </label>
-          <button type="submit" class="btn btn--dark btn--lg"><span class="emoji-icon">🐾</span> Crear cuenta</button>
-          <p class="auth-note">Cero spam · gratis para siempre · solo lo esencial</p>
+          <button type="submit" class="btn btn--dark btn--lg"><span class="emoji-icon">ðŸ¾</span> Crear cuenta</button>
+          <p class="auth-note">Cero spam Â· gratis para siempre Â· solo lo esencial</p>
         </form>
       </div>
     </div>
@@ -379,18 +379,18 @@
         <div class="profile-avatar" id="profileAvatar">L</div>
 
         <div class="profile-name-row">
-          <span class="profile-name" id="profileName">—</span>
+          <span class="profile-name" id="profileName">â€”</span>
           <button class="username-edit-btn" id="editUsernameBtn" onclick="startEditUsername()" aria-label="Editar nombre">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
           </button>
         </div>
         <input type="text" class="username-edit-input" id="usernameEditInput" style="display:none" maxlength="24" />
 
-        <div class="profile-email" id="profileEmail">—</div>
+        <div class="profile-email" id="profileEmail">â€”</div>
 
         <div class="profile-actions">
-          <a href="biblioteca.html" class="btn btn--primary btn--lg"><span class="emoji-icon">📖</span> Ir a la biblioteca</a>
-          <button class="btn btn--cream btn--lg" onclick="handleLogout()">Cerrar sesión <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+          <a href="biblioteca.html" class="btn btn--primary btn--lg"><span class="emoji-icon">ðŸ“–</span> Ir a la biblioteca</a>
+          <button class="btn btn--cream btn--lg" onclick="handleLogout()">Cerrar sesiÃ³n <svg class="icon"><use href="#i-arrow-right"/></svg></button>
         </div>
 
         <button class="delete-link" onclick="handleDeleteAccount()">Eliminar mi cuenta</button>
@@ -405,14 +405,14 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260748"></script>
+<script src="partials.js?v=20260749"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js?v=20260747"></script>
 <script src="animations.js?v=20260623"></script>
 <script>
-/* ============ ACCOUNT — real Supabase Auth ============ */
+/* ============ ACCOUNT â€” real Supabase Auth ============ */
 const sb = window.supabase.createClient(
   'https://eopobchvkfvkkrtrzeyu.supabase.co',
   'sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D',
@@ -493,19 +493,19 @@ document.querySelectorAll('[data-pw-toggle]').forEach(btn => {
     input.type = show ? 'text' : 'password';
     btn.classList.toggle('is-on', show);
     btn.innerHTML = show ? EYE_OFF : EYE_OPEN;
-    btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    btn.setAttribute('aria-label', show ? 'Ocultar contraseÃ±a' : 'Mostrar contraseÃ±a');
     input.focus();
   });
 });
 
 function spError(e) {
   const msg = (e && e.message) || '';
-  if ((e && e.code === '23505') || /profiles_username_lower_unique/i.test(msg)) return 'Ese nombre de usuario ya está en uso. Elige otro.';
-  if (/already registered|already exists/i.test(msg)) return 'Ya hay una cuenta con ese correo. Inicia sesión.';
-  if (/invalid login credentials/i.test(msg)) return 'Correo o contraseña incorrectos.';
-  if (/password|6 characters/i.test(msg)) return 'La contraseña debe tener al menos 6 caracteres.';
-  if (/invalid email/i.test(msg)) return 'El correo no parece válido.';
-  return msg || 'Algo falló. Vuelve a intentarlo.';
+  if ((e && e.code === '23505') || /profiles_username_lower_unique/i.test(msg)) return 'Ese nombre de usuario ya estÃ¡ en uso. Elige otro.';
+  if (/already registered|already exists/i.test(msg)) return 'Ya hay una cuenta con ese correo. Inicia sesiÃ³n.';
+  if (/invalid login credentials/i.test(msg)) return 'Correo o contraseÃ±a incorrectos.';
+  if (/password|6 characters/i.test(msg)) return 'La contraseÃ±a debe tener al menos 6 caracteres.';
+  if (/invalid email/i.test(msg)) return 'El correo no parece vÃ¡lido.';
+  return msg || 'Algo fallÃ³. Vuelve a intentarlo.';
 }
 
 // Case-insensitive availability check via the username_available RPC.
@@ -527,17 +527,17 @@ async function handleSignup(e) {
   const password = document.getElementById('signupPassword').value;
   const wantsNewsletter = document.getElementById('signupSubscribe')?.checked !== false;
   if (!username || !email || !password) { showError('Rellena todos los campos.'); return false; }
-  if (password.length < 6)               { showError('La contraseña debe tener al menos 6 caracteres.'); return false; }
+  if (password.length < 6)               { showError('La contraseÃ±a debe tener al menos 6 caracteres.'); return false; }
 
   const btn = e.target.querySelector('button[type=submit]');
   if (btn) btn.disabled = true;
   try {
-    if (await isUsernameTaken(username)) { showError('Ese nombre de usuario ya está en uso. Elige otro.'); if (btn) btn.disabled = false; return false; }
+    if (await isUsernameTaken(username)) { showError('Ese nombre de usuario ya estÃ¡ en uso. Elige otro.'); if (btn) btn.disabled = false; return false; }
     const r = await sb.auth.signUp({ email, password, options: { data: { username } } });
     if (r.error) throw r.error;
     const userId = r.data && r.data.user && r.data.user.id;
     if (!userId) throw new Error('No user returned');
-    // Create the profile row — this also fires the account welcome email trigger
+    // Create the profile row â€” this also fires the account welcome email trigger
     const ins = await sb.from('profiles').insert({ id: userId, username, email });
     if (ins.error) throw ins.error;
     // If the visitor opted in, add them to the subscribers list with a
@@ -545,12 +545,12 @@ async function handleSignup(e) {
     if (wantsNewsletter) {
       try {
         await sb.from('subscribers').insert({ email, source: 'account-signup' });
-      } catch (_) { /* dup or RLS — non-fatal */ }
+      } catch (_) { /* dup or RLS â€” non-fatal */ }
     }
     const profile = { id: userId, username, email };
     syncIdentity(profile);
     renderAuthState(profile);
-    if (typeof showToast === 'function') showToast(`¡Bienvenido, ${username}! Te enviamos un correo.`);
+    if (typeof showToast === 'function') showToast(`Â¡Bienvenido, ${username}! Te enviamos un correo.`);
     redirectToNextIfAny();
   } catch (err) {
     showError(spError(err));
@@ -575,14 +575,14 @@ async function handleLogin(e) {
     const userId = r.data && r.data.user && r.data.user.id;
     let profile = await loadProfile(userId);
     if (!profile) {
-      // Profile row missing (e.g. signed up elsewhere) — create a minimal one
+      // Profile row missing (e.g. signed up elsewhere) â€” create a minimal one
       const fallbackName = (r.data.user.user_metadata && r.data.user.user_metadata.username) || email.split('@')[0];
       await sb.from('profiles').insert({ id: userId, username: fallbackName, email });
       profile = { id: userId, username: fallbackName, email };
     }
     syncIdentity(profile);
     renderAuthState(profile);
-    if (typeof showToast === 'function') showToast(`¡Hola otra vez, ${profile.username}!`);
+    if (typeof showToast === 'function') showToast(`Â¡Hola otra vez, ${profile.username}!`);
     redirectToNextIfAny();
   } catch (err) {
     showError(spError(err));
@@ -592,7 +592,7 @@ async function handleLogin(e) {
   return false;
 }
 
-/* If we arrived here via ?next=…, hop back to that page once auth succeeds.
+/* If we arrived here via ?next=â€¦, hop back to that page once auth succeeds.
    Used by the freebie modal's "Create account to download" flow. */
 function redirectToNextIfAny() {
   const params = new URLSearchParams(location.search);
@@ -610,7 +610,7 @@ async function handleLogout() {
   await sb.auth.signOut();
   syncIdentity(null);
   renderAuthState(null);
-  if (typeof showToast === 'function') showToast('Sesión cerrada');
+  if (typeof showToast === 'function') showToast('SesiÃ³n cerrada');
 }
 
 async function startEditUsername() {
@@ -632,7 +632,7 @@ async function startEditUsername() {
     const val = input.value.trim();
     if (val.length >= 2 && val !== currentProfile.username) {
       if (val.toLowerCase() !== currentProfile.username.toLowerCase() && await isUsernameTaken(val)) {
-        if (typeof showToast === 'function') showToast('Ese nombre de usuario ya está en uso.');
+        if (typeof showToast === 'function') showToast('Ese nombre de usuario ya estÃ¡ en uso.');
         input.value = currentProfile.username;
         renderAuthState(currentProfile);
         return;
@@ -662,7 +662,7 @@ async function handleDeleteAccount() {
   const userId = session.user.id;
   const profile = await loadProfile(userId);
   const label = (profile && profile.username) || 'tu cuenta';
-  if (!confirm(`¿Seguro que quieres eliminar la cuenta de ${label}? Esta acción no se puede deshacer.`)) return;
+  if (!confirm(`Â¿Seguro que quieres eliminar la cuenta de ${label}? Esta acciÃ³n no se puede deshacer.`)) return;
   // Delete profile (auth.users row remains; admin can clean up server-side)
   await sb.from('profiles').delete().eq('id', userId);
   await sb.auth.signOut();

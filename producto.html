@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -29,14 +29,14 @@
   <!-- End Meta Pixel Code -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" id="prMetaDesc" content="Guía digital de Logramo." />
-  <title id="prDocTitle">Cargando… · Logramo</title>
+  <meta name="description" id="prMetaDesc" content="GuÃ­a digital de Logramo." />
+  <title id="prDocTitle">Cargandoâ€¦ Â· Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260748" />
+  <link rel="stylesheet" href="styles.css?v=20260749" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="biblioteca">
@@ -48,8 +48,8 @@
 <section class="library-hero">
   <div class="container">
     <span class="eyebrow" data-reveal>Biblioteca</span>
-    <h1 data-reveal id="prHeroTitle">Abriendo este libro…</h1>
-    <p class="lead" data-reveal id="prHeroDesc">Te lo mostramos en un segundo 🐾</p>
+    <h1 data-reveal id="prHeroTitle">Abriendo este libroâ€¦</h1>
+    <p class="lead" data-reveal id="prHeroDesc">Te lo mostramos en un segundo ðŸ¾</p>
     <div data-reveal style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a href="biblioteca.html" class="btn btn--primary btn--lg">Ver toda la biblioteca <svg class="icon"><use href="#i-arrow-right"/></svg></a>
       <a href="index.html" class="btn btn--cream btn--lg">Inicio</a>
@@ -62,15 +62,15 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260748"></script>
+<script src="partials.js?v=20260749"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="script.js?v=20260747"></script>
 <script src="animations.js?v=20260623"></script>
 <script>
-/* Auto-open the product modal from ?id=…
+/* Auto-open the product modal from ?id=â€¦
    producto.html is now a thin shell that exists only to preserve old shared
-   URLs (SEO, WhatsApp, Google) — the actual product experience is the modal.
+   URLs (SEO, WhatsApp, Google) â€” the actual product experience is the modal.
    The hero behind invites the visitor to browse the library if they close it. */
 (function () {
   var id = (new URLSearchParams(location.search)).get('id');
@@ -90,10 +90,10 @@
       if (r.ok) { var arr = await r.json(); p = Array.isArray(arr) && arr[0]; }
     } catch (e) {}
     if (!p) { location.replace('biblioteca.html'); return; }
-    document.title = (p.title || 'Producto') + ' · Logramo';
-    var meta = document.getElementById('prMetaDesc'); if (meta) meta.setAttribute('content', p.description || ('Logramo · ' + p.title));
+    document.title = (p.title || 'Producto') + ' Â· Logramo';
+    var meta = document.getElementById('prMetaDesc'); if (meta) meta.setAttribute('content', p.description || ('Logramo Â· ' + p.title));
     var ht = document.getElementById('prHeroTitle'); if (ht) ht.textContent = p.title || 'Producto';
-    var hd = document.getElementById('prHeroDesc'); if (hd) hd.textContent = p.description || 'Abre la guía para más detalles 🐾';
+    var hd = document.getElementById('prHeroDesc'); if (hd) hd.textContent = p.description || 'Abre la guÃ­a para mÃ¡s detalles ðŸ¾';
     window.openFreebieModal(p);
   });
 })();

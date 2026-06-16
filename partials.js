@@ -117,6 +117,7 @@ const FOOTER_HTML = `
         <p class="footer__brand-desc">El sitio que ojalá hubiéramos encontrado nosotros cuando empezamos. Guías claras, sin tecnicismos y escritas para dueños como tú.</p>
         <div class="footer__social">
           <a href="https://www.facebook.com/profile.php?id=61590239832119" target="_blank" rel="noopener" class="footer__social-link footer__social-link--fb" aria-label="Facebook"><svg class="icon"><use href="#i-facebook"/></svg></a>
+          <a href="https://www.instagram.com/logramo_brand/" target="_blank" rel="noopener" class="footer__social-link footer__social-link--ig" aria-label="Instagram"><svg class="icon"><use href="#i-instagram"/></svg></a>
           <a href="https://youtube.com/@megusta_logramo" target="_blank" rel="noopener" class="footer__social-link footer__social-link--yt" aria-label="YouTube"><svg class="icon"><use href="#i-youtube"/></svg></a>
           <a href="https://pin.it/4WgVTqM4j" target="_blank" rel="noopener" class="footer__social-link footer__social-link--pin" aria-label="Pinterest"><svg class="icon"><use href="#i-pinterest"/></svg></a>
         </div>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -29,15 +29,15 @@
   <!-- End Meta Pixel Code -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Guías para criar un perro feliz. Llegamos muy pronto." />
+  <meta name="description" content="GuÃ­as para criar un perro feliz. Llegamos muy pronto." />
   <meta name="robots" content="noindex" />
-  <title>Llegamos pronto · Logramo</title>
+  <title>Llegamos pronto Â· Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260748" />
+  <link rel="stylesheet" href="styles.css?v=20260749" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
@@ -129,21 +129,21 @@
 
 <div id="partial-nav" style="display:none"></div>
 
-<section class="cs-card" role="region" aria-label="Próximamente">
-  <div class="cs-paws cs-paws--tl"><span class="emoji-icon">🐾</span></div>
-  <div class="cs-paws cs-paws--br"><span class="emoji-icon">🐾</span></div>
+<section class="cs-card" role="region" aria-label="PrÃ³ximamente">
+  <div class="cs-paws cs-paws--tl"><span class="emoji-icon">ðŸ¾</span></div>
+  <div class="cs-paws cs-paws--br"><span class="emoji-icon">ðŸ¾</span></div>
 
   <div class="cs-logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-  <span class="cs-eyebrow"><span class="emoji-icon">🐾</span> Próximamente</span>
+  <span class="cs-eyebrow"><span class="emoji-icon">ðŸ¾</span> PrÃ³ximamente</span>
   <h1 class="cs-title">Estamos preparando<br>algo <em>muy bonito.</em></h1>
-  <p class="cs-desc">Guías claras para criar un perro feliz 🐶 Fáciles de entender y muy útiles. Déjanos tu correo y te avisamos en cuanto abramos.</p>
+  <p class="cs-desc">GuÃ­as claras para criar un perro feliz ðŸ¶ FÃ¡ciles de entender y muy Ãºtiles. DÃ©janos tu correo y te avisamos en cuanto abramos.</p>
 
   <form class="cs-form" id="csForm" novalidate>
     <input type="email" id="csEmail" class="cs-form__input" placeholder="tu@correo.com" required autocomplete="email" />
-    <button type="submit" class="cs-form__btn" id="csBtn">Avísame</button>
+    <button type="submit" class="cs-form__btn" id="csBtn">AvÃ­same</button>
   </form>
   <p class="cs-status" id="csStatus" aria-live="polite"></p>
-  <p class="cs-note">Un email cuando lancemos. Nada más.</p>
+  <p class="cs-note">Un email cuando lancemos. Nada mÃ¡s.</p>
 
   <div class="cs-foot">
     Hecho con
@@ -152,7 +152,7 @@
   </div>
 </section>
 
-<script src="partials.js?v=20260748"></script>
+<script src="partials.js?v=20260749"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -165,15 +165,15 @@
     e.preventDefault();
     var email=(input.value||'').trim();
     if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ setStatus('Revisa el correo, por favor.', 'err'); return; }
-    btn.disabled=true; setStatus('Enviando…');
+    btn.disabled=true; setStatus('Enviandoâ€¦');
     try{
       var r=await sb.from('subscribers').insert({ email:email, source:'coming-soon' });
       if(r.error){
-        // duplicate email is fine — treat as success
-        if(/duplicate|unique/i.test(r.error.message)){ setStatus('¡Ya estás en la lista! Te avisamos pronto.', 'ok'); }
+        // duplicate email is fine â€” treat as success
+        if(/duplicate|unique/i.test(r.error.message)){ setStatus('Â¡Ya estÃ¡s en la lista! Te avisamos pronto.', 'ok'); }
         else { setStatus('Hubo un problema. Intenta de nuevo.', 'err'); btn.disabled=false; return; }
       } else {
-        setStatus('¡Listo! Te avisamos en cuanto lancemos.', 'ok');
+        setStatus('Â¡Listo! Te avisamos en cuanto lancemos.', 'ok');
       }
       input.value='';
     }catch(err){ setStatus('Hubo un problema. Intenta de nuevo.', 'err'); }
