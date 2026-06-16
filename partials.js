@@ -918,8 +918,16 @@ if (currentLink) {
     stopCoverCarousel();
     hideModal('popup-freebie-dl');
     try {
-      if (history.state && history.state.logramoModal) history.back();
+      // Opened in-place from the library grid: pop history back to it (keeps
+      // the grid's scroll position + active filters exactly as they were).
+      if (history.state && history.state.logramoModal) { history.back(); return; }
     } catch (_) {}
+    // Otherwise the visitor landed directly on producto.html?id=… (shared link /
+    // SEO / reload), so there's no history entry to pop. Don't strand them on the
+    // bare shell hero — take them straight to the library grid.
+    if ((location.pathname.split('/').pop() || '') === 'producto.html') {
+      location.replace('biblioteca.html');
+    }
   }
   // X button closes — backdrop & Escape do nothing (avoid accidental dismissal).
   // We don't check the .open class here because the global handler in script.js
