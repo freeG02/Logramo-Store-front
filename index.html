@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta charset="UTF-8" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18216737645"></script>
   <script>
@@ -27,7 +28,6 @@
   src="https://www.facebook.com/tr?id=4357191121163003&ev=PageView&noscript=1"
   /></noscript>
   <!-- End Meta Pixel Code -->
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Guías para dueños primerizos que están sobreviviendo el caos de tener un perro (y amándolo). Claras, al grano y escritas por gente que ya pasó por ahí." />
   <title>Cría un perro feliz · Logramo</title>
@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260749" />
+  <link rel="stylesheet" href="styles.css?v=20260750" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
 </head>
 <body data-page="home">
@@ -356,7 +356,7 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260749"></script>
+<script src="partials.js?v=20260750"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -418,7 +418,7 @@
       // secondary tag (top-right): Gratis if free, else first tag
       var trKey=p.is_free?'gratis':String(ptags[0]||'').toLowerCase();
       var trLabel=TAGLABELS[trKey]||cap(trKey);
-      var trClass=(trKey==='nuevo'||trKey==='caliente')?'gtag gtag--terra gtag--tr':'gtag gtag--tr';
+      var trClass='gtag gtag--'+(window.LogramoTagColor?window.LogramoTagColor(trKey):'default')+' gtag--tr';
       var topTag=trLabel?'<span class="'+trClass+'">'+esc(trLabel)+'</span>':'';
       // optional bottom banner: only when on sale
       var onSale=p.original_price&&Number(p.original_price)>Number(p.price);

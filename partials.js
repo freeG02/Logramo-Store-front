@@ -389,6 +389,18 @@ if (currentLink) {
     pink:'#FCD1D8', peach:'#FFCDB8', terra:'#C55932', forest:'#3C4824',
   };
 
+  /* Tag → color, mirroring what the admin assigns (the `tags` table). Seeded
+     with the built-in defaults so badges are colored immediately, then refreshed
+     from the table. Exposed as window.LogramoTagColor so every page (home
+     highlight, modal, etc.) renders the same color the admin shows. */
+  const TAG_COLOR = { gratis:'gratis', caliente:'caliente', nuevo:'nuevo', popular:'popular', recomendado:'recomendado', bestseller:'bestseller' };
+  function tagColor(slug) { const k = String(slug || '').toLowerCase(); return TAG_COLOR[k] || 'default'; }
+  window.LogramoTagColor = tagColor;
+  fetch(SB_URL + '/rest/v1/tags?select=slug,color', { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) { (rows || []).forEach(function (t) { if (t && t.slug) TAG_COLOR[String(t.slug).toLowerCase()] = t.color || 'default'; }); })
+    .catch(function () {});
+
   function isLoggedIn() {
     try {
       const u = JSON.parse(localStorage.getItem('logramo_user') || 'null');
@@ -737,7 +749,7 @@ if (currentLink) {
       var _top = null; for (var _i = 0; _i < _TAG_PRIORITY.length; _i++) { if (_ptags.indexOf(_TAG_PRIORITY[_i]) > -1) { _top = _TAG_PRIORITY[_i]; break; } } if (!_top) _top = _ptags[0] || null;
       var _k = String(_top || '').toLowerCase();
       var _trLabel = _top ? (_TAGLABELS[_k] || (_k.charAt(0).toUpperCase() + _k.slice(1))) : '';
-      var _trClass = (_k === 'nuevo' || _k === 'caliente') ? 'gtag gtag--terra gtag--tr' : 'gtag gtag--tr';
+      var _trClass = 'gtag gtag--' + tagColor(_top) + ' gtag--tr';
       var topTagHtml = _trLabel ? ('<span class="' + _trClass + '">' + _esc(_trLabel) + '</span>') : '';
       var bannerHtml = (p.original_price && Number(p.original_price) > Number(p.price)) ? '<span class="gbanner gbanner--terra">Oferta</span>' : '';
       // Build the image list: cover_image first, then gallery (deduped)
@@ -806,7 +818,10 @@ if (currentLink) {
         priceEl.style.display = '';
       }
     }
-    if (mEl) mEl.textContent = p.is_free ? 'PDF · Descarga inmediata' : 'PDF · Acceso al instante';
+    if (mEl) {
+      var pagesTxt = (p.pages && Number(p.pages) > 0) ? (Number(p.pages) + (Number(p.pages) === 1 ? ' página · ' : ' páginas · ')) : '';
+      mEl.textContent = pagesTxt + (p.is_free ? 'PDF · Descarga inmediata' : 'PDF · Acceso al instante');
+    }
     // ---------- Actions: free → download; paid → PayPal ----------
     const btn = document.getElementById('freebieDownloadBtn');
     const lbl = document.getElementById('freebieDownloadLabel');

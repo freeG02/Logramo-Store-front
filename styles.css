@@ -3715,6 +3715,15 @@ h1, h2, h3, h4,
   padding:1.4cqw 3.2cqw; font-weight:800; font-size:4cqw; text-transform:uppercase; letter-spacing:.05em;
   white-space:nowrap; box-shadow:1.5px 1.5px 0 var(--c-ink); }
 .gtag--terra{ background:var(--c-terracotta); color:#fff; }
+/* Per-tag colors — mirror the .lib-tag palette so the cover badge matches the
+   color assigned to each tag in the admin (the `tags` table). */
+.gtag--gratis{ background:var(--c-forest); color:var(--c-cream); }
+.gtag--caliente{ background:var(--c-terracotta); color:var(--c-cream); }
+.gtag--nuevo{ background:var(--c-sky); color:var(--c-ink); }
+.gtag--popular{ background:var(--c-golden); color:var(--c-ink); }
+.gtag--recomendado{ background:var(--c-lavender); color:var(--c-ink); }
+.gtag--bestseller{ background:var(--c-terracotta); color:var(--c-cream); }
+.gtag--default{ background:var(--c-pink); color:var(--c-ink); }
 .gtag--tr{ top:7%; right:7%; transform:rotate(4deg); transform-origin:center; }
 
 /* OPTIONAL integrated bottom banner — z-index:1 so the cover's bottom
