@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -30,8 +30,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Comparte tu experiencia con tu guÃ­a Logramo." />
-  <title>Tu reseÃ±a Â· Logramo</title>
+  <meta name="description" content="Comparte tu experiencia con tu guía Logramo." />
+  <title>Tu reseña · Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -166,7 +166,7 @@
     <!-- LOADING SKELETON -->
     <div id="state-loading" class="state is-active">
       <div class="review-card skeleton">
-        <span class="eyebrow">Cargando tu reseÃ±a</span>
+        <span class="eyebrow">Cargando tu reseña</span>
         <h1>&nbsp;</h1>
         <p class="lede">&nbsp;</p>
       </div>
@@ -175,16 +175,16 @@
     <!-- FORM -->
     <div id="state-form" class="state">
       <div class="review-card">
-        <span class="eyebrow" id="eyebrowText">Tu reseÃ±a</span>
-        <h1 id="heroHeadline">Â¿CÃ³mo te <em>fue?</em></h1>
+        <span class="eyebrow" id="eyebrowText">Tu reseña</span>
+        <h1 id="heroHeadline">¿Cómo te <em>fue?</em></h1>
         <p class="lede" id="ledeText">
-          Tu opiniÃ³n nos ayuda mucho y le sirve a otros dueÃ±os como tÃº que estÃ¡n decidiendo si vale la pena.
+          Tu opinión nos ayuda mucho y le sirve a otros dueños como tú que están decidiendo si vale la pena.
         </p>
 
         <form id="reviewForm" novalidate>
           <div class="field">
-            <label class="lbl">Tu valoraciÃ³n</label>
-            <div class="rating" role="radiogroup" aria-label="ValoraciÃ³n de 1 a 5 estrellas">
+            <label class="lbl">Tu valoración</label>
+            <div class="rating" role="radiogroup" aria-label="Valoración de 1 a 5 estrellas">
               <input type="radio" name="rating" id="r5" value="5"><label for="r5" title="5 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
               <input type="radio" name="rating" id="r4" value="4"><label for="r4" title="4 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
               <input type="radio" name="rating" id="r3" value="3"><label for="r3" title="3 estrellas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l2.9 6 6.6.95-4.78 4.66L17.85 21 12 17.9 6.15 21l1.13-6.79L2.5 9.55l6.6-.95z"/></svg></label>
@@ -194,25 +194,25 @@
           </div>
 
           <div class="field">
-            <label class="lbl" for="quoteInput">CuÃ©ntanos cÃ³mo te fue</label>
-            <textarea id="quoteInput" name="quote" maxlength="280" placeholder="Â¿QuÃ© cambiÃ³? Â¿QuÃ© te sirviÃ³? Habla como le hablarÃ­as a un amigo."></textarea>
-            <span class="hint">MÃ­nimo 10 caracteres. MÃ¡ximo 280. <span id="quoteCounter" style="opacity:.7"></span></span>
+            <label class="lbl" for="quoteInput">Cuéntanos cómo te fue</label>
+            <textarea id="quoteInput" name="quote" maxlength="280" placeholder="¿Qué cambió? ¿Qué te sirvió? Habla como le hablarías a un amigo."></textarea>
+            <span class="hint">Mínimo 10 caracteres. Máximo 280. <span id="quoteCounter" style="opacity:.7"></span></span>
           </div>
 
           <div class="field">
             <label class="lbl" for="dogNameInput">El nombre de tu perro <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--c-text-muted)">(opcional)</span></label>
-            <input id="dogNameInput" type="text" maxlength="40" placeholder="Ej. Lola, Toby, Cocoâ€¦">
-            <span class="hint">Si lo aÃ±ades, aparecerÃ¡ junto a tu reseÃ±a en la web.</span>
+            <input id="dogNameInput" type="text" maxlength="40" placeholder="Ej. Lola, Toby, Coco…">
+            <span class="hint">Si lo añades, aparecerá junto a tu reseña en la web.</span>
           </div>
 
           <div class="form-error" id="formError"></div>
 
           <div class="submit-row">
             <button type="submit" class="btn-submit" id="submitBtn">
-              <span id="submitLabel">Enviar mi reseÃ±a</span>
+              <span id="submitLabel">Enviar mi reseña</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14M13 6l6 6-6 6"/></svg>
             </button>
-            <span class="help">Lleva 30 segundos. Revisamos cada reseÃ±a antes de publicarla.</span>
+            <span class="help">Lleva 30 segundos. Revisamos cada reseña antes de publicarla.</span>
           </div>
         </form>
       </div>
@@ -224,9 +224,9 @@
         <div class="icon-circle">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-ink)"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
         </div>
-        <h2>Â¡Gracias por tu <em style="color:var(--c-terracotta);font-style:italic">reseÃ±a!</em></h2>
-        <p>La leeremos pronto y, si todo estÃ¡ bien, aparecerÃ¡ en la web. Gracias de verdad por tomarte el tiempo ðŸ¾</p>
-        <a class="btn-link" href="index.html">Volver al inicio â†’</a>
+        <h2>¡Gracias por tu <em style="color:var(--c-terracotta);font-style:italic">reseña!</em></h2>
+        <p>La leeremos pronto y, si todo está bien, aparecerá en la web. Gracias de verdad por tomarte el tiempo 🐾</p>
+        <a class="btn-link" href="index.html">Volver al inicio →</a>
       </div>
     </div>
 
@@ -237,8 +237,8 @@
           <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-ink)"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 17h.01"/></svg>
         </div>
         <h2 id="errTitle">Este enlace ya no funciona</h2>
-        <p id="errMsg">El enlace de reseÃ±a ya fue usado o expirÃ³. Si todavÃ­a quieres contarnos tu experiencia, respÃ³ndenos al email. Leemos cada respuesta.</p>
-        <a class="btn-link" id="errCta" href="mailto:ayuda@logramo.com?subject=Mi%20experiencia%20con%20Logramo">EscrÃ­benos â†’</a>
+        <p id="errMsg">El enlace de reseña ya fue usado o expiró. Si todavía quieres contarnos tu experiencia, respóndenos al email. Leemos cada respuesta.</p>
+        <a class="btn-link" id="errCta" href="mailto:ayuda@logramo.com?subject=Mi%20experiencia%20con%20Logramo">Escríbenos →</a>
       </div>
     </div>
 
@@ -288,7 +288,7 @@
     if (!ta || !counter) return;
     function refresh() {
       var n = ta.value.length;
-      counter.textContent = 'Â· ' + n + ' / 280';
+      counter.textContent = '· ' + n + ' / 280';
       counter.style.color = n > 260 ? 'var(--c-terracotta)' : '';
     }
     ta.addEventListener('input', refresh);
@@ -297,8 +297,8 @@
 
   if (!TOKEN) {
     show('state-error');
-    $('errTitle').textContent = 'Enlace no vÃ¡lido';
-    $('errMsg').textContent = 'Este enlace no incluye un cÃ³digo de reseÃ±a. Si llegaste aquÃ­ desde un email nuestro, copia el enlace completo o respÃ³ndenos directamente.';
+    $('errTitle').textContent = 'Enlace no válido';
+    $('errMsg').textContent = 'Este enlace no incluye un código de reseña. Si llegaste aquí desde un email nuestro, copia el enlace completo o respóndenos directamente.';
     return;
   }
 
@@ -314,13 +314,13 @@
       var reason = (data && data.reason) || 'invalid';
       if (reason === 'used') {
         $('errTitle').textContent = 'Este enlace ya fue usado';
-        $('errMsg').textContent = 'Recibimos tu reseÃ±a antes. Â¡Gracias! Si quieres editarla o agregar algo, respÃ³ndenos al email.';
+        $('errMsg').textContent = 'Recibimos tu reseña antes. ¡Gracias! Si quieres editarla o agregar algo, respóndenos al email.';
       } else if (reason === 'expired') {
-        $('errTitle').textContent = 'Este enlace expirÃ³';
-        $('errMsg').textContent = 'El enlace tenÃ­a 90 dÃ­as. Si todavÃ­a quieres contarnos cÃ³mo te fue, respÃ³ndenos al email. Leemos cada palabra.';
+        $('errTitle').textContent = 'Este enlace expiró';
+        $('errMsg').textContent = 'El enlace tenía 90 días. Si todavía quieres contarnos cómo te fue, respóndenos al email. Leemos cada palabra.';
       } else {
-        $('errTitle').textContent = 'Enlace no vÃ¡lido';
-        $('errMsg').textContent = 'No encontramos este enlace. AsegÃºrate de copiarlo entero desde el email, o respÃ³ndenos directamente y te ayudamos.';
+        $('errTitle').textContent = 'Enlace no válido';
+        $('errMsg').textContent = 'No encontramos este enlace. Asegúrate de copiarlo entero desde el email, o respóndenos directamente y te ayudamos.';
       }
       return;
     }
@@ -328,21 +328,21 @@
     // Personalize headline
     var first = (data.firstName || '').trim();
     if (first) {
-      $('heroHeadline').innerHTML = first + ', Â¿cÃ³mo te <em>fue?</em>';
+      $('heroHeadline').innerHTML = first + ', ¿cómo te <em>fue?</em>';
     }
     if (data.productTitle) {
       $('ledeText').innerHTML =
         'Hace un par de semanas descargaste <strong>' +
         escapeHtml(data.productTitle) +
-        '</strong>. CuÃ©ntanos cÃ³mo te fue. Tu reseÃ±a le sirve a otros dueÃ±os como tÃº.';
-      $('eyebrowText').textContent = 'Tu reseÃ±a Â· ' + data.productTitle;
+        '</strong>. Cuéntanos cómo te fue. Tu reseña le sirve a otros dueños como tú.';
+      $('eyebrowText').textContent = 'Tu reseña · ' + data.productTitle;
     }
     show('state-form');
   })
   .catch(function () {
     show('state-error');
-    $('errTitle').textContent = 'No pudimos cargar tu reseÃ±a';
-    $('errMsg').textContent = 'Algo fallÃ³ al conectarnos al servidor. Recarga la pÃ¡gina, o respÃ³ndenos al email si el problema sigue.';
+    $('errTitle').textContent = 'No pudimos cargar tu reseña';
+    $('errMsg').textContent = 'Algo falló al conectarnos al servidor. Recarga la página, o respóndenos al email si el problema sigue.';
   });
 
   function escapeHtml(s) {
@@ -360,15 +360,15 @@
     var quote = $('quoteInput').value.trim();
     var dogName = $('dogNameInput').value.trim();
 
-    if (!rating) { showFormError('Elige una valoraciÃ³n del 1 al 5.'); return; }
-    if (quote.length < 10) { showFormError('CuÃ©ntanos un poco mÃ¡s (mÃ­nimo 10 caracteres).'); return; }
-    if (quote.length > 280) { showFormError('La reseÃ±a es muy larga. MÃ¡ximo 280 caracteres.'); return; }
+    if (!rating) { showFormError('Elige una valoración del 1 al 5.'); return; }
+    if (quote.length < 10) { showFormError('Cuéntanos un poco más (mínimo 10 caracteres).'); return; }
+    if (quote.length > 280) { showFormError('La reseña es muy larga. Máximo 280 caracteres.'); return; }
 
     var btn = $('submitBtn');
     var label = $('submitLabel');
     var originalLabel = label.textContent;
     btn.disabled = true;
-    label.textContent = 'Enviandoâ€¦';
+    label.textContent = 'Enviando…';
 
     fetch(FUNCTION_URL, {
       method: 'POST',
@@ -397,25 +397,25 @@
         show('state-error');
         if (reason === 'used') {
           $('errTitle').textContent = 'Este enlace ya fue usado';
-          $('errMsg').textContent = 'Parece que ya nos enviaste tu reseÃ±a. Â¡Gracias!';
+          $('errMsg').textContent = 'Parece que ya nos enviaste tu reseña. ¡Gracias!';
         } else if (reason === 'expired') {
-          $('errTitle').textContent = 'Este enlace expirÃ³';
-          $('errMsg').textContent = 'El enlace tenÃ­a 90 dÃ­as. RespÃ³ndenos al email si todavÃ­a quieres contarnos.';
+          $('errTitle').textContent = 'Este enlace expiró';
+          $('errMsg').textContent = 'El enlace tenía 90 días. Respóndenos al email si todavía quieres contarnos.';
         } else {
-          $('errTitle').textContent = 'Enlace no vÃ¡lido';
-          $('errMsg').textContent = 'No encontramos este enlace. RespÃ³ndenos al email y te ayudamos.';
+          $('errTitle').textContent = 'Enlace no válido';
+          $('errMsg').textContent = 'No encontramos este enlace. Respóndenos al email y te ayudamos.';
         }
         return;
       }
-      if (reason === 'quote_too_short') { showFormError('CuÃ©ntanos un poco mÃ¡s (mÃ­nimo 10 caracteres).'); return; }
-      if (reason === 'quote_too_long') { showFormError('La reseÃ±a es muy larga. MÃ¡ximo 800 caracteres.'); return; }
-      if (reason === 'bad_rating') { showFormError('Elige una valoraciÃ³n del 1 al 5.'); return; }
-      showFormError('No pudimos enviar tu reseÃ±a. Intenta de nuevo en un momento.');
+      if (reason === 'quote_too_short') { showFormError('Cuéntanos un poco más (mínimo 10 caracteres).'); return; }
+      if (reason === 'quote_too_long') { showFormError('La reseña es muy larga. Máximo 800 caracteres.'); return; }
+      if (reason === 'bad_rating') { showFormError('Elige una valoración del 1 al 5.'); return; }
+      showFormError('No pudimos enviar tu reseña. Intenta de nuevo en un momento.');
     })
     .catch(function () {
       btn.disabled = false;
       label.textContent = originalLabel;
-      showFormError('Algo fallÃ³ de nuestro lado. Intenta de nuevo, o respÃ³ndenos al email.');
+      showFormError('Algo falló de nuestro lado. Intenta de nuevo, o respóndenos al email.');
     });
   });
 

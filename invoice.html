@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -30,7 +30,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>Factura Â· Logramo</title>
+  <title>Factura · Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="styles.css?v=20260749" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
-    /* Page chrome â€” not part of the printed invoice */
+    /* Page chrome — not part of the printed invoice */
     body { margin: 0; background: #d6d4c8; padding: 32px 16px 80px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #111A17; }
     .inv-wrap { max-width: 720px; margin: 0 auto; }
 
@@ -97,7 +97,7 @@
 
     .invoice__error { padding: 60px 40px; text-align: center; color: rgba(17,26,23,.7); }
 
-    /* PRINT STYLES â€” hide UI chrome, simplify paper for clean PDF export */
+    /* PRINT STYLES — hide UI chrome, simplify paper for clean PDF export */
     @media print {
       body { background: #fff; padding: 0; }
       .actions, .invoice__error { display: none !important; }
@@ -119,8 +119,8 @@
   <div class="invoice" id="inv"></div>
 
   <div class="actions">
-    <button type="button" class="btn-print" id="printBtn">ðŸ“„ Imprimir / Guardar PDF</button>
-    <a href="index.html" class="btn-back">â† Volver al sitio</a>
+    <button type="button" class="btn-print" id="printBtn">📄 Imprimir / Guardar PDF</button>
+    <a href="index.html" class="btn-back">← Volver al sitio</a>
   </div>
 </div>
 
@@ -144,7 +144,7 @@
   };
 
   var WHOLE_UNIT_CCY = ['JPY','HUF','TWD','MXN','BRL','PHP','ARS','CLP','COP','PYG','VND','IDR','KRW','ISK'];
-  var SYMBOLS = { USD:'$', EUR:'â‚¬', GBP:'Â£', MXN:'MX$', BRL:'R$', CAD:'C$', AUD:'A$', JPY:'Â¥', CHF:'CHF ', SEK:'kr ', DKK:'kr ', NOK:'kr ', PLN:'zÅ‚ ', CZK:'KÄ ', HUF:'Ft ', ILS:'â‚ª', DOP:'RD$', ARS:'AR$', CLP:'CL$', COP:'COL$', PEN:'S/', UYU:'$U', PYG:'â‚²', BOB:'Bs' };
+  var SYMBOLS = { USD:'$', EUR:'€', GBP:'£', MXN:'MX$', BRL:'R$', CAD:'C$', AUD:'A$', JPY:'¥', CHF:'CHF ', SEK:'kr ', DKK:'kr ', NOK:'kr ', PLN:'zł ', CZK:'Kč ', HUF:'Ft ', ILS:'₪', DOP:'RD$', ARS:'AR$', CLP:'CL$', COP:'COL$', PEN:'S/', UYU:'$U', PYG:'₲', BOB:'Bs' };
   function fmtMoney(amt, ccy){
     var n = Number(amt||0);
     var decimals = WHOLE_UNIT_CCY.indexOf(ccy) > -1 ? 0 : 2;
@@ -154,7 +154,7 @@
   }
 
   if(!data.order || !data.email){
-    document.getElementById('inv').innerHTML = '<div class="invoice__error"><h2>Factura no encontrada</h2><p>El enlace parece estar incompleto. Si llegaste aquÃ­ desde un email, vuelve al email y haz clic en el enlace original.</p></div>';
+    document.getElementById('inv').innerHTML = '<div class="invoice__error"><h2>Factura no encontrada</h2><p>El enlace parece estar incompleto. Si llegaste aquí desde un email, vuelve al email y haz clic en el enlace original.</p></div>';
     return;
   }
 
@@ -169,7 +169,7 @@
       +'<div class="invoice__head-left">'+ logoSvg +'</div>'
       +'<div class="invoice__head-right">'
         +'<div class="invoice__title">Factura</div>'
-        +'<span class="invoice__status">Pagada âœ“</span>'
+        +'<span class="invoice__status">Pagada ✓</span>'
       +'</div>'
     +'</div>'
 
@@ -193,7 +193,7 @@
     +'<div class="invoice__line">'
       +'<div>'
         +'<div class="invoice__line-title">'+esc(data.product)+'</div>'
-        +'<div class="invoice__line-sub">GuÃ­a digital Â· descarga inmediata</div>'
+        +'<div class="invoice__line-sub">Guía digital · descarga inmediata</div>'
       +'</div>'
       +'<div class="invoice__line-amount">'+formattedTotal+'</div>'
     +'</div>'
@@ -206,14 +206,14 @@
     +'<div class="invoice__pay">'
       +'<div class="invoice__pay-icon">PP</div>'
       +'<div>'
-        +'<div class="invoice__pay-label">MÃ©todo de pago</div>'
-        +'<div class="invoice__pay-value">PayPal Â· Orden <strong>'+esc(data.order)+'</strong></div>'
+        +'<div class="invoice__pay-label">Método de pago</div>'
+        +'<div class="invoice__pay-value">PayPal · Orden <strong>'+esc(data.order)+'</strong></div>'
       +'</div>'
     +'</div>'
 
     +'<div class="invoice__foot">'
-      +'<strong>Logramoâ„¢</strong> Â· perros felices, dueÃ±os imperfectos<br>'
-      +'<a href="https://logramo.com" style="color:inherit">logramo.com</a> Â· '
+      +'<strong>Logramo™</strong> · perros felices, dueños imperfectos<br>'
+      +'<a href="https://logramo.com" style="color:inherit">logramo.com</a> · '
       +'<a href="mailto:ayuda@logramo.com" style="color:inherit">ayuda@logramo.com</a>'
     +'</div>';
 

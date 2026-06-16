@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -29,8 +29,8 @@
   <!-- End Meta Pixel Code -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="GuÃ­as y libros escritos por dueÃ±os que ya pasaron por esto: algunos gratis, otros premium. Todos fÃ¡ciles de leer y muy Ãºtiles." />
-  <title>Biblioteca Â· Logramo</title>
+  <meta name="description" content="Guías y libros escritos por dueños que ya pasaron por esto: algunos gratis, otros premium. Todos fáciles de leer y muy útiles." />
+  <title>Biblioteca · Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -48,7 +48,7 @@
   <div class="container">
     <span class="eyebrow" data-reveal>La biblioteca de Logramo</span>
     <h1 data-reveal>Todo lo que<br><em>nadie te explica</em><br>en un solo lugar</h1>
-    <p class="lead" data-reveal>GuÃ­as y libros escritos por dueÃ±os que ya pasaron por esto: algunos gratis, otros premium. Todos fÃ¡ciles de leer y hechos con mucho cariÃ±o ðŸ¶</p>
+    <p class="lead" data-reveal>Guías y libros escritos por dueños que ya pasaron por esto: algunos gratis, otros premium. Todos fáciles de leer y hechos con mucho cariño 🐶</p>
   </div>
 </section>
 
@@ -67,13 +67,13 @@
     <button class="filter-btn" data-filter="nuevo">Nuevo</button>
     <!-- Categories -->
     <button class="filter-btn" data-filter="cachorros">Cachorros</button>
-    <button class="filter-btn" data-filter="educacion">EducaciÃ³n</button>
+    <button class="filter-btn" data-filter="educacion">Educación</button>
     <button class="filter-btn" data-filter="salud">Salud</button>
     <button class="filter-btn" data-filter="conducta">Conducta</button>
-    <button class="filter-btn" data-filter="alimentacion">AlimentaciÃ³n</button>
+    <button class="filter-btn" data-filter="alimentacion">Alimentación</button>
     <button class="filter-btn" data-filter="paseos">Paseos</button>
   </div>
-  <p id="libraryEmpty" style="display:none;text-align:center;padding:40px 20px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">No hay libros con ese filtro todavÃ­aâ€¦ pero estamos en ello ðŸ˜‰</p>
+  <p id="libraryEmpty" style="display:none;text-align:center;padding:40px 20px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">No hay libros con ese filtro todavía… pero estamos en ello 😉</p>
 </div>
 
 <!-- ============ FEATURED CAROUSEL ============ -->
@@ -135,7 +135,7 @@
     .fc-card { grid-template-columns:1fr; }
     .fc-card__cover-wrap{ order:-1; min-height:300px; padding:40px 36px; }
     /* Mobile destacados: cover on top, then below it just tag + category + price + CTA.
-       Title and long description are hidden â€” title lives on the cover image already. */
+       Title and long description are hidden — title lives on the cover image already. */
     .fc-card__details { order:1; padding:24px 28px 32px; text-align:center; align-items:center; display:flex; flex-direction:column; gap:8px; }
     .fc-card__details .fc-card__title,
     .fc-card__details .fc-card__desc { display:none; }
@@ -154,7 +154,7 @@
 <section style="padding: 0 0 60px" id="destacados">
   <div class="container">
     <div style="margin-bottom:24px;display:flex;align-items:center;gap:12px" data-reveal>
-      <span class="tag tag--golden"><span class="emoji-icon">ðŸ”¥</span> Destacados</span>
+      <span class="tag tag--golden"><span class="emoji-icon">🔥</span> Destacados</span>
       <span style="font-family:var(--font-display);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--c-text-muted)">Los libros estrella de Logramo</span>
     </div>
 
@@ -169,7 +169,7 @@
 </section>
 
 <script>
-/* Featured carousel â€” initialised after the slides are rendered from the DB */
+/* Featured carousel — initialised after the slides are rendered from the DB */
 window.initFcCarousel = function(){
   var track=document.getElementById('fcTrack');
   var wrapper=document.getElementById('featuredCarousel');
@@ -201,16 +201,16 @@ window.initFcCarousel = function(){
 <!-- ============ PRODUCTS (live from database) ============ -->
 <section style="padding: 40px 0 var(--section-py)">
   <div class="container">
-    <div id="libDynamic"><p class="muted" style="text-align:center;padding:50px 20px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">Cargando librosâ€¦</p></div>
+    <div id="libDynamic"><p class="muted" style="text-align:center;padding:50px 20px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">Cargando libros…</p></div>
   </div>
 </section>
 
 <!-- ============ NEWSLETTER CTA (hidden for signed-in accounts) ============ -->
 <section class="newsletter-section" data-reveal id="libNewsletter">
   <div class="newsletter-section__inner">
-    <div style="display:flex;justify-content:center;margin-bottom:16px"><span class="emoji-icon">ðŸ””</span></div>
-    <h2 class="newsletter-section__title">Hay mÃ¡s libros<br>en camino.</h2>
-    <p class="newsletter-section__desc">SÃ© el primero en saber cuÃ¡ndo publicamos algo nuevo. Solo un email, cuando haga falta.</p>
+    <div style="display:flex;justify-content:center;margin-bottom:16px"><span class="emoji-icon">🔔</span></div>
+    <h2 class="newsletter-section__title">Hay más libros<br>en camino.</h2>
+    <p class="newsletter-section__desc">Sé el primero en saber cuándo publicamos algo nuevo. Solo un email, cuando haga falta.</p>
     <form class="newsletter-section__form" onsubmit="handleSimpleNewsletter(event)">
       <input type="email" class="newsletter-section__input" placeholder="tu@correo.com" required />
       <button type="submit" class="btn btn--dark btn--lg">Notificarme <svg class="icon"><use href="#i-arrow-right"/></svg></button>
@@ -243,7 +243,7 @@ window.initFcCarousel = function(){
 <script src="script.js?v=20260747"></script>
 <script src="animations.js?v=20260623"></script>
 <script>
-/* ============ BIBLIOTECA â€” live products from Supabase ============ */
+/* ============ BIBLIOTECA — live products from Supabase ============ */
 (function(){
   var sb = window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
   var mount=document.getElementById('libDynamic');
@@ -256,18 +256,18 @@ window.initFcCarousel = function(){
   var REG={gratis:{label:'Gratis',color:'gratis'},caliente:{label:'Caliente',color:'caliente'},nuevo:{label:'Nuevo',color:'nuevo'},popular:{label:'Popular',color:'popular'},recomendado:{label:'Recomendado',color:'recomendado'}};
   var activeFilter='todos', query='';
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[Ì€-Í¯]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+  function slug(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   function tagInfo(s){return REG[s]||{label:s,color:'default'};}
   function badge(s){var t=tagInfo(s);return '<span class="lib-tag lib-tag--'+(t.color||'default')+'">'+esc(t.label)+'</span>';}
   var TAG_PRIORITY=['bestseller','caliente','nuevo','popular','recomendado','gratis'];
   function topTag(tags){for(var i=0;i<TAG_PRIORITY.length;i++){if(tags.indexOf(TAG_PRIORITY[i])>-1)return TAG_PRIORITY[i];}return tags[0]||null;}
   function topBadge(s){var t=tagInfo(s);return '<span class="book-card__top-tag lib-tag lib-tag--'+(t.color||'default')+'">'+esc(t.label)+'</span>';}
-  var CAT_ICON={'Cachorros':'i-paw','EducaciÃ³n':'i-target','Salud':'i-shield','Conducta':'i-flame','AlimentaciÃ³n':'i-bone','Paseos':'i-leaf'};
-  var CAT_ORDER=['Cachorros','EducaciÃ³n','Salud','Conducta','AlimentaciÃ³n','Paseos'];
+  var CAT_ICON={'Cachorros':'i-paw','Educación':'i-target','Salud':'i-shield','Conducta':'i-flame','Alimentación':'i-bone','Paseos':'i-leaf'};
+  var CAT_ORDER=['Cachorros','Educación','Salud','Conducta','Alimentación','Paseos'];
   function isNew(p){return p.created_at && (Date.now()-new Date(p.created_at).getTime())<30*864e5;}
   function cardTags(p){var t=(p.tags||[]).slice(); if(isNew(p)&&t.indexOf('nuevo')===-1)t.unshift('nuevo'); return t;}
   var CCOLOR={sky:['#ADCBEF','#111A17'],peach:['#FFCDB8','#111A17'],sage:['#B5C1AB','#111A17'],golden:['#F6D055','#111A17'],lavender:['#C9C2EC','#111A17'],pink:['#F3C7D6','#111A17'],cream:['#FEFAE8','#111A17'],terracotta:['#C55932','#fff'],terra:['#C55932','#fff'],forest:['#3C4824','#FEFAE8'],ink:['#111A17','#FEFAE8']};
-  var TAGLABELS2={gratis:'Gratis',nuevo:'Nuevo',recomendado:'Recomendado',popular:'Popular',caliente:'Caliente',bestseller:'MÃ¡s vendido'};
+  var TAGLABELS2={gratis:'Gratis',nuevo:'Nuevo',recomendado:'Recomendado',popular:'Popular',caliente:'Caliente',bestseller:'Más vendido'};
   function cap2(s){s=String(s||'');return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
   /* cover() now renders the 3D book frame (book3d) sitting on a neutral shelf,
      with a tilted top-right secondary tag and an OPTIONAL bottom banner. */
@@ -285,7 +285,7 @@ window.initFcCarousel = function(){
       var cc=CCOLOR[String(p.cover_color||'sky').toLowerCase()]||CCOLOR.sky;
       coverEl='<span class="cover gcover" style="background:'+cc[0]+';color:'+cc[1]+'">'
         +topTagHtml
-        +'<span class="gcover__top"><span class="gsub">'+esc(p.cover_sub||'GuÃ­a PDF')+'</span></span>'
+        +'<span class="gcover__top"><span class="gsub">'+esc(p.cover_sub||'Guía PDF')+'</span></span>'
         +'<span class="gtitle"'+(p.cover_title_size?(' style="font-size:'+p.cover_title_size+'cqw"'):'')+'>'+esc(p.cover_title||p.title||'').replace(/\n/g,'<br>')+'</span>'
         +banner
         +'</span>';
@@ -299,14 +299,14 @@ window.initFcCarousel = function(){
     var priceTxt=isFree?'Gratis':(window.LogramoCurrency?LogramoCurrency.format(p.price):'$'+Number(p.price||0).toFixed(2));
     var priceCls='book-card__price'+(isFree?' book-card__price--free':'');
     // The cover opens the product modal (data-freebie). Below it, a bar with the
-    // price + "AÃ±adir al carrito". The button is OUTSIDE the data-freebie link,
+    // price + "Añadir al carrito". The button is OUTSIDE the data-freebie link,
     // so clicking it adds to cart instead of opening the modal.
     // Keep the .book-card class + data-* on the wrapper so filters/search work.
     return '<div class="book-card book-card--bare" data-tags="'+tags.join(' ')+'" data-cat="'+slug(p.category)+'" data-title="'+esc((p.title||'').toLowerCase())+'" data-desc="'+esc((p.description||'').toLowerCase())+'">'
       +'<a href="#" data-freebie="'+esc(p.id)+'" class="book-card__coverlink" aria-label="'+esc(p.title||'')+'">'+cover(p, top)+'</a>'
       +'<div class="book-card__bar">'
         +'<span class="'+priceCls+'">'+priceTxt+'</span>'
-        +'<button type="button" class="btn btn--golden btn--sm book-card__add" data-add-id="'+esc(p.id)+'" data-add-name="'+esc(p.title||'')+'" data-add-price="'+Number(p.price||0)+'" aria-label="AÃ±adir al carrito"><svg class="icon"><use href="#i-cart"/></svg> <span class="book-card__add-label">AÃ±adir</span></button>'
+        +'<button type="button" class="btn btn--golden btn--sm book-card__add" data-add-id="'+esc(p.id)+'" data-add-name="'+esc(p.title||'')+'" data-add-price="'+Number(p.price||0)+'" aria-label="Añadir al carrito"><svg class="icon"><use href="#i-cart"/></svg> <span class="book-card__add-label">Añadir</span></button>'
       +'</div>'
     +'</div>';
   }
@@ -341,7 +341,7 @@ window.initFcCarousel = function(){
     if(window.initFcCarousel) window.initFcCarousel();
   }
   function render(products){
-    if(!products.length){ mount.innerHTML='<p class="muted" style="text-align:center;padding:50px;color:var(--c-text-muted)">AÃºn no hay libros publicados.</p>'; return; }
+    if(!products.length){ mount.innerHTML='<p class="muted" style="text-align:center;padding:50px;color:var(--c-text-muted)">Aún no hay libros publicados.</p>'; return; }
     mount.innerHTML='<div class="library-grid">'+products.map(card).join('')+'</div>';
   }
   function applyFilters(){
@@ -377,25 +377,25 @@ window.initFcCarousel = function(){
      never see these (no ?demo param). Demo cards aren't meant to be opened. */
   function DEMO_PRODUCTS(){
     var d=[
-      {category:'Cachorros',color:'sky',sub:'GuÃ­a PDF',title:'Los Primeros\n30 DÃ­as',price:0,free:true,tags:['gratis']},
-      {category:'Cachorros',color:'peach',sub:'Libro Digital',title:'SueÃ±o\nTranquilo',price:14.99,tags:['nuevo']},
+      {category:'Cachorros',color:'sky',sub:'Guía PDF',title:'Los Primeros\n30 Días',price:0,free:true,tags:['gratis']},
+      {category:'Cachorros',color:'peach',sub:'Libro Digital',title:'Sueño\nTranquilo',price:14.99,tags:['nuevo']},
       {category:'Cachorros',color:'golden',sub:'Manual',title:'Mordidas\ny Juego',price:12.99,tags:[]},
-      {category:'EducaciÃ³n',color:'golden',sub:'Libro Estrella',title:'CrÃ­a un\nPerro Feliz',price:29.99,orig:39.99,tags:['recomendado']},
-      {category:'EducaciÃ³n',color:'lavender',sub:'Libro Digital',title:'Adiestramiento\nAvanzado',price:24.99,tags:[]},
-      {category:'EducaciÃ³n',color:'pink',sub:'Mini GuÃ­a',title:'5 Comandos\nBÃ¡sicos',price:0,free:true,tags:['gratis']},
-      {category:'Salud',color:'sage',sub:'GuÃ­a PrÃ¡ctica',title:'Salud del\nCachorro',price:19.99,tags:[]},
+      {category:'Educación',color:'golden',sub:'Libro Estrella',title:'Cría un\nPerro Feliz',price:29.99,orig:39.99,tags:['recomendado']},
+      {category:'Educación',color:'lavender',sub:'Libro Digital',title:'Adiestramiento\nAvanzado',price:24.99,tags:[]},
+      {category:'Educación',color:'pink',sub:'Mini Guía',title:'5 Comandos\nBásicos',price:0,free:true,tags:['gratis']},
+      {category:'Salud',color:'sage',sub:'Guía Práctica',title:'Salud del\nCachorro',price:19.99,tags:[]},
       {category:'Salud',color:'peach',sub:'Mini Libro',title:'Ejercicio\nDiario',price:12.99,tags:['popular']},
       {category:'Salud',color:'sky',sub:'Manual',title:'Primeros\nAuxilios',price:16.99,tags:[]},
       {category:'Conducta',color:'lavender',sub:'Libro Digital',title:'Ladridos\nBajo Control',price:19.99,tags:['popular']},
-      {category:'Conducta',color:'pink',sub:'Manual',title:'Ansiedad por\nSeparaciÃ³n',price:22.99,tags:['nuevo']},
-      {category:'Conducta',color:'forest',sub:'GuÃ­a',title:'AdiÃ³s a los\nMiedos',price:18.99,tags:['caliente']},
-      {category:'AlimentaciÃ³n',color:'sky',sub:'Manual',title:'AlimentaciÃ³n\nSana',price:19.99,tags:[]},
-      {category:'AlimentaciÃ³n',color:'golden',sub:'GuÃ­a Express',title:'Snacks\nCaseros',price:9.99,tags:['nuevo']},
-      {category:'Paseos',color:'golden',sub:'GuÃ­a Express',title:'Paseos\nSin Tirones',price:14.99,orig:19.99,tags:['recomendado']},
-      {category:'Paseos',color:'sage',sub:'Mini GuÃ­a',title:'SocializaciÃ³n\nen el Parque',price:11.99,tags:[]}
+      {category:'Conducta',color:'pink',sub:'Manual',title:'Ansiedad por\nSeparación',price:22.99,tags:['nuevo']},
+      {category:'Conducta',color:'forest',sub:'Guía',title:'Adiós a los\nMiedos',price:18.99,tags:['caliente']},
+      {category:'Alimentación',color:'sky',sub:'Manual',title:'Alimentación\nSana',price:19.99,tags:[]},
+      {category:'Alimentación',color:'golden',sub:'Guía Express',title:'Snacks\nCaseros',price:9.99,tags:['nuevo']},
+      {category:'Paseos',color:'golden',sub:'Guía Express',title:'Paseos\nSin Tirones',price:14.99,orig:19.99,tags:['recomendado']},
+      {category:'Paseos',color:'sage',sub:'Mini Guía',title:'Socialización\nen el Parque',price:11.99,tags:[]}
     ];
     var now=Date.now();
-    return d.map(function(x,i){ return { id:'demo-'+i, title:x.title.replace(/\n/g,' '), category:x.category, description:'Libro de ejemplo para previsualizar el diseÃ±o.', price:x.price, is_free:!!x.free, original_price:x.orig||null, tags:x.tags, cover_color:x.color, cover_sub:x.sub, cover_title:x.title, published:true, created_at:new Date(now-i*864e5).toISOString() }; });
+    return d.map(function(x,i){ return { id:'demo-'+i, title:x.title.replace(/\n/g,' '), category:x.category, description:'Libro de ejemplo para previsualizar el diseño.', price:x.price, is_free:!!x.free, original_price:x.orig||null, tags:x.tags, cover_color:x.color, cover_sub:x.sub, cover_title:x.title, published:true, created_at:new Date(now-i*864e5).toISOString() }; });
   }
   (async function(){
     try{ var t=await sb.from('tags').select('*'); if(!t.error)(t.data||[]).forEach(function(x){REG[x.slug]={label:x.label,color:x.color||'default'};}); }catch(e){}

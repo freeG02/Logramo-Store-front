@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -29,8 +29,8 @@
   <!-- End Meta Pixel Code -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Â¡Gracias por tu compra! Descarga tu guÃ­a aquÃ­." />
-  <title>Â¡Gracias! Â· Logramo</title>
+  <meta name="description" content="¡Gracias por tu compra! Descarga tu guía aquí." />
+  <title>¡Gracias! · Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -41,7 +41,7 @@
   <style>
     .gracias-section { min-height: calc(100vh - 80px); display:flex; align-items:center; justify-content:center; padding:32px 0; }
     @media(max-width:560px){ .gracias-section { min-height: calc(100vh - 64px); padding:24px 0; } }
-    /* Download buttons carry the guide title, which can be long â€” let it wrap
+    /* Download buttons carry the guide title, which can be long — let it wrap
        inside the button instead of overflowing past the edge. */
     .gracias-dl { white-space: normal; text-align: center; line-height: 1.3; word-break: break-word; }
     .gracias-dl .icon { flex: 0 0 auto; }
@@ -59,10 +59,10 @@
       </div>
     </div>
     <span class="eyebrow">Compra confirmada</span>
-    <h1 style="margin:10px 0 14px;font-size:clamp(1.7rem,3.6vw,2.3rem);line-height:1.05">Â¡Gracias por confiar en Logramo!</h1>
-    <p id="gMsg" style="margin:0 auto 22px;color:var(--c-text-muted);font-size:1.02rem;line-height:1.45;max-width:460px">Preparando tu descargaâ€¦</p>
+    <h1 style="margin:10px 0 14px;font-size:clamp(1.7rem,3.6vw,2.3rem);line-height:1.05">¡Gracias por confiar en Logramo!</h1>
+    <p id="gMsg" style="margin:0 auto 22px;color:var(--c-text-muted);font-size:1.02rem;line-height:1.45;max-width:460px">Preparando tu descarga…</p>
     <div id="gActions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"></div>
-    <p style="margin-top:20px;font-size:.82rem;color:var(--c-text-muted)">Â¿Algo falla? EscrÃ­benos a ayuda@logramo.com y te lo mandamos directo ðŸ¾</p>
+    <p style="margin-top:20px;font-size:.82rem;color:var(--c-text-muted)">¿Algo falla? Escríbenos a ayuda@logramo.com y te lo mandamos directo 🐾</p>
   </div>
 </section>
 
@@ -81,7 +81,7 @@
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   async function downloadPdf(url, filename){
     if(!url) return;
-    var nameGuess=(filename||'logramo.pdf').replace(/[^a-z0-9\-_. Ã¡Ã©Ã­Ã³ÃºÃ±ÃÃ‰ÃÃ“ÃšÃ‘]/gi,'').trim()||'logramo.pdf';
+    var nameGuess=(filename||'logramo.pdf').replace(/[^a-z0-9\-_. áéíóúñÁÉÍÓÚÑ]/gi,'').trim()||'logramo.pdf';
     if(!/\.pdf$/i.test(nameGuess)) nameGuess+='.pdf';
     try{
       var res=await fetch(url, { mode:'cors' });
@@ -126,7 +126,7 @@
         fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: _val, currency: _cur }, _order||undefined);
       }
     } catch(e){}
-    var fallback=function(){ msg.textContent='Tu compra se procesÃ³. Si no recibes tu archivo, contÃ¡ctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; };
+    var fallback=function(){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; };
     if(!ids.length){ fallback(); return; }
     var r; try{ r=await sb.from('products').select('id,title,pdf_url').in('id',ids); }catch(e){}
     if(!r || r.error || !r.data || !r.data.length){ fallback(); return; }
@@ -138,24 +138,24 @@
     if(single){
       var p=prods[0];
       if(p.pdf_url){
-        msg.innerHTML='Tu guÃ­a <strong>'+esc(p.title)+'</strong> estÃ¡ lista. La descarga empieza automÃ¡ticamente.';
+        msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está lista. La descarga empieza automáticamente.';
         act.innerHTML='<button class="btn btn--primary" id="gDl"><svg class="icon"><use href="#i-pdf"/></svg> Descargar de nuevo</button><a href="biblioteca.html" class="btn btn--cream">Seguir explorando</a>';
         document.getElementById('gDl').addEventListener('click',function(){ downloadPdf(p.pdf_url, p.title); });
         setTimeout(function(){ downloadPdf(p.pdf_url, p.title); }, 800);
       } else {
-        msg.innerHTML='Tu guÃ­a <strong>'+esc(p.title)+'</strong> estÃ¡ confirmada. RecibirÃ¡s un email con el archivo en breve. <br><small style="opacity:.7">(El vendedor aÃºn no ha subido el PDF, pero estarÃ¡ disponible muy pronto.)</small>';
+        msg.innerHTML='Tu guía <strong>'+esc(p.title)+'</strong> está confirmada. Recibirás un email con el archivo en breve. <br><small style="opacity:.7">(El vendedor aún no ha subido el PDF, pero estará disponible muy pronto.)</small>';
         act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Seguir explorando</a>';
       }
       return;
     }
 
     // Multi-guide cart order: list every guide with its own download button.
-    msg.innerHTML='Tus <strong>'+prods.length+' guÃ­as</strong> estÃ¡n listas. Las descargas empiezan automÃ¡ticamente.';
+    msg.innerHTML='Tus <strong>'+prods.length+' guías</strong> están listas. Las descargas empiezan automáticamente.';
     var rows=prods.map(function(p,i){
       if(p.pdf_url){
         return '<button class="btn btn--primary gracias-dl" data-pdf="'+esc(p.pdf_url)+'" data-name="'+esc(p.title)+'"><svg class="icon"><use href="#i-pdf"/></svg> '+esc(p.title)+'</button>';
       }
-      return '<span class="btn btn--cream gracias-dl" style="opacity:.7;cursor:default">'+esc(p.title)+' Â· llega por email</span>';
+      return '<span class="btn btn--cream gracias-dl" style="opacity:.7;cursor:default">'+esc(p.title)+' · llega por email</span>';
     }).join('');
     act.innerHTML='<div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:420px;margin:0 auto">'+rows+'<a href="biblioteca.html" class="btn btn--cream">Seguir explorando</a></div>';
     Array.prototype.forEach.call(act.querySelectorAll('button[data-pdf]'),function(b){

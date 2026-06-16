@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -30,7 +30,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>Panel Â· Logramo</title>
+  <title>Panel · Logramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -112,7 +112,7 @@
     .side-toggle { display:none; }
     .side-backdrop { display:none; }
     .side-close { display:none; }
-    /* Site-nav (injected from partials) parked at the bottom of the dashboard â€” full-width, content-height */
+    /* Site-nav (injected from partials) parked at the bottom of the dashboard — full-width, content-height */
     body.dash #mainNav { position:fixed !important; top:auto !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:80; width:100% !important; height:auto !important; min-height:0 !important; max-height:none !important; margin:0 !important; padding:8px 0 !important; transform:translateY(100%); transition:transform .3s var(--ease-out); background:var(--c-cream); border-top:var(--bw-2) solid var(--c-ink); box-shadow:0 -4px 0 var(--c-ink); border-bottom:0 !important; overflow:visible !important; }
     body.dash #mainNav.is-revealed { transform:translateY(0); }
     body.dash #mainNav .nav__inner { min-height:0 !important; padding-top:0 !important; padding-bottom:0 !important; }
@@ -387,15 +387,15 @@
   <button class="side-toggle" id="sideToggle" aria-label="Open menu" type="button"><span></span><span></span><span></span></button>
   <div class="side-backdrop" id="sideBackdrop"></div>
   <nav class="side" id="sideNav">
-    <button type="button" class="side-close" id="sideClose" aria-label="Close menu">âœ•</button>
+    <button type="button" class="side-close" id="sideClose" aria-label="Close menu">✕</button>
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
     <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Home</button>
-    <button class="side__link" data-view="trafico"><span class="emoji-icon">ðŸŽ¯</span> Traffic</button>
+    <button class="side__link" data-view="trafico"><span class="emoji-icon">🎯</span> Traffic</button>
     <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Sales</button>
     <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-image"/></svg> Content</button>
     <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Subscribers</button>
-    <button class="side__link" data-view="mensajes"><span class="emoji-icon">ðŸ’¬</span> Messages<span class="side__badge" id="msgUnread" hidden>0</span></button>
-    <button class="side__link" data-view="ajustes"><span class="emoji-icon">ðŸ‘¤</span> Settings</button>
+    <button class="side__link" data-view="mensajes"><span class="emoji-icon">💬</span> Messages<span class="side__badge" id="msgUnread" hidden>0</span></button>
+    <button class="side__link" data-view="ajustes"><span class="emoji-icon">👤</span> Settings</button>
     <div class="side__foot">
       <div class="side__user" id="whoami"></div>
       <button class="side__link" id="logoutBtn"><svg class="icon"><use href="#i-arrow-left"/></svg> Log out</button>
@@ -406,10 +406,10 @@
 
     <!-- ===== TOPBAR (bell) ===== -->
     <div class="topbar">
-      <div class="topbar__greet"><h1 id="greetTitle">Welcome back! ðŸ¾</h1><p>Here's what's happening at Logramo today</p></div>
+      <div class="topbar__greet"><h1 id="greetTitle">Welcome back! 🐾</h1><p>Here's what's happening at Logramo today</p></div>
       <div class="topbar__right">
         <div class="bell" id="bellWrap">
-          <button class="bell__btn" id="bellBtn" aria-label="Notificaciones"><span class="emoji-icon">ðŸ””</span><span class="bell__dot" id="bellDot" hidden>0</span></button>
+          <button class="bell__btn" id="bellBtn" aria-label="Notificaciones"><span class="emoji-icon">🔔</span><span class="bell__dot" id="bellDot" hidden>0</span></button>
           <div class="bell__panel" id="bellPanel" hidden>
             <div class="bell__head">Notifications</div>
             <div id="bellList"><p class="muted" style="padding:14px 16px;margin:0">No new notifications. We'll alert you here when a sale comes in.</p></div>
@@ -421,16 +421,16 @@
     <!-- ===== INICIO ===== -->
     <section data-page-view="inicio">
       <div class="cards3">
-        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">0</div><div class="ov-card__label">Total visits â†’</div><div class="ov-card__delta" id="ovVisitasD">â€”</div></div>
-        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">$0</div><div class="ov-card__label">Revenue â†’</div><div class="ov-card__delta" id="ovIngresosD">â€”</div></div>
-        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">0</div><div class="ov-card__label">Sales â†’</div><div class="ov-card__delta" id="ovVentasD">â€”</div></div>
+        <div class="ov-card ov-card--1" data-goto="trafico" role="button" tabindex="0"><div class="ov-card__num" id="ovVisitas">0</div><div class="ov-card__label">Total visits →</div><div class="ov-card__delta" id="ovVisitasD">—</div></div>
+        <div class="ov-card ov-card--2" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovIngresos">$0</div><div class="ov-card__label">Revenue →</div><div class="ov-card__delta" id="ovIngresosD">—</div></div>
+        <div class="ov-card ov-card--3" data-goto="ventas" role="button" tabindex="0"><div class="ov-card__num" id="ovVentas">0</div><div class="ov-card__label">Sales →</div><div class="ov-card__delta" id="ovVentasD">—</div></div>
       </div>
       <div class="ov-grid">
         <div>
           <div class="panel"><h2>Revenue & visits</h2><p class="panel__hint">Live data from purchases + pageviews. The chart fills in as orders come in.</p>
             <div class="tf-tabs" data-tf-for="earnings"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
             <div class="chart-box"><canvas id="earningsChart"></canvas></div></div>
-          <div class="panel"><h2>Top selling products</h2><div id="topProducts"><p class="muted">Loadingâ€¦</p></div></div>
+          <div class="panel"><h2>Top selling products</h2><div id="topProducts"><p class="muted">Loading…</p></div></div>
         </div>
         <div>
           <div class="panel"><h2>Top customers</h2><div id="topCustomers"></div></div>
@@ -451,7 +451,7 @@
         <button class="subtab" data-sub="com">Comments</button>
       </div>
       <p class="muted" style="margin:-8px 0 18px;font-size:.84rem">
-        Tip: click the <strong>â­ star</strong> next to any product below to set it as the homepage highlight.
+        Tip: click the <strong>⭐ star</strong> next to any product below to set it as the homepage highlight.
       </p>
 
       <!-- PRODUCTS -->
@@ -461,55 +461,55 @@
             <div class="panel">
               <h2 id="pEditorTitle">Add product</h2>
               <p class="panel__hint">Fill in the details and watch the preview.</p>
-              <div class="field"><label for="p-title">Title</label><input type="text" id="p-title" placeholder="e.g. SueÃ±o tranquilo" /></div>
+              <div class="field"><label for="p-title">Title</label><input type="text" id="p-title" placeholder="e.g. Sueño tranquilo" /></div>
               <div class="row2">
                 <div class="field"><label for="p-cat">Category</label>
-                  <select id="p-cat"><option>Cachorros</option><option>EducaciÃ³n</option><option>Salud</option><option>Conducta</option><option>AlimentaciÃ³n</option><option>Paseos</option></select>
+                  <select id="p-cat"><option>Cachorros</option><option>Educación</option><option>Salud</option><option>Conducta</option><option>Alimentación</option><option>Paseos</option></select>
                 </div>
                 <div class="field"><label for="p-price">Price ($)</label><input type="number" id="p-price" step="0.01" min="0" placeholder="19.99" /></div>
               </div>
-              <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Free (adds the â€œGratisâ€ tag)</label></div>
-              <div class="field"><label for="p-original">Original price ($) <span class="muted">â€” optional strike-through</span></label><input type="number" id="p-original" step="0.01" min="0" placeholder="49.99" /></div>
-              <div class="field"><label for="p-pages">Pages <span class="muted">â€” optional, shown in the freebie download modal</span></label><input type="number" id="p-pages" min="1" placeholder="e.g. 24" /></div>
+              <div class="field"><label class="check"><input type="checkbox" id="p-free" /> Free (adds the “Gratis” tag)</label></div>
+              <div class="field"><label for="p-original">Original price ($) <span class="muted">— optional strike-through</span></label><input type="number" id="p-original" step="0.01" min="0" placeholder="49.99" /></div>
+              <div class="field"><label for="p-pages">Pages <span class="muted">— optional, shown in the freebie download modal</span></label><input type="number" id="p-pages" min="1" placeholder="e.g. 24" /></div>
               <input type="hidden" id="p-buy-url" value="" />
-              <div class="field"><label for="p-desc">Description</label><textarea id="p-desc" placeholder="A warm one-liner about the bookâ€¦"></textarea></div>
-              <div class="field"><label>Tags</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Type and press Enterâ€¦ (Gratis, Calienteâ€¦)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
+              <div class="field"><label for="p-desc">Description</label><textarea id="p-desc" placeholder="A warm one-liner about the book…"></textarea></div>
+              <div class="field"><label>Tags</label><div class="tagfield" id="pTagfield"><input type="text" class="tagfield__input" id="pTagInput" placeholder="Type and press Enter… (Gratis, Caliente…)" autocomplete="off" /><div class="tagfield__dropdown" id="pTagDropdown"></div></div></div>
               <div class="field"><label>Available tags</label><div class="tagpool" id="pTagPool"></div>
-                <div class="newtag"><input type="text" id="newTagName" placeholder="Create a new tagâ€¦" /><select id="newTagColor"><option value="gratis">Green</option><option value="caliente">Orange</option><option value="nuevo">Blue</option><option value="popular">Gold</option><option value="recomendado">Lilac</option><option value="default">Pink</option></select><button type="button" class="icon-btn" id="createTagBtn">Create</button></div>
+                <div class="newtag"><input type="text" id="newTagName" placeholder="Create a new tag…" /><select id="newTagColor"><option value="gratis">Green</option><option value="caliente">Orange</option><option value="nuevo">Blue</option><option value="popular">Gold</option><option value="recomendado">Lilac</option><option value="default">Pink</option></select><button type="button" class="icon-btn" id="createTagBtn">Create</button></div>
               </div>
               <h3 class="editor-sub">Cover</h3>
               <div class="field"><label>Cover type</label>
                 <div class="seg" id="p-covermode"><button type="button" data-mode="design" class="active">Name design</button><button type="button" data-mode="image">Own image</button></div>
               </div>
               <div id="coverDesign">
-                <div class="field"><label for="p-coversub">Subtitle (small text)</label><input type="text" id="p-coversub" value="GuÃ­a PDF" /></div>
-                <div class="field"><label for="p-covertitle">Cover title (Enter = 2 lines)</label><textarea id="p-covertitle" placeholder="SueÃ±o&#10;Tranquilo"></textarea></div>
+                <div class="field"><label for="p-coversub">Subtitle (small text)</label><input type="text" id="p-coversub" value="Guía PDF" /></div>
+                <div class="field"><label for="p-covertitle">Cover title (Enter = 2 lines)</label><textarea id="p-covertitle" placeholder="Sueño&#10;Tranquilo"></textarea></div>
                 <div class="field"><label for="p-covertitlesize">Title size on cover <span class="muted" id="p-covertitlesize-val" style="font-weight:400">15.5</span></label><input type="range" id="p-covertitlesize" min="9" max="22" step="0.5" value="15.5" style="width:100%" /></div>
                 <div class="row2">
                   <div class="field"><label>Background color</label><div class="swatches" id="p-colorSwatches"></div></div>
-                  <div class="field"><label for="p-icon">Emoji (just one)</label><input type="text" id="p-icon" class="emoji-input" placeholder="ðŸ¶" maxlength="8" autocomplete="off" /></div>
+                  <div class="field"><label for="p-icon">Emoji (just one)</label><input type="text" id="p-icon" class="emoji-input" placeholder="🐶" maxlength="8" autocomplete="off" /></div>
                 </div>
               </div>
               <div id="coverImageBox" hidden>
                 <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="p-cover-file" /><div id="p-cover-thumb" class="thumbs"></div></div>
               </div>
-              <div class="field"><label>Extra images (gallery â€” inside views)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
+              <div class="field"><label>Extra images (gallery — inside views)</label><input type="file" accept="image/*" multiple id="p-gallery-file" /><div id="p-gallery-thumbs" class="thumbs"></div></div>
               <div class="field"><label>PDF file (product download)</label><input type="file" accept="application/pdf" id="p-pdf-file" /><div id="p-pdf-info" class="muted" style="margin-top:8px"></div></div>
 
               <details class="legacy-fields" style="margin-top:18px">
                 <summary style="cursor:pointer;font-family:var(--font-display);font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--c-text-muted);padding:8px 0">Legacy long-page fields (not shown on the site)</summary>
-                <p class="panel__hint" style="margin:6px 0 10px">These used to power the full product page. The site now uses the unified popup, so these fields are hidden by default â€” data is preserved here in case you want to revive them later.</p>
-                <div class="field"><label>â€œEl problemaâ€ â€” the pains</label><div class="repeater" id="repProblems"></div></div>
-                <div class="field"><label>â€œLa soluciÃ³nâ€ â€” how the guide helps</label><div class="repeater" id="repSolutions"></div></div>
-                <div class="field"><label>Contenido â€” modules</label><div class="repeater" id="repModules"></div></div>
-                <div class="field"><label>â€œÂ¿Para quiÃ©n es?â€ cards</label><div class="repeater" id="repAudience"></div></div>
+                <p class="panel__hint" style="margin:6px 0 10px">These used to power the full product page. The site now uses the unified popup, so these fields are hidden by default — data is preserved here in case you want to revive them later.</p>
+                <div class="field"><label>“El problema” — the pains</label><div class="repeater" id="repProblems"></div></div>
+                <div class="field"><label>“La solución” — how the guide helps</label><div class="repeater" id="repSolutions"></div></div>
+                <div class="field"><label>Contenido — modules</label><div class="repeater" id="repModules"></div></div>
+                <div class="field"><label>“¿Para quién es?” cards</label><div class="repeater" id="repAudience"></div></div>
               </details>
 
               <input type="hidden" id="p-color" value="sky" />
               <input type="hidden" id="p-cover-image" value="" />
               <input type="hidden" id="p-pdf-url" value="" />
               <div class="field" style="margin-top:8px"><label class="check"><input type="checkbox" id="p-published" checked /> Published (visible on the site)</label></div>
-              <div class="field"><label class="check"><input type="checkbox" id="p-featured" /> Featured (show in the homepage carousel â€” max 2)</label></div>
+              <div class="field"><label class="check"><input type="checkbox" id="p-featured" /> Featured (show in the homepage carousel — max 2)</label></div>
               <div class="actions"><button type="button" class="btn btn--primary" id="pSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Publish</button><button type="button" class="icon-btn" id="pResetBtn">Clear</button><span class="muted" id="pSaveStatus"></span></div>
             </div>
           </div>
@@ -532,15 +532,15 @@
                 <div class="field"><label for="a-cat">Category</label><select id="a-cat"></select><span class="muted" style="display:block;font-size:.74rem;margin-top:6px">Manage these in the <strong>Categories</strong> subtab.</span></div>
                 <div class="field"><label for="a-read">Read time (min)</label><input type="number" id="a-read" min="1" value="5" /></div>
               </div>
-              <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Hot ðŸ”¥ (trending article)</label></div>
+              <div class="field"><label class="check"><input type="checkbox" id="a-hot" /> Hot 🔥 (trending article)</label></div>
               <div class="field"><label class="check"><input type="checkbox" id="a-published" checked /> Published (visible on the site)</label></div>
-              <div class="field"><label for="a-publish-at">Schedule for later <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">â€” optional</span></label><input type="datetime-local" id="a-publish-at" /><span class="muted" id="a-schedule-hint" style="display:block;font-size:.78rem;margin-top:6px">Leave empty to publish now. Pick a future time to schedule.</span></div>
-              <div class="field"><label for="a-related-product">Related product <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">â€” optional</span></label><select id="a-related-product"><option value="">â€” Show "Ver biblioteca" (default)</option></select><span class="muted" style="display:block;font-size:.78rem;margin-top:6px">Shown in the "Plan completo" sidebar widget when readers open this article.</span></div>
-              <div class="field"><label for="a-excerpt">Excerpt</label><textarea id="a-excerpt" placeholder="A hook that grabs attentionâ€¦"></textarea></div>
+              <div class="field"><label for="a-publish-at">Schedule for later <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">— optional</span></label><input type="datetime-local" id="a-publish-at" /><span class="muted" id="a-schedule-hint" style="display:block;font-size:.78rem;margin-top:6px">Leave empty to publish now. Pick a future time to schedule.</span></div>
+              <div class="field"><label for="a-related-product">Related product <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">— optional</span></label><select id="a-related-product"><option value="">— Show "Ver biblioteca" (default)</option></select><span class="muted" style="display:block;font-size:.78rem;margin-top:6px">Shown in the "Plan completo" sidebar widget when readers open this article.</span></div>
+              <div class="field"><label for="a-excerpt">Excerpt</label><textarea id="a-excerpt" placeholder="A hook that grabs attention…"></textarea></div>
               <div class="field"><label for="a-body">Body</label><textarea id="a-body" rows="14" placeholder="Write the full article. Separate paragraphs with a blank line. Basic HTML is allowed (&lt;strong&gt;, &lt;em&gt;, &lt;a href&gt;, &lt;h2&gt;, &lt;ul&gt;&lt;li&gt;)."></textarea><span class="muted" style="display:block;font-size:.78rem;margin-top:6px">Blank line = new paragraph. Plain HTML also works.</span></div>
-              <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="a-img-file" /><input type="text" id="a-img-url" placeholder="Or paste an image URL (https://â€¦)" style="margin-top:8px" /><div id="a-img-thumb" class="thumbs"></div></div>
+              <div class="field"><label>Cover image</label><input type="file" accept="image/*" id="a-img-file" /><input type="text" id="a-img-url" placeholder="Or paste an image URL (https://…)" style="margin-top:8px" /><div id="a-img-thumb" class="thumbs"></div></div>
               <input type="hidden" id="a-img" value="" />
-              <div class="field"><label>Tags</label><div class="tagfield" id="aTagfield"><input type="text" class="tagfield__input" id="aTagInput" placeholder="Type and press Enterâ€¦" autocomplete="off" /><div class="tagfield__dropdown" id="aTagDropdown"></div></div></div>
+              <div class="field"><label>Tags</label><div class="tagfield" id="aTagfield"><input type="text" class="tagfield__input" id="aTagInput" placeholder="Type and press Enter…" autocomplete="off" /><div class="tagfield__dropdown" id="aTagDropdown"></div></div></div>
               <div class="actions"><button type="button" class="btn btn--primary" id="aSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Publish</button><button type="button" class="icon-btn" id="aResetBtn">Clear</button><span class="muted" id="aSaveStatus"></span></div>
             </div>
           </div>
@@ -558,7 +558,7 @@
             <div class="panel">
               <h2 id="catEditorTitle">Add category</h2>
               <p class="panel__hint">These show up in the article editor and color-code articles on the blog.</p>
-              <div class="field"><label for="cat-name">Name</label><input type="text" id="cat-name" placeholder="e.g. AdopciÃ³n" /></div>
+              <div class="field"><label for="cat-name">Name</label><input type="text" id="cat-name" placeholder="e.g. Adopción" /></div>
               <div class="field">
                 <label>Color</label>
                 <div id="cat-swatches" class="cat-swatches"></div>
@@ -574,7 +574,7 @@
           <div>
             <div class="panel panel--list">
               <h2>All categories</h2>
-              <div class="list" id="catList"><p class="muted">Loadingâ€¦</p></div>
+              <div class="list" id="catList"><p class="muted">Loading…</p></div>
             </div>
           </div>
         </div>
@@ -586,10 +586,10 @@
           <div>
             <div class="panel">
               <h2 id="vEditorTitle">Add video</h2>
-              <p class="panel__hint">The cards in the homepage â€œVideos realesâ€ section. Paste a YouTube link â€” the thumbnail is taken from YouTube automatically unless you upload your own.</p>
-              <div class="field"><label for="v-title">Title</label><input type="text" id="v-title" placeholder="e.g. El primer dÃ­a fue un caos totalâ€¦" /></div>
+              <p class="panel__hint">The cards in the homepage “Videos reales” section. Paste a YouTube link — the thumbnail is taken from YouTube automatically unless you upload your own.</p>
+              <div class="field"><label for="v-title">Title</label><input type="text" id="v-title" placeholder="e.g. El primer día fue un caos total…" /></div>
               <div class="field"><label for="v-label">Label (small tag)</label><input type="text" id="v-label" placeholder="e.g. Historia real" /></div>
-              <div class="field"><label for="v-url">YouTube link</label><input type="text" id="v-url" placeholder="https://www.youtube.com/watch?v=â€¦" /></div>
+              <div class="field"><label for="v-url">YouTube link</label><input type="text" id="v-url" placeholder="https://www.youtube.com/watch?v=…" /></div>
               <div class="field"><label>Custom thumbnail (optional)</label><input type="file" accept="image/*" id="v-thumb-file" /><div id="v-thumb-info" class="thumbs"></div></div>
               <input type="hidden" id="v-thumb" value="" />
               <div class="field"><label for="v-sort">Order (lower = first)</label><input type="number" id="v-sort" value="0" /></div>
@@ -610,15 +610,15 @@
               <h2 id="rEditorTitle">Add review</h2>
               <p class="panel__hint">Shown on the homepage and on every product page.</p>
               <div class="row2">
-                <div class="field"><label for="r-name">Name</label><input type="text" id="r-name" placeholder="e.g. MarÃ­a L." /></div>
-                <div class="field"><label for="r-loc">Location / dog</label><input type="text" id="r-loc" placeholder="e.g. Madrid Â· Border collie" /></div>
+                <div class="field"><label for="r-name">Name</label><input type="text" id="r-name" placeholder="e.g. María L." /></div>
+                <div class="field"><label for="r-loc">Location / dog</label><input type="text" id="r-loc" placeholder="e.g. Madrid · Border collie" /></div>
               </div>
               <div class="row2">
                 <div class="field"><label for="r-rating">Rating</label><select id="r-rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
                 <div class="field"><label for="r-sort">Order (lower = first)</label><input type="number" id="r-sort" value="0" /></div>
               </div>
-              <div class="field"><label for="r-quote">Quote</label><textarea id="r-quote" placeholder="What they saidâ€¦"></textarea></div>
-              <div class="field"><label>Photo (optional â€” initials shown if empty)</label><input type="file" accept="image/*" id="r-avatar-file" /><div id="r-avatar-info" class="thumbs"></div></div>
+              <div class="field"><label for="r-quote">Quote</label><textarea id="r-quote" placeholder="What they said…"></textarea></div>
+              <div class="field"><label>Photo (optional — initials shown if empty)</label><input type="file" accept="image/*" id="r-avatar-file" /><div id="r-avatar-info" class="thumbs"></div></div>
               <input type="hidden" id="r-avatar" value="" />
               <div class="actions"><button type="button" class="btn btn--primary" id="rSaveBtn"><svg class="icon"><use href="#i-check"/></svg> Save</button><button type="button" class="icon-btn" id="rResetBtn">Clear</button><span class="muted" id="rSaveStatus"></span></div>
             </div>
@@ -640,10 +640,10 @@
               <button type="button" class="subtab" data-cm-filter="approved">Visible</button>
               <button type="button" class="subtab" data-cm-filter="hidden">Hidden</button>
             </div>
-            <input type="search" id="cmSearch" placeholder="Search by author or textâ€¦" class="cm-search">
+            <input type="search" id="cmSearch" placeholder="Search by author or text…" class="cm-search">
           </div>
           <div id="cmStats" class="cm-stats"></div>
-          <div id="cmList" class="cm-list"><p class="muted">Loadingâ€¦</p></div>
+          <div id="cmList" class="cm-list"><p class="muted">Loading…</p></div>
         </div>
       </div>
 
@@ -658,14 +658,14 @@
         <div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
         <div class="panel"><h2>Countries by traffic</h2><p class="panel__hint">Fills up as people visit the site.</p><div id="trafCountries"></div></div>
-        <div class="panel"><h2>Most visited pages</h2><div id="trafTop"><p class="muted">Loadingâ€¦</p></div></div>
+        <div class="panel"><h2>Most visited pages</h2><div id="trafTop"><p class="muted">Loading…</p></div></div>
       </div>
       <div class="panel" style="margin-top:24px">
         <h2 style="margin:0 0 4px">Where they come from</h2>
         <p class="panel__hint" style="margin-top:0">Acquisition channel captured when someone lands on the site (utm_source on the link, or the referring site). Emails we send are tagged <code>email</code>.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-          <div><h3 style="margin:0 0 8px;font-size:.9rem">Subscribers</h3><div id="acqSubBox"><p class="muted">â€”</p></div></div>
-          <div><h3 style="margin:0 0 8px;font-size:.9rem">Buyers</h3><div id="acqBuyBox"><p class="muted">â€”</p></div></div>
+          <div><h3 style="margin:0 0 8px;font-size:.9rem">Subscribers</h3><div id="acqSubBox"><p class="muted">—</p></div></div>
+          <div><h3 style="margin:0 0 8px;font-size:.9rem">Buyers</h3><div id="acqBuyBox"><p class="muted">—</p></div></div>
         </div>
       </div>
     </section>
@@ -678,12 +678,12 @@
         <div class="tf-tabs" data-tf-for="ventas"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
         <div class="chart-box chart-box--sm"><canvas id="ventasChart"></canvas></div></div>
       <div class="ov-grid" style="margin-top:24px">
-        <div class="panel"><h2>Recent orders</h2><div id="ordersBox"><p class="muted">Loadingâ€¦</p></div></div>
+        <div class="panel"><h2>Recent orders</h2><div id="ordersBox"><p class="muted">Loading…</p></div></div>
         <div class="panel"><h2>Countries by sales</h2><div id="salesCountries"></div></div>
       </div>
       <div class="panel" style="margin-top:24px"><h2>Most added to cart</h2>
-        <p class="panel__hint">Which guides people add to their cart the most. Tracked automatically when a visitor taps â€œAÃ±adir al carritoâ€ in the library.</p>
-        <div id="cartTop"><p class="muted">Loadingâ€¦</p></div>
+        <p class="panel__hint">Which guides people add to their cart the most. Tracked automatically when a visitor taps “Añadir al carrito” in the library.</p>
+        <div id="cartTop"><p class="muted">Loading…</p></div>
       </div>
     </section>
 
@@ -693,16 +693,16 @@
       <div class="stats" id="subStats"></div>
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0">Email list</h2><button class="icon-btn" id="exportCsvBtn">Export CSV</button></div>
-        <div id="subBox"><p class="muted">Loadingâ€¦</p></div>
+        <div id="subBox"><p class="muted">Loading…</p></div>
       </div>
 
       <!-- Sale / urgency email composer -->
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px"><h2 style="margin:0">Send a sale email</h2><span class="muted" id="saleCount"></span></div>
         <p class="panel__hint" style="margin-top:0">Goes to every subscriber who hasn't unsubscribed. Each email greets the person by name. Tip: put <code>{name}</code> in the subject to insert their first name.</p>
-        <div class="field"><label for="saleSubject">Subject</label><input type="text" id="saleSubject" placeholder="{name}, oferta por tiempo limitado ðŸ¾" /></div>
-        <div class="field"><label for="saleHeadline">Offer headline</label><input type="text" id="saleHeadline" placeholder="30% en todas las guÃ­as" /></div>
-        <div class="field"><label for="saleSubtitle">Intro line</label><input type="text" id="saleSubtitle" placeholder="Tenemos algo especial por tiempo limitado y querÃ­amos que te enteraras primero." /></div>
+        <div class="field"><label for="saleSubject">Subject</label><input type="text" id="saleSubject" placeholder="{name}, oferta por tiempo limitado 🐾" /></div>
+        <div class="field"><label for="saleHeadline">Offer headline</label><input type="text" id="saleHeadline" placeholder="30% en todas las guías" /></div>
+        <div class="field"><label for="saleSubtitle">Intro line</label><input type="text" id="saleSubtitle" placeholder="Tenemos algo especial por tiempo limitado y queríamos que te enteraras primero." /></div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
           <div class="field"><label for="saleDiscount">Big number</label><input type="text" id="saleDiscount" placeholder="-30%" /></div>
           <div class="field"><label for="saleCode">Coupon code</label><input type="text" id="saleCode" placeholder="PERRO30" /></div>
@@ -723,7 +723,7 @@
 
     <!-- ===== MESSAGES (conversations) ===== -->
     <section data-page-view="mensajes" hidden>
-      <div class="page-head"><h1>Messages</h1><p>Every chat thread visitors start appears here. Replies you send from this page also email the visitor â€” they see them in their chat panel next time too.</p></div>
+      <div class="page-head"><h1>Messages</h1><p>Every chat thread visitors start appears here. Replies you send from this page also email the visitor — they see them in their chat panel next time too.</p></div>
       <div class="stats" id="msgStats"></div>
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
@@ -737,7 +737,7 @@
             <button class="icon-btn" id="msgRefresh">Refresh</button>
           </div>
         </div>
-        <div id="msgBox"><p class="muted">Loadingâ€¦</p></div>
+        <div id="msgBox"><p class="muted">Loading…</p></div>
       </div>
     </section>
 
@@ -761,7 +761,7 @@
       </div>
     </section>
 
-    <!-- ===== RESET DATA MODAL (3-step friction: confirm â†’ password â†’ wipe) ===== -->
+    <!-- ===== RESET DATA MODAL (3-step friction: confirm → password → wipe) ===== -->
     <style>
       .reset-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
       .reset-modal[hidden]{display:none}
@@ -775,23 +775,23 @@
       <div class="reset-modal__backdrop" data-reset-cancel></div>
       <div class="reset-modal__card" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle">
         <div id="resetStage1">
-          <h2 id="resetModalTitle" style="color:#c0392b;margin-top:0">âš ï¸ Reset all data?</h2>
+          <h2 id="resetModalTitle" style="color:#c0392b;margin-top:0">⚠️ Reset all data?</h2>
           <p>This permanently deletes:</p>
           <ul>
-            <li><strong>Subscribers</strong> â€” the whole email list</li>
-            <li><strong>Purchases</strong> â€” all sales &amp; revenue records</li>
-            <li><strong>Visit analytics</strong> â€” pageviews / traffic stats</li>
+            <li><strong>Subscribers</strong> — the whole email list</li>
+            <li><strong>Purchases</strong> — all sales &amp; revenue records</li>
+            <li><strong>Visit analytics</strong> — pageviews / traffic stats</li>
           </ul>
           <p class="panel__hint">Products, articles, videos, reviews and messages are <strong>not</strong> touched. This cannot be undone.</p>
           <div class="actions" style="justify-content:flex-end;gap:8px">
             <button type="button" class="btn" data-reset-cancel>Cancelar</button>
-            <button type="button" class="btn" id="resetToStep2" style="background:#c0392b;color:#fff;border-color:#c0392b">SÃ­, continuar</button>
+            <button type="button" class="btn" id="resetToStep2" style="background:#c0392b;color:#fff;border-color:#c0392b">Sí, continuar</button>
           </div>
         </div>
         <div id="resetStage2" hidden>
-          <h2 style="color:#c0392b;margin-top:0">Confirma con tu contraseÃ±a</h2>
-          <p class="panel__hint">Escribe la contraseÃ±a de <strong id="resetAdminEmail"></strong> para borrar todo.</p>
-          <div class="field"><input type="password" id="resetPass" placeholder="Tu contraseÃ±a de admin" autocomplete="current-password" /></div>
+          <h2 style="color:#c0392b;margin-top:0">Confirma con tu contraseña</h2>
+          <p class="panel__hint">Escribe la contraseña de <strong id="resetAdminEmail"></strong> para borrar todo.</p>
+          <div class="field"><input type="password" id="resetPass" placeholder="Tu contraseña de admin" autocomplete="current-password" /></div>
           <div class="actions" style="justify-content:flex-end;gap:8px;align-items:center">
             <span class="muted" id="resetStatus"></span>
             <button type="button" class="btn" data-reset-cancel>Cancelar</button>
@@ -821,7 +821,7 @@
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var $=function(id){return document.getElementById(id);};
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function slugify(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[Ì€-Í¯]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+  function slugify(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
 
   /* ===== TAGS ===== */
   var DEFAULT_TAGS={gratis:{label:'Gratis',color:'gratis'},caliente:{label:'Caliente',color:'caliente'},nuevo:{label:'Nuevo',color:'nuevo'},popular:{label:'Popular',color:'popular'},recomendado:{label:'Recomendado',color:'recomendado'}};
@@ -837,13 +837,13 @@
     var selected=[];
     function chips(){
       [].slice.call(field.querySelectorAll('.tagfield__chip')).forEach(function(c){c.remove();});
-      selected.forEach(function(slug){ var t=tagInfo(slug); var chip=document.createElement('span'); chip.className='tagfield__chip lib-tag--'+(t.color||'default'); chip.innerHTML=esc(t.label)+' <button type="button" data-slug="'+slug+'">âœ•</button>'; field.insertBefore(chip,input); });
+      selected.forEach(function(slug){ var t=tagInfo(slug); var chip=document.createElement('span'); chip.className='tagfield__chip lib-tag--'+(t.color||'default'); chip.innerHTML=esc(t.label)+' <button type="button" data-slug="'+slug+'">✕</button>'; field.insertBefore(chip,input); });
       renderPool(); if(onChange) onChange();
     }
     function add(s){ if(s&&selected.indexOf(s)===-1){ selected.push(s); chips(); } }
     function remove(s){ selected=selected.filter(function(x){return x!==s;}); chips(); }
     function renderPool(){ if(!pool) return; pool.innerHTML=Object.keys(REG).map(function(slug){ var u=selected.indexOf(slug)>-1; return '<span class="lib-tag lib-tag--'+(REG[slug].color||'default')+(u?' is-used':'')+'" data-slug="'+slug+'">'+esc(REG[slug].label)+'</span>'; }).join(''); }
-    function showDrop(){ var q=slugify(input.value); var items=Object.keys(REG).filter(function(s){return selected.indexOf(s)===-1;}).filter(function(s){return !q||s.indexOf(q)>-1||slugify(REG[s].label).indexOf(q)>-1;}); var html=items.map(function(s){return '<div class="tagfield__opt" data-slug="'+s+'">'+badge(s)+'<span>'+esc(REG[s].label)+'</span></div>';}).join(''); if(q&&!REG[q]){ html+='<div class="tagfield__opt tagfield__opt--create" data-create="1">ï¼‹ Crear â€œ'+esc(input.value.trim())+'â€</div>'; } drop.innerHTML=html; drop.classList.toggle('open',html.length>0); }
+    function showDrop(){ var q=slugify(input.value); var items=Object.keys(REG).filter(function(s){return selected.indexOf(s)===-1;}).filter(function(s){return !q||s.indexOf(q)>-1||slugify(REG[s].label).indexOf(q)>-1;}); var html=items.map(function(s){return '<div class="tagfield__opt" data-slug="'+s+'">'+badge(s)+'<span>'+esc(REG[s].label)+'</span></div>';}).join(''); if(q&&!REG[q]){ html+='<div class="tagfield__opt tagfield__opt--create" data-create="1">＋ Crear “'+esc(input.value.trim())+'”</div>'; } drop.innerHTML=html; drop.classList.toggle('open',html.length>0); }
     field.addEventListener('click',function(e){ var b=e.target.closest('.tagfield__chip button'); if(b){remove(b.dataset.slug);return;} input.focus(); });
     input.addEventListener('focus',showDrop); input.addEventListener('input',showDrop);
     input.addEventListener('keydown',async function(e){ if(e.key==='Enter'){ e.preventDefault(); var raw=input.value.trim(),q=slugify(raw); if(!q)return; if(!REG[q]) await createTag(raw,'default'); add(q); input.value=''; showDrop(); } else if(e.key==='Backspace'&&!input.value&&selected.length){ remove(selected[selected.length-1]); } });
@@ -880,16 +880,16 @@
       var inner=opts.fields.map(function(f){ var v=row[f.key]||'';
         // Legacy "i-paw"-style values are no longer rendered as icons publicly;
         // show an empty emoji field for them so the editor stays clean.
-        if(f.type==='icon'){ var ev = (v && /^i-/.test(v)) ? '' : v; return '<input type="text" class="rep-emoji-input emoji-input" data-k="'+f.key+'" value="'+esc(ev)+'" placeholder="ðŸ¶" maxlength="8" autocomplete="off" />'; }
+        if(f.type==='icon'){ var ev = (v && /^i-/.test(v)) ? '' : v; return '<input type="text" class="rep-emoji-input emoji-input" data-k="'+f.key+'" value="'+esc(ev)+'" placeholder="🐶" maxlength="8" autocomplete="off" />'; }
         if(f.type==='textarea') return '<textarea data-k="'+f.key+'" placeholder="'+esc(f.ph||'')+'">'+esc(v)+'</textarea>';
         return '<input type="text" data-k="'+f.key+'" value="'+esc(v)+'" placeholder="'+esc(f.ph||'')+'">';
       }).join('');
-      return '<div class="rep-row" data-state="edit"><div class="rep-row__main">'+inner+'<div class="rep-row__actions"><button type="button" class="btn-done">Done</button></div></div><button type="button" class="rep-rm" title="Remove">âœ•</button></div>';
+      return '<div class="rep-row" data-state="edit"><div class="rep-row__main">'+inner+'<div class="rep-row__actions"><button type="button" class="btn-done">Done</button></div></div><button type="button" class="rep-rm" title="Remove">✕</button></div>';
     }
     function tileHtml(row, i){
       var lbl=esc(SINGULAR)+' '+(i+1);
       var hint=row.title?'<span class="rep-tile__hint">'+esc(String(row.title).slice(0,40))+'</span>':'';
-      return '<div class="rep-row rep-tile" data-state="tile"><button type="button" class="rep-tile__btn"><span class="rep-tile__num">'+lbl+'</span>'+hint+'<span class="rep-tile__edit">Edit</span></button><button type="button" class="rep-rm" title="Remove">âœ•</button></div>';
+      return '<div class="rep-row rep-tile" data-state="tile"><button type="button" class="rep-tile__btn"><span class="rep-tile__num">'+lbl+'</span>'+hint+'<span class="rep-tile__edit">Edit</span></button><button type="button" class="rep-rm" title="Remove">✕</button></div>';
     }
     function rowHtml(row,i){ return row._collapsed ? tileHtml(row,i) : editHtml(row); }
     function render(){
@@ -901,7 +901,7 @@
           h.className='rep-row__handle';
           h.title='Drag to reorder';
           h.setAttribute('aria-label','Drag');
-          h.textContent='â‹®â‹®';
+          h.textContent='⋮⋮';
           r.appendChild(h);
         }
       });
@@ -949,25 +949,25 @@
   var repProblems=makeRepeater('repProblems',{singular:'Problem',addLabel:'+ Add problem',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'Short title'},{key:'text',type:'textarea',ph:'Description'}]});
   var repSolutions=makeRepeater('repSolutions',{singular:'Solution',addLabel:'+ Add solution',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'Short title'},{key:'text',type:'textarea',ph:'Description'}]});
   var repModules=makeRepeater('repModules',{singular:'Module',addLabel:'+ Add module',fields:[{key:'title',type:'text',ph:'Module title'},{key:'desc',type:'textarea',ph:'What it covers'}]});
-  var repAudience=makeRepeater('repAudience',{singular:'Para quiÃ©n',addLabel:'+ Add card',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'e.g. Acabas de adoptar'},{key:'desc',type:'textarea',ph:'Description'}]});
+  var repAudience=makeRepeater('repAudience',{singular:'Para quién',addLabel:'+ Add card',fields:[{key:'icon',type:'icon'},{key:'title',type:'text',ph:'e.g. Acabas de adoptar'},{key:'desc',type:'textarea',ph:'Description'}]});
 
   // cover mode (design vs image)
   $('p-covermode').addEventListener('click',function(e){ var b=e.target.closest('[data-mode]'); if(!b)return; $('p-covermode').querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); var img=b.dataset.mode==='image'; $('coverImageBox').hidden=!img; $('coverDesign').hidden=img; pPreview(); });
   function coverMode(){ var a=$('p-covermode').querySelector('button.active'); return a?a.dataset.mode:'design'; }
   function setCoverMode(m){ $('p-covermode').querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x.dataset.mode===m);}); var img=m==='image'; $('coverImageBox').hidden=!img; $('coverDesign').hidden=img; }
   // cover image upload
-  $('p-cover-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading imageâ€¦'; try{ var url=await uploadFile(f,'covers'); $('p-cover-image').value=url; renderCoverThumb(); pPreview(); $('pSaveStatus').textContent='âœ“ Image uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  function renderCoverThumb(){ var u=$('p-cover-image').value; $('p-cover-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="p-cover-rm">âœ•</button></div>':''; }
+  $('p-cover-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'covers'); $('p-cover-image').value=url; renderCoverThumb(); pPreview(); $('pSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  function renderCoverThumb(){ var u=$('p-cover-image').value; $('p-cover-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="p-cover-rm">✕</button></div>':''; }
   $('p-cover-thumb').addEventListener('click',function(e){ if(e.target.id==='p-cover-rm'){ $('p-cover-image').value=''; renderCoverThumb(); pPreview(); } });
   // gallery upload (multiple)
-  $('p-gallery-file').addEventListener('change',async function(e){ var files=Array.prototype.slice.call(e.target.files); if(!files.length)return; $('pSaveStatus').textContent='Uploading imagesâ€¦'; try{ for(var i=0;i<files.length;i++){ var url=await uploadFile(files[i],'gallery'); pGallery.push(url); } renderGallery(); $('pSaveStatus').textContent='âœ“ Uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  function renderGallery(){ $('p-gallery-thumbs').innerHTML=pGallery.map(function(u,i){ return '<div class="thumb"><img src="'+esc(u)+'"><button type="button" data-gi="'+i+'">âœ•</button></div>'; }).join(''); }
+  $('p-gallery-file').addEventListener('change',async function(e){ var files=Array.prototype.slice.call(e.target.files); if(!files.length)return; $('pSaveStatus').textContent='Uploading images…'; try{ for(var i=0;i<files.length;i++){ var url=await uploadFile(files[i],'gallery'); pGallery.push(url); } renderGallery(); $('pSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  function renderGallery(){ $('p-gallery-thumbs').innerHTML=pGallery.map(function(u,i){ return '<div class="thumb"><img src="'+esc(u)+'"><button type="button" data-gi="'+i+'">✕</button></div>'; }).join(''); }
   $('p-gallery-thumbs').addEventListener('click',function(e){ var b=e.target.closest('[data-gi]'); if(!b)return; pGallery.splice(parseInt(b.dataset.gi),1); renderGallery(); });
   // pdf upload
-  $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading PDFâ€¦'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='âœ“ PDF uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'ðŸ“„ <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF uploaded</a> Â· <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Remove</button>':'No PDF uploaded yet.'; }
+  $('p-pdf-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('pSaveStatus').textContent='Uploading PDF…'; try{ var url=await uploadFile(f,'pdfs'); $('p-pdf-url').value=url; renderPdf(); $('pSaveStatus').textContent='✓ PDF uploaded'; setTimeout(function(){$('pSaveStatus').textContent='';},1200); }catch(err){ $('pSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  function renderPdf(){ var u=$('p-pdf-url').value; $('p-pdf-info').innerHTML=u?'📄 <a href="'+esc(u)+'" target="_blank" style="color:var(--c-terracotta);font-weight:700">PDF uploaded</a> · <button type="button" class="icon-btn" id="p-pdf-rm" style="padding:3px 8px">Remove</button>':'No PDF uploaded yet.'; }
   $('p-pdf-info').addEventListener('click',function(e){ if(e.target.id==='p-pdf-rm'){ $('p-pdf-url').value=''; renderPdf(); } });
-  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'GuÃ­a PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_title_size:($('p-covertitlesize').value?parseFloat($('p-covertitlesize').value):null), cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, pages:($('p-pages').value?parseInt($('p-pages').value,10):null), published:$('p-published').checked, featured:$('p-featured').checked, original_price:($('p-original').value?parseFloat($('p-original').value):null), buy_url:$('p-buy-url').value.trim(), problems:repProblems.get(), solutions:repSolutions.get(), modules:repModules.get(), audience:repAudience.get() }; }
+  function pGather(){ var free=$('p-free').checked; return { title:$('p-title').value.trim(), category:$('p-cat').value, description:$('p-desc').value.trim(), price:$('p-price').value?parseFloat($('p-price').value):0, is_free:free, tags:pField.get(), cover_color:$('p-color').value, cover_icon:$('p-icon').value, cover_sub:$('p-coversub').value.trim()||'Guía PDF', cover_title:$('p-covertitle').value.trim()||$('p-title').value.trim()||'Producto', cover_title_size:($('p-covertitlesize').value?parseFloat($('p-covertitlesize').value):null), cover_image:(coverMode()==='image'?$('p-cover-image').value:''), images:pGallery.slice(), pdf_url:$('p-pdf-url').value, pages:($('p-pages').value?parseInt($('p-pages').value,10):null), published:$('p-published').checked, featured:$('p-featured').checked, original_price:($('p-original').value?parseFloat($('p-original').value):null), buy_url:$('p-buy-url').value.trim(), problems:repProblems.get(), solutions:repSolutions.get(), modules:repModules.get(), audience:repAudience.get() }; }
   var ADMIN_CCOLOR={sky:['#ADCBEF','#111A17'],peach:['#FFCDB8','#111A17'],sage:['#B5C1AB','#111A17'],golden:['#F6D055','#111A17'],lavender:['#C9C2EC','#111A17'],pink:['#F3C7D6','#111A17'],cream:['#FEFAE8','#111A17'],terracotta:['#C55932','#fff'],terra:['#C55932','#fff'],forest:['#3C4824','#FEFAE8'],ink:['#111A17','#FEFAE8']};
   function pCard(p){
     var tags=(p.tags||[]).map(badge).join('');
@@ -979,10 +979,10 @@
       coverEl='<span class="cover"><img src="'+esc(p.cover_image)+'" alt=""></span>';
     } else {
       var cc=ADMIN_CCOLOR[String(p.cover_color||'sky').toLowerCase()]||ADMIN_CCOLOR.sky;
-      coverEl='<span class="cover gcover" style="background:'+cc[0]+';color:'+cc[1]+'"><span class="gcover__top"><span class="gsub">'+esc(p.cover_sub||'GuÃ­a PDF')+'</span></span><span class="gtitle" style="'+sizeStyle+'">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</span></span>';
+      coverEl='<span class="cover gcover" style="background:'+cc[0]+';color:'+cc[1]+'"><span class="gcover__top"><span class="gsub">'+esc(p.cover_sub||'Guía PDF')+'</span></span><span class="gtitle" style="'+sizeStyle+'">'+esc(p.cover_title||p.title||'Producto').replace(/\n/g,'<br>')+'</span></span>';
     }
     var frame='<div style="display:flex;justify-content:center;padding:18px 0 26px"><span class="book3d book3d--shadow" style="--w:210px">'+coverEl+'</span></div>';
-    return '<div class="book-card" style="border:0;box-shadow:none;background:transparent;overflow:visible">'+frame+'<div class="book-card__body" style="padding-top:0">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'TÃ­tulo')+'</h3><p class="book-card__desc">'+esc(p.description||'DescripciÃ³nâ€¦')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></div>';
+    return '<div class="book-card" style="border:0;box-shadow:none;background:transparent;overflow:visible">'+frame+'<div class="book-card__body" style="padding-top:0">'+(tags?'<div class="lib-tags" style="margin-bottom:10px">'+tags+'</div>':'')+'<span class="book-card__category">'+esc(p.category||'')+'</span><h3 class="book-card__title">'+esc(p.title||'Título')+'</h3><p class="book-card__desc">'+esc(p.description||'Descripción…')+'</p><div class="book-card__footer">'+price+'<span class="book-card__cta">'+cta+' <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></div>';
   }
   function pPreview(){ $('pPreview').innerHTML=pCard(pGather()); }
   var CURRENT_HIGHLIGHT_ID = null;
@@ -990,7 +990,7 @@
     try{ var st=await sb.from('site_settings').select('value').eq('key','highlight_product_id').maybeSingle(); CURRENT_HIGHLIGHT_ID = (st&&st.data)?(st.data.value||null):null; }catch(e){ CURRENT_HIGHLIGHT_ID = null; }
   }
   function highlightBtnHtml(isOn, id){
-    return '<button type="button" class="list-item__star'+(isOn?' is-on':'')+'" data-highlight="'+id+'" title="'+(isOn?'Quitar destacado del home':'Destacar en home')+'" aria-label="Highlight on homepage">â­</button>';
+    return '<button type="button" class="list-item__star'+(isOn?' is-on':'')+'" data-highlight="'+id+'" title="'+(isOn?'Quitar destacado del home':'Destacar en home')+'" aria-label="Highlight on homepage">⭐</button>';
   }
   async function pLoad(){
     var box=$('pList');
@@ -1006,7 +1006,7 @@
           +highlightBtnHtml(isHighlight,p.id)
           +'<div class="list-item__info">'
             +'<div class="list-item__title">'+esc(p.title)+(hidden?' <span class="list-item__badge">Hidden</span>':'')+(isHighlight?' <span class="list-item__badge" style="background:var(--c-terracotta);color:var(--c-cream);border-color:var(--c-ink)">On homepage</span>':'')+'</div>'
-            +'<div class="list-item__meta">'+esc(p.category||'')+' Â· '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' Â· '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div>'
+            +'<div class="list-item__meta">'+esc(p.category||'')+' · '+(p.is_free?'Free':'$'+Number(p.price||0).toFixed(2))+' · '+((p.tags&&p.tags.length)?p.tags.join(', '):'no tags')+'</div>'
           +'</div>'
           +pubBtnHtml(p.published,p.id)
           +'<button class="icon-btn" data-edit="'+p.id+'">Edit</button>'
@@ -1017,7 +1017,7 @@
       if(typeof refreshRelatedProductOptions==='function') refreshRelatedProductOptions();
     }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; }
   }
-  /* Highlight star â€” click any star to set that product as the homepage
+  /* Highlight star — click any star to set that product as the homepage
      highlight (or clear it if it's already the highlighted one). */
   $('pList').addEventListener('click', async function(e){
     var hb = e.target.closest('[data-highlight]');
@@ -1064,9 +1064,9 @@
     }
   });
 
-  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=(p.cover_icon && !/^i-/.test(p.cover_icon))?p.cover_icon:''; $('p-coversub').value=p.cover_sub||'GuÃ­a PDF'; $('p-covertitle').value=p.cover_title||''; $('p-covertitlesize').value=(p.cover_title_size||15.5); $('p-covertitlesize-val').textContent=(p.cover_title_size||15.5); pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-pages').value=p.pages||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
-  $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Savingâ€¦'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error && /cover_title_size/.test(r.error.message||'')){ delete p.cover_title_size; r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(!r.error){ alert('Saved â€” but the cover "Title size" was not stored yet. Run the cover_title_size migration (one line of SQL) to enable it.'); } } if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='âœ“ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
-  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='';$('p-coversub').value='GuÃ­a PDF';$('p-covertitle').value='';$('p-covertitlesize').value=15.5;$('p-covertitlesize-val').textContent='15.5';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-pages').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
+  $('pList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var p=PRODUCTS.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(p){ editingP=p.id; $('p-title').value=p.title||''; $('p-cat').value=p.category||'Cachorros'; $('p-desc').value=p.description||''; $('p-price').value=p.is_free?'':(p.price||''); $('p-free').checked=!!p.is_free; $('p-color').value=p.cover_color||'sky'; $('p-icon').value=(p.cover_icon && !/^i-/.test(p.cover_icon))?p.cover_icon:''; $('p-coversub').value=p.cover_sub||'Guía PDF'; $('p-covertitle').value=p.cover_title||''; $('p-covertitlesize').value=(p.cover_title_size||15.5); $('p-covertitlesize-val').textContent=(p.cover_title_size||15.5); pField.set(p.tags||[]); $('p-cover-image').value=p.cover_image||''; pGallery=(p.images||[]).slice(); $('p-pdf-url').value=p.pdf_url||''; $('p-pages').value=p.pages||''; $('p-published').checked=p.published!==false; $('p-featured').checked=!!p.featured; $('p-original').value=p.original_price||''; $('p-buy-url').value=p.buy_url||''; repProblems.set(asArr(p.problems)); repSolutions.set(asArr(p.solutions)); repModules.set(asArr(p.modules)); repAudience.set(asArr(p.audience)); setCoverMode(p.cover_image?'image':'design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Edit product'; pPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this product?'))return; var r=await sb.from('products').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); pLoad(); } });
+  $('pSaveBtn').addEventListener('click',async function(){ var p=pGather(); if(!p.title){alert('Add a title.');return;} if(p.featured){ var others=(PRODUCTS||[]).filter(function(x){return x.featured && String(x.id)!==String(editingP);}); if(others.length>=2){ alert('You can only feature 2 products at a time. Un-feature another product first ('+others.map(function(x){return x.title;}).join(', ')+').'); return; } } $('pSaveStatus').textContent='Saving…'; var r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(r.error && /cover_title_size/.test(r.error.message||'')){ delete p.cover_title_size; r=editingP?await sb.from('products').update(p).eq('id',editingP):await sb.from('products').insert(p); if(!r.error){ alert('Saved — but the cover "Title size" was not stored yet. Run the cover_title_size migration (one line of SQL) to enable it.'); } } if(r.error){$('pSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('pSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('pSaveStatus').textContent='';},1600); pReset(); pLoad(); });
+  function pReset(){ editingP=null; pField.set([]); pGallery=[]; $('p-title').value='';$('p-cat').value='Cachorros';$('p-desc').value='';$('p-price').value='';$('p-free').checked=false;$('p-color').value='sky';$('p-icon').value='';$('p-coversub').value='Guía PDF';$('p-covertitle').value='';$('p-covertitlesize').value=15.5;$('p-covertitlesize-val').textContent='15.5';$('p-cover-image').value='';$('p-pdf-url').value='';$('p-pages').value='';$('p-published').checked=true;$('p-featured').checked=false;$('p-original').value='';$('p-buy-url').value=''; repProblems.set([]); repSolutions.set([]); repModules.set([]); repAudience.set([]); setCoverMode('design'); renderSwatches(); renderCoverThumb(); renderGallery(); renderPdf(); $('pEditorTitle').textContent='Add product'; pPreview(); }
   $('pResetBtn').addEventListener('click',pReset);
   $('p-free').addEventListener('change',function(){ if($('p-free').checked) pField.add('gratis'); else pField.remove('gratis'); pPreview(); });
   ['p-title','p-cat','p-desc','p-price','p-coversub','p-covertitle','p-icon'].forEach(function(id){ $(id).addEventListener('input',pPreview); $(id).addEventListener('change',pPreview); });
@@ -1074,8 +1074,8 @@
   $('createTagBtn').addEventListener('click',async function(){ var n=$('newTagName').value.trim(); if(!n)return; var s=await createTag(n,$('newTagColor').value); pField.add(s); $('newTagName').value=''; });
 
   /* ===== Drag-reorder + Pin helpers (shared by products/articles/videos/reviews) ===== */
-  function dragHandleHtml(){ return '<span class="list-item__drag" title="Drag to reorder" aria-label="Drag">â‹®â‹®</span>'; }
-  function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">ðŸ“Œ</button>'; }
+  function dragHandleHtml(){ return '<span class="list-item__drag" title="Drag to reorder" aria-label="Drag">⋮⋮</span>'; }
+  function pinBtnHtml(isPinned, id){ return '<button type="button" class="list-item__pin'+(isPinned?' is-pinned':'')+'" data-pin="'+id+'" title="'+(isPinned?'Unpin':'Pin (max 3)')+'" aria-label="Pin">📌</button>'; }
   var EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
   var EYE_OFF_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.1 4.1"/><path d="M6.6 6.6A17 17 0 0 0 2 12s3.5 6 10 6a10 10 0 0 0 4.5-1.1"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/></svg>';
   function pubBtnHtml(isPublished, id){ var hidden = isPublished === false; return '<button type="button" class="list-item__pub'+(hidden?' is-hidden':'')+'" data-pub="'+id+'" title="'+(hidden?'Show on site':'Hide from site')+'" aria-label="'+(hidden?'Show on site':'Hide from site')+'">'+(hidden?EYE_OFF_SVG:EYE_OPEN_SVG)+'</button>'; }
@@ -1150,24 +1150,24 @@
   function ytId(url){ var m=String(url||'').match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
   function vThumb(v){ if(v.thumbnail) return v.thumbnail; var id=ytId(v.youtube_url); return id?'https://img.youtube.com/vi/'+id+'/hqdefault.jpg':''; }
   function vGather(){ return { title:$('v-title').value.trim(), label:$('v-label').value.trim(), youtube_url:$('v-url').value.trim(), thumbnail:$('v-thumb').value.trim(), sort:parseInt($('v-sort').value)||0 }; }
-  function renderVThumb(){ var u=$('v-thumb').value; $('v-thumb-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="v-thumb-rm">âœ•</button></div>':''; }
+  function renderVThumb(){ var u=$('v-thumb').value; $('v-thumb-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="v-thumb-rm">✕</button></div>':''; }
   $('v-thumb-info').addEventListener('click',function(e){ if(e.target.id==='v-thumb-rm'){ $('v-thumb').value=''; renderVThumb(); } });
-  $('v-thumb-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('vSaveStatus').textContent='Uploadingâ€¦'; try{ var url=await uploadFile(f,'videos'); $('v-thumb').value=url; renderVThumb(); $('vSaveStatus').textContent='âœ“ Uploaded'; setTimeout(function(){$('vSaveStatus').textContent='';},1200); }catch(err){ $('vSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  async function vLoad(){ var box=$('vList'); try{ var r=await sb.from('videos').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; VIDEOS=r.data||[]; box.innerHTML=VIDEOS.length?VIDEOS.map(function(v){ return '<div class="list-item'+(v.pinned?' is-pinned':'')+'" data-id="'+v.id+'">'+dragHandleHtml()+pinBtnHtml(v.pinned,v.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(v.title||'(untitled)')+'</div><div class="list-item__meta">'+(v.label?esc(v.label)+' Â· ':'')+(ytId(v.youtube_url)?'YouTube âœ“':'no link')+'</div></div><button class="icon-btn" data-vedit="'+v.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-vdel="'+v.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No videos yet. Add up to 3 for the homepage.</p>'; attachSortableList('vList','videos',function(){return VIDEOS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load â€” did you run the videos SQL? ('+esc(e.message||'')+')</p>'; } }
+  $('v-thumb-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('vSaveStatus').textContent='Uploading…'; try{ var url=await uploadFile(f,'videos'); $('v-thumb').value=url; renderVThumb(); $('vSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('vSaveStatus').textContent='';},1200); }catch(err){ $('vSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  async function vLoad(){ var box=$('vList'); try{ var r=await sb.from('videos').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; VIDEOS=r.data||[]; box.innerHTML=VIDEOS.length?VIDEOS.map(function(v){ return '<div class="list-item'+(v.pinned?' is-pinned':'')+'" data-id="'+v.id+'">'+dragHandleHtml()+pinBtnHtml(v.pinned,v.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(v.title||'(untitled)')+'</div><div class="list-item__meta">'+(v.label?esc(v.label)+' · ':'')+(ytId(v.youtube_url)?'YouTube ✓':'no link')+'</div></div><button class="icon-btn" data-vedit="'+v.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-vdel="'+v.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No videos yet. Add up to 3 for the homepage.</p>'; attachSortableList('vList','videos',function(){return VIDEOS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the videos SQL? ('+esc(e.message||'')+')</p>'; } }
   $('vList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-vedit]'),del=e.target.closest('[data-vdel]'); if(ed){ var v=VIDEOS.filter(function(x){return String(x.id)===String(ed.dataset.vedit);})[0]; if(v){ editingV=v.id; $('v-title').value=v.title||''; $('v-label').value=v.label||''; $('v-url').value=v.youtube_url||''; $('v-thumb').value=v.thumbnail||''; $('v-sort').value=v.sort||0; renderVThumb(); $('vEditorTitle').textContent='Edit video'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this video?'))return; var r=await sb.from('videos').delete().eq('id',del.dataset.vdel); if(r.error)alert('Error: '+r.error.message); vLoad(); } });
-  $('vSaveBtn').addEventListener('click',async function(){ var v=vGather(); if(!v.title||!v.youtube_url){alert('Add a title and a YouTube link.');return;} if(VIDEOS.length>=3 && !editingV){ if(!confirm('The homepage shows 3 videos. Adding more is fine, but only the first 3 (by order) appear. Continue?')) return; } $('vSaveStatus').textContent='Savingâ€¦'; var r=editingV?await sb.from('videos').update(v).eq('id',editingV):await sb.from('videos').insert(v); if(r.error){$('vSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('vSaveStatus').textContent='âœ“ Saved'; setTimeout(function(){$('vSaveStatus').textContent='';},1600); vReset(); vLoad(); });
+  $('vSaveBtn').addEventListener('click',async function(){ var v=vGather(); if(!v.title||!v.youtube_url){alert('Add a title and a YouTube link.');return;} if(VIDEOS.length>=3 && !editingV){ if(!confirm('The homepage shows 3 videos. Adding more is fine, but only the first 3 (by order) appear. Continue?')) return; } $('vSaveStatus').textContent='Saving…'; var r=editingV?await sb.from('videos').update(v).eq('id',editingV):await sb.from('videos').insert(v); if(r.error){$('vSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('vSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('vSaveStatus').textContent='';},1600); vReset(); vLoad(); });
   $('vResetBtn').addEventListener('click',vReset);
   function vReset(){ editingV=null; $('v-title').value='';$('v-label').value='';$('v-url').value='';$('v-thumb').value='';$('v-sort').value='0'; renderVThumb(); $('vEditorTitle').textContent='Add video'; }
 
   /* ===== REVIEWS ===== */
   var editingR=null, REVIEWS=[];
   function rGather(){ return { name:$('r-name').value.trim(), location:$('r-loc').value.trim(), quote:$('r-quote').value.trim(), rating:parseInt($('r-rating').value)||5, avatar:$('r-avatar').value.trim(), sort:parseInt($('r-sort').value)||0 }; }
-  function renderRAvatar(){ var u=$('r-avatar').value; $('r-avatar-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="r-avatar-rm">âœ•</button></div>':''; }
+  function renderRAvatar(){ var u=$('r-avatar').value; $('r-avatar-info').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="r-avatar-rm">✕</button></div>':''; }
   $('r-avatar-info').addEventListener('click',function(e){ if(e.target.id==='r-avatar-rm'){ $('r-avatar').value=''; renderRAvatar(); } });
-  $('r-avatar-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('rSaveStatus').textContent='Uploadingâ€¦'; try{ var url=await uploadFile(f,'reviews'); $('r-avatar').value=url; renderRAvatar(); $('rSaveStatus').textContent='âœ“ Uploaded'; setTimeout(function(){$('rSaveStatus').textContent='';},1200); }catch(err){ $('rSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  async function rLoad(){ var box=$('rList'); try{ var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; REVIEWS=r.data||[]; box.innerHTML=REVIEWS.length?REVIEWS.map(function(rv){ return '<div class="list-item'+(rv.pinned?' is-pinned':'')+'" data-id="'+rv.id+'">'+dragHandleHtml()+pinBtnHtml(rv.pinned,rv.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(rv.name||'(no name)')+' Â· '+'â˜…'.repeat(rv.rating||5)+'</div><div class="list-item__meta">'+(rv.location?esc(rv.location)+' Â· ':'')+esc((rv.quote||'').slice(0,48))+'â€¦</div></div><button class="icon-btn" data-redit="'+rv.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-rdel="'+rv.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No reviews yet. Add a few to show on the site.</p>'; attachSortableList('rList','reviews',function(){return REVIEWS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load â€” did you run the reviews SQL? ('+esc(e.message||'')+')</p>'; } }
+  $('r-avatar-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('rSaveStatus').textContent='Uploading…'; try{ var url=await uploadFile(f,'reviews'); $('r-avatar').value=url; renderRAvatar(); $('rSaveStatus').textContent='✓ Uploaded'; setTimeout(function(){$('rSaveStatus').textContent='';},1200); }catch(err){ $('rSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  async function rLoad(){ var box=$('rList'); try{ var r=await sb.from('reviews').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; REVIEWS=r.data||[]; box.innerHTML=REVIEWS.length?REVIEWS.map(function(rv){ return '<div class="list-item'+(rv.pinned?' is-pinned':'')+'" data-id="'+rv.id+'">'+dragHandleHtml()+pinBtnHtml(rv.pinned,rv.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(rv.name||'(no name)')+' · '+'★'.repeat(rv.rating||5)+'</div><div class="list-item__meta">'+(rv.location?esc(rv.location)+' · ':'')+esc((rv.quote||'').slice(0,48))+'…</div></div><button class="icon-btn" data-redit="'+rv.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-rdel="'+rv.id+'">Delete</button></div>'; }).join(''):'<p class="muted">No reviews yet. Add a few to show on the site.</p>'; attachSortableList('rList','reviews',function(){return REVIEWS;}); }catch(e){ box.innerHTML='<p class="muted">Could not load — did you run the reviews SQL? ('+esc(e.message||'')+')</p>'; } }
   $('rList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-redit]'),del=e.target.closest('[data-rdel]'); if(ed){ var rv=REVIEWS.filter(function(x){return String(x.id)===String(ed.dataset.redit);})[0]; if(rv){ editingR=rv.id; $('r-name').value=rv.name||''; $('r-loc').value=rv.location||''; $('r-quote').value=rv.quote||''; $('r-rating').value=rv.rating||5; $('r-avatar').value=rv.avatar||''; $('r-sort').value=rv.sort||0; renderRAvatar(); $('rEditorTitle').textContent='Edit review'; window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this review?'))return; var r=await sb.from('reviews').delete().eq('id',del.dataset.rdel); if(r.error)alert('Error: '+r.error.message); rLoad(); } });
-  $('rSaveBtn').addEventListener('click',async function(){ var rv=rGather(); if(!rv.name||!rv.quote){alert('Add a name and a quote.');return;} $('rSaveStatus').textContent='Savingâ€¦'; var r=editingR?await sb.from('reviews').update(rv).eq('id',editingR):await sb.from('reviews').insert(rv); if(r.error){$('rSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('rSaveStatus').textContent='âœ“ Saved'; setTimeout(function(){$('rSaveStatus').textContent='';},1600); rReset(); rLoad(); });
+  $('rSaveBtn').addEventListener('click',async function(){ var rv=rGather(); if(!rv.name||!rv.quote){alert('Add a name and a quote.');return;} $('rSaveStatus').textContent='Saving…'; var r=editingR?await sb.from('reviews').update(rv).eq('id',editingR):await sb.from('reviews').insert(rv); if(r.error){$('rSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('rSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('rSaveStatus').textContent='';},1600); rReset(); rLoad(); });
   $('rResetBtn').addEventListener('click',rReset);
   function rReset(){ editingR=null; $('r-name').value='';$('r-loc').value='';$('r-quote').value='';$('r-rating').value='5';$('r-avatar').value='';$('r-sort').value='0'; renderRAvatar(); $('rEditorTitle').textContent='Add review'; }
 
@@ -1179,7 +1179,7 @@
      Lists every comment posted to a blog post and lets the admin hide
      (status='hidden') or delete it. RLS policies (see migration
      20260531_admin_comment_moderation.sql) restrict this to profiles
-     where is_admin = true â€” so mark your own profile first. */
+     where is_admin = true — so mark your own profile first. */
   var COMMENTS = [];
   var ARTICLES_BY_ID = {};
   var ADMIN_UID = null;
@@ -1193,7 +1193,7 @@
     eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.1 4.1"/><path d="M6.6 6.6A17 17 0 0 0 2 12s3.5 6 10 6a10 10 0 0 0 4.5-1.1"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/></svg>',
     trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>'
   };
-  function cmInitials(name){ var s=String(name||'').trim(); if(!s) return 'â€¢'; var parts=s.split(/[\s._\-+@]+/).filter(Boolean); if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase(); return s.slice(0,2).toUpperCase(); }
+  function cmInitials(name){ var s=String(name||'').trim(); if(!s) return '•'; var parts=s.split(/[\s._\-+@]+/).filter(Boolean); if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase(); return s.slice(0,2).toUpperCase(); }
   function cmFmtDate(iso){ if(!iso) return ''; var d=new Date(iso); var now=Date.now(); var diffH=(now-d.getTime())/3600000; if(diffH<24) return Math.max(1,Math.floor(diffH))+'h ago'; var diffD=Math.floor(diffH/24); if(diffD<7) return diffD+'d ago'; return d.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}); }
   function cmRender(){
     var box = $('cmList'); if(!box) return;
@@ -1222,14 +1222,14 @@
       var badge = isHidden
         ? '<span class="cm-status-badge cm-status-badge--hidden">Hidden</span>'
         : '<span class="cm-status-badge cm-status-badge--ok">Visible</span>';
-      var replyTag = isReply ? '<span class="cm-meta">â†³ reply</span>' : '';
+      var replyTag = isReply ? '<span class="cm-meta">↳ reply</span>' : '';
       var adminTag = c.is_admin_author ? '<span class="cm-badge-admin">Logramo</span>' : '';
       var liked = !!c.admin_liked;
       return '<div class="cm-item'+(isHidden?' is-hidden':'')+(isReply?' is-reply':'')+'" data-cm="'+esc(c.id)+'">'
         +'<div class="cm-avatar">'+esc(cmInitials(c.author_name))+'</div>'
         +'<div class="cm-body">'
           +'<div class="cm-head">'
-            +'<span class="cm-name">'+esc(c.author_name||'AnÃ³nimo')+'</span>'
+            +'<span class="cm-name">'+esc(c.author_name||'Anónimo')+'</span>'
             +adminTag
             +badge
             +replyTag
@@ -1238,7 +1238,7 @@
           +'<div class="cm-article">On: '+articleHtml+'</div>'
           +'<p class="cm-text">'+esc(c.body||'')+'</p>'
           +'<div class="cm-reply-box" data-cm-replybox="'+esc(c.id)+'" hidden>'
-            +'<textarea placeholder="Responder como Logramoâ€¦"></textarea>'
+            +'<textarea placeholder="Responder como Logramo…"></textarea>'
             +'<div class="cm-reply-actions">'
               +'<button type="button" class="icon-btn" data-cm-replysend="'+esc(c.id)+'">Reply as Logramo</button>'
               +'<button type="button" class="icon-btn" data-cm-replycancel="'+esc(c.id)+'">Cancel</button>'
@@ -1260,7 +1260,7 @@
   }
   async function cmLoad(){
     var box = $('cmList'); if(!box) return;
-    box.innerHTML = '<p class="muted">Loadingâ€¦</p>';
+    box.innerHTML = '<p class="muted">Loading…</p>';
     try{
       var r = await sb.from('blog_comments').select('*').order('created_at',{ascending:false});
       if(r.error) throw r.error;
@@ -1333,10 +1333,10 @@
     var ta = box && box.querySelector('textarea');
     var body = (ta ? ta.value : '').trim();
     if(body.length < 1){ if(ta) ta.focus(); return; }
-    if(body.length > 1500){ alert('MÃ¡ximo 1500 caracteres.'); return; }
+    if(body.length > 1500){ alert('Máximo 1500 caracteres.'); return; }
     if(!ADMIN_UID){ alert('No admin session.'); return; }
     var sendBtn = box.querySelector('[data-cm-replysend]');
-    if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = 'Sendingâ€¦'; }
+    if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = 'Sending…'; }
     try{
       var r = await sb.from('blog_comments').insert({
         article_id: parent.article_id,
@@ -1404,7 +1404,7 @@
     {slug:'rose',     hex:'#DBC3C3'},
   ];
   var CATS = [], editingCat = null;
-  function slugifyCat(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[Ì€-Í¯]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40); }
+  function slugifyCat(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40); }
   function catColorHex(slug){ var c=CAT_COLOR_OPTIONS.find(function(x){return x.slug===slug;}); return c?c.hex:'#B5C1AB'; }
   function renderCatSwatches(selected){
     var box = $('cat-swatches'); if(!box) return;
@@ -1422,7 +1422,7 @@
       box.innerHTML = CATS.length ? CATS.map(function(c){
         return '<div class="list-item" data-id="'+c.id+'">'
           +'<span class="cat-dot" style="background:'+catColorHex(c.color)+'"></span>'
-          +'<div class="list-item__info"><div class="list-item__title">'+esc(c.name)+'</div><div class="list-item__meta">'+esc(c.color)+' Â· '+esc(c.slug)+'</div></div>'
+          +'<div class="list-item__info"><div class="list-item__title">'+esc(c.name)+'</div><div class="list-item__meta">'+esc(c.color)+' · '+esc(c.slug)+'</div></div>'
           +'<button class="icon-btn" data-cedit="'+c.id+'">Edit</button>'
           +'<button class="icon-btn icon-btn--danger" data-cdel="'+c.id+'">Delete</button>'
         +'</div>';
@@ -1455,7 +1455,7 @@
     var color = $('cat-color').value || 'sage';
     var status = $('catSaveStatus');
     if(name.length < 2){ status.textContent = 'Name is too short.'; return; }
-    status.textContent = 'Savingâ€¦';
+    status.textContent = 'Saving…';
     var payload = { name: name, slug: slugifyCat(name), color: color };
     try{
       var r;
@@ -1466,7 +1466,7 @@
         r = await sb.from('blog_categories').insert(Object.assign({sort_order: sort}, payload));
       }
       if(r.error) throw r.error;
-      status.textContent = 'âœ“ Saved';
+      status.textContent = '✓ Saved';
       setTimeout(function(){ status.textContent=''; }, 1400);
       catReset();
       loadCategories();
@@ -1502,22 +1502,22 @@
   // Convert a `datetime-local` input value (local time, no zone) into an ISO
   // timestamptz string. Returns null when the field is empty.
   function localDtToIso(v){ if(!v) return null; var d=new Date(v); return isNaN(d.getTime())?null:d.toISOString(); }
-  // Reverse: ISO timestamptz â†’ value for a datetime-local input (local time).
+  // Reverse: ISO timestamptz → value for a datetime-local input (local time).
   function isoToLocalDt(iso){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d.getTime())) return ''; var pad=function(n){return String(n).padStart(2,'0');}; return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes()); }
   function aGather(){ return { title:$('a-title').value.trim(), category:$('a-cat').value, excerpt:$('a-excerpt').value.trim(), body:$('a-body').value, read_time:parseInt($('a-read').value)||5, image_url:$('a-img').value.trim(), hot:$('a-hot').checked, published:$('a-published').checked, publish_at:localDtToIso($('a-publish-at').value), related_product_id:$('a-related-product').value||null, tags:aField.get() }; }
   function refreshRelatedProductOptions(){
     var sel = $('a-related-product'); if(!sel) return;
     var current = sel.value;
-    var opts = ['<option value="">â€” Show "Ver biblioteca" (default)</option>']
+    var opts = ['<option value="">— Show "Ver biblioteca" (default)</option>']
       .concat((PRODUCTS||[]).filter(function(p){return p.published!==false;})
         .map(function(p){ return '<option value="'+esc(p.id)+'">'+esc(p.title||'(untitled)')+'</option>'; }));
     sel.innerHTML = opts.join('');
     if(current) sel.value = current;
   }
-  function aCard(a){ var catColors={Cachorros:'terra',EducaciÃ³n:'forest',Conducta:'forest',Salud:'golden',AlimentaciÃ³n:'peach',Historias:'lavender'}; var tag='<span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'; var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">ðŸ”¥ Caliente</span>':''; var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>'; return '<a href="blog-post.html" class="article-card" data-cat="'+slugify(a.category)+(a.hot?' caliente':'')+'"><div class="article-card__img-wrap">'+tag+hot+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'TÃ­tulo del artÃ­culo')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'Extractoâ€¦')+'</p><div class="article-card__meta"><span><span class="emoji-icon">â°</span> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
+  function aCard(a){ var catColors={Cachorros:'terra',Educación:'forest',Conducta:'forest',Salud:'golden',Alimentación:'peach',Historias:'lavender'}; var tag='<span class="tag tag--'+(catColors[a.category]||'solid')+' article-card__tag">'+esc(a.category||'Blog')+'</span>'; var hot=a.hot?'<span class="tag article-card__tag article-card__tag--hot">🔥 Caliente</span>':''; var img=a.image_url?'<img class="article-card__img" src="'+esc(a.image_url)+'" alt="">':'<div style="width:100%;height:100%;background:var(--c-sage)"></div>'; return '<a href="blog-post.html" class="article-card" data-cat="'+slugify(a.category)+(a.hot?' caliente':'')+'"><div class="article-card__img-wrap">'+tag+hot+img+'</div><div class="article-card__body"><h3 class="article-card__title">'+esc(a.title||'Título del artículo')+'</h3><p class="article-card__excerpt">'+esc(a.excerpt||'Extracto…')+'</p><div class="article-card__meta"><span><span class="emoji-icon">⏰</span> '+(a.read_time||5)+' MIN</span><span class="article-card__read">Leer <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></span></div></div></a>'; }
   function aPreview(){ $('aPreview').innerHTML=aCard(aGather()); }
-  $('a-img-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('aSaveStatus').textContent='Uploading imageâ€¦'; try{ var url=await uploadFile(f,'articles'); $('a-img').value=url; renderAThumb(); aPreview(); $('aSaveStatus').textContent='âœ“ Image uploaded'; setTimeout(function(){$('aSaveStatus').textContent='';},1200); }catch(err){ $('aSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
-  function renderAThumb(){ var u=$('a-img').value; $('a-img-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="a-img-rm">âœ•</button></div>':''; var urlEl=$('a-img-url'); if(urlEl) urlEl.value=u&&/^https?:\/\//.test(u)?u:''; }
+  $('a-img-file').addEventListener('change',async function(e){ var f=e.target.files[0]; if(!f)return; $('aSaveStatus').textContent='Uploading image…'; try{ var url=await uploadFile(f,'articles'); $('a-img').value=url; renderAThumb(); aPreview(); $('aSaveStatus').textContent='✓ Image uploaded'; setTimeout(function(){$('aSaveStatus').textContent='';},1200); }catch(err){ $('aSaveStatus').textContent=''; alert('Upload error: '+(err.message||err)); } e.target.value=''; });
+  function renderAThumb(){ var u=$('a-img').value; $('a-img-thumb').innerHTML=u?'<div class="thumb"><img src="'+esc(u)+'"><button type="button" id="a-img-rm">✕</button></div>':''; var urlEl=$('a-img-url'); if(urlEl) urlEl.value=u&&/^https?:\/\//.test(u)?u:''; }
   $('a-img-thumb').addEventListener('click',function(e){ if(e.target.id==='a-img-rm'){ $('a-img').value=''; renderAThumb(); aPreview(); } });
   $('a-img-url').addEventListener('input',function(){ $('a-img').value=this.value.trim(); renderAThumb(); aPreview(); });
   async function aLoad(){ var box=$('aList'); try{ var r=await sb.from('articles').select('*').order('pinned',{ascending:false}).order('sort_order',{ascending:true}).order('created_at',{ascending:false}); if(r.error)throw r.error; ARTICLES=r.data||[]; var nowMs=Date.now(); box.innerHTML=ARTICLES.length?ARTICLES.map(function(a){
@@ -1526,19 +1526,19 @@
     var scheduled=!hidden && schedMs && schedMs>nowMs;
     var badges='';
     if(hidden) badges+=' <span class="list-item__badge">Hidden</span>';
-    if(scheduled){ var dt=new Date(schedMs); badges+=' <span class="list-item__badge list-item__badge--sched">Scheduled Â· '+dt.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'</span>'; }
-    return '<div class="list-item'+(a.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+(scheduled?' is-scheduled':'')+'" data-id="'+a.id+'">'+dragHandleHtml()+pinBtnHtml(a.pinned,a.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' ðŸ”¥':'')+badges+'</div><div class="list-item__meta">'+esc(a.category||'')+' Â· '+(a.read_time||5)+' min Â· '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(a.published,a.id)+'<button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';
+    if(scheduled){ var dt=new Date(schedMs); badges+=' <span class="list-item__badge list-item__badge--sched">Scheduled · '+dt.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'</span>'; }
+    return '<div class="list-item'+(a.pinned?' is-pinned':'')+(hidden?' is-unpublished':'')+(scheduled?' is-scheduled':'')+'" data-id="'+a.id+'">'+dragHandleHtml()+pinBtnHtml(a.pinned,a.id)+'<div class="list-item__info"><div class="list-item__title">'+esc(a.title)+(a.hot?' 🔥':'')+badges+'</div><div class="list-item__meta">'+esc(a.category||'')+' · '+(a.read_time||5)+' min · '+((a.tags&&a.tags.length)?a.tags.join(', '):'no tags')+'</div></div>'+pubBtnHtml(a.published,a.id)+'<button class="icon-btn" data-edit="'+a.id+'">Edit</button><button class="icon-btn icon-btn--danger" data-del="'+a.id+'">Delete</button></div>';
   }).join(''):'<p class="muted">No articles yet.</p>'; attachSortableList('aList','articles',function(){return ARTICLES;}); }catch(e){ box.innerHTML='<p class="muted">Could not load ('+esc(e.message||'')+').</p>'; } }
   $('aList').addEventListener('click',async function(e){ var ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]'); if(ed){ var a=ARTICLES.filter(function(x){return String(x.id)===String(ed.dataset.edit);})[0]; if(a){ editingA=a.id; $('a-title').value=a.title||''; $('a-cat').value=a.category||'Cachorros'; $('a-excerpt').value=a.excerpt||''; $('a-read').value=a.read_time||5; $('a-img').value=a.image_url||''; $('a-body').value=a.body||''; $('a-hot').checked=!!a.hot; $('a-published').checked=a.published!==false; $('a-publish-at').value=isoToLocalDt(a.publish_at); $('a-related-product').value=a.related_product_id||''; updateScheduleHint(); aField.set(a.tags||[]); renderAThumb(); $('aEditorTitle').textContent='Edit article'; aPreview(); window.scrollTo({top:0,behavior:'smooth'}); } } if(del){ if(!confirm('Delete this article?'))return; var r=await sb.from('articles').delete().eq('id',del.dataset.del); if(r.error)alert('Error: '+r.error.message); aLoad(); } });
-  $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Add a title.');return;} $('aSaveStatus').textContent='Savingâ€¦'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='âœ“ Saved'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
+  $('aSaveBtn').addEventListener('click',async function(){ var a=aGather(); if(!a.title){alert('Add a title.');return;} $('aSaveStatus').textContent='Saving…'; var r=editingA?await sb.from('articles').update(a).eq('id',editingA):await sb.from('articles').insert(a); if(r.error){$('aSaveStatus').textContent='';alert('Error: '+r.error.message);return;} $('aSaveStatus').textContent='✓ Saved'; setTimeout(function(){$('aSaveStatus').textContent='';},1600); aReset(); aLoad(); });
   function aReset(){ editingA=null; aField.set([]); $('a-title').value=''; $('a-cat').value=(CATS[0]&&CATS[0].name)||''; $('a-excerpt').value='';$('a-read').value=5;$('a-img').value='';$('a-body').value='';$('a-hot').checked=false;$('a-published').checked=true;$('a-publish-at').value=''; $('a-related-product').value=''; updateScheduleHint(); renderAThumb(); $('aEditorTitle').textContent='Add article'; aPreview(); }
   function updateScheduleHint(){
     var hint=$('a-schedule-hint'); if(!hint) return;
     var iso=localDtToIso($('a-publish-at').value);
     if(!iso){ hint.textContent='Leave empty to publish now. Pick a future time to schedule.'; hint.style.color=''; return; }
     var d=new Date(iso), now=new Date();
-    if(d <= now){ hint.textContent='âš  That time is in the past â€” the post will publish immediately on save.'; hint.style.color='var(--c-terracotta)'; }
-    else { hint.textContent='âœ“ Will go live on '+d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'.'; hint.style.color='var(--c-forest)'; }
+    if(d <= now){ hint.textContent='⚠ That time is in the past — the post will publish immediately on save.'; hint.style.color='var(--c-terracotta)'; }
+    else { hint.textContent='✓ Will go live on '+d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'.'; hint.style.color='var(--c-forest)'; }
   }
   $('a-publish-at').addEventListener('input', updateScheduleHint);
   $('a-publish-at').addEventListener('change', updateScheduleHint);
@@ -1569,10 +1569,10 @@
   function dset(label,data,color){ return {label:label,data:data,borderColor:color,backgroundColor:color,pointBackgroundColor:color,fill:false}; }
   var MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-  /* ---- timeframe engine (Hora/DÃ­a/Semana/Mes/AÃ±o) ---- */
+  /* ---- timeframe engine (Hora/Día/Semana/Mes/Año) ---- */
   function tfLabels(tf){
     if(tf==='hora'){ var a=[]; for(var i=0;i<24;i++) a.push(i+'h'); return a; }
-    if(tf==='dia') return ['Lun','Mar','MiÃ©','Jue','Vie','SÃ¡b','Dom'];
+    if(tf==='dia') return ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
     if(tf==='semana') return ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'];
     if(tf==='ano') return ['2021','2022','2023','2024','2025'];
     return MONTHS; // mes
@@ -1580,7 +1580,7 @@
   /* ---- bucket helpers: turn a list of {created_at, amount?} rows into per-label buckets ---- */
   function bucketIndex(tf, d){
     if(tf==='hora') return d.getHours();
-    if(tf==='dia'){ var w=d.getDay(); return w===0?6:(w-1); /* Mon..Sun â†’ 0..6 */ }
+    if(tf==='dia'){ var w=d.getDay(); return w===0?6:(w-1); /* Mon..Sun → 0..6 */ }
     if(tf==='semana'){ var now=new Date(); var diffDays=Math.floor((now-d)/864e5); var weeksAgo=Math.floor(diffDays/7); var idx=7-weeksAgo; return (idx>=0&&idx<8)?idx:-1; }
     if(tf==='ano'){ var yr=d.getFullYear(); var base=(new Date()).getFullYear()-4; var idx=yr-base; return (idx>=0&&idx<5)?idx:-1; }
     return d.getMonth(); // mes
@@ -1604,7 +1604,7 @@
     return out;
   }
 
-  /* Charts now pull real data from purchases + pageviews. Empty DB â†’ flat 0 line. */
+  /* Charts now pull real data from purchases + pageviews. Empty DB → flat 0 line. */
   var CHARTS={
     earnings: async function(tf){
       var L=tfLabels(tf);
@@ -1637,8 +1637,8 @@
   /* ---- friendly page names + country flags ---- */
   var PAGE_NAMES={'/':'Home','/index.html':'Home','/biblioteca.html':'Library','/blog.html':'Blog','/blog-post.html':'Article','/producto.html':'Product','/sobre-nosotros.html':'About','/cuenta.html':'Account','/admin.html':'Panel'};
   function pageName(p){ return PAGE_NAMES[p] || (p||'').replace(/^\//,'').replace(/\.html$/,'') || p; }
-  var COUNTRY_ES={ES:'EspaÃ±a',MX:'MÃ©xico',AR:'Argentina',CO:'Colombia',CL:'Chile',PE:'PerÃº',VE:'Venezuela',EC:'Ecuador',US:'Estados Unidos',GT:'Guatemala',CU:'Cuba',BO:'Bolivia',DO:'Rep. Dominicana',HN:'Honduras',PY:'Paraguay',SV:'El Salvador',NI:'Nicaragua',CR:'Costa Rica',PA:'PanamÃ¡',UY:'Uruguay',PR:'Puerto Rico',FR:'Francia',PT:'Portugal',IT:'Italia',DE:'Alemania',GB:'Reino Unido',BR:'Brasil',CA:'CanadÃ¡'};
-  function countryFlag(v){ if(v&&v.length===2) return '<img class="flag" src="https://flagcdn.com/40x30/'+v.toLowerCase()+'.png" alt="" loading="lazy">'; return '<span class="flag" style="display:inline-flex;align-items:center;justify-content:center;font-size:.9rem">ðŸŒ</span>'; }
+  var COUNTRY_ES={ES:'España',MX:'México',AR:'Argentina',CO:'Colombia',CL:'Chile',PE:'Perú',VE:'Venezuela',EC:'Ecuador',US:'Estados Unidos',GT:'Guatemala',CU:'Cuba',BO:'Bolivia',DO:'Rep. Dominicana',HN:'Honduras',PY:'Paraguay',SV:'El Salvador',NI:'Nicaragua',CR:'Costa Rica',PA:'Panamá',UY:'Uruguay',PR:'Puerto Rico',FR:'Francia',PT:'Portugal',IT:'Italia',DE:'Alemania',GB:'Reino Unido',BR:'Brasil',CA:'Canadá'};
+  function countryFlag(v){ if(v&&v.length===2) return '<img class="flag" src="https://flagcdn.com/40x30/'+v.toLowerCase()+'.png" alt="" loading="lazy">'; return '<span class="flag" style="display:inline-flex;align-items:center;justify-content:center;font-size:.9rem">🌐</span>'; }
   function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
   function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?x.flag:'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
   function money0(n){ return '$'+Number(n||0).toFixed(2); }
@@ -1708,7 +1708,7 @@
     }
   }
 
-  /* ===== TRÃFICO ===== */
+  /* ===== TRÁFICO ===== */
   var TRAF_ROWS=[];
   function renderTrafCountries(tf){
     var box=$('trafCountries'); if(!box) return;
@@ -1763,7 +1763,7 @@
       panel.hidden = true;
       openConversationFromBell(item.getAttribute('data-conv'));
     });
-    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New sale</strong> Â· $'+Number(o.total||0).toFixed(2)+(o.email?(' Â· '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
+    try{ sb.channel('orders-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},function(p){ var o=p.new||{}; bellCount++; dot.textContent=bellCount; dot.hidden=false; if(list.querySelector('.muted')) list.innerHTML=''; list.insertAdjacentHTML('afterbegin','<div class="bell__item"><strong>New sale</strong> · $'+Number(o.total||0).toFixed(2)+(o.email?(' · '+esc(o.email)):'')+'</div>'); }).subscribe(); }catch(e){}
     try{ sb.channel('messages-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'direction=eq.in'},function(p){
       var m=p.new||{};
       bellCount++; dot.textContent=bellCount; dot.hidden=false;
@@ -1773,9 +1773,9 @@
       var who = conv ? (conv.visitor_name || conv.visitor_email) : 'Visitante';
       list.insertAdjacentHTML('afterbegin',
         '<div class="bell__item bell__item--clickable" data-conv="'+esc(m.conversation_id||'')+'">' +
-          '<strong>New message Â· '+esc(who)+'</strong>' +
+          '<strong>New message · '+esc(who)+'</strong>' +
           '<div class="bell__item-preview">'+esc((m.body||'').slice(0,100))+'</div>' +
-          '<div class="bell__item-cta">Click para responder &nbsp;â†’</div>' +
+          '<div class="bell__item-cta">Click para responder &nbsp;→</div>' +
         '</div>'
       );
       if(typeof loadMessages==='function') loadMessages();
@@ -1802,7 +1802,7 @@
       }
       $('ordersBox').innerHTML = '<table class="tbl"><tr><th>Date</th><th>Product</th><th>Buyer</th><th>Total</th><th>Status</th></tr>' +
         purchases.slice(0,50).map(function(o){
-          return '<tr><td>'+esc(timeAgo(o.created_at))+'</td><td>'+esc(titleMap[o.product_id]||'(unknown)')+'</td><td>'+esc(o.payer_name||o.email||'â€”')+'</td><td>'+money0(o.amount)+'</td><td>'+esc(o.status||'paid')+'</td></tr>';
+          return '<tr><td>'+esc(timeAgo(o.created_at))+'</td><td>'+esc(titleMap[o.product_id]||'(unknown)')+'</td><td>'+esc(o.payer_name||o.email||'—')+'</td><td>'+money0(o.amount)+'</td><td>'+esc(o.status||'paid')+'</td></tr>';
         }).join('') + '</table>';
     } else {
       $('ordersBox').innerHTML = '<p class="muted">No orders yet. When PayPal captures a payment, it appears here.</p>';
@@ -1813,7 +1813,7 @@
     var salesCty=Object.keys(byC).map(function(c){return {flag:countryFlag(c),name:countryName(c),val:byC[c]};}).sort(function(a,b){return b.val-a.val;}).slice(0,6);
     $('salesCountries').innerHTML = salesCty.length ? miniRows(salesCty) : '<p class="muted">No country data yet. New orders will show the buyer\'s country here.</p>';
 
-    // Most added to cart â€” ranked by how often each product is added (intent).
+    // Most added to cart — ranked by how often each product is added (intent).
     try{
       var ce = await sb.from('cart_events').select('product_id,product_title'); if(ce.error) throw ce.error;
       var crows = ce.data || [];
@@ -1856,8 +1856,8 @@
     return '<table class="tbl"><tr><th>Channel</th><th>#</th><th>%</th></tr>'+e.map(function(x){return '<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/total*100)+'%</td></tr>';}).join('')+'</table>';
   }
   async function loadAcquisition(){
-    try{ var s=await sb.from('subscribers').select('channel'); if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally((s&&!s.error&&s.data)||[])); }catch(e){ if($('acqSubBox')) $('acqSubBox').innerHTML='<p class="muted">â€”</p>'; }
-    try{ var r=await sb.from('purchases').select('channel'); if($('acqBuyBox')) $('acqBuyBox').innerHTML=acqBox(acqTally((r&&!r.error&&r.data)||[])); }catch(e){ if($('acqBuyBox')) $('acqBuyBox').innerHTML='<p class="muted">â€”</p>'; }
+    try{ var s=await sb.from('subscribers').select('channel'); if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally((s&&!s.error&&s.data)||[])); }catch(e){ if($('acqSubBox')) $('acqSubBox').innerHTML='<p class="muted">—</p>'; }
+    try{ var r=await sb.from('purchases').select('channel'); if($('acqBuyBox')) $('acqBuyBox').innerHTML=acqBox(acqTally((r&&!r.error&&r.data)||[])); }catch(e){ if($('acqBuyBox')) $('acqBuyBox').innerHTML='<p class="muted">—</p>'; }
   }
 
   /* ===== SALE EMAIL COMPOSER ===== */
@@ -1866,7 +1866,7 @@
     var SITE='https://logramo.com'; var cur=sel.value;
     var html='<option value="'+SITE+'/biblioteca.html">Library (all guides)</option><option value="'+SITE+'/index.html">Homepage</option>';
     (typeof PRODUCTS!=='undefined'?(PRODUCTS||[]):[]).filter(function(p){return p.published!==false;}).forEach(function(p){ html+='<option value="'+SITE+'/producto.html?id='+esc(p.id)+'">'+esc(p.title||'Product')+'</option>'; });
-    html+='<option value="__custom">Custom URLâ€¦</option>';
+    html+='<option value="__custom">Custom URL…</option>';
     sel.innerHTML=html; if(cur) sel.value=cur;
   }
   function saleGather(){
@@ -1879,12 +1879,12 @@
     var s=await sb.auth.getSession(); var token=s&&s.data&&s.data.session?s.data.session.access_token:null;
     if(!token){ $('saleStatus').textContent='Not logged in.'; return; }
     if(testTo) f.testTo=testTo;
-    $('saleStatus').textContent=testTo?'Sending testâ€¦':'Sendingâ€¦';
+    $('saleStatus').textContent=testTo?'Sending test…':'Sending…';
     try{
       var r=await fetch(SUPABASE_URL+'/functions/v1/send-sale',{ method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(f) });
       var d=await r.json().catch(function(){return {};});
       if(!r.ok||!d.ok) throw new Error(d.reason||('HTTP '+r.status));
-      $('saleStatus').textContent=testTo?('âœ“ Test sent to '+testTo):('âœ“ Sent to '+(d.sent||0)+' subscribers');
+      $('saleStatus').textContent=testTo?('✓ Test sent to '+testTo):('✓ Sent to '+(d.sent||0)+' subscribers');
     }catch(err){ $('saleStatus').textContent='Error: '+(err.message||err); }
   }
   if($('saleCtaTarget')) $('saleCtaTarget').addEventListener('change',function(){ $('saleCtaCustomWrap').hidden=this.value!=='__custom'; });
@@ -1903,7 +1903,7 @@
     var ins = (msgs||[]).filter(function(m){return m.direction==='in';});
     var last = ins[ins.length-1];
     var t = (last && last.body || '').replace(/\s+/g,' ').trim();
-    return esc(t.length>140 ? t.slice(0,140)+'â€¦' : t);
+    return esc(t.length>140 ? t.slice(0,140)+'…' : t);
   }
   function convCard(c){
     var msgs = CONV_MSGS[c.id] || [];
@@ -1914,14 +1914,14 @@
       var cls = m.direction === 'in' ? 'thread-bubble--in' : 'thread-bubble--out';
       return '<div class="thread-bubble '+cls+'">'
         +'<div class="thread-bubble__body">'+esc(m.body).replace(/\n/g,'<br>')+'</div>'
-        +'<div class="thread-bubble__meta">'+(m.direction==='in'?'Â· Cliente':'Â· Logramo')+' Â· '+esc(timeAgo(m.created_at))+'</div>'
+        +'<div class="thread-bubble__meta">'+(m.direction==='in'?'· Cliente':'· Logramo')+' · '+esc(timeAgo(m.created_at))+'</div>'
       +'</div>';
     }).join('');
     return '<div class="msg-item'+(unread?' is-unread':'')+(isOpenRow?' is-open':'')+'" data-conv="'+c.id+'">'
       +'<div class="msg-item__head" data-toggle="'+c.id+'">'
         +'<div class="msg-item__main">'
           +'<div class="msg-item__row"><span class="msg-item__name">'+esc(c.visitor_name||'(no name)')+'</span>'+convStatusBadge(c)+'</div>'
-          +'<div class="msg-item__email">'+esc(c.visitor_email||'')+' Â· '+msgs.length+' '+(msgs.length===1?'mensaje':'mensajes')+' Â· Ãºltima '+esc(timeAgo(c.last_message_at))+'</div>'
+          +'<div class="msg-item__email">'+esc(c.visitor_email||'')+' · '+msgs.length+' '+(msgs.length===1?'mensaje':'mensajes')+' · última '+esc(timeAgo(c.last_message_at))+'</div>'
           +(!isOpenRow?'<div class="msg-item__preview">'+lastInboundPreview(msgs)+'</div>':'')
         +'</div>'
         +'<svg class="msg-item__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
@@ -1930,13 +1930,13 @@
         +'<div class="thread">'+bubbles+'</div>'
         +(open ? '<div class="msg-item__reply">'
           +'<label class="muted" style="display:block;font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Reply to '+esc(c.visitor_email)+'</label>'
-          +'<textarea class="msg-item__textarea" data-reply="'+c.id+'" rows="4" placeholder="Write your replyâ€¦ they get it by email AND see it in their chat panel."></textarea>'
+          +'<textarea class="msg-item__textarea" data-reply="'+c.id+'" rows="4" placeholder="Write your reply… they get it by email AND see it in their chat panel."></textarea>'
           +'<div class="msg-item__actions">'
             +'<button class="btn btn--primary" data-send="'+c.id+'"><svg class="icon icon--xs"><use href="#i-mail"/></svg> Send reply</button>'
             +'<button class="icon-btn" data-close="'+c.id+'">Close conversation</button>'
             +'<span class="muted" data-status="'+c.id+'"></span>'
           +'</div>'
-        +'</div>' : '<p class="muted" style="margin:14px 0 4px">Esta conversaciÃ³n estÃ¡ cerrada. El visitante puede abrir una nueva desde el chat.</p>')
+        +'</div>' : '<p class="muted" style="margin:14px 0 4px">Esta conversación está cerrada. El visitante puede abrir una nueva desde el chat.</p>')
       +'</div>' : '')
     +'</div>';
   }
@@ -1954,7 +1954,7 @@
   async function loadMessages(){
     var box = $('msgBox'); if(!box) return;
     var filter = ($('msgFilter') && $('msgFilter').value) || 'all';
-    box.innerHTML = '<p class="muted">Loadingâ€¦</p>';
+    box.innerHTML = '<p class="muted">Loading…</p>';
     try{
       var rc = await sb.from('conversations').select('*').order('last_message_at',{ascending:false}).limit(200);
       if(rc.error) throw rc.error;
@@ -1996,7 +1996,7 @@
       var statusEl = document.querySelector('[data-status="'+id+'"]');
       var reply = (ta && ta.value || '').trim();
       if (reply.length < 2) { if(statusEl) statusEl.textContent='Add a reply first.'; return; }
-      send.disabled = true; var origLabel = send.innerHTML; send.innerHTML = 'Sendingâ€¦'; if(statusEl) statusEl.textContent='';
+      send.disabled = true; var origLabel = send.innerHTML; send.innerHTML = 'Sending…'; if(statusEl) statusEl.textContent='';
       try{
         var r = await fetch(SUPABASE_URL + '/functions/v1/send-message-reply', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2004,7 +2004,7 @@
         });
         var data = await r.json().catch(function(){return {};});
         if(!r.ok || !data.ok) throw new Error(data.reason || ('HTTP '+r.status));
-        if(statusEl) statusEl.textContent = 'âœ“ Sent';
+        if(statusEl) statusEl.textContent = '✓ Sent';
         ta.value = '';
         setTimeout(loadMessages, 600);
       }catch(err){
@@ -2030,9 +2030,9 @@
   });
 
   /* ===== AJUSTES ===== */
-  $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('At least 6 characters.');return;} $('passStatus').textContent='Savingâ€¦'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'âœ“ Changed'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
+  $('changePassBtn').addEventListener('click',async function(){ var p=$('setPass').value; if(p.length<6){alert('At least 6 characters.');return;} $('passStatus').textContent='Saving…'; var r=await sb.auth.updateUser({password:p}); $('passStatus').textContent=r.error?'':'✓ Changed'; if(r.error)alert('Error: '+r.error.message); $('setPass').value=''; });
 
-  /* ===== DANGER ZONE â€” reset all data (3-step friction) ===== */
+  /* ===== DANGER ZONE — reset all data (3-step friction) ===== */
   (function(){
     var modal=$('resetModal'); if(!modal) return;
     var s1=$('resetStage1'), s2=$('resetStage2');
@@ -2044,14 +2044,14 @@
     var cb=$('resetConfirmBtn');
     if(cb) cb.addEventListener('click',async function(){
       var email=$('setEmail').value||''; var pass=$('resetPass').value||'';
-      if(!pass){ $('resetStatus').textContent='Escribe tu contraseÃ±a.'; return; }
-      cb.disabled=true; $('resetStatus').textContent='Verificandoâ€¦';
+      if(!pass){ $('resetStatus').textContent='Escribe tu contraseña.'; return; }
+      cb.disabled=true; $('resetStatus').textContent='Verificando…';
       // Step 3a: verify the password against the EXACT logged-in admin account.
       var auth=await sb.auth.signInWithPassword({email:email,password:pass});
-      if(auth.error){ cb.disabled=false; $('resetStatus').textContent='ContraseÃ±a incorrecta.'; return; }
+      if(auth.error){ cb.disabled=false; $('resetStatus').textContent='Contraseña incorrecta.'; return; }
       var token=auth.data&&auth.data.session?auth.data.session.access_token:null;
       // Step 3b: only now call the server-side wipe, with the fresh admin token.
-      $('resetStatus').textContent='Borrandoâ€¦';
+      $('resetStatus').textContent='Borrando…';
       try{
         var r=await fetch(SUPABASE_URL+'/functions/v1/reset-data',{
           method:'POST',
@@ -2062,7 +2062,7 @@
         if(!r.ok||!data.ok) throw new Error(data.reason||('HTTP '+r.status));
         var d=data.deleted||{};
         close();
-        alert('Datos borrados:\nâ€¢ Suscriptores: '+(d.subscribers||0)+'\nâ€¢ Compras: '+(d.purchases||0)+'\nâ€¢ Visitas: '+(d.pageviews||0));
+        alert('Datos borrados:\n• Suscriptores: '+(d.subscribers||0)+'\n• Compras: '+(d.purchases||0)+'\n• Visitas: '+(d.pageviews||0));
         if(typeof loadInicio==='function') loadInicio();
       }catch(err){
         $('resetStatus').textContent='Error: '+(err.message||err);
@@ -2073,35 +2073,35 @@
 
   /* ===== IMPORT SAMPLE CONTENT ===== */
   var SAMPLE_PRODUCTS=[
-    {title:'Los primeros 30 dÃ­as con tu perro',category:'Cachorros',description:'Todo lo que ojalÃ¡ alguien te hubiera contado antes del primer dÃ­a.',price:0,is_free:true,tags:['gratis'],cover_color:'sky',cover_icon:'i-paw',cover_sub:'GuÃ­a PDF',cover_title:'Los Primeros\n30 DÃ­as'},
-    {title:'SueÃ±o tranquilo: cÃ³mo dormir toda la noche',category:'Cachorros',description:'El mÃ©todo paso a paso para que tu cachorro deje de llorar de noche. Y tÃº puedas dormir por fin.',price:14.99,is_free:false,tags:[],cover_color:'peach',cover_icon:'i-clock',cover_sub:'Libro Digital',cover_title:'SueÃ±o\nTranquilo'},
-    {title:'Manual de salud para cachorros',category:'Salud',description:'Vacunas, desparasitaciÃ³n y salud bÃ¡sica â€” sin que te entre el pÃ¡nico leyÃ©ndolo.',price:19.99,is_free:false,tags:[],cover_color:'sage',cover_icon:'i-shield',cover_sub:'GuÃ­a PrÃ¡ctica',cover_title:'Salud del\nCachorro'},
-    {title:'CrÃ­a un perro feliz: guÃ­a completa',category:'EducaciÃ³n',description:'12 semanas de plan estructurado para nuevos dueÃ±os.',price:29.99,is_free:false,tags:['recomendado'],cover_color:'golden',cover_icon:'i-paw',cover_sub:'Libro Estrella',cover_title:'CrÃ­a un\nPerro Feliz'},
-    {title:'Adiestramiento avanzado en casa',category:'EducaciÃ³n',description:'Trucos, comandos avanzados y tÃ©cnicas de obediencia.',price:24.99,is_free:false,tags:[],cover_color:'lavender',cover_icon:'i-target',cover_sub:'Libro Digital',cover_title:'Adiestramiento\nAvanzado'},
-    {title:'Los 5 comandos esenciales',category:'EducaciÃ³n',description:'Las palabras que tu perro debe aprender primero.',price:0,is_free:true,tags:['gratis'],cover_color:'pink',cover_icon:'i-check-circle',cover_sub:'Mini GuÃ­a',cover_title:'5 Comandos\nBÃ¡sicos'},
-    {title:'AlimentaciÃ³n sana para tu perro',category:'AlimentaciÃ³n',description:'QuÃ© comer, cuÃ¡ndo, cuÃ¡nto y quÃ© evitar absolutamente.',price:19.99,is_free:false,tags:[],cover_color:'sky',cover_icon:'i-bone',cover_sub:'Manual',cover_title:'AlimentaciÃ³n\nSana'},
-    {title:'Primeros auxilios caninos',category:'Salud',description:'QuÃ© hacer en emergencias antes de llegar al veterinario.',price:16.99,is_free:false,tags:[],cover_color:'sage',cover_icon:'i-heart',cover_sub:'GuÃ­a PrÃ¡ctica',cover_title:'Primeros\nAuxilios'},
-    {title:'Ejercicio diario por raza y edad',category:'Salud',description:'Plan de actividad fÃ­sica adaptado a tu perro.',price:12.99,is_free:false,tags:[],cover_color:'peach',cover_icon:'i-flame',cover_sub:'Mini Libro',cover_title:'Ejercicio\nDiario'},
-    {title:'Ladridos bajo control',category:'Conducta',description:'Identifica el tipo de ladrido y soluciÃ³nalo de raÃ­z.',price:19.99,is_free:false,tags:['popular'],cover_color:'lavender',cover_icon:'i-bell',cover_sub:'Libro Digital',cover_title:'Ladridos\nBajo Control'},
-    {title:'Ansiedad por separaciÃ³n: el mÃ©todo',category:'Conducta',description:'Plan paso a paso para que se quede solo sin sufrir â€” ni Ã©l ni tÃº.',price:22.99,is_free:false,tags:['nuevo'],cover_color:'pink',cover_icon:'i-heart',cover_sub:'Manual',cover_title:'Ansiedad por\nSeparaciÃ³n'},
-    {title:'Paseos sin tirones',category:'Paseos',description:'Camina con tu perro sin que parezca que Ã©l te lleva a ti. TÃ©cnica real, resultados reales.',price:14.99,is_free:false,tags:[],cover_color:'golden',cover_icon:'i-leaf',cover_sub:'GuÃ­a Express',cover_title:'Paseos\nSin Drama'}
+    {title:'Los primeros 30 días con tu perro',category:'Cachorros',description:'Todo lo que ojalá alguien te hubiera contado antes del primer día.',price:0,is_free:true,tags:['gratis'],cover_color:'sky',cover_icon:'i-paw',cover_sub:'Guía PDF',cover_title:'Los Primeros\n30 Días'},
+    {title:'Sueño tranquilo: cómo dormir toda la noche',category:'Cachorros',description:'El método paso a paso para que tu cachorro deje de llorar de noche. Y tú puedas dormir por fin.',price:14.99,is_free:false,tags:[],cover_color:'peach',cover_icon:'i-clock',cover_sub:'Libro Digital',cover_title:'Sueño\nTranquilo'},
+    {title:'Manual de salud para cachorros',category:'Salud',description:'Vacunas, desparasitación y salud básica — sin que te entre el pánico leyéndolo.',price:19.99,is_free:false,tags:[],cover_color:'sage',cover_icon:'i-shield',cover_sub:'Guía Práctica',cover_title:'Salud del\nCachorro'},
+    {title:'Cría un perro feliz: guía completa',category:'Educación',description:'12 semanas de plan estructurado para nuevos dueños.',price:29.99,is_free:false,tags:['recomendado'],cover_color:'golden',cover_icon:'i-paw',cover_sub:'Libro Estrella',cover_title:'Cría un\nPerro Feliz'},
+    {title:'Adiestramiento avanzado en casa',category:'Educación',description:'Trucos, comandos avanzados y técnicas de obediencia.',price:24.99,is_free:false,tags:[],cover_color:'lavender',cover_icon:'i-target',cover_sub:'Libro Digital',cover_title:'Adiestramiento\nAvanzado'},
+    {title:'Los 5 comandos esenciales',category:'Educación',description:'Las palabras que tu perro debe aprender primero.',price:0,is_free:true,tags:['gratis'],cover_color:'pink',cover_icon:'i-check-circle',cover_sub:'Mini Guía',cover_title:'5 Comandos\nBásicos'},
+    {title:'Alimentación sana para tu perro',category:'Alimentación',description:'Qué comer, cuándo, cuánto y qué evitar absolutamente.',price:19.99,is_free:false,tags:[],cover_color:'sky',cover_icon:'i-bone',cover_sub:'Manual',cover_title:'Alimentación\nSana'},
+    {title:'Primeros auxilios caninos',category:'Salud',description:'Qué hacer en emergencias antes de llegar al veterinario.',price:16.99,is_free:false,tags:[],cover_color:'sage',cover_icon:'i-heart',cover_sub:'Guía Práctica',cover_title:'Primeros\nAuxilios'},
+    {title:'Ejercicio diario por raza y edad',category:'Salud',description:'Plan de actividad física adaptado a tu perro.',price:12.99,is_free:false,tags:[],cover_color:'peach',cover_icon:'i-flame',cover_sub:'Mini Libro',cover_title:'Ejercicio\nDiario'},
+    {title:'Ladridos bajo control',category:'Conducta',description:'Identifica el tipo de ladrido y soluciónalo de raíz.',price:19.99,is_free:false,tags:['popular'],cover_color:'lavender',cover_icon:'i-bell',cover_sub:'Libro Digital',cover_title:'Ladridos\nBajo Control'},
+    {title:'Ansiedad por separación: el método',category:'Conducta',description:'Plan paso a paso para que se quede solo sin sufrir — ni él ni tú.',price:22.99,is_free:false,tags:['nuevo'],cover_color:'pink',cover_icon:'i-heart',cover_sub:'Manual',cover_title:'Ansiedad por\nSeparación'},
+    {title:'Paseos sin tirones',category:'Paseos',description:'Camina con tu perro sin que parezca que él te lleva a ti. Técnica real, resultados reales.',price:14.99,is_free:false,tags:[],cover_color:'golden',cover_icon:'i-leaf',cover_sub:'Guía Express',cover_title:'Paseos\nSin Drama'}
   ];
   var SAMPLE_ARTICLES=[
-    {title:'Las 5 palabras que tu perro debe aprender primero',category:'EducaciÃ³n',excerpt:'No, "siÃ©ntate" no es la mÃ¡s importante. Te contamos cuÃ¡l es y por quÃ© el orden importa.',read_time:5,image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop',hot:true,tags:['caliente']},
-    {title:'Â¿Tu cachorro llora toda la noche? Esto pasa',category:'Cachorros',excerpt:'Spoiler: no te odia. Te explicamos la razÃ³n real y cÃ³mo ayudarle (y dormir tÃº tambiÃ©n).',read_time:4,image_url:'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&q=80&fit=crop',hot:true,tags:['caliente']},
-    {title:'Por quÃ© ladra a otros perros en el paseo',category:'Conducta',excerpt:'Si tu paseo se convierte en concierto, este artÃ­culo es para ti. Tiene soluciÃ³n, de verdad.',read_time:6,image_url:'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop',hot:false,tags:[]},
-    {title:'Vacunas bÃ¡sicas: quÃ© necesitas y cuÃ¡ndo',category:'Salud',excerpt:'Sin dramatismos ni terminologÃ­a rara. El calendario bÃ¡sico explicado como te lo explicarÃ­a un amigo.',read_time:5,image_url:'https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600&q=80&fit=crop',hot:false,tags:[]},
-    {title:'Caminar sin tirar de la correa: tÃ©cnica real',category:'EducaciÃ³n',excerpt:'La tÃ©cnica real para que camines tÃº a Ã©l, y no Ã©l a ti ðŸ˜…',read_time:7,image_url:'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80&fit=crop',hot:false,tags:[]},
-    {title:'Lo que nadie te dice sobre adoptar un perro adulto',category:'Historias',excerpt:'Historia real, sin filtros. Lo bonito, lo difÃ­cil y lo que nadie te cuenta antes de firmar.',read_time:8,image_url:'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=600&q=80&fit=crop',hot:false,tags:[]}
+    {title:'Las 5 palabras que tu perro debe aprender primero',category:'Educación',excerpt:'No, "siéntate" no es la más importante. Te contamos cuál es y por qué el orden importa.',read_time:5,image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop',hot:true,tags:['caliente']},
+    {title:'¿Tu cachorro llora toda la noche? Esto pasa',category:'Cachorros',excerpt:'Spoiler: no te odia. Te explicamos la razón real y cómo ayudarle (y dormir tú también).',read_time:4,image_url:'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&q=80&fit=crop',hot:true,tags:['caliente']},
+    {title:'Por qué ladra a otros perros en el paseo',category:'Conducta',excerpt:'Si tu paseo se convierte en concierto, este artículo es para ti. Tiene solución, de verdad.',read_time:6,image_url:'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80&fit=crop',hot:false,tags:[]},
+    {title:'Vacunas básicas: qué necesitas y cuándo',category:'Salud',excerpt:'Sin dramatismos ni terminología rara. El calendario básico explicado como te lo explicaría un amigo.',read_time:5,image_url:'https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600&q=80&fit=crop',hot:false,tags:[]},
+    {title:'Caminar sin tirar de la correa: técnica real',category:'Educación',excerpt:'La técnica real para que camines tú a él, y no él a ti 😅',read_time:7,image_url:'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80&fit=crop',hot:false,tags:[]},
+    {title:'Lo que nadie te dice sobre adoptar un perro adulto',category:'Historias',excerpt:'Historia real, sin filtros. Lo bonito, lo difícil y lo que nadie te cuenta antes de firmar.',read_time:8,image_url:'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=600&q=80&fit=crop',hot:false,tags:[]}
   ];
   $('importBtn').addEventListener('click',async function(){
     var c = await sb.from('products').select('id',{count:'exact',head:true});
     if((c.count||0)>0 && !confirm('There are already products in the database. Import the samples anyway? (may duplicate)')) return;
-    $('importStatus').textContent='Importingâ€¦';
+    $('importStatus').textContent='Importing…';
     var rp = await sb.from('products').insert(SAMPLE_PRODUCTS);
     var ra = await sb.from('articles').insert(SAMPLE_ARTICLES);
     if(rp.error||ra.error){ $('importStatus').textContent=''; alert('Error: '+((rp.error&&rp.error.message)||'')+' '+((ra.error&&ra.error.message)||'')); return; }
-    $('importStatus').textContent='âœ“ Imported'; pLoad(); aLoad();
+    $('importStatus').textContent='✓ Imported'; pLoad(); aLoad();
   });
 
   /* ===== MOBILE DRAWER ===== */
@@ -2110,7 +2110,7 @@
   $('sideBackdrop')&&$('sideBackdrop').addEventListener('click',function(){ setDrawer(false); });
   $('sideClose')&&$('sideClose').addEventListener('click',function(){ setDrawer(false); });
 
-  /* ===== SITE NAV â€” parked at the bottom; a 2nd scroll-down at the page bottom reveals it ===== */
+  /* ===== SITE NAV — parked at the bottom; a 2nd scroll-down at the page bottom reveals it ===== */
   (function(){
     var hint=document.getElementById('siteNavHint');
     var hintLabel=document.getElementById('siteNavHintLabel');
@@ -2121,7 +2121,7 @@
       if(!hint) return;
       if(state==='hidden'){ hint.classList.remove('show','pulse'); if(hintLabel) hintLabel.textContent='Scroll again to open the site menu'; }
       else if(state==='show'){ hint.classList.add('show'); hint.classList.remove('pulse'); if(hintLabel) hintLabel.textContent='Scroll once more to open the site menu'; }
-      else if(state==='primed'){ hint.classList.add('show','pulse'); if(hintLabel) hintLabel.textContent='Scroll again now â†“'; }
+      else if(state==='primed'){ hint.classList.add('show','pulse'); if(hintLabel) hintLabel.textContent='Scroll again now ↓'; }
     }
     function attempt(){
       if(!atBottom()) return;
@@ -2203,13 +2203,13 @@
     var email=session&&session.user?session.user.email:'';
     var name=friendlyNameFromEmail(email)||email;
     $('whoami').textContent=name;
-    $('greetTitle').textContent=name?('Welcome back, '+name+' ðŸ¾'):'Welcome back! ðŸ¾';
+    $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
     await loadTags(); await loadCategories(); pPreview(); aPreview(); loadInicio(); await pLoad(); await aLoad(); vLoad(); rLoad(); cmLoad(); loadMessages();
   }
   function leave(){ $('shell').hidden=true; $('loginScreen').hidden=false; }
-  $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging inâ€¦'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
+  $('loginForm').addEventListener('submit',async function(e){ e.preventDefault(); $('loginError').textContent=''; $('loginBtn').textContent='Logging in…'; var r=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value}); $('loginBtn').textContent='Log in'; if(r.error){ $('loginError').textContent=r.error.message==='Invalid login credentials'?'Wrong email or password.':r.error.message; return; } enter(r.data.session); });
   (function(){ var t=$('loginPassToggle'); if(!t) return; t.addEventListener('click',function(){ var i=$('loginPass'); if(!i) return; var show=i.type==='password'; i.type=show?'text':'password'; t.classList.toggle('is-on',show); t.setAttribute('aria-label',show?'Hide password':'Show password'); t.querySelector('.pw-eye').outerHTML=(show?EYE_OFF_SVG:EYE_OPEN_SVG).replace('<svg ','<svg class="pw-eye" '); }); })();
   $('logoutBtn').addEventListener('click',async function(){ await sb.auth.signOut(); leave(); });
 
