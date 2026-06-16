@@ -138,7 +138,7 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 - `from: Logramo <ayuda@logramo.com>`, `reply_to: ayuda@logramo.com`.
 - Resend API key stored as Supabase secret `RESEND_API_KEY`.
 - All emails use the magazine-style template: cream header w/ logo + date eyebrow, big Arial-Black uppercase headline, eyebrow + photo + colored panels (cream → forest → cream-alt), **sky-blue footer** with FB/YT/Pinterest icons from `cdn.simpleicons.org`.
-- Social media: **only Facebook, YouTube, Pinterest** (no Instagram, no TikTok).
+- Social media **in emails**: only Facebook, YouTube, Pinterest (no TikTok). Note: the **site footer** (`partials.js`) also links **Instagram** (`logramo_brand`) — emails were not updated to match.
 
 **Cron schedule**
 - `0 14 * * *` UTC daily (pg_cron + pg_net), calls `send-followups`.
