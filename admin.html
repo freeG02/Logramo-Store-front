@@ -1641,15 +1641,28 @@
     return out;
   }
 
+  // Fetch ALL rows from a table, paginating past the 1000-row response cap (bounded).
+  async function allRows(table, cols){
+    var out=[], from=0, PAGE=1000;
+    for(var i=0;i<60;i++){
+      var r=await sb.from(table).select(cols).order('created_at',{ascending:false}).range(from, from+PAGE-1);
+      if(r.error) break;
+      var b=r.data||[]; out=out.concat(b);
+      if(b.length<PAGE) break; from+=PAGE;
+    }
+    return out;
+  }
+  async function pvAll(cols){ return allRows('pageviews', cols||'created_at'); }
+
   /* Charts now pull real data from purchases + pageviews. Empty DB → flat 0 line. */
   var CHARTS={
     earnings: async function(tf){
       var L=tfLabels(tf);
-      var pv = await sb.from('pageviews').select('created_at');
-      var pur = await sb.from('purchases').select('created_at,amount');
-      var visits = pv.error ? zeros(L.length) : bucketSum(tf, pv.data);
-      var revenue = pur.error ? zeros(L.length) : bucketSum(tf, pur.data, function(r){return r.amount;});
-      var sales = pur.error ? zeros(L.length) : bucketSum(tf, pur.data);
+      var pv = await pvAll('created_at');
+      var pur = await allRows('purchases','created_at,amount');
+      var visits = bucketSum(tf, pv);
+      var revenue = bucketSum(tf, pur, function(r){return r.amount;});
+      var sales = bucketSum(tf, pur);
       lineChart('earningsChart',L,[
         dset('Visits', visits, '#3F7FD0'),
         dset('Revenue ($)', revenue, '#5E8C3E'),
@@ -1658,14 +1671,14 @@
     },
     traf: async function(tf){
       var L=tfLabels(tf);
-      var pv = await sb.from('pageviews').select('created_at');
-      var visits = pv.error ? zeros(L.length) : bucketSum(tf, pv.data);
+      var pv = (TRAF_ROWS && TRAF_ROWS.length) ? TRAF_ROWS : (await pvAll('created_at'));
+      var visits = bucketSum(tf, pv);
       lineChart('trafChart',L,[ dset('Visits', visits, '#3F7FD0') ]);
     },
     ventas: async function(tf){
       var L=tfLabels(tf);
-      var pur = await sb.from('purchases').select('created_at,amount');
-      var revenue = pur.error ? zeros(L.length) : bucketSum(tf, pur.data, function(r){return r.amount;});
+      var pur = await allRows('purchases','created_at,amount');
+      var revenue = bucketSum(tf, pur, function(r){return r.amount;});
       lineChart('ventasChart',L,[ dset('Revenue ($)', revenue, '#5E8C3E') ]);
     }
   };
@@ -1700,8 +1713,7 @@
     // Revenue + sales = from purchases
     var revenue = 0, sales = 0, purchases = [];
     try{
-      var pr = await sb.from('purchases').select('email,payer_name,product_id,amount,currency,status,created_at').order('created_at',{ascending:false});
-      if(!pr.error) purchases = pr.data || [];
+      purchases = await allRows('purchases','email,payer_name,product_id,amount,currency,status,created_at');
       purchases.forEach(function(p){ revenue += Number(p.amount||0); sales += 1; });
     }catch(e){}
     $('ovIngresos').textContent = money0(revenue);
@@ -1787,9 +1799,16 @@
   }
   async function loadTrafico(){
     try{
-      var r=await sb.from('pageviews').select('*'); if(r.error)throw r.error;
-      var rows=r.data||[]; TRAF_ROWS=rows; var now=Date.now(), day=864e5;
-      var total=rows.length, last7=rows.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length, today=rows.filter(function(x){return now-new Date(x.created_at).getTime()<day;}).length;
+      var now=Date.now(), day=864e5;
+      var d7=new Date(now-7*day).toISOString(), d1=new Date(now-day).toISOString();
+      // Headline counts via COUNT queries, not row length: a plain select caps at
+      // 1000 rows, which used to freeze "Total visits" at 1000 once traffic grew.
+      var total=0,last7=0,today=0;
+      var ct=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(ct.error)throw ct.error; total=ct.count||0;
+      try{ var c7=await sb.from('pageviews').select('id',{count:'exact',head:true}).gte('created_at',d7); if(!c7.error&&c7.count!=null) last7=c7.count; }catch(e){}
+      try{ var c1=await sb.from('pageviews').select('id',{count:'exact',head:true}).gte('created_at',d1); if(!c1.error&&c1.count!=null) today=c1.count; }catch(e){}
+      // Rows for the chart + country/page breakdowns — paginate past the 1000 cap.
+      var rows=await pvAll('path,country,created_at'); TRAF_ROWS=rows;
       var byPath={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; });
       var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
       $('trafStats').innerHTML=stat(total,'Total visits')+stat(last7,'Last 7 days')+stat(today,'Today')+stat(Object.keys(byPath).length,'Distinct pages');
@@ -1881,7 +1900,7 @@
   /* ===== VENTAS ===== */
   async function loadVentas(){
     var purchases = [];
-    try{ var pr = await sb.from('purchases').select('email,payer_name,product_id,amount,currency,status,paypal_order_id,country,created_at').order('created_at',{ascending:false}); if(!pr.error) purchases = pr.data || []; }catch(e){}
+    try{ purchases = await allRows('purchases','email,payer_name,product_id,amount,currency,status,paypal_order_id,country,created_at'); }catch(e){}
 
     var paid = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='' || s==='paid' || s==='captured' || s==='completed'; });
     var pending = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='pending' || s==='processing'; });
@@ -1932,8 +1951,7 @@
   function chanLabel(c){ return c?String(c):'direct'; }
   async function loadSubs(){
     try{
-      var r=await sb.from('subscribers').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error;
-      SUBS=r.data||[]; var now=Date.now(), day=864e5;
+      SUBS=await allRows('subscribers','*'); var now=Date.now(), day=864e5;
       var active=SUBS.filter(function(s){return !s.unsubscribed_at;});
       $('subStats').innerHTML=stat(active.length,'Active')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return x.unsubscribed_at;}).length,'Unsubscribed');
       $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Email</th><th>Channel</th><th>Source</th><th>Date</th><th>Status</th></tr>'+SUBS.map(function(s){return '<tr'+(s.unsubscribed_at?' style="opacity:.5"':'')+'><td>'+esc(s.email)+'</td><td>'+esc(chanLabel(s.channel))+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('en-US')+'</td><td>'+(s.unsubscribed_at?'Unsubscribed':'Active')+'</td></tr>';}).join('')+'</table>':'<p class="muted">No subscribers yet. When someone signs up on the site, they appear here.</p>';
@@ -1952,8 +1970,8 @@
     return '<table class="tbl"><tr><th>Channel</th><th>#</th><th>%</th></tr>'+e.map(function(x){return '<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/total*100)+'%</td></tr>';}).join('')+'</table>';
   }
   async function loadAcquisition(){
-    try{ var s=await sb.from('subscribers').select('channel'); if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally((s&&!s.error&&s.data)||[])); }catch(e){ if($('acqSubBox')) $('acqSubBox').innerHTML='<p class="muted">—</p>'; }
-    try{ var r=await sb.from('purchases').select('channel'); if($('acqBuyBox')) $('acqBuyBox').innerHTML=acqBox(acqTally((r&&!r.error&&r.data)||[])); }catch(e){ if($('acqBuyBox')) $('acqBuyBox').innerHTML='<p class="muted">—</p>'; }
+    try{ var s=await allRows('subscribers','channel'); if($('acqSubBox')) $('acqSubBox').innerHTML=acqBox(acqTally(s||[])); }catch(e){ if($('acqSubBox')) $('acqSubBox').innerHTML='<p class="muted">—</p>'; }
+    try{ var r=await allRows('purchases','channel'); if($('acqBuyBox')) $('acqBuyBox').innerHTML=acqBox(acqTally(r||[])); }catch(e){ if($('acqBuyBox')) $('acqBuyBox').innerHTML='<p class="muted">—</p>'; }
   }
 
   /* ===== SALE EMAIL COMPOSER ===== */
