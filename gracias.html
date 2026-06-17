@@ -71,10 +71,10 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260752"></script>
+<script src="partials.js?v=20260753"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script src="script.js?v=20260749"></script>
+<script src="script.js?v=20260753"></script>
 <script>
 (function(){
   var sb=window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
@@ -120,10 +120,15 @@
     // are the exact amount PayPal charged (passed through from checkout).
     try {
       var _order=params.get('order')||'';
-      var _val=parseFloat(params.get('val')||'0')||0;
-      var _cur=params.get('cur')||'USD';
-      if(typeof fbTrack==='function' && _val>0){
-        fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: _val, currency: _cur }, _order||undefined);
+      var _val=Math.round((parseFloat(params.get('val')||'0')||0)*100)/100;
+      var _cur=(params.get('cur')||'USD').toUpperCase();
+      // Fire the Pixel Purchase once per order. Refreshing or revisiting this
+      // page must not re-send it (Meta dedupes by event_id within its window,
+      // but a revisit days later could otherwise double-count / skew values).
+      var _fired=false; try{ _fired=localStorage.getItem('logramo_purchase_'+_order)==='1'; }catch(e){}
+      if(typeof fbTrack==='function' && _val>0 && _order && !_fired){
+        fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: _val, currency: _cur }, _order);
+        try{ localStorage.setItem('logramo_purchase_'+_order,'1'); }catch(e){}
       }
     } catch(e){}
     var fallback=function(){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; };

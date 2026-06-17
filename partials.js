@@ -611,9 +611,10 @@ if (currentLink) {
           let recorded = false;
           // Preferred: the server verifies the PayPal order, then records it (service role).
           try {
+            const _mb = (typeof getMetaBrowserIds === 'function') ? getMetaBrowserIds() : {};
             const rr = await fetch(SB_URL + '/functions/v1/record-purchase', {
               method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ order_id: orderId, channel: channel, country: country })
+              body: JSON.stringify(Object.assign({ order_id: orderId, channel: channel, country: country }, _mb))
             });
             recorded = !!(rr && rr.ok);
           } catch (e) {}

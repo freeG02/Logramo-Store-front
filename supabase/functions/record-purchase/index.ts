@@ -45,8 +45,12 @@ async function sha256(s: string): Promise<string> {
 async function sendCapiPurchase(opts: {
   email: string; name: string | null; value: number; currency: string;
   orderId: string; contentIds: string[]; ip: string; ua: string;
+  fbc?: string; fbp?: string;
 }): Promise<void> {
   if (!META_CAPI_TOKEN) return;
+  // Never send a zero / non-finite Purchase value — Meta flags these as
+  // "missing values" and they distort ROAS. A free guide is not a Purchase.
+  if (!(Number.isFinite(opts.value) && opts.value > 0)) return;
   try {
     const em = opts.email ? [await sha256(opts.email)] : undefined;
     const parts = (opts.name ?? "").trim().split(/\s+/).filter(Boolean);
@@ -55,6 +59,10 @@ async function sendCapiPurchase(opts: {
     const user_data: Record<string, unknown> = { em, fn, ln };
     if (opts.ip) user_data.client_ip_address = opts.ip;
     if (opts.ua) user_data.client_user_agent = opts.ua;
+    // Click ID + Browser ID from the browser's Pixel cookies — the strongest
+    // match signals and what Meta's "send more parameters / fbc" prompts want.
+    if (opts.fbc) user_data.fbc = opts.fbc;
+    if (opts.fbp) user_data.fbp = opts.fbp;
     const payload = {
       data: [{
         event_name: "Purchase",
@@ -132,6 +140,8 @@ serve(async (req: Request) => {
   const orderId = String(body.order_id ?? "").trim();
   const channel = body.channel ? String(body.channel) : null;
   const country = body.country ? String(body.country) : null;
+  const fbc = body.fbc ? String(body.fbc) : "";
+  const fbp = body.fbp ? String(body.fbp) : "";
   if (!orderId) return json({ ok: false, reason: "missing_order_id" }, 400);
 
   // Which products from this order are already on file (idempotency, per item).
@@ -249,6 +259,7 @@ serve(async (req: Request) => {
       email, name, value: orderTotal, currency, orderId, contentIds,
       ip: (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
       ua: req.headers.get("user-agent") ?? "",
+      fbc, fbp,
     });
   }
 

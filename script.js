@@ -308,6 +308,35 @@ function getBuyerCountry() {
   } catch (e) { return ''; }
 }
 
+/* Meta Click ID (_fbc) + Browser ID (_fbp), read from the Pixel's own cookies so
+   the server-side Conversions API event can be matched to the same person the
+   browser saw. This is the single biggest Event Match Quality lever and what
+   Meta's "send more parameters / fbc coverage" prompts are asking for. If the
+   visitor arrived from a Facebook ad (?fbclid=...) but the Pixel hasn't written
+   _fbc yet, build it in the exact format Meta expects: fb.1.<ms>.<fbclid>. */
+(function stashFbclid() {
+  try {
+    var id = new URLSearchParams(location.search).get('fbclid');
+    if (id) localStorage.setItem('logramo_fbclid', id);
+  } catch (e) {}
+})();
+function getMetaBrowserIds() {
+  var out = {};
+  try {
+    var ck = document.cookie || '';
+    var fbc = (ck.match(/(?:^|;\s*)_fbc=([^;]+)/) || [])[1];
+    var fbp = (ck.match(/(?:^|;\s*)_fbp=([^;]+)/) || [])[1];
+    if (fbc) out.fbc = decodeURIComponent(fbc);
+    if (fbp) out.fbp = decodeURIComponent(fbp);
+    if (!out.fbc) {
+      var fbclid = '';
+      try { fbclid = localStorage.getItem('logramo_fbclid') || ''; } catch (e) {}
+      if (fbclid) out.fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+    }
+  } catch (e) {}
+  return out;
+}
+
 /* ---------- Meta Pixel: code-defined standard events ----------
    The Pixel base code (in every page <head>) defines fbq globally, so these are
    always safe to call. We fire events here in code — NOT via Meta's Event Setup
@@ -839,7 +868,7 @@ function renderCartPayPalButtons() {
             // Server verifies the order with PayPal and records one row per item.
             return fetch(LOGRAMO_SB_URL + '/functions/v1/record-purchase', {
               method: 'POST', headers: { apikey: LOGRAMO_SB_KEY, Authorization: 'Bearer ' + LOGRAMO_SB_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ order_id: orderId, channel: channel, country: country })
+              body: JSON.stringify(Object.assign({ order_id: orderId, channel: channel, country: country }, getMetaBrowserIds()))
             }).catch(function () {}).then(function () {
               cartItems = []; saveCart();
               // Pass the real captured total + currency so gracias.html can fire a
