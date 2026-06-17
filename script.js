@@ -678,6 +678,20 @@ function trackCartAdd(product) {
   // If the country column isn't there yet, retry without it so the log still saves.
   if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('cart_events', { product_id: row.product_id, product_title: row.product_title, price: row.price }); }).catch(function () {});
 }
+// Log "started checkout" (Meta InitiateCheckout) first-party so the dashboard's
+// funnel has the step between add-to-cart and purchase. Same cookieless model.
+function trackCheckout(items, valueUsd) {
+  try {
+    var list = items || [];
+    var row = {
+      num_items: list.reduce(function (s, i) { return s + (i.qty || 1); }, 0) || list.length || 1,
+      value: Math.round((Number(valueUsd) || 0) * 100) / 100,
+      country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : '') || ''
+    };
+    var p = sbInsert('checkout_events', row);
+    if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('checkout_events', { num_items: row.num_items, value: row.value }); }).catch(function () {});
+  } catch (e) {}
+}
 function removeFromCart(id) { cartItems = cartItems.filter(i => i.id !== id); saveCart(); renderCart(); }
 function renderCart() {
   const container = document.getElementById('cartItems');
@@ -812,6 +826,7 @@ function renderCartPayPalButtons() {
             num_items: cartItems.reduce(function (s, i) { return s + (i.qty || 1); }, 0),
             value: fbAmt(totalUsd), currency: fbCcy()
           });
+          trackCheckout(cartItems, totalUsd);
           return actions.order.create(buildCartOrder());
         },
         onApprove: function (data, actions) {

@@ -331,6 +331,20 @@
     .online-cart { font-family:var(--font-display); font-weight:800; font-size:.7rem; padding:2px 9px; border-radius:9999px; background:var(--c-golden); color:var(--c-ink); border:var(--bw-1) solid var(--c-ink); white-space:nowrap; }
     .online-summary { padding:10px 12px; margin-bottom:6px; border:var(--bw-1) solid var(--c-ink); border-radius:12px; background:var(--c-golden); font-family:var(--font-display); font-weight:800; font-size:.78rem; animation:cartPulse 1.4s ease-in-out infinite; }
     @keyframes cartPulse { 0%,100%{ box-shadow:4px 4px 0 var(--c-ink); } 50%{ box-shadow:4px 4px 0 var(--c-terracotta); transform:translate(-1px,-1px); } }
+    /* conversion funnel */
+    .funnel { display:flex; flex-direction:column; gap:12px; }
+    .funnel-step { display:grid; grid-template-columns:165px 1fr 96px; gap:14px; align-items:center; }
+    .funnel-step__head { font-family:var(--font-display); font-weight:800; font-size:.82rem; }
+    .funnel-bar-wrap { background:var(--c-cream-alt); border:var(--bw-1) solid var(--c-ink); border-radius:9999px; height:28px; overflow:hidden; }
+    .funnel-bar { height:100%; min-width:4px; border-radius:9999px; transition:width .5s var(--ease-out); }
+    .funnel-step:nth-child(1) .funnel-bar { background:var(--c-sky); }
+    .funnel-step:nth-child(2) .funnel-bar { background:#BFE0AE; }
+    .funnel-step:nth-child(3) .funnel-bar { background:var(--c-golden); }
+    .funnel-step:nth-child(4) .funnel-bar { background:var(--c-terracotta); }
+    .funnel-step__right { text-align:right; display:flex; flex-direction:column; line-height:1.15; }
+    .funnel-step__n { font-family:var(--font-display); font-weight:900; font-size:1.05rem; }
+    .funnel-step__conv { font-size:.68rem; font-weight:700; color:var(--c-text-muted); }
+    @media(max-width:560px){ .funnel-step { grid-template-columns:120px 1fr 70px; gap:8px; } .funnel-step__head{ font-size:.74rem; } }
     .online-h2 { display:flex; align-items:center; gap:10px; }
     .live-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); border:var(--bw-1) solid var(--c-ink); font-family:var(--font-display); font-weight:900; font-size:.58rem; letter-spacing:.12em; animation:liveFlash 1.3s ease-in-out infinite; }
     .live-badge__dot { width:7px; height:7px; border-radius:50%; background:var(--c-cream); }
@@ -678,6 +692,7 @@
       <div class="panel"><h2>Visits</h2>
         <div class="tf-tabs" data-tf-for="traf"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
         <div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
+      <div class="panel" style="margin-top:24px"><h2>Conversion funnel</h2><p class="panel__hint">From landing to sale (all-time). Each step shows how many got there and the % that continued from the step before — where you lose people.</p><div id="funnel"><p class="muted">Loading…</p></div></div>
       <div class="ov-grid" style="margin-top:24px">
         <div class="panel"><h2>Countries by traffic</h2><p class="panel__hint">Fills up as people visit the site.</p><div id="trafCountries"></div></div>
         <div class="panel"><h2>Most visited pages</h2><div id="trafTop"><p class="muted">Loading…</p></div></div>
@@ -835,7 +850,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260751"></script>
+<script src="partials.js?v=20260752"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1782,7 +1797,35 @@
       renderTrafCountries(activeTf('traf'));
       $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Page</th><th>Visits</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">No visits recorded yet.</p>';
       loadAcquisition();
+      loadFunnel(total);
     }catch(e){ $('trafStats').innerHTML=''; $('trafTop').innerHTML='<p class="muted">Traffic table missing. ('+esc(e.message||'')+')</p>'; }
+  }
+  async function loadFunnel(visits){
+    var c={ visits:visits||0, cart:0, checkout:0, sales:0 };
+    try{ var ce=await sb.from('cart_events').select('id',{count:'exact',head:true}); if(!ce.error&&ce.count!=null) c.cart=ce.count; }catch(e){}
+    try{ var co=await sb.from('checkout_events').select('id',{count:'exact',head:true}); if(!co.error&&co.count!=null) c.checkout=co.count; }catch(e){}
+    try{ var pu=await sb.from('purchases').select('id',{count:'exact',head:true}); if(!pu.error&&pu.count!=null) c.sales=pu.count; }catch(e){}
+    renderFunnel(c);
+  }
+  function renderFunnel(c){
+    var box=$('funnel'); if(!box) return;
+    var steps=[
+      {label:'👀 Visits', n:c.visits||0},
+      {label:'🛒 Added to cart', n:c.cart||0},
+      {label:'💳 Started checkout', n:c.checkout||0},
+      {label:'✅ Purchased', n:c.sales||0}
+    ];
+    var top=steps[0].n||1;
+    box.innerHTML='<div class="funnel">'+steps.map(function(s,i){
+      var w=Math.max(Math.round((s.n/top)*100),3);
+      var prev=i>0?steps[i-1].n:0;
+      var conv=i>0?(prev?Math.round(s.n/prev*100):0):null;
+      return '<div class="funnel-step"><div class="funnel-step__head">'+s.label+'</div>'
+        +'<div class="funnel-bar-wrap"><div class="funnel-bar" style="width:'+w+'%"></div></div>'
+        +'<div class="funnel-step__right"><span class="funnel-step__n">'+s.n.toLocaleString('en-US')+'</span>'
+        +(conv!=null?'<span class="funnel-step__conv">'+conv+'% of prev</span>':'<span class="funnel-step__conv">start</span>')
+        +'</div></div>';
+    }).join('')+'</div>';
   }
 
   /* ===== NOTIFICATION BELL ===== */

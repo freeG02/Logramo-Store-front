@@ -597,6 +597,7 @@ if (currentLink) {
             value: Number(amount), currency: ccy
           });
         }
+        if (typeof trackCheckout === 'function') trackCheckout([{ id: p.id, qty: 1, price: p.price }], Number(p.price) || 0);
         return actions.order.create({
           purchase_units: [{ amount: { value: amount, currency_code: ccy }, description: (p.title || 'Producto Logramo').slice(0, 127), custom_id: String(p.id || '') }]
         });
