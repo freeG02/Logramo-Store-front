@@ -77,9 +77,7 @@ window.LogramoCurrency = (function () {
   /* When display currency != checkout currency (e.g., ARS shown, USD charged),
      return a buyer-facing note. Otherwise empty string. */
   function checkoutNote(usdAmount) {
-    var co = checkoutCurrency();
-    if (co === state.ccy) return '';
-    return 'El cobro se realiza en USD ($' + Number(usdAmount || 0).toFixed(2) + ') a través de PayPal.';
+    return '';
   }
 
   async function init() {
