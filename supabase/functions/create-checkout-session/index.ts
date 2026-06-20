@@ -33,6 +33,54 @@ const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
 });
 
+// Meta Conversions API (server-side InitiateCheckout). Dormant until
+// META_CAPI_TOKEN is set. The browser fires the same InitiateCheckout with the
+// same event_id (ic_event_id), so Meta dedupes the pair into one event and the
+// server's CAPI coverage matches the pixel.
+const META_PIXEL_ID = Deno.env.get("META_PIXEL_ID") ?? "4357191121163003";
+const META_CAPI_TOKEN = Deno.env.get("META_CAPI_TOKEN") ?? "";
+const META_API_VERSION = "v19.0";
+
+// Fire-and-forget InitiateCheckout to the Conversions API. Never throws.
+async function sendCapiInitiateCheckout(opts: {
+  eventId: string; value: number; currency: string;
+  contents: { id: string; quantity: number; item_price: number }[];
+  ids: string[]; ip: string; ua: string; fbc?: string; fbp?: string; sourceUrl: string;
+}): Promise<void> {
+  if (!META_CAPI_TOKEN || !opts.eventId) return;
+  if (!(Number.isFinite(opts.value) && opts.value > 0)) return;
+  try {
+    const user_data: Record<string, unknown> = {};
+    if (opts.ip) user_data.client_ip_address = opts.ip;
+    if (opts.ua) user_data.client_user_agent = opts.ua;
+    if (opts.fbc) user_data.fbc = opts.fbc;
+    if (opts.fbp) user_data.fbp = opts.fbp;
+    const payload = {
+      data: [{
+        event_name: "InitiateCheckout",
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: opts.eventId,            // dedup key, shared with the browser event
+        action_source: "website",
+        event_source_url: `${opts.sourceUrl}/biblioteca.html`,
+        user_data,
+        custom_data: {
+          currency: opts.currency,
+          value: Math.round(opts.value * 100) / 100,
+          content_type: "product",
+          content_ids: opts.ids,
+          contents: opts.contents,
+          num_items: opts.contents.reduce((s, c) => s + (c.quantity || 1), 0),
+        },
+      }],
+    };
+    await fetch(`https://graph.facebook.com/${META_API_VERSION}/${META_PIXEL_ID}/events?access_token=${encodeURIComponent(META_CAPI_TOKEN)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (_e) { /* swallow — checkout still proceeds */ }
+}
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -109,6 +157,9 @@ serve(async (req: Request) => {
   const country = body.country ? String(body.country) : "";
   const fbc = body.fbc ? String(body.fbc) : "";
   const fbp = body.fbp ? String(body.fbp) : "";
+  const icEventId = body.ic_event_id ? String(body.ic_event_id).slice(0, 120) : "";
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
+  const ua = req.headers.get("user-agent") ?? "";
   const origin = String(body.origin || "https://logramo.com").replace(/\/+$/, "");
   const clientAmounts: Record<string, number> = (body.client_amounts && typeof body.client_amounts === "object") ? body.client_amounts : {};
 
@@ -128,6 +179,9 @@ serve(async (req: Request) => {
   const lc = ccy.toLowerCase();
 
   const ids: string[] = [];
+  // Per-item price detail for Meta (contents + value), in the charge currency.
+  const icContents: { id: string; quantity: number; item_price: number }[] = [];
+  let icValue = 0;
   const line_items = priced.map((it: any) => {
     const p = products.get(it.id);
     ids.push(it.id);
@@ -139,6 +193,8 @@ serve(async (req: Request) => {
     const cAmt = Number(clientAmounts[it.id]);
     let major = serverMajor;
     if (Number.isFinite(cAmt) && cAmt > 0 && cAmt >= serverMajor * 0.7 && cAmt <= serverMajor * 1.5) major = cAmt;
+    icContents.push({ id: it.id, quantity: it.qty, item_price: Math.round(major * 100) / 100 });
+    icValue += major * it.qty;
     return {
       quantity: it.qty,
       price_data: {
@@ -168,6 +224,13 @@ serve(async (req: Request) => {
     cancel_url: `${origin}/biblioteca.html`,
   };
 
+  // Server-side InitiateCheckout to Meta (deduped against the browser event by
+  // ic_event_id). Kicked off now so its round trip overlaps session creation.
+  const icPromise = sendCapiInitiateCheckout({
+    eventId: icEventId, value: icValue, currency: ccy, contents: icContents,
+    ids, ip, ua, fbc, fbp, sourceUrl: origin,
+  });
+
   // Create the session; if Stripe rejects the currency for this account, retry in USD.
   try {
     let session;
@@ -182,6 +245,7 @@ serve(async (req: Request) => {
         session = await stripe.checkout.sessions.create({ ...params, line_items: usdItems });
       } else { throw e; }
     }
+    await icPromise.catch(() => {});
     return json({ ok: true, url: session.url, id: session.id });
   } catch (e: any) {
     return json({ ok: false, reason: "stripe_error", detail: String(e?.message || e) }, 502);

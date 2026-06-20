@@ -52,10 +52,25 @@ serve(async (req: Request) => {
     const paid = s.payment_status === "paid";
     // Still-open async method (chiefly OXXO): a voucher the buyer hasn't paid yet.
     const pending = s.payment_status === "unpaid" && s.status !== "expired";
+    // Per-line price detail (charge currency) so the thank-you page's Purchase
+    // pixel can send `contents` with a real item_price per guide — matches the
+    // CAPI event's contents and gives Meta varied price info.
+    let items: { id: string; qty: number; amount: number }[] = [];
+    if (paid) {
+      try {
+        const li = await stripe.checkout.sessions.listLineItems(sessionId, { limit: 100, expand: ["data.price.product"] });
+        items = (li.data || []).map((it: any) => {
+          const prod = it?.price?.product;
+          const pid = (prod && typeof prod === "object" && prod.metadata && prod.metadata.product_id) ? String(prod.metadata.product_id) : "";
+          const qty = Math.max(1, Number(it.quantity) || 1);
+          return { id: pid, qty, amount: Math.round((fromStripeAmount(it.amount_total, currency) / qty) * 100) / 100 };
+        }).filter((x: any) => x.id);
+      } catch (_e) { /* fall back to ids-only below */ }
+    }
     return json({
       ok: true, paid, pending,
       email: s.customer_details?.email || "",
-      currency, amount: fromStripeAmount(s.amount_total, currency), ids,
+      currency, amount: fromStripeAmount(s.amount_total, currency), ids, items,
     });
   } catch (e: any) {
     return json({ ok: false, reason: "stripe_error", detail: String(e?.message || e) }, 502);

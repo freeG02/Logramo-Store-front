@@ -56,8 +56,9 @@ async function sha256(s: string): Promise<string> {
 // Fire-and-forget Purchase to the Conversions API. Never throws into the caller.
 async function sendCapiPurchase(opts: {
   email: string; name: string | null; value: number; currency: string;
-  orderId: string; contentIds: string[]; ip: string; ua: string;
-  fbc?: string; fbp?: string;
+  orderId: string; contentIds: string[];
+  contents: { id: string; quantity: number; item_price: number }[];
+  ip: string; ua: string; fbc?: string; fbp?: string;
 }): Promise<void> {
   if (!META_CAPI_TOKEN) return;
   if (!(Number.isFinite(opts.value) && opts.value > 0)) return;
@@ -84,6 +85,8 @@ async function sendCapiPurchase(opts: {
           value: Math.round(opts.value * 100) / 100,
           content_type: "product",
           content_ids: opts.contentIds,
+          contents: opts.contents,
+          num_items: opts.contents.reduce((s, c) => s + (c.quantity || 1), 0) || opts.contentIds.length,
         },
       }],
     };
@@ -172,8 +175,12 @@ async function fulfill(session: any, req: Request): Promise<void> {
   if (recorded.length) {
     const orderTotal = fromStripeAmount(session.amount_total, currency) || lines.reduce((s, l) => s + (l.amount || 0), 0);
     const contentIds = lines.map((l) => l.productId).filter((x): x is string => !!x);
+    // Per-item price detail so Meta sees real, varied price info per Purchase.
+    const contents = lines
+      .filter((l) => l.productId)
+      .map((l) => ({ id: String(l.productId), quantity: 1, item_price: Math.round((l.amount || 0) * 100) / 100 }));
     await sendCapiPurchase({
-      email, name, value: orderTotal, currency, orderId: sessionId, contentIds,
+      email, name, value: orderTotal, currency, orderId: sessionId, contentIds, contents,
       ip: (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
       ua: req.headers.get("user-agent") ?? "",
       fbc: md.fbc || "", fbp: md.fbp || "",

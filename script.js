@@ -383,6 +383,12 @@ function fbTrack(event, params, eventId) {
     else fbq('track', event, params || {});
   } catch (e) {}
 }
+// Shared dedup key so the browser event and its server-side Conversions API twin
+// collapse into one in Meta. Passed to fbTrack AND sent to the edge function.
+function fbEventId(prefix) {
+  try { if (window.crypto && crypto.randomUUID) return (prefix || 'e') + '_' + crypto.randomUUID(); } catch (e) {}
+  return (prefix || 'e') + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+}
 
 function trackSubscriber(email, source) {
   if (!(email && /\S+@\S+\.\S+/.test(email))) return;
@@ -819,12 +825,14 @@ function startCartCheckout() {
   if (mount) mount.innerHTML = '<p class="muted" style="text-align:center;padding:12px">Redirigiendo a pago seguro…</p>';
 
   var totalUsd = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
+  var icEventId = fbEventId('ic');
   try {
     fbTrack('InitiateCheckout', {
       content_ids: cartItems.map(function (i) { return i.id; }), content_type: 'product',
+      contents: cartItems.map(function (i) { return { id: i.id, quantity: i.qty || 1, item_price: fbAmt(i.price) }; }),
       num_items: cartItems.reduce(function (s, i) { return s + (i.qty || 1); }, 0),
       value: fbAmt(totalUsd), currency: fbCcy()
-    });
+    }, icEventId);
     trackCheckout(cartItems, totalUsd);
   } catch (e) {}
 
@@ -838,6 +846,7 @@ function startCartCheckout() {
     currency: ccy, client_amounts: clientAmounts,
     channel: (typeof getChannel === 'function' ? getChannel() : null),
     country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null),
+    ic_event_id: icEventId,
     origin: location.origin
   };
   var mb = (typeof getMetaBrowserIds === 'function') ? getMetaBrowserIds() : {};

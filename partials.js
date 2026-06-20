@@ -575,8 +575,13 @@ if (currentLink) {
   function startStripeCheckout(p, btn, lbl) {
     const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
     const amount = (window.LogramoCurrency ? Number(LogramoCurrency.checkoutAmount(p.price)) : Number(p.price || 0));
+    const icEventId = (typeof fbEventId === 'function') ? fbEventId('ic') : '';
     if (typeof fbTrack === 'function') {
-      fbTrack('InitiateCheckout', { content_ids: [p.id], content_type: 'product', num_items: 1, value: amount, currency: ccy });
+      fbTrack('InitiateCheckout', {
+        content_ids: [p.id], content_type: 'product', num_items: 1,
+        contents: [{ id: p.id, quantity: 1, item_price: amount }],
+        value: amount, currency: ccy
+      }, icEventId);
     }
     if (typeof trackCheckout === 'function') trackCheckout([{ id: p.id, qty: 1, price: p.price }], Number(p.price) || 0);
 
@@ -590,6 +595,7 @@ if (currentLink) {
       items: [{ id: p.id, qty: 1 }], currency: ccy, client_amounts: clientAmounts,
       channel: (typeof getChannel === 'function' ? getChannel() : null),
       country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null),
+      ic_event_id: icEventId,
       origin: location.origin
     }, mb);
 

@@ -71,10 +71,10 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260768"></script>
+<script src="partials.js?v=20260770"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script src="script.js?v=20260769"></script>
+<script src="script.js?v=20260770"></script>
 <script>
 (function(){
   var sb=window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
@@ -121,7 +121,7 @@
     // (OXXO voucher → arrives by email when it clears). Legacy PayPal links
     // instead carried order/val/cur in the URL.
     var sessionId=params.get('session_id')||'';
-    var paid=true, pending=false, order='', val=0, cur='USD';
+    var paid=true, pending=false, order='', val=0, cur='USD', lineItems=[];
     if(sessionId){
       paid=false;
       try{
@@ -134,6 +134,7 @@
           paid=!!sd.paid; pending=!!sd.pending; order=sessionId;
           val=Math.round((Number(sd.amount)||0)*100)/100; cur=(sd.currency||'USD').toUpperCase();
           if(Array.isArray(sd.ids) && sd.ids.length) ids=sd.ids;
+          if(Array.isArray(sd.items)) lineItems=sd.items;
         }
       }catch(e){ /* network hiccup: fall through to the download UI by ids */ paid=true; }
     } else {
@@ -163,7 +164,13 @@
       // but a revisit days later could otherwise double-count / skew values).
       var _fired=false; try{ _fired=localStorage.getItem('logramo_purchase_'+order)==='1'; }catch(e){}
       if(typeof fbTrack==='function' && val>0 && order && !_fired){
-        fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: val, currency: cur }, order);
+        // Per-item price detail so Meta gets real, varied price info (not just a
+        // single value). Matches the CAPI Purchase's `contents` in stripe-webhook.
+        var pContents=(lineItems||[]).map(function(x){ return { id:x.id, quantity:x.qty||1, item_price:x.amount }; });
+        var pNum=pContents.reduce(function(s,c){ return s+(c.quantity||1); },0)||ids.length;
+        var pParams={ content_ids: ids, content_type:'product', num_items: pNum, value: val, currency: cur };
+        if(pContents.length) pParams.contents=pContents;
+        fbTrack('Purchase', pParams, order);
         try{ localStorage.setItem('logramo_purchase_'+order,'1'); }catch(e){}
       }
     } catch(e){}
