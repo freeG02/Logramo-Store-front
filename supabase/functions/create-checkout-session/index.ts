@@ -162,7 +162,6 @@ serve(async (req: Request) => {
     // enabled in the Dashboard (card, Apple Pay, Google Pay, OXXO, Link, …).
     customer_creation: "always",
     billing_address_collection: "auto",
-    payment_method_options: { oxxo: { expires_after_days: 3 } },
     metadata,
     payment_intent_data: { metadata },
     success_url: `${origin}/gracias.html?session_id={CHECKOUT_SESSION_ID}&ids=${encodeURIComponent(ids.join(","))}`,
