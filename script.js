@@ -309,6 +309,36 @@ function getBuyerCountry() {
   } catch (e) { return ''; }
 }
 
+// Resolve the visitor's 2-letter country, preferring the geo the currency module
+// already detected + cached this session ('logramo_geo'). Falls back to the SAME
+// 3-source chain (ipapi -> ipwho -> geojs) the currency module uses, instead of a
+// single provider — so a rate-limited ipapi.co no longer silently yields "no
+// country" on the visit log. Caches the result so the next caller is instant.
+// Resolves '' only if all three sources fail.
+async function geoCountry() {
+  var cached = getBuyerCountry();
+  if (cached) return cached;
+  var sources = [
+    { url: 'https://ipapi.co/json/', key: 'country_code' },
+    { url: 'https://ipwho.is/', key: 'country_code' },
+    { url: 'https://get.geojs.io/v1/ip/country.json', key: 'country' }
+  ];
+  for (var i = 0; i < sources.length; i++) {
+    try {
+      var rr = await fetch(sources[i].url, { cache: 'no-store' });
+      if (!rr.ok) continue;
+      var gg = await rr.json();
+      var code = (gg && gg[sources[i].key]) || '';
+      if (code && code.length === 2) {
+        code = code.toUpperCase();
+        try { sessionStorage.setItem('logramo_geo', JSON.stringify({ country_code: code })); } catch (e) {}
+        return code;
+      }
+    } catch (e) { /* try next source */ }
+  }
+  return '';
+}
+
 /* Meta Click ID (_fbc) + Browser ID (_fbp), read from the Pixel's own cookies so
    the server-side Conversions API event can be matched to the same person the
    browser saw. This is the single biggest Event Match Quality lever and what
@@ -379,9 +409,10 @@ function trackPageview(opts) {
   } catch (e) { /* storage blocked (private mode): fall through and count it */ }
   var base = { path: location.pathname || '/', referrer: document.referrer || '' };
   if (opts.article_id) base.article_id = opts.article_id;
-  fetch('https://ipapi.co/json/').then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (geo) {
-    var country = (geo && (geo.country_code || geo.country)) || '';
-    var payload = Object.assign({}, base, { country: country });
+  // Reuse the robust, cached geo (same chain the currency module uses) rather than
+  // a bare ipapi.co call that records no country whenever ipapi.co rate-limits.
+  geoCountry().then(function (country) {
+    var payload = Object.assign({}, base, { country: country || '' });
     var p = sbInsert('pageviews', payload);
     // If the country column doesn't exist yet, fall back to a plain pageview
     if (p && p.then) p.then(function (res) { if (res && !res.ok) sbInsert('pageviews', base); }).catch(function () {});
