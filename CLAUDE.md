@@ -10,7 +10,7 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 
 **Backend**: Supabase (project ref `eopobchvkfvkkrtrzeyu`). Postgres + Storage + Auth + Edge Functions.
 
-**Payments**: PayPal Smart Buttons (currently in **LIVE** mode). Client ID stored in `public.site_settings` table (key `paypal_client_id`).
+**Payments**: **Stripe Checkout** (hosted redirect). Buyer clicks "Pagar" → `create-checkout-session` edge fn prices the order from the `products` table and builds the session → buyer pays on Stripe's hosted page (card, Apple Pay, Google Pay, OXXO, Link, … via `automatic_payment_methods`) → `stripe-webhook` edge fn records the purchase(s) + sends the email + fires Meta CAPI. Secrets `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` are Supabase secrets (no client-side key needed). Migrated off PayPal Smart Buttons June 2026 (Mexican buyers distrusted PayPal). The old `record-purchase` edge fn + `paypal_client_id`/`paypal_env` site_settings are now orphaned (kept, unused).
 
 **Emails**: Resend transactional API, invoked from Supabase Edge Functions. Sending from `ayuda@logramo.com` (domain verified, DNS records in GoDaddy: DKIM + SPF + feedback MX).
 
@@ -84,11 +84,11 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 
 **subscribers** — newsletter signups. `email`, `source`, `created_at`. Trigger sends welcome email on insert.
 
-**purchases** — every successful PayPal capture lands here. `email`, `payer_name`, `product_id`, `amount`, `currency`, `paypal_order_id`, `status`, `channel`, `country`, `checkin_sent_at`, `review_sent_at`, `created_at`. A **cart order writes one row per guide, all sharing the same `paypal_order_id`** (the `record-purchase` function reads PayPal's verified line items). The confirmation email is sent **once per order by `record-purchase`** (NOT by a DB trigger — that was dropped in `20260622`). The daily cron picks up rows that are +7d (sends check-in) and +14d (sends review request) — note these are still per-row, so a multi-guide order gets a check-in/review request per guide.
+**purchases** — every successful payment lands here. `email`, `payer_name`, `product_id`, `amount`, `currency`, `stripe_session_id` (new — the Stripe Checkout Session id), `paypal_order_id` (legacy, historical rows only), `status`, `channel`, `country`, `checkin_sent_at`, `review_sent_at`, `created_at`. A **cart order writes one row per guide, all sharing the same `stripe_session_id`** (the `stripe-webhook` function reads Stripe's verified line items; product id is stored on each line's `price.product.metadata.product_id`). The confirmation email is sent **once per order by `stripe-webhook`** (NOT by a DB trigger — that was dropped in `20260622`). The daily cron picks up rows that are +7d (sends check-in) and +14d (sends review request) — note these are still per-row, so a multi-guide order gets a check-in/review request per guide.
 
 **review_tokens** — one-use tokens for tokenized review links sent in email. `token (pk)`, `purchase_id (fk)`, `used_at`, `expires_at` (default +90 days), `created_at`.
 
-**site_settings** — key/value config. Currently holds: `paypal_client_id`, `paypal_env` (`live`), `highlight_product_id` (which product appears in the homepage highlight block).
+**site_settings** — key/value config. Holds: `highlight_product_id` (which product appears in the homepage highlight block). `paypal_client_id` / `paypal_env` are leftover from the PayPal era (unused; Stripe Checkout needs no client-side key).
 
 ---
 
@@ -99,9 +99,9 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 | `index.html` | Homepage — hero with rotating image, "highlight" paid product block (Cría un Perro Feliz right now), latest 3 blog posts, 3 homepage videos, reviews carousel, newsletter signup. |
 | `biblioteca.html` | Product library. Filter chips that auto-hide if empty. Featured carousel (Destacados, max 2 cards, fully clickable). |
 | `blog.html` | Article list. Multi-select category filter chips that auto-hide if empty. |
-| `producto.html?id=...` | Product detail page. 2×2 image grid where each tile holds an A4-portrait paper-shaped wrapper. Clickable images open a lightbox with prev/next arrow nav. PayPal Smart Buttons (Card on top, PayPal below, brand-styled wrapper). |
-| `gracias.html?id=...&order=...` | Post-purchase thank-you page. Confetti animation. Auto-downloads PDF. Cart orders land here as `?ids=a,b,c&order=...` — it lists every guide and auto-downloads each PDF; single `?id=` still works. |
-| **Cart sidebar** (`partials.js`) | Real multi-item PayPal checkout: "Ir al pago" swaps to PayPal Smart Buttons in the footer, builds ONE order with an `items[]` breakdown (single capture = one fee), captures, calls `record-purchase`, then → `gracias.html?ids=...`. `script.js` → `checkout()` / `buildCartOrder()`. |
+| `producto.html?id=...` | Product detail page (thin shell that opens the modal). The modal (`partials.js`) shows a brand-styled "Pagar de forma segura" button → `startStripeCheckout(p)` → `create-checkout-session` → redirect to Stripe. |
+| `gracias.html?session_id=...&ids=...` | Post-purchase thank-you page. Reads `?session_id=` and asks `checkout-status`: **paid** (card/Apple Pay) → confetti + auto-downloads each PDF + fires the Purchase pixel; **pending** (OXXO voucher not yet paid) → "te llega por email" message, no download/pixel. Legacy `?id=`/`?ids=`+`order/val/cur` (PayPal) still works as a fallback. |
+| **Cart sidebar** (`partials.js`) | Multi-item Stripe checkout: "Ir al pago" → `checkout()`/`startCartCheckout()` (in `script.js`) POSTs all cart items to `create-checkout-session` (ONE session for the cart) and redirects to Stripe; `stripe-webhook` writes one purchases row per guide. |
 | `invoice.html?order=...&email=...&...` | Branded printable invoice. "Imprimir / Guardar PDF" button → browser print → save as PDF. URL params: `order`, `email`, `name`, `product`, `amount`, `currency`, `date`. |
 | `coming-soon.html` | Standalone "we'll launch soon" page (currently NOT gated; redirect was removed). |
 | `admin.html` | Dashboard (auth-gated via Supabase Auth). Subtabs: Products, Articles, Homepage Videos, Reviews, Highlight (homepage product picker). Drag-reorder via SortableJS on every list. Pin (max 3) on products/articles/videos/reviews. |
@@ -115,7 +115,7 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 - Maps country → currency (50+ currencies including all Latam: ARS, CLP, COP, PEN, UYU, BOB, DOP, GTQ, etc.).
 - Fetches live USD→ccy rate from open.er-api.com → frankfurter.app fallback.
 - Display prices via `LogramoCurrency.format(usdAmount)` — symbol + code (e.g., "€27.59", "R$152", "MX$549 MXN", "$29.99 USD").
-- PayPal checkout uses `LogramoCurrency.checkoutCurrency()` — buyer is charged in their actual local currency if PayPal supports it (USD, EUR, GBP, MXN, BRL, etc.); otherwise falls back to USD with a "El cobro se realiza en USD" note on the product page.
+- Checkout uses `LogramoCurrency.checkoutCurrency()` — buyer is charged in their actual local currency if Stripe supports it (the `STRIPE_OK` list in `script.js`, mirrored server-side; covers nearly all of Latam — ARS, CLP, COP, PEN, etc.); otherwise falls back to USD. `create-checkout-session` re-prices server-side from the `products` table and converts USD→local with its own FX fetch (handles Stripe zero-decimal currencies), so the client never sets the charge amount.
 - Manual override: `?ccy=EUR` URL param (used for QA only).
 - Visible chip was removed from the navbar — detection still runs invisibly.
 
@@ -126,12 +126,12 @@ A Spanish-language dog-care brand selling **digital guides** (PDFs) to dog owner
 | Email | Trigger | Status | File |
 |---|---|---|---|
 | **Welcome** | New row in `subscribers` (via Database Webhook) | ✅ Deployed | `supabase/functions/send-welcome/index.ts` |
-| **Purchase confirmation + PDF + invoice link** | Called once per order by `record-purchase` after it inserts the rows. **One email per order with a download link per guide** (a cart of N guides = 1 email, not N). Accepts `{ order: { items:[...] } }`; legacy `{ record }` single-row shape still works. | ✅ Deployed | `supabase/functions/send-purchase/index.ts` |
+| **Purchase confirmation + PDF + invoice link** | Called once per order by `stripe-webhook` after it inserts the rows. **One email per order with a download link per guide** (a cart of N guides = 1 email, not N). Accepts `{ order: { stripe_session_id, items:[...] } }`; legacy `{ record }` single-row shape still works. | ✅ Deployed | `supabase/functions/send-purchase/index.ts` |
 | **+7d "How's it going?"** | Daily cron, finds purchases where `created_at < now() - 7d AND checkin_sent_at IS NULL` | ✅ Deployed (cron scheduled) | `supabase/functions/send-followups/index.ts` |
 | **+14d Review request** | Daily cron, same function, finds `created_at < now() - 14d AND review_sent_at IS NULL`. Creates tokenized review link. | ✅ Deployed (same function) | `supabase/functions/send-followups/index.ts` |
 
 **Personalization**
-- Buyers (have `payer_name` from PayPal): use first name, e.g., "María".
+- Buyers (have `payer_name` from Stripe's `customer_details.name`): use first name, e.g., "María".
 - Subscribers (only have email): smart name parse from local-part. Strip digits, split on `._-+`, skip generic prefixes (info, hola, contacto, admin, etc.). Fall back to no greeting if generic.
 
 **Sending stack**
@@ -161,7 +161,7 @@ The user is working through Phase 4: customer accounts + content. Specifically:
 
 - **User communication style**: replies tend to be short. They expect concise, structured answers with copy/paste-ready commands.
 - **Their PowerShell window**: keep it the same one across commands. Always `cd "C:\Users\rosem\OneDrive\Documents\Logramo\Logo Assets\Website Assets"` first if they reopened.
-- **Sharing API keys**: the publishable `sb_publishable_...` key is safe (hardcoded in public JS). The `RESEND_API_KEY` and PayPal secrets must NEVER be pasted in chat — if accidentally shared, immediately revoke.
+- **Sharing API keys**: the publishable `sb_publishable_...` key is safe (hardcoded in public JS). The `RESEND_API_KEY`, `STRIPE_SECRET_KEY`, and `STRIPE_WEBHOOK_SECRET` must NEVER be pasted in chat — if accidentally shared, immediately revoke/roll.
 - **Pushing live**: only when user explicitly says so. They've said "push it live" when ready; we hold otherwise.
 - **Testing emails without waiting**: insert a backdated purchase row (`created_at = now() - interval '15 days'`) → run `send-followups` manually → verify both emails arrive → delete the test row.
 - **Spanish in UI / English in dashboard**: Public site is Spanish (es-LA). Dashboard admin UI is in English.
@@ -173,7 +173,7 @@ The user is working through Phase 4: customer accounts + content. Specifically:
 - Live: https://logramo.com
 - Supabase dashboard: https://supabase.com/dashboard/project/eopobchvkfvkkrtrzeyu
 - Resend: https://resend.com (domain `logramo.com` verified)
-- PayPal Developer: https://developer.paypal.com (Live app linked, sandbox kept as backup)
+- Stripe Dashboard: https://dashboard.stripe.com (Payments, Payment methods, Webhooks). Webhook endpoint: `https://eopobchvkfvkkrtrzeyu.supabase.co/functions/v1/stripe-webhook` (events: `checkout.session.completed`, `async_payment_succeeded`, `async_payment_failed`, `expired`).
 - GitHub: https://github.com/freeG02/Logramo-Store-front
 
 ---

@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260750" />
+  <link rel="stylesheet" href="styles.css?v=20260767" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     .gracias-section { min-height: calc(100vh - 80px); display:flex; align-items:center; justify-content:center; padding:32px 0; }
@@ -71,10 +71,10 @@
 <div id="partial-chat"></div>
 <div id="partial-popups"></div>
 
-<script src="partials.js?v=20260753"></script>
+<script src="partials.js?v=20260768"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script src="script.js?v=20260754"></script>
+<script src="script.js?v=20260762"></script>
 <script>
 (function(){
   var sb=window.supabase.createClient('https://eopobchvkfvkkrtrzeyu.supabase.co','sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D');
@@ -109,26 +109,62 @@
   }
 
   (async function(){
+    var SB_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
+    var SB_KEY='sb_publishable_6GZ1L30_DktAPRbsPs-6Lg_PSqJ5c-D';
     var params=new URLSearchParams(location.search);
     // ?ids=a,b,c for a cart order; ?id=a for a single product-page purchase.
     var ids=(params.get('ids')||params.get('id')||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
     var msg=document.getElementById('gMsg'), act=document.getElementById('gActions');
-    // Fire confetti for everyone who lands here after paying
+
+    // Payment state. Stripe Checkout returns ?session_id=… → ask checkout-status
+    // whether it's paid now (card/Apple Pay → download here) or still pending
+    // (OXXO voucher → arrives by email when it clears). Legacy PayPal links
+    // instead carried order/val/cur in the URL.
+    var sessionId=params.get('session_id')||'';
+    var paid=true, pending=false, order='', val=0, cur='USD';
+    if(sessionId){
+      paid=false;
+      try{
+        var sr=await fetch(SB_URL+'/functions/v1/checkout-status',{
+          method:'POST', headers:{ apikey:SB_KEY, Authorization:'Bearer '+SB_KEY, 'Content-Type':'application/json' },
+          body:JSON.stringify({ session_id:sessionId })
+        });
+        var sd=await sr.json();
+        if(sd && sd.ok){
+          paid=!!sd.paid; pending=!!sd.pending; order=sessionId;
+          val=Math.round((Number(sd.amount)||0)*100)/100; cur=(sd.currency||'USD').toUpperCase();
+          if(Array.isArray(sd.ids) && sd.ids.length) ids=sd.ids;
+        }
+      }catch(e){ /* network hiccup: fall through to the download UI by ids */ paid=true; }
+    } else {
+      order=params.get('order')||'';
+      val=Math.round((parseFloat(params.get('val')||'0')||0)*100)/100;
+      cur=(params.get('cur')||'USD').toUpperCase();
+    }
+
+    // OXXO (or any async method) not yet paid: no celebration, no download, no
+    // Purchase pixel — the guides go out by email once the voucher is paid.
+    if(pending){
+      var eyP=document.querySelector('.gracias-section .eyebrow'); if(eyP) eyP.textContent='Pago pendiente';
+      var h1P=document.querySelector('.gracias-section h1'); if(h1P) h1P.textContent='Tu pago está casi listo';
+      msg.innerHTML='Tu pago con <strong>OXXO</strong> quedó registrado. En cuanto pagues el comprobante en la tienda, te enviamos tus guías por email (suele tardar de unas horas a 1–2 días). Revisa también la carpeta de spam.';
+      act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Seguir explorando</a>';
+      return;
+    }
+
+    // Fire confetti for everyone who lands here after a confirmed payment.
     celebrate();
-    // Meta Pixel: Purchase. eventID = PayPal order id, which the server-side
-    // Conversions API event also uses, so Meta dedupes the two into one. val/cur
-    // are the exact amount PayPal charged (passed through from checkout).
+    // Meta Pixel: Purchase. eventID = Stripe session id, which the server-side
+    // Conversions API event (in stripe-webhook) also uses, so Meta dedupes the
+    // two into one. val/cur are the exact amount Stripe charged.
     try {
-      var _order=params.get('order')||'';
-      var _val=Math.round((parseFloat(params.get('val')||'0')||0)*100)/100;
-      var _cur=(params.get('cur')||'USD').toUpperCase();
       // Fire the Pixel Purchase once per order. Refreshing or revisiting this
       // page must not re-send it (Meta dedupes by event_id within its window,
       // but a revisit days later could otherwise double-count / skew values).
-      var _fired=false; try{ _fired=localStorage.getItem('logramo_purchase_'+_order)==='1'; }catch(e){}
-      if(typeof fbTrack==='function' && _val>0 && _order && !_fired){
-        fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: _val, currency: _cur }, _order);
-        try{ localStorage.setItem('logramo_purchase_'+_order,'1'); }catch(e){}
+      var _fired=false; try{ _fired=localStorage.getItem('logramo_purchase_'+order)==='1'; }catch(e){}
+      if(typeof fbTrack==='function' && val>0 && order && !_fired){
+        fbTrack('Purchase', { content_ids: ids, content_type:'product', num_items: ids.length, value: val, currency: cur }, order);
+        try{ localStorage.setItem('logramo_purchase_'+order,'1'); }catch(e){}
       }
     } catch(e){}
     var fallback=function(){ msg.textContent='Tu compra se procesó. Si no recibes tu archivo, contáctanos.'; act.innerHTML='<a href="biblioteca.html" class="btn btn--primary">Ir a la biblioteca</a>'; };

@@ -171,7 +171,12 @@ const CART_HTML = `
     <div class="cart-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
     <button class="btn btn--primary btn--lg full-w" id="cartCheckoutBtn" onclick="checkout()">Ir al pago <svg class="icon"><use href="#i-arrow-right"/></svg></button>
     <div id="cartPay" class="cart-pay" style="display:none">
-      <div class="cart-pay__head"><span class="emoji-icon">🛡️</span> <span>Pago seguro · Tarjeta o PayPal</span></div>
+      <div class="pay-logos" aria-label="Métodos de pago aceptados">
+        <span class="pay-logo pay-logo--visa">VISA</span>
+        <span class="pay-logo" title="Mastercard"><svg viewBox="0 0 38 24" aria-hidden="true"><circle cx="15" cy="12" r="7" fill="#EB001B"/><circle cx="23" cy="12" r="7" fill="#F79E1B"/><path d="M19 6.8a7 7 0 0 0 0 10.4 7 7 0 0 0 0-10.4z" fill="#FF5F00"/></svg></span>
+        <span class="pay-logo" title="Apple Pay"><svg viewBox="0 0 14 17" aria-hidden="true"><path d="M11.6 9c0-1.9 1.5-2.8 1.6-2.9-.9-1.3-2.2-1.5-2.7-1.5-1.1-.1-2.2.7-2.8.7-.6 0-1.5-.7-2.4-.7-1.2 0-2.4.7-3 1.8-1.3 2.2-.3 5.5.9 7.3.6.9 1.3 1.9 2.3 1.8.9 0 1.3-.6 2.4-.6 1.1 0 1.4.6 2.4.6 1 0 1.6-.9 2.2-1.8.7-1 1-2 1-2.1 0 0-1.9-.7-1.9-2.9z" fill="#000"/><path d="M9.8 3.5c.5-.6.8-1.4.7-2.3-.7 0-1.6.5-2.1 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.6-.4 2.2-1z" fill="#000"/></svg>Pay</span>
+        <span class="pay-logo" title="Google Pay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12.2c0-.8-.1-1.5-.2-2.2H12v4.3h6.2c-.3 1.4-1.1 2.6-2.3 3.4v2.8h3.7c2.2-2 3.4-5 3.4-8.3z" fill="#4285F4"/><path d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.8c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.8H1.8v2.9C3.7 21.3 7.6 24 12 24z" fill="#34A853"/><path d="M5.6 14.7c-.2-.7-.4-1.4-.4-2.2s.1-1.5.4-2.2V7.4H1.8C1 8.9.6 10.4.6 12.5s.4 3.6 1.2 5.1l3.8-2.9z" fill="#FBBC05"/><path d="M12 4.9c1.7 0 3.2.6 4.4 1.7l3.3-3.3C17.7 1.5 15.1.5 12 .5 7.6.5 3.7 3.2 1.8 7.4l3.8 2.9C6.5 7.5 9 4.9 12 4.9z" fill="#EA4335"/></svg>Pay</span>
+      </div>
       <div id="cartPayButtons"></div>
       <p class="cart-pay__note" id="cartPayNote" style="display:none"></p>
       <button type="button" class="cart-pay__back" id="cartPayBack">← Volver al carrito</button>
@@ -249,11 +254,18 @@ const FREEBIE_HTML = `
           <button type="button" class="btn btn--primary btn--lg full-w" id="freebieDownloadBtn" style="display:none">
             <svg class="icon"><use href="#i-pdf"/></svg> <span id="freebieDownloadLabel">Descargar ahora</span>
           </button>
-          <div id="freebiePaypalWrap" style="display:none">
-            <div class="paypal-wrap">
-              <div class="paypal-wrap__head"><span class="emoji-icon">🛡️</span> <span>Pago seguro · Tarjeta o PayPal</span></div>
-              <div id="paypal-button-container"></div>
-              <p class="paypal-wrap__note" id="freebiePaypalNote" style="display:none"></p>
+          <div id="freebiePayWrap" style="display:none">
+            <div class="pay-wrap">
+              <button type="button" class="btn btn--primary btn--lg full-w" id="freebiePayBtn">
+                <span id="freebiePayLabel">Comprar ahora</span>
+              </button>
+              <div class="pay-logos" aria-label="Métodos de pago aceptados">
+                <span class="pay-logo pay-logo--visa">VISA</span>
+                <span class="pay-logo" title="Mastercard"><svg viewBox="0 0 38 24" aria-hidden="true"><circle cx="15" cy="12" r="7" fill="#EB001B"/><circle cx="23" cy="12" r="7" fill="#F79E1B"/><path d="M19 6.8a7 7 0 0 0 0 10.4 7 7 0 0 0 0-10.4z" fill="#FF5F00"/></svg></span>
+                <span class="pay-logo" title="Apple Pay"><svg viewBox="0 0 14 17" aria-hidden="true"><path d="M11.6 9c0-1.9 1.5-2.8 1.6-2.9-.9-1.3-2.2-1.5-2.7-1.5-1.1-.1-2.2.7-2.8.7-.6 0-1.5-.7-2.4-.7-1.2 0-2.4.7-3 1.8-1.3 2.2-.3 5.5.9 7.3.6.9 1.3 1.9 2.3 1.8.9 0 1.3-.6 2.4-.6 1.1 0 1.4.6 2.4.6 1 0 1.6-.9 2.2-1.8.7-1 1-2 1-2.1 0 0-1.9-.7-1.9-2.9z" fill="#000"/><path d="M9.8 3.5c.5-.6.8-1.4.7-2.3-.7 0-1.6.5-2.1 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.6-.4 2.2-1z" fill="#000"/></svg>Pay</span>
+                <span class="pay-logo" title="Google Pay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12.2c0-.8-.1-1.5-.2-2.2H12v4.3h6.2c-.3 1.4-1.1 2.6-2.3 3.4v2.8h3.7c2.2-2 3.4-5 3.4-8.3z" fill="#4285F4"/><path d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.8c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.8H1.8v2.9C3.7 21.3 7.6 24 12 24z" fill="#34A853"/><path d="M5.6 14.7c-.2-.7-.4-1.4-.4-2.2s.1-1.5.4-2.2V7.4H1.8C1 8.9.6 10.4.6 12.5s.4 3.6 1.2 5.1l3.8-2.9z" fill="#FBBC05"/><path d="M12 4.9c1.7 0 3.2.6 4.4 1.7l3.3-3.3C17.7 1.5 15.1.5 12 .5 7.6.5 3.7 3.2 1.8 7.4l3.8 2.9C6.5 7.5 9 4.9 12 4.9z" fill="#EA4335"/></svg>Pay</span>
+              </div>
+              <p class="pay-wrap__note" id="freebiePayNote" style="display:none"></p>
             </div>
           </div>
           <p class="freebie-modal__hint" id="freebieHint">El PDF se descarga al instante.</p>
@@ -555,108 +567,42 @@ if (currentLink) {
     });
   }
 
-  /* ----- PayPal Smart Buttons (ported from producto.html, mounted in the modal) ----- */
-  async function fetchSiteSetting(key) {
-    try {
-      const r = await fetch(SB_URL + '/rest/v1/site_settings?key=eq.' + encodeURIComponent(key) + '&select=value', {
-        headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
-      });
-      if (!r.ok) return '';
-      const arr = await r.json();
-      return (Array.isArray(arr) && arr[0] && arr[0].value) || '';
-    } catch (_) { return ''; }
-  }
-  async function paypalConfig() {
-    return { client_id: await fetchSiteSetting('paypal_client_id'), env: (await fetchSiteSetting('paypal_env')) || 'sandbox' };
-  }
-  function loadPayPalSDK(client_id) {
-    return new Promise(function (resolve, reject) {
-      if (window.paypal) { resolve(); return; }
-      const s = document.createElement('script');
-      const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-      s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(client_id) + '&currency=' + encodeURIComponent(ccy) + '&intent=capture&enable-funding=card&disable-funding=paylater&components=buttons';
-      s.onload = resolve; s.onerror = function () { reject(new Error('sdk load failed')); };
-      document.head.appendChild(s);
+  /* ----- Stripe Checkout (hosted redirect) for a single guide -----
+     Wires the modal's "Pagar" button: builds the create-checkout-session call,
+     then redirects the buyer to Stripe's hosted page. Fulfillment (record + email
+     + PDF) happens in stripe-webhook after Stripe confirms the payment. */
+  function startStripeCheckout(p, btn, lbl) {
+    const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+    const amount = (window.LogramoCurrency ? Number(LogramoCurrency.checkoutAmount(p.price)) : Number(p.price || 0));
+    if (typeof fbTrack === 'function') {
+      fbTrack('InitiateCheckout', { content_ids: [p.id], content_type: 'product', num_items: 1, value: amount, currency: ccy });
+    }
+    if (typeof trackCheckout === 'function') trackCheckout([{ id: p.id, qty: 1, price: p.price }], Number(p.price) || 0);
+
+    if (btn) btn.disabled = true;
+    const prevLabel = lbl ? lbl.textContent : '';
+    if (lbl) lbl.textContent = 'Redirigiendo…';
+
+    const clientAmounts = {}; clientAmounts[p.id] = amount;
+    const mb = (typeof getMetaBrowserIds === 'function') ? getMetaBrowserIds() : {};
+    const payload = Object.assign({
+      items: [{ id: p.id, qty: 1 }], currency: ccy, client_amounts: clientAmounts,
+      channel: (typeof getChannel === 'function' ? getChannel() : null),
+      country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null),
+      origin: location.origin
+    }, mb);
+
+    fetch(SB_URL + '/functions/v1/create-checkout-session', {
+      method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ok && d.url) { window.location.href = d.url; return; }
+      if (btn) btn.disabled = false; if (lbl) lbl.textContent = prevLabel;
+      alert('No se pudo iniciar el pago. Intenta de nuevo.');
+    }).catch(function () {
+      if (btn) btn.disabled = false; if (lbl) lbl.textContent = prevLabel;
+      alert('No se pudo iniciar el pago. Intenta de nuevo.');
     });
-  }
-  async function renderPayPalButtons(p) {
-    const mount = document.getElementById('paypal-button-container'); if (!mount) return;
-    mount.innerHTML = '<p class="muted" style="text-align:center;padding:10px">Cargando pago seguro…</p>';
-    const cfg = await paypalConfig();
-    if (!cfg.client_id) { mount.innerHTML = '<p class="muted" style="text-align:center;padding:14px 16px;background:var(--c-cream-alt);border:var(--bw-1) solid var(--c-ink);border-radius:var(--radius-md)">El checkout estará disponible pronto.</p>'; return; }
-    try { await loadPayPalSDK(cfg.client_id); } catch (e) { mount.innerHTML = '<p class="muted">No se pudo cargar PayPal.</p>'; return; }
-    if (!window.paypal || !window.paypal.Buttons) { mount.innerHTML = '<p class="muted">PayPal SDK error.</p>'; return; }
-    mount.innerHTML = '';
-    const commonHandlers = {
-      createOrder: function (data, actions) {
-        const ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-        const amount = (window.LogramoCurrency ? LogramoCurrency.checkoutAmount(p.price) : Number(p.price || 0).toFixed(2));
-        if (typeof fbTrack === 'function') {
-          fbTrack('InitiateCheckout', {
-            content_ids: [p.id], content_type: 'product', num_items: 1,
-            value: Number(amount), currency: ccy
-          });
-        }
-        if (typeof trackCheckout === 'function') trackCheckout([{ id: p.id, qty: 1, price: p.price }], Number(p.price) || 0);
-        return actions.order.create({
-          purchase_units: [{ amount: { value: amount, currency_code: ccy }, description: (p.title || 'Producto Logramo').slice(0, 127), custom_id: String(p.id || '') }]
-        });
-      },
-      onApprove: function (data, actions) {
-        mount.insertAdjacentHTML('beforeend', '<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
-        return actions.order.capture().then(async function (details) {
-          const orderId = (details && details.id) || (data && data.orderID) || null;
-          const channel = (typeof getChannel === 'function' ? getChannel() : null);
-          const country = (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null);
-          let recorded = false;
-          // Preferred: the server verifies the PayPal order, then records it (service role).
-          try {
-            const _mb = (typeof getMetaBrowserIds === 'function') ? getMetaBrowserIds() : {};
-            const rr = await fetch(SB_URL + '/functions/v1/record-purchase', {
-              method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify(Object.assign({ order_id: orderId, channel: channel, country: country }, _mb))
-            });
-            recorded = !!(rr && rr.ok);
-          } catch (e) {}
-          // Fallback: direct insert (works while the open insert policy still exists).
-          if (!recorded) {
-            try {
-              const payer = (details && details.payer) || {};
-              const unit = (details && details.purchase_units && details.purchase_units[0]) || {};
-              const amt = (unit && unit.amount) || {};
-              const name = [(payer.name && payer.name.given_name) || '', (payer.name && payer.name.surname) || ''].filter(Boolean).join(' ').trim();
-              const purchase = {
-                email: payer.email_address || '', payer_name: name || null, product_id: p.id,
-                amount: Number(amt.value || p.price || 0), currency: amt.currency_code || 'USD',
-                paypal_order_id: orderId, status: 'completed', channel: channel, country: country
-              };
-              const postPurchase = function (row) {
-                return fetch(SB_URL + '/rest/v1/purchases', {
-                  method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-                  body: JSON.stringify(row)
-                });
-              };
-              const resp = await postPurchase(purchase);
-              if (resp && !resp.ok) { const fb = Object.assign({}, purchase); delete fb.channel; delete fb.country; await postPurchase(fb); }
-            } catch (e) {}
-          }
-          // Carry the real captured total + currency so gracias.html can fire a
-          // Purchase event with the exact value PayPal charged.
-          var _u = (details && details.purchase_units && details.purchase_units[0]) || {};
-          var _a = (_u && _u.amount) || {};
-          window.location.href = 'gracias.html?id=' + encodeURIComponent(p.id) + '&order=' + encodeURIComponent(details.id || '')
-            + '&val=' + encodeURIComponent(_a.value || '') + '&cur=' + encodeURIComponent(_a.currency_code || '');
-        });
-      },
-      onError: function (err) { alert('Error en el pago: ' + (err && err.message ? err.message : err)); }
-    };
-    const FUNDING = window.paypal.FUNDING || {};
-    if (FUNDING.CARD) {
-      window.paypal.Buttons(Object.assign({}, commonHandlers, { fundingSource: FUNDING.CARD, style: { shape: 'rect', color: 'black', label: 'pay', height: 48 } })).render(mount);
-    }
-    if (FUNDING.PAYPAL) {
-      window.paypal.Buttons(Object.assign({}, commonHandlers, { fundingSource: FUNDING.PAYPAL, style: { shape: 'rect', color: 'gold', label: 'paypal', height: 48 } })).render(mount);
-    }
   }
 
   /* ----- Modal "more details" + recommended (same-category) books ----- */
@@ -824,14 +770,14 @@ if (currentLink) {
       var pagesTxt = (p.pages && Number(p.pages) > 0) ? (Number(p.pages) + (Number(p.pages) === 1 ? ' página · ' : ' páginas · ')) : '';
       mEl.textContent = pagesTxt + (p.is_free ? 'PDF · Descarga inmediata' : 'PDF · Acceso al instante');
     }
-    // ---------- Actions: free → download; paid → PayPal ----------
+    // ---------- Actions: free → download; paid → Stripe Checkout ----------
     const btn = document.getElementById('freebieDownloadBtn');
     const lbl = document.getElementById('freebieDownloadLabel');
     const hint = document.getElementById('freebieHint');
-    const paypalWrap = document.getElementById('freebiePaypalWrap');
-    const paypalNote = document.getElementById('freebiePaypalNote');
+    const payWrap = document.getElementById('freebiePayWrap');
+    const payNote = document.getElementById('freebiePayNote');
     if (p.is_free) {
-      if (paypalWrap) paypalWrap.style.display = 'none';
+      if (payWrap) payWrap.style.display = 'none';
       if (btn) btn.style.display = '';
       const loggedIn = isLoggedIn();
       if (lbl) lbl.textContent = loggedIn ? 'Descargar ahora' : 'Crear cuenta para descargar';
@@ -853,15 +799,21 @@ if (currentLink) {
     } else {
       if (btn) btn.style.display = 'none';
       if (hint) hint.style.display = 'none';
-      if (paypalWrap) paypalWrap.style.display = '';
+      if (payWrap) payWrap.style.display = '';
       // Currency-conversion note (when display ccy differs from charge ccy)
       const note = (window.LogramoCurrency && LogramoCurrency.checkoutNote) ? LogramoCurrency.checkoutNote(p.price) : '';
-      if (paypalNote) {
-        if (note) { paypalNote.textContent = note; paypalNote.style.display = ''; }
-        else { paypalNote.style.display = 'none'; }
+      if (payNote) {
+        if (note) { payNote.textContent = note; payNote.style.display = ''; }
+        else { payNote.style.display = 'none'; }
       }
-      // Render PayPal buttons (handles its own loading state)
-      renderPayPalButtons(p);
+      // "Pagar" → create a Stripe Checkout Session and redirect.
+      const payBtn = document.getElementById('freebiePayBtn');
+      const payLbl = document.getElementById('freebiePayLabel');
+      if (payBtn) {
+        if (payLbl) payLbl.textContent = 'Comprar ahora';
+        payBtn.disabled = false;
+        payBtn.onclick = function () { startStripeCheckout(p, payBtn, payLbl); };
+      }
     }
     showModal('popup-freebie-dl');
   }

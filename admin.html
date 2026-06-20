@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="preconnect" href="https://eopobchvkfvkkrtrzeyu.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=20260750" />
+  <link rel="stylesheet" href="styles.css?v=20260767" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
   <style>
     body { background: var(--c-cream-alt); }
@@ -850,7 +850,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260753"></script>
+<script src="partials.js?v=20260768"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1900,7 +1900,7 @@
   /* ===== VENTAS ===== */
   async function loadVentas(){
     var purchases = [];
-    try{ purchases = await allRows('purchases','email,payer_name,product_id,amount,currency,status,paypal_order_id,country,created_at'); }catch(e){}
+    try{ purchases = await allRows('purchases','email,payer_name,product_id,amount,currency,status,paypal_order_id,stripe_session_id,country,created_at'); }catch(e){}
 
     var paid = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='' || s==='paid' || s==='captured' || s==='completed'; });
     var pending = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='pending' || s==='processing'; });
@@ -1920,7 +1920,7 @@
           return '<tr><td>'+esc(timeAgo(o.created_at))+'</td><td>'+esc(titleMap[o.product_id]||'(unknown)')+'</td><td>'+esc(o.payer_name||o.email||'—')+'</td><td>'+money0(o.amount)+'</td><td>'+esc(o.status||'paid')+'</td></tr>';
         }).join('') + '</table>';
     } else {
-      $('ordersBox').innerHTML = '<p class="muted">No orders yet. When PayPal captures a payment, it appears here.</p>';
+      $('ordersBox').innerHTML = '<p class="muted">No orders yet. When Stripe confirms a payment, it appears here.</p>';
     }
 
     // Sales by country, from the buyer geo captured on each purchase.

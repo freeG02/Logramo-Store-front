@@ -1313,8 +1313,8 @@ h6 { font-size: .9rem; }
   .lightbox__nav { display: none !important; }
 }
 
-/* Branded PayPal wrapper around the SDK buttons */
-.paypal-wrap {
+/* Branded wrapper around the "Pagar" button (Stripe Checkout redirect) */
+.pay-wrap {
   background: var(--c-cream-alt);
   border: var(--bw-2) solid var(--c-ink);
   border-radius: var(--radius-md);
@@ -1325,16 +1325,26 @@ h6 { font-size: .9rem; }
   margin-left: auto; margin-right: auto;   /* centre the checkout box */
   display: flex; flex-direction: column; gap: 10px;
 }
-.paypal-wrap__head {
-  display: flex; align-items: center; gap: 8px;
+.pay-wrap__head {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
   font-family: var(--font-display); font-weight: 800;
   font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
-  color: var(--c-ink); padding-bottom: 4px;
-  border-bottom: 1px dashed rgba(17,26,23,.15);
+  color: var(--c-ink);
 }
-.paypal-wrap__head .icon { color: var(--c-terracotta); }
-#paypal-button-container { display: flex; flex-direction: column; gap: 8px; }
-.paypal-wrap__note { margin: 4px 2px 0; font-size: .75rem; color: var(--c-text-muted); text-align: center; line-height: 1.4; }
+.pay-wrap__head .icon { color: var(--c-terracotta); }
+.pay-wrap__note { margin: 4px 2px 0; font-size: .75rem; color: var(--c-text-muted); text-align: center; line-height: 1.4; }
+
+/* Accepted-payment-method logos, shown under the checkout button */
+.pay-logos { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; }
+.pay-logo {
+  display: inline-flex; align-items: center; gap: 3px;
+  height: 24px; padding: 0 6px; box-sizing: border-box;
+  background: #fff; border: 1px solid rgba(17,26,23,.18); border-radius: 5px;
+  font-family: var(--font-display); font-weight: 800; font-size: .62rem; letter-spacing: .02em;
+  color: var(--c-ink); line-height: 1;
+}
+.pay-logo svg { display: block; height: 15px; width: auto; }
+.pay-logo--visa { color: #1A1F71; font-style: italic; letter-spacing: .04em; }
 
 /* Hero columns: left text/CTA grows, right gallery is narrower & stays pinned to top so it
    doesn't get pushed down when the Pay-with-Card form opens */
@@ -2353,7 +2363,7 @@ h6 { font-size: .9rem; }
   margin-bottom: 18px;
   text-transform: uppercase;
 }
-/* Cart checkout panel (PayPal Smart Buttons), swapped in over "Ir al pago" */
+/* Cart checkout panel (loading state before the Stripe redirect), swapped in over "Ir al pago" */
 .cart-pay {
   background: var(--c-cream); border: var(--bw-2) solid var(--c-ink);
   border-radius: var(--radius-md); box-shadow: 4px 4px 0 var(--c-ink);
@@ -2375,9 +2385,8 @@ h6 { font-size: .9rem; }
   text-decoration: underline; text-underline-offset: 2px;
 }
 .cart-pay__back:hover { color: var(--c-ink); }
-/* While the PayPal checkout is open, the form (card fields + billing address)
-   can be taller than the sidebar. Hide the item list and let the footer take
-   the remaining height and scroll, so the whole form (incl. the pay button) is
+/* While the checkout panel is open, hide the item list and let the footer take
+   the remaining height and scroll, so the whole panel (incl. any note) is
    reachable. */
 .cart-sidebar--paying .cart-sidebar__items { display: none; }
 .cart-sidebar--paying .cart-sidebar__footer {
@@ -3348,8 +3357,8 @@ h1, h2, h3, h4,
 .review-card__stars svg { width: 20px; height: 20px; }
 
 /* ============ FREEBIE / PRODUCT MODAL ============ */
-/* Cap the popup height and scroll the body side internally so the PayPal
-   card form (when expanded) doesn't blow the popup out of the viewport. */
+/* Cap the popup height and scroll the body side internally so a long product
+   description doesn't blow the popup out of the viewport. */
 .popup--freebie { max-width: 560px; padding: 0; overflow: hidden; max-height: 90vh; display: flex; flex-direction: column; }
 .freebie-modal__grid {
   display: grid;
@@ -3374,7 +3383,7 @@ h1, h2, h3, h4,
 .freebie-modal__cover:hover .book-card__cover { transform: none; }
 @media (max-width: 660px) {
   /* Mobile: popup keeps its rounded-corner clipping (overflow:hidden), but the
-     BODY side scrolls internally so PayPal's expanded card form has room. */
+     BODY side scrolls internally so the content has room. */
   .popup--freebie { max-width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; }
   /* Whole modal scrolls as one piece — so a swipe that starts on the cover
      image scrolls too (no more "dead" top area). */
@@ -3382,8 +3391,7 @@ h1, h2, h3, h4,
   .freebie-modal__cover { min-height: 0; padding: 22px 18px 16px; }
   .freebie-modal__cover .book-card__cover { max-width: 200px; }
   /* More specific than the base .freebie-modal__body rule below so it actually wins:
-     tighter side padding (wider PayPal buttons so the card label isn't squeezed to
-     an icon) + real bottom margin under the checkout. */
+     tighter side padding + real bottom margin under the checkout. */
   .popup--freebie .freebie-modal__body { max-height: none; min-height: 0; overflow-y: visible; padding: 22px 18px 44px; }
 }
 .freebie-modal__cover {
@@ -3424,7 +3432,7 @@ h1, h2, h3, h4,
 .freebie-modal__price { font-family: var(--font-body); font-weight: 900; font-size: 1.8rem; line-height: 1; letter-spacing: -.02em; color: var(--c-terracotta); margin: 0 0 18px; display: flex; align-items: baseline; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .freebie-modal__price-was { font-size: 1.1rem; font-weight: 700; color: var(--c-text-muted); text-decoration: line-through; letter-spacing: -.01em; }
 .freebie-modal__body .freebie-modal__badges { justify-content: center; }
-.freebie-modal__body .paypal-wrap__head { justify-content: center; }
+.freebie-modal__body .pay-wrap { margin-top: 4px; }
 .freebie-modal__body .freebie-modal__actions { width: 100%; }
 .freebie-modal__title {
   font-family: var(--font-display); font-weight: 900;

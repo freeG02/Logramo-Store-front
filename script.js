@@ -8,17 +8,19 @@
    Pages call LogramoCurrency.onReady(fn) to re-format prices once detection
    completes. format(usdPrice) returns the localized string ("€26.50", "MXN $549", "$29.99").
 
-   PayPal-supported currencies get full localized checkout. Unsupported markets
-   (e.g., AR, CL, CO) fall back to USD throughout so display == charge.        */
+   Stripe-supported currencies get full localized checkout. Unsupported markets
+   fall back to USD throughout so display == charge. (Stripe covers nearly all of
+   Latam natively — ARS, CLP, COP, PEN, etc. — so far more buyers are now charged
+   in their own currency than under PayPal.)                                    */
 window.LogramoCurrency = (function () {
   var COUNTRY_TO_CCY = {
     /* Eurozone */
     ES:'EUR',FR:'EUR',DE:'EUR',IT:'EUR',PT:'EUR',NL:'EUR',BE:'EUR',IE:'EUR',AT:'EUR',FI:'EUR',GR:'EUR',LU:'EUR',SK:'EUR',SI:'EUR',EE:'EUR',LV:'EUR',LT:'EUR',CY:'EUR',MT:'EUR',HR:'EUR',
-    /* Anglo + Asia majors — PayPal native */
+    /* Anglo + Asia majors */
     US:'USD',CA:'CAD',GB:'GBP',AU:'AUD',NZ:'NZD',CH:'CHF',JP:'JPY',
     SE:'SEK',DK:'DKK',NO:'NOK',PL:'PLN',CZ:'CZK',HU:'HUF',IL:'ILS',TW:'TWD',TH:'THB',SG:'SGD',HK:'HKD',PH:'PHP',
-    /* Latin America — full list, even where PayPal can't natively charge.
-       Display in local; checkout falls back to USD where unsupported. */
+    /* Latin America — full list. Stripe charges most of these natively;
+       display in local, checkout falls back to USD only where unsupported. */
     MX:'MXN',BR:'BRL',
     AR:'ARS',CL:'CLP',CO:'COP',PE:'PEN',UY:'UYU',PY:'PYG',BO:'BOB',
     EC:'USD',SV:'USD',PA:'USD',PR:'USD', /* fully dollarized */
@@ -43,8 +45,9 @@ window.LogramoCurrency = (function () {
     SAR:'﷼', AED:'AED ', EGP:'E£', MAD:'MAD ', NGN:'₦', KES:'KSh ',
     RON:'lei ', BGN:'лв ', UAH:'₴', ISK:'kr '
   };
-  /* PayPal Smart Buttons supported currencies */
-  var PAYPAL_OK = ['USD','EUR','GBP','AUD','BRL','CAD','CHF','CZK','DKK','HKD','HUF','ILS','JPY','MXN','NOK','NZD','PHP','PLN','SEK','SGD','THB','TWD'];
+  /* Stripe presentment currencies (mirror of STRIPE_OK in create-checkout-session).
+     Anything outside this set is displayed locally but charged in USD. */
+  var STRIPE_OK = ['USD','EUR','GBP','AUD','BRL','CAD','CHF','CZK','DKK','HKD','HUF','ILS','JPY','MXN','NOK','NZD','PHP','PLN','SEK','SGD','THB','TWD','ARS','CLP','COP','PEN','UYU','PYG','BOB','GTQ','HNL','NIO','CRC','DOP','JMD','TTD','INR','KRW','TRY','ZAR','IDR','MYR','VND','SAR','AED','EGP','MAD','NGN','KES','RON','BGN','UAH','ISK','CNY'];
   /* Currencies displayed as whole units (no decimals) — most Latam + a few others */
   var WHOLE_UNIT_CCY = ['JPY','HUF','TWD','MXN','BRL','PHP','ARS','CLP','COP','PYG','VND','IDR','KRW','ISK'];
 
@@ -65,10 +68,10 @@ window.LogramoCurrency = (function () {
   }
 
   function checkoutCurrency() {
-    return PAYPAL_OK.indexOf(state.ccy) > -1 ? state.ccy : 'USD';
+    return STRIPE_OK.indexOf(state.ccy) > -1 ? state.ccy : 'USD';
   }
   function checkoutAmount(usdAmount) {
-    /* If PayPal can charge in local, return the localized amount; else USD original */
+    /* If Stripe can charge in local, return the localized amount; else USD original */
     if (checkoutCurrency() === 'USD') return Number(usdAmount || 0).toFixed(2);
     var n = Number(usdAmount || 0) * (state.rate || 1);
     var decimals = WHOLE_UNIT_CCY.indexOf(state.ccy) > -1 ? 0 : 2;
@@ -168,8 +171,8 @@ window.LogramoCurrency = (function () {
     subs.push(fn);
   }
 
-  /* Currencies the user can pick. PayPal-supported get full local checkout;
-     others display in local and charge in USD with a "charged in USD" note. */
+  /* Currencies the user can pick. Stripe-supported get full local checkout;
+     others display in local and charge in USD. */
   var OPTIONS = [
     { code:'AUTO', label:'Auto-detect',         flag:'🌐' },
     /* Most relevant for our Spanish-language audience first */
@@ -339,7 +342,7 @@ function getMetaBrowserIds() {
    The Pixel base code (in every page <head>) defines fbq globally, so these are
    always safe to call. We fire events here in code — NOT via Meta's Event Setup
    Tool — so each carries real value/currency and never breaks on a layout change.
-   value/currency use the buyer's CHARGE currency so they match what PayPal bills
+   value/currency use the buyer's CHARGE currency so they match what Stripe bills
    and the server-side Conversions API event. */
 function fbCcy() { return (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD'); }
 function fbAmt(usd) { return window.LogramoCurrency ? Number(LogramoCurrency.checkoutAmount(usd)) : Number(usd || 0); }
@@ -752,139 +755,69 @@ function closeCart() {
   document.getElementById('cartOverlay')?.classList.remove('open');
   syncScrollLock();
 }
-/* ----- Cart checkout: real multi-item PayPal Smart Buttons -----
-   One PayPal order with an items[] breakdown (single capture = one PayPal fee).
-   Each line item carries sku = product id; record-purchase reads those server-side
-   and writes one purchases row per guide, so every guide fires its own
-   confirmation email + PDF. Mirrors the single-product flow in partials.js. */
-var cartPayRendered = false;
+/* ----- Cart checkout: redirect to Stripe Checkout (hosted) -----
+   One Stripe Checkout Session for the whole cart — Stripe shows every eligible
+   method (card, Apple Pay, Google Pay, OXXO, …). create-checkout-session prices
+   each line from the products table (authoritative) and returns the hosted URL;
+   stripe-webhook records one purchases row per guide after Stripe confirms the
+   payment, so every guide fires its own confirmation email + PDF. Mirrors the
+   single-product flow in partials.js. */
 function checkout() {
   if (cartItems.length === 0) return;
   startCartCheckout();
-}
-function cartPayConfig() {
-  function getSetting(key) {
-    return fetch(LOGRAMO_SB_URL + '/rest/v1/site_settings?key=eq.' + encodeURIComponent(key) + '&select=value', {
-      headers: { apikey: LOGRAMO_SB_KEY, Authorization: 'Bearer ' + LOGRAMO_SB_KEY }
-    }).then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (a) { return (Array.isArray(a) && a[0] && a[0].value) || ''; })
-      .catch(function () { return ''; });
-  }
-  return Promise.all([getSetting('paypal_client_id'), getSetting('paypal_env')])
-    .then(function (v) { return { client_id: v[0], env: v[1] || 'sandbox' }; });
-}
-function loadCartPayPalSDK(clientId) {
-  return new Promise(function (resolve, reject) {
-    if (window.paypal) { resolve(); return; }
-    var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-    var s = document.createElement('script');
-    s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(clientId) + '&currency=' + encodeURIComponent(ccy) + '&intent=capture&enable-funding=card&disable-funding=paylater&components=buttons';
-    s.onload = resolve; s.onerror = function () { reject(new Error('sdk load failed')); };
-    document.head.appendChild(s);
-  });
-}
-// Build PayPal line items + a breakdown total that EXACTLY equals their sum
-// (PayPal rejects the order otherwise). Done in integer minor units to dodge
-// floating-point drift, using the same per-item rounding as the product page.
-function buildCartOrder() {
-  var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
-  var unitStr = function (usd) { return window.LogramoCurrency ? LogramoCurrency.checkoutAmount(usd) : Number(usd || 0).toFixed(2); };
-  var sample = unitStr(0);
-  var decimals = (String(sample).split('.')[1] || '').length; // 0 for whole-unit ccys, else 2
-  var factor = Math.pow(10, decimals);
-  var totalMinor = 0;
-  var items = cartItems.map(function (it) {
-    var qty = Math.max(1, parseInt(it.qty || 1, 10));
-    var unit = unitStr(it.price);
-    totalMinor += Math.round(Number(unit) * factor) * qty;
-    return {
-      name: String(it.name || 'Guía Logramo').slice(0, 127),
-      quantity: String(qty),
-      sku: String(it.id || '').slice(0, 127),
-      unit_amount: { value: unit, currency_code: ccy }
-    };
-  });
-  var total = (totalMinor / factor).toFixed(decimals);
-  return {
-    purchase_units: [{
-      amount: { value: total, currency_code: ccy, breakdown: { item_total: { value: total, currency_code: ccy } } },
-      description: ('Logramo · ' + cartItems.length + (cartItems.length === 1 ? ' guía' : ' guías')).slice(0, 127),
-      custom_id: 'cart',
-      items: items
-    }]
-  };
 }
 function startCartCheckout() {
   var pay = document.getElementById('cartPay');
   var btn = document.getElementById('cartCheckoutBtn');
   if (!pay || !btn) return;
   var sidebar = document.getElementById('cartSidebar');
-  // Paying mode: the PayPal form (card fields + billing address) can be taller
-  // than the sidebar, so hand the footer the remaining height + scroll.
   if (sidebar) sidebar.classList.add('cart-sidebar--paying');
   btn.style.display = 'none';
   pay.style.display = '';
   var back = document.getElementById('cartPayBack');
   if (back) back.onclick = function () { pay.style.display = 'none'; btn.style.display = ''; if (sidebar) sidebar.classList.remove('cart-sidebar--paying'); };
-  // Currency note when display ccy != charge ccy (e.g. ARS shown, USD charged).
+  // Currency note when display ccy != charge ccy (e.g. an unsupported market shown
+  // locally but charged in USD).
   var note = document.getElementById('cartPayNote');
   if (note && window.LogramoCurrency) {
-    var totalUsd = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
-    var msg = LogramoCurrency.checkoutNote ? LogramoCurrency.checkoutNote(totalUsd) : '';
+    var totalUsdN = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
+    var msg = LogramoCurrency.checkoutNote ? LogramoCurrency.checkoutNote(totalUsdN) : '';
     if (msg) { note.textContent = msg; note.style.display = ''; } else { note.style.display = 'none'; }
   }
-  renderCartPayPalButtons();
-}
-function renderCartPayPalButtons() {
   var mount = document.getElementById('cartPayButtons');
-  if (!mount) return;
-  if (cartPayRendered && window.paypal) { return; } // buttons persist across open/close
-  mount.innerHTML = '<p class="muted" style="text-align:center;padding:10px">Cargando pago seguro…</p>';
-  cartPayConfig().then(function (cfg) {
-    if (!cfg.client_id) { mount.innerHTML = '<p class="muted" style="text-align:center;padding:12px">El checkout estará disponible pronto.</p>'; return; }
-    loadCartPayPalSDK(cfg.client_id).then(function () {
-      if (!window.paypal || !window.paypal.Buttons) { mount.innerHTML = '<p class="muted">PayPal SDK error.</p>'; return; }
-      mount.innerHTML = '';
-      var handlers = {
-        createOrder: function (data, actions) {
-          var totalUsd = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
-          fbTrack('InitiateCheckout', {
-            content_ids: cartItems.map(function (i) { return i.id; }), content_type: 'product',
-            num_items: cartItems.reduce(function (s, i) { return s + (i.qty || 1); }, 0),
-            value: fbAmt(totalUsd), currency: fbCcy()
-          });
-          trackCheckout(cartItems, totalUsd);
-          return actions.order.create(buildCartOrder());
-        },
-        onApprove: function (data, actions) {
-          mount.insertAdjacentHTML('beforeend', '<p class="muted" style="text-align:center;margin-top:10px">Procesando…</p>');
-          return actions.order.capture().then(function (details) {
-            var orderId = (details && details.id) || (data && data.orderID) || '';
-            var channel = (typeof getChannel === 'function' ? getChannel() : null);
-            var country = (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null);
-            var ids = cartItems.map(function (i) { return i.id; });
-            // Server verifies the order with PayPal and records one row per item.
-            return fetch(LOGRAMO_SB_URL + '/functions/v1/record-purchase', {
-              method: 'POST', headers: { apikey: LOGRAMO_SB_KEY, Authorization: 'Bearer ' + LOGRAMO_SB_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify(Object.assign({ order_id: orderId, channel: channel, country: country }, getMetaBrowserIds()))
-            }).catch(function () {}).then(function () {
-              cartItems = []; saveCart();
-              // Pass the real captured total + currency so gracias.html can fire a
-              // Purchase event with the exact value PayPal charged.
-              var unit = (details && details.purchase_units && details.purchase_units[0]) || {};
-              var amt = (unit && unit.amount) || {};
-              window.location.href = 'gracias.html?ids=' + encodeURIComponent(ids.join(',')) + '&order=' + encodeURIComponent(orderId)
-                + '&val=' + encodeURIComponent(amt.value || '') + '&cur=' + encodeURIComponent(amt.currency_code || '');
-            });
-          });
-        },
-        onError: function (err) { alert('Error en el pago: ' + (err && err.message ? err.message : err)); }
-      };
-      var FUNDING = window.paypal.FUNDING || {};
-      if (FUNDING.CARD) window.paypal.Buttons(Object.assign({}, handlers, { fundingSource: FUNDING.CARD, style: { shape: 'rect', color: 'black', label: 'pay', height: 48 } })).render(mount);
-      if (FUNDING.PAYPAL) window.paypal.Buttons(Object.assign({}, handlers, { fundingSource: FUNDING.PAYPAL, style: { shape: 'rect', color: 'gold', label: 'paypal', height: 48 } })).render(mount);
-      cartPayRendered = true;
-    }).catch(function () { mount.innerHTML = '<p class="muted">No se pudo cargar PayPal.</p>'; });
+  if (mount) mount.innerHTML = '<p class="muted" style="text-align:center;padding:12px">Redirigiendo a pago seguro…</p>';
+
+  var totalUsd = cartItems.reduce(function (s, i) { return s + i.price * (i.qty || 1); }, 0);
+  try {
+    fbTrack('InitiateCheckout', {
+      content_ids: cartItems.map(function (i) { return i.id; }), content_type: 'product',
+      num_items: cartItems.reduce(function (s, i) { return s + (i.qty || 1); }, 0),
+      value: fbAmt(totalUsd), currency: fbCcy()
+    });
+    trackCheckout(cartItems, totalUsd);
+  } catch (e) {}
+
+  var ccy = (window.LogramoCurrency ? LogramoCurrency.checkoutCurrency() : 'USD');
+  var clientAmounts = {};
+  cartItems.forEach(function (i) {
+    clientAmounts[i.id] = window.LogramoCurrency ? Number(LogramoCurrency.checkoutAmount(i.price)) : Number(i.price || 0);
+  });
+  var payload = {
+    items: cartItems.map(function (i) { return { id: i.id, qty: i.qty || 1 }; }),
+    currency: ccy, client_amounts: clientAmounts,
+    channel: (typeof getChannel === 'function' ? getChannel() : null),
+    country: (typeof getBuyerCountry === 'function' ? getBuyerCountry() : null),
+    origin: location.origin
+  };
+  var mb = (typeof getMetaBrowserIds === 'function') ? getMetaBrowserIds() : {};
+  fetch(LOGRAMO_SB_URL + '/functions/v1/create-checkout-session', {
+    method: 'POST', headers: { apikey: LOGRAMO_SB_KEY, Authorization: 'Bearer ' + LOGRAMO_SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign(payload, mb))
+  }).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.ok && d.url) { window.location.href = d.url; }
+    else if (mount) { mount.innerHTML = '<p class="muted" style="text-align:center;padding:12px">No se pudo iniciar el pago. Intenta de nuevo.</p>'; }
+  }).catch(function () {
+    if (mount) mount.innerHTML = '<p class="muted" style="text-align:center;padding:12px">No se pudo iniciar el pago. Intenta de nuevo.</p>';
   });
 }
 document.getElementById('cartBtn')?.addEventListener('click', openCart);

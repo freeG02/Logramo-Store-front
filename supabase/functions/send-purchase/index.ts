@@ -285,15 +285,18 @@ serve(async (req: Request) => {
   catch { return new Response(JSON.stringify({ error: "invalid JSON" }), { status: 400 }); }
 
   // Two accepted shapes:
-  //   • { order: { email, payer_name, currency, paypal_order_id, items:[{product_id, amount}] } }
-  //     — sent ONCE per order by record-purchase (cart = several guides, one email).
+  //   • { order: { email, payer_name, currency, stripe_session_id, items:[{product_id, amount}] } }
+  //     — sent ONCE per order by stripe-webhook (cart = several guides, one email).
   //   • { record: {...purchases row...} } — legacy single-row webhook/trigger shape.
   const order = payload?.order;
   const legacy = payload?.record ?? (order ? null : payload) ?? {};
   const email: string = String((order?.email ?? legacy?.email) ?? "").trim();
   const payerName: string = (order?.payer_name ?? legacy?.payer_name) ?? "";
   const currency: string = (order?.currency ?? legacy?.currency) ?? "USD";
-  const paypalOrderId: string = (order?.paypal_order_id ?? legacy?.paypal_order_id) ?? "";
+  // Order reference for the invoice link: Stripe session id now, PayPal order id
+  // for any historical rows still being (re)sent.
+  const orderRef: string =
+    (order?.stripe_session_id ?? legacy?.stripe_session_id ?? order?.paypal_order_id ?? legacy?.paypal_order_id) ?? "";
   const items: { product_id: string; amount: number }[] =
     order && Array.isArray(order.items)
       ? order.items.map((i: any) => ({ product_id: String(i?.product_id ?? ""), amount: Number(i?.amount ?? 0) }))
@@ -346,7 +349,7 @@ serve(async (req: Request) => {
 
   // Self-contained invoice URL — all data the page needs is in the query string.
   const invoiceUrl = `${SITE_URL}/invoice.html`
-    + `?order=${encodeURIComponent(paypalOrderId)}`
+    + `?order=${encodeURIComponent(orderRef)}`
     + `&email=${encodeURIComponent(email)}`
     + `&name=${encodeURIComponent(payerName || "")}`
     + `&product=${encodeURIComponent(invoiceLabel)}`
