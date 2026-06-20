@@ -362,6 +362,11 @@
     .ov-card:hover { transform:translate(-3px,-3px); box-shadow:var(--shadow-sm); }
     .ov-card--1 { background:var(--c-sky); } .ov-card--2 { background:#BFE0AE; } .ov-card--3 { background:var(--c-peach); }
     .ov-card__num { font-family:var(--font-display); font-weight:900; font-size:2.1rem; line-height:1; color:var(--c-ink); }
+    .odo { display:inline-flex; align-items:stretch; font-variant-numeric:tabular-nums; line-height:1; }
+    .odo-col { display:inline-block; height:1em; overflow:hidden; }
+    .odo-strip { display:flex; flex-direction:column; transition:transform .95s cubic-bezier(.22,1,.36,1); }
+    .odo-strip > span { height:1em; display:flex; align-items:center; justify-content:center; }
+    .odo-sep { display:inline-flex; align-items:flex-start; }
     .ov-card__label { font-size:.78rem; color:var(--c-ink); opacity:.7; margin-top:8px; font-weight:600; }
     .ov-card__delta { font-size:.74rem; font-weight:800; margin-top:12px; }
     .ov-up { color:var(--c-forest); } .ov-down { color:var(--c-burgundy); }
@@ -1591,11 +1596,67 @@
   $('a-hot').addEventListener('change',function(){ if($('a-hot').checked) aField.add('caliente'); else aField.remove('caliente'); aPreview(); });
   ['a-title','a-cat','a-excerpt','a-read'].forEach(function(id){ $(id).addEventListener('input',aPreview); $(id).addEventListener('change',aPreview); });
 
-  function stat(n,l){ return '<div class="stat-card"><div class="stat-card__num">'+n+'</div><div class="stat-card__label">'+l+'</div></div>'; }
+  // ---- Big-card number odometer (each digit rolls to its new value) ----
+  var STAT_PREV = {};
+  function odoFmt(v, money){ return money ? money0(v) : Math.round(Number(v)||0).toLocaleString('en-US'); }
+  function odoSig(str){ return str.replace(/[0-9]/g,'#'); }
+  function odoBuild(el, str){
+    el.classList.add('odo'); el.innerHTML='';
+    for(var i=0;i<str.length;i++){
+      var ch=str[i];
+      if(ch>='0'&&ch<='9'){
+        var col=document.createElement('span'); col.className='odo-col';
+        var strip=document.createElement('span'); strip.className='odo-strip';
+        for(var d=0;d<=9;d++){ var s=document.createElement('span'); s.textContent=d; strip.appendChild(s); }
+        col.appendChild(strip); el.appendChild(col); col._strip=strip;
+      } else {
+        var sep=document.createElement('span'); sep.className='odo-sep'; sep.textContent=ch; el.appendChild(sep);
+      }
+    }
+    el._odoSig=odoSig(str);
+  }
+  // Render `value` as an odometer in `el`: rolls each digit to its new place,
+  // unless it's the first paint or the digit count changed (then it snaps).
+  function odoSet(el, value, money){
+    if(!el) return;
+    var str=odoFmt(value, money), animate = el._odoSig===odoSig(str);
+    if(!animate) odoBuild(el, str);
+    var cols=el.querySelectorAll('.odo-col'), ci=0;
+    for(var i=0;i<str.length;i++){
+      var ch=str[i]; if(ch<'0'||ch>'9') continue;
+      var strip=cols[ci]._strip; ci++;
+      if(animate){ strip.style.transform='translateY(-'+ch+'em)'; }
+      else { var t=strip.style.transition; strip.style.transition='none'; strip.style.transform='translateY(-'+ch+'em)'; void strip.offsetHeight; strip.style.transition=t; }
+    }
+  }
+  // Overview cards: stable element that remembers its own digit positions.
+  function animateNum(el, to, money){ odoSet(el, to, money); }
+  // Stat cards: rebuilt via innerHTML each render, so seed from the previous
+  // value (snap) then roll to the new one on the next frame.
+  function animateStatCards(root){
+    if(!root) return;
+    root.querySelectorAll('.stat-card__num[data-to]').forEach(function(el){
+      var to=parseFloat(el.getAttribute('data-to'))||0, prev=parseFloat(el.getAttribute('data-prev'))||0, money=el.getAttribute('data-money')==='1';
+      el.removeAttribute('data-to');
+      odoSet(el, prev, money);
+      requestAnimationFrame(function(){ odoSet(el, to, money); });
+    });
+  }
+  function stat(n,l){
+    var money = (typeof n==='string') && n.charAt(0)==='$';
+    var num = money ? (parseFloat(String(n).replace(/[^0-9.\-]/g,''))||0) : (Number(n)||0);
+    var prev = (STAT_PREV[l]!=null) ? STAT_PREV[l] : num; STAT_PREV[l] = num;
+    return '<div class="stat-card"><div class="stat-card__num" data-prev="'+prev+'" data-to="'+num+'" data-money="'+(money?1:0)+'"></div><div class="stat-card__label">'+l+'</div></div>';
+  }
 
   /* ===== CHARTS + INICIO ===== */
   var COL={terra:'#C55932',forest:'#3C4824',golden:'#E0B73C',sky:'#7FB0E8',burgundy:'#C65768'};
-  function lineChart(id,labels,datasets){ var el=$(id); if(!el||!window.Chart) return; if(el._chart) el._chart.destroy();
+  function lineChart(id,labels,datasets){ var el=$(id); if(!el||!window.Chart) return;
+    // Only redraw when the data actually changed, so the live refresh doesn't
+    // re-animate the chart every tick when nothing new came in.
+    var sig=JSON.stringify([labels,datasets.map(function(d){return d.data;})]);
+    if(el._chart){ if(el._sig===sig) return; el._sig=sig; el._chart.data.labels=labels; el._chart.data.datasets=datasets; el._chart.update(); return; }
+    el._sig=sig;
     el._chart=new Chart(el,{ type:'line', data:{labels:labels,datasets:datasets}, options:{
       responsive:true, maintainAspectRatio:false,
       interaction:{ mode:'nearest', intersect:true, axis:'xy' },
@@ -1754,7 +1815,7 @@
     // Visits = total pageviews
     var visits = 0;
     try{ var pv=await sb.from('pageviews').select('id',{count:'exact',head:true}); if(!pv.error&&pv.count!=null) visits=pv.count; }catch(e){}
-    $('ovVisitas').textContent = visits.toLocaleString('en-US');
+    animateNum($('ovVisitas'), visits, false);
 
     // Revenue + sales = from purchases
     var revenue = 0, sales = 0, purchases = [];
@@ -1764,8 +1825,8 @@
       purchases.forEach(function(p){ p.amount = toUsd(p.amount, p.currency); });
       purchases.forEach(function(p){ revenue += Number(p.amount||0); sales += 1; });
     }catch(e){}
-    $('ovIngresos').textContent = money0(revenue);
-    $('ovVentas').textContent = sales.toLocaleString('en-US');
+    animateNum($('ovIngresos'), revenue, true);
+    animateNum($('ovVentas'), sales, false);
     refreshSalesBadge();
 
     CHARTS.earnings(activeTf('earnings'));
@@ -1835,7 +1896,15 @@
       if($('onlineList')) $('onlineList').innerHTML='<p class="muted">Live presence not set up yet — apply the presence migration. ('+esc(e.message||'')+')</p>';
     }
   }
-  function startPresence(){ if(PRESENCE_TIMER) return; loadPresence(); refreshSalesBadge(); PRESENCE_TIMER=setInterval(function(){ loadPresence(); refreshSalesBadge(); },15000); }
+  // Live numbers: re-load the data for whichever view is open, so every number
+  // refreshes on its own (no page reload). Paused while the tab is hidden.
+  var ACTIVE_VIEW='inicio';
+  function liveRefresh(){
+    if(document.hidden) return;
+    if(['inicio','trafico','ventas','emails'].indexOf(ACTIVE_VIEW)<0) return;
+    var fn=loaders[ACTIVE_VIEW]; if(typeof fn==='function') fn();
+  }
+  function startPresence(){ if(PRESENCE_TIMER) return; loadPresence(); refreshSalesBadge(); PRESENCE_TIMER=setInterval(function(){ loadPresence(); refreshSalesBadge(); liveRefresh(); },15000); }
 
   /* ===== TRÁFICO ===== */
   var TRAF_ROWS=[];
@@ -1860,7 +1929,7 @@
       var rows=await pvAll('path,country,created_at'); TRAF_ROWS=rows;
       var byPath={}; rows.forEach(function(x){ byPath[x.path]=(byPath[x.path]||0)+1; });
       var top=Object.keys(byPath).map(function(p){return {p:p,n:byPath[p]};}).sort(function(a,b){return b.n-a.n;}).slice(0,8);
-      $('trafStats').innerHTML=stat(total,'Total visits')+stat(last7,'Last 7 days')+stat(today,'Today')+stat(Object.keys(byPath).length,'Distinct pages');
+      $('trafStats').innerHTML=stat(total,'Total visits')+stat(last7,'Last 7 days')+stat(today,'Today')+stat(Object.keys(byPath).length,'Distinct pages'); animateStatCards($('trafStats'));
       CHARTS.traf(activeTf('traf'));
       renderTrafCountries(activeTf('traf'));
       $('trafTop').innerHTML=top.length?'<table class="tbl"><tr><th>Page</th><th>Visits</th></tr>'+top.map(function(t){return '<tr><td>'+esc(pageName(t.p))+'</td><td>'+t.n+'</td></tr>';}).join('')+'</table>':'<p class="muted">No visits recorded yet.</p>';
@@ -1880,7 +1949,7 @@
     var steps=[
       {label:'👀 Visits', n:c.visits||0},
       {label:'🛒 Added to cart', n:c.cart||0},
-      {label:'💳 Started checkout', n:c.checkout||0},
+      {label:'💳 Initiate checkout', n:c.checkout||0},
       {label:'✅ Purchased', n:c.sales||0}
     ];
     var top=steps[0].n||1;
@@ -1956,7 +2025,7 @@
     var pending = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='pending' || s==='processing'; });
     var revenue = paid.reduce(function(a,p){return a+Number(p.amount||0);}, 0);
 
-    $('salesStats').innerHTML = stat(purchases.length,'Orders') + stat(money0(revenue),'Revenue') + stat(paid.length,'Paid') + stat(pending.length,'Pending');
+    $('salesStats').innerHTML = stat(purchases.length,'Orders') + stat(money0(revenue),'Revenue') + stat(paid.length,'Paid') + stat(pending.length,'Pending'); animateStatCards($('salesStats'));
     CHARTS.ventas(activeTf('ventas'));
 
     if(purchases.length){
@@ -2003,7 +2072,7 @@
     try{
       SUBS=await allRows('subscribers','*'); var now=Date.now(), day=864e5;
       var active=SUBS.filter(function(s){return !s.unsubscribed_at;});
-      $('subStats').innerHTML=stat(active.length,'Active')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return x.unsubscribed_at;}).length,'Unsubscribed');
+      $('subStats').innerHTML=stat(active.length,'Active')+stat(SUBS.filter(function(x){return now-new Date(x.created_at).getTime()<7*day;}).length,'This week')+stat(SUBS.filter(function(x){return x.unsubscribed_at;}).length,'Unsubscribed'); animateStatCards($('subStats'));
       $('subBox').innerHTML=SUBS.length?'<table class="tbl"><tr><th>Email</th><th>Channel</th><th>Source</th><th>Date</th><th>Status</th></tr>'+SUBS.map(function(s){return '<tr'+(s.unsubscribed_at?' style="opacity:.5"':'')+'><td>'+esc(s.email)+'</td><td>'+esc(chanLabel(s.channel))+'</td><td>'+esc(s.source||'')+'</td><td>'+new Date(s.created_at).toLocaleDateString('en-US')+'</td><td>'+(s.unsubscribed_at?'Unsubscribed':'Active')+'</td></tr>';}).join('')+'</table>':'<p class="muted">No subscribers yet. When someone signs up on the site, they appear here.</p>';
       if($('saleCount')) $('saleCount').textContent=active.length+' active subscribers';
       saleCtaOptions();
@@ -2336,7 +2405,7 @@
   /* ===== NAV ===== */
   var loaders={ inicio:loadInicio, trafico:loadTrafico, ventas:loadVentas, emails:loadSubs, mensajes:loadMessages };
   document.querySelectorAll('.side__link[data-view]').forEach(function(btn){ btn.addEventListener('click',function(){
-    var v=btn.dataset.view;
+    var v=btn.dataset.view; ACTIVE_VIEW=v;
     document.querySelectorAll('.side__link[data-view]').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[data-page-view]').forEach(function(s){s.hidden=s.dataset.pageView!==v;});
     if(v==='ventas') markSalesSeen();
