@@ -71,8 +71,13 @@
     .side__link:hover { color:var(--c-cream); background:rgba(255,255,255,.06); }
     .side__link.active { color:var(--c-ink); background:var(--c-golden); }
     .side__badge { margin-left:auto; min-width:22px; height:22px; padding:0 7px; display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; background:var(--c-terracotta); color:var(--c-cream); font-size:.66rem; font-weight:900; letter-spacing:.04em; }
-    .side__foot { margin-top:auto; }
-    .side__user { font-size:.72rem; color:rgba(254,250,232,.5); padding:8px 12px; word-break:break-all; }
+    .side__badge--red { background:#E11D2A; color:#fff; }
+    .side__foot { margin-top:auto; padding-top:12px; border-top:1px solid rgba(254,250,232,.12); }
+    .side__user { display:flex; align-items:center; gap:10px; padding:8px 12px 10px; }
+    .side__avatar { flex:0 0 auto; width:32px; height:32px; border-radius:50%; background:var(--c-golden); color:var(--c-ink); display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:900; font-size:.82rem; text-transform:uppercase; }
+    .side__uname { min-width:0; flex:1; font-size:.8rem; font-weight:600; color:rgba(254,250,232,.85); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .side__logout { color:rgba(254,250,232,.6); }
+    .side__logout:hover { color:#fff; background:rgba(225,29,42,.18); }
 
     /* Messages inbox */
     .msg-filter { padding:8px 12px; border:var(--bw-1) solid var(--c-ink); border-radius:var(--radius-sm); background:var(--c-cream); font:inherit; font-size:.85rem; cursor:pointer; }
@@ -425,14 +430,17 @@
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
     <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Home</button>
     <button class="side__link" data-view="trafico"><span class="emoji-icon">🎯</span> Traffic</button>
-    <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Sales</button>
+    <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Sales<span class="side__badge side__badge--red" id="salesCount" hidden>0</span></button>
     <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-image"/></svg> Content</button>
     <button class="side__link" data-view="emails"><svg class="icon"><use href="#i-mail"/></svg> Subscribers</button>
-    <button class="side__link" data-view="mensajes"><span class="emoji-icon">💬</span> Messages<span class="side__badge" id="msgUnread" hidden>0</span></button>
+    <button class="side__link" data-view="mensajes"><span class="emoji-icon">💬</span> Messages<span class="side__badge side__badge--red" id="msgUnread" hidden>0</span></button>
     <button class="side__link" data-view="ajustes"><span class="emoji-icon">👤</span> Settings</button>
     <div class="side__foot">
-      <div class="side__user" id="whoami"></div>
-      <button class="side__link" id="logoutBtn"><svg class="icon"><use href="#i-arrow-left"/></svg> Log out</button>
+      <div class="side__user" id="whoami">
+        <span class="side__avatar" id="whoamiAvatar"></span>
+        <span class="side__uname" id="whoamiName"></span>
+      </div>
+      <button class="side__link side__logout" id="logoutBtn"><svg class="icon"><use href="#i-arrow-left"/></svg> Log out</button>
     </div>
   </nav>
 
@@ -692,7 +700,7 @@
       <div class="panel"><h2>Visits</h2>
         <div class="tf-tabs" data-tf-for="traf"><button data-tf="hora">Hour</button><button data-tf="dia" class="active">Day</button><button data-tf="semana">Week</button><button data-tf="mes">Month</button><button data-tf="ano">Year</button></div>
         <div class="chart-box chart-box--sm"><canvas id="trafChart"></canvas></div></div>
-      <div class="panel" style="margin-top:24px"><h2>Conversion funnel</h2><p class="panel__hint">From landing to sale (all-time). Each step shows how many got there and the % that continued from the step before — where you lose people.</p><div id="funnel"><p class="muted">Loading…</p></div></div>
+      <div class="panel" style="margin-top:24px"><h2>Conversion funnel</h2><p class="panel__hint">From landing to sale (all-time). Each step shows how many got there and the % of all visitors who reached it — where you lose people.</p><div id="funnel"><p class="muted">Loading…</p></div></div>
       <div class="ov-grid" style="margin-top:24px">
         <div class="panel"><h2>Countries by traffic</h2><p class="panel__hint">Fills up as people visit the site.</p><div id="trafCountries"></div></div>
         <div class="panel"><h2>Most visited pages</h2><div id="trafTop"><p class="muted">Loading…</p></div></div>
@@ -1737,6 +1745,15 @@
     }catch(e){}
     $('ovIngresos').textContent = money0(revenue);
     $('ovVentas').textContent = sales.toLocaleString('en-US');
+    var salesBadge = $('salesCount');
+    if(salesBadge){
+      // Count purchases directly (exact head count) so the badge is reliable and
+      // matches the funnel's "Purchased" step, instead of depending on the row fetch above.
+      var salesN = sales;
+      try{ var pc = await sb.from('purchases').select('id',{count:'exact',head:true}); if(!pc.error && pc.count!=null) salesN = pc.count; }catch(e){}
+      salesBadge.textContent = salesN.toLocaleString('en-US');
+      salesBadge.hidden = false;
+    }
 
     CHARTS.earnings(activeTf('earnings'));
 
@@ -1856,12 +1873,11 @@
     var top=steps[0].n||1;
     box.innerHTML='<div class="funnel">'+steps.map(function(s,i){
       var w=Math.max(Math.round((s.n/top)*100),3);
-      var prev=i>0?steps[i-1].n:0;
-      var conv=i>0?(prev?Math.round(s.n/prev*100):0):null;
+      var conv=i>0?(top?Math.round(s.n/top*100):0):null;
       return '<div class="funnel-step"><div class="funnel-step__head">'+s.label+'</div>'
         +'<div class="funnel-bar-wrap"><div class="funnel-bar" style="width:'+w+'%"></div></div>'
         +'<div class="funnel-step__right"><span class="funnel-step__n">'+s.n.toLocaleString('en-US')+'</span>'
-        +(conv!=null?'<span class="funnel-step__conv">'+conv+'% of prev</span>':'<span class="funnel-step__conv">start</span>')
+        +(conv!=null?'<span class="funnel-step__conv">'+conv+'% of visits</span>':'<span class="funnel-step__conv">start</span>')
         +'</div></div>';
     }).join('')+'</div>';
   }
@@ -2337,7 +2353,8 @@
     ADMIN_UID = session && session.user ? session.user.id : null;
     var email=session&&session.user?session.user.email:'';
     var name=friendlyNameFromEmail(email)||email;
-    $('whoami').textContent=name;
+    $('whoamiName').textContent=name;
+    $('whoamiAvatar').textContent=(name||email||'?').trim().charAt(0).toUpperCase();
     $('greetTitle').textContent=name?('Welcome back, '+name+' 🐾'):'Welcome back! 🐾';
     $('setEmail').value=email;
     initBell();
