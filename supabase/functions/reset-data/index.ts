@@ -6,8 +6,8 @@
 //     body:    { confirm: "RESET" }
 //   → verifies the bearer token belongs to a profile with is_admin = true
 //   → deletes ALL rows from, in FK-safe order:
-//        review_tokens → purchases → subscribers → pageviews
-//   → returns { ok:true, deleted: { review_tokens, purchases, subscribers, pageviews } }
+//        review_tokens → purchases → subscribers → pageviews → cart_events → checkout_events
+//   → returns { ok:true, deleted: { review_tokens, purchases, subscribers, pageviews, cart_events, checkout_events } }
 //
 // What it does NOT touch: products, articles, videos, reviews, messages, blog_*.
 //
@@ -24,7 +24,7 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
 // Tables wiped, in dependency order (children before parents).
-const RESET_TABLES = ["review_tokens", "purchases", "subscribers", "pageviews"];
+const RESET_TABLES = ["review_tokens", "purchases", "subscribers", "pageviews", "cart_events", "checkout_events"];
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",

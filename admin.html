@@ -2197,7 +2197,7 @@
         if(!r.ok||!data.ok) throw new Error(data.reason||('HTTP '+r.status));
         var d=data.deleted||{};
         close();
-        alert('Datos borrados:\n• Suscriptores: '+(d.subscribers||0)+'\n• Compras: '+(d.purchases||0)+'\n• Visitas: '+(d.pageviews||0));
+        alert('Datos borrados:\n• Suscriptores: '+(d.subscribers||0)+'\n• Compras: '+(d.purchases||0)+'\n• Visitas: '+(d.pageviews||0)+'\n• Añadidos al carrito: '+(d.cart_events||0)+'\n• Checkouts iniciados: '+(d.checkout_events||0));
         if(typeof loadInicio==='function') loadInicio();
       }catch(err){
         $('resetStatus').textContent='Error: '+(err.message||err);
