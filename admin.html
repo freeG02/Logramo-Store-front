@@ -428,7 +428,7 @@
   <nav class="side" id="sideNav">
     <button type="button" class="side-close" id="sideClose" aria-label="Close menu">✕</button>
     <div class="side__logo"><svg viewBox="0 0 193.55 28.54"><use href="#logo-logramo"/></svg></div>
-    <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-grid"/></svg> Home</button>
+    <button class="side__link active" data-view="inicio"><svg class="icon"><use href="#i-home"/></svg> Home</button>
     <button class="side__link" data-view="trafico"><span class="emoji-icon">🎯</span> Traffic</button>
     <button class="side__link" data-view="ventas"><svg class="icon"><use href="#i-cart"/></svg> Sales<span class="side__badge side__badge--red" id="salesCount" hidden>0</span></button>
     <button class="side__link" data-view="contenido"><svg class="icon"><use href="#i-image"/></svg> Content</button>
@@ -858,7 +858,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="partials.js?v=20260768"></script>
+<script src="partials.js?v=20260769"></script>
 <script>
 (function(){
   var SUPABASE_URL='https://eopobchvkfvkkrtrzeyu.supabase.co';
@@ -1717,6 +1717,27 @@
     return rate ? n / rate : n; // unknown currency → leave as-is
   }
   function money0(n){ return '$'+Number(n||0).toFixed(2); }
+
+  // Sales badge = a "new sales" notifier: shows how many purchases have landed
+  // since the last time the Sales tab was opened. Hides at zero (never shows 0),
+  // resets when the Sales button is clicked.
+  var SALES_SEEN_KEY = 'logramo_sales_seen';
+  var lastSalesTotal = 0;
+  async function refreshSalesBadge(){
+    var badge = $('salesCount'); if(!badge) return;
+    var total = 0;
+    try{ var pc = await sb.from('purchases').select('id',{count:'exact',head:true}); if(pc.error || pc.count==null) return; total = pc.count; }catch(e){ return; }
+    lastSalesTotal = total;
+    var seen = parseInt(localStorage.getItem(SALES_SEEN_KEY), 10);
+    if(!isFinite(seen) || seen > total){ seen = total; localStorage.setItem(SALES_SEEN_KEY, String(total)); } // first run / table shrank → re-baseline, no badge
+    var fresh = total - seen;
+    if(fresh > 0){ badge.textContent = fresh.toLocaleString('en-US'); badge.hidden = false; }
+    else { badge.hidden = true; }
+  }
+  function markSalesSeen(){
+    localStorage.setItem(SALES_SEEN_KEY, String(lastSalesTotal));
+    var badge = $('salesCount'); if(badge) badge.hidden = true;
+  }
   function timeAgo(iso){
     var d=new Date(iso), now=new Date();
     var s=Math.floor((now-d)/1000);
@@ -1745,15 +1766,7 @@
     }catch(e){}
     $('ovIngresos').textContent = money0(revenue);
     $('ovVentas').textContent = sales.toLocaleString('en-US');
-    var salesBadge = $('salesCount');
-    if(salesBadge){
-      // Count purchases directly (exact head count) so the badge is reliable and
-      // matches the funnel's "Purchased" step, instead of depending on the row fetch above.
-      var salesN = sales;
-      try{ var pc = await sb.from('purchases').select('id',{count:'exact',head:true}); if(!pc.error && pc.count!=null) salesN = pc.count; }catch(e){}
-      salesBadge.textContent = salesN.toLocaleString('en-US');
-      salesBadge.hidden = false;
-    }
+    refreshSalesBadge();
 
     CHARTS.earnings(activeTf('earnings'));
 
@@ -1822,7 +1835,7 @@
       if($('onlineList')) $('onlineList').innerHTML='<p class="muted">Live presence not set up yet — apply the presence migration. ('+esc(e.message||'')+')</p>';
     }
   }
-  function startPresence(){ if(PRESENCE_TIMER) return; loadPresence(); PRESENCE_TIMER=setInterval(loadPresence,15000); }
+  function startPresence(){ if(PRESENCE_TIMER) return; loadPresence(); refreshSalesBadge(); PRESENCE_TIMER=setInterval(function(){ loadPresence(); refreshSalesBadge(); },15000); }
 
   /* ===== TRÁFICO ===== */
   var TRAF_ROWS=[];
@@ -2326,6 +2339,7 @@
     var v=btn.dataset.view;
     document.querySelectorAll('.side__link[data-view]').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[data-page-view]').forEach(function(s){s.hidden=s.dataset.pageView!==v;});
+    if(v==='ventas') markSalesSeen();
     if(loaders[v]) loaders[v]();
     setDrawer(false);
   }); });
