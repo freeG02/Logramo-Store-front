@@ -1659,9 +1659,10 @@
     earnings: async function(tf){
       var L=tfLabels(tf);
       var pv = await pvAll('created_at');
-      var pur = await allRows('purchases','created_at,amount');
+      var pur = await allRows('purchases','created_at,amount,currency');
+      await fxReady;
       var visits = bucketSum(tf, pv);
-      var revenue = bucketSum(tf, pur, function(r){return r.amount;});
+      var revenue = bucketSum(tf, pur, function(r){return toUsd(r.amount, r.currency);});
       var sales = bucketSum(tf, pur);
       lineChart('earningsChart',L,[
         dset('Visits', visits, '#3F7FD0'),
@@ -1677,8 +1678,9 @@
     },
     ventas: async function(tf){
       var L=tfLabels(tf);
-      var pur = await allRows('purchases','created_at,amount');
-      var revenue = bucketSum(tf, pur, function(r){return r.amount;});
+      var pur = await allRows('purchases','created_at,amount,currency');
+      await fxReady;
+      var revenue = bucketSum(tf, pur, function(r){return toUsd(r.amount, r.currency);});
       lineChart('ventasChart',L,[ dset('Revenue ($)', revenue, '#5E8C3E') ]);
     }
   };
@@ -1691,6 +1693,21 @@
   function countryFlag(v){ if(v&&v.length===2) return '<img class="flag" src="https://flagcdn.com/40x30/'+v.toLowerCase()+'.png" alt="" loading="lazy">'; return '<span class="flag" style="display:inline-flex;align-items:center;justify-content:center;font-size:.9rem">🌐</span>'; }
   function countryName(v){ if(v&&v.length===2) return COUNTRY_ES[v.toUpperCase()]||v.toUpperCase(); return v; }
   function miniRows(arr){ return arr.map(function(x){ return '<div class="mini-row">'+(x.flag?x.flag:'')+'<div class="mini-row__name">'+esc(x.name)+(x.sub?'<div class="mini-row__sub">'+esc(x.sub)+'</div>':'')+'</div><span class="mini-row__val">'+esc(String(x.val||''))+'</span></div>'; }).join(''); }
+  // ── Dashboard currency: each purchase is charged/stored in the buyer's local
+  // currency (DOP, ARS, COP, …). Convert every amount to USD so the whole
+  // dashboard reports one consistent currency. FX = live USD→ccy rates.
+  var FX_USD = { USD: 1 };
+  var fxReady = fetch('https://open.er-api.com/v6/latest/USD')
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(j && j.rates) FX_USD = j.rates; })
+    .catch(function(){ /* keep raw amounts if FX is unreachable */ });
+  function toUsd(amount, ccy){
+    var n = Number(amount) || 0;
+    var c = String(ccy || 'USD').toUpperCase();
+    if(c === 'USD' || !c) return n;
+    var rate = FX_USD[c];
+    return rate ? n / rate : n; // unknown currency → leave as-is
+  }
   function money0(n){ return '$'+Number(n||0).toFixed(2); }
   function timeAgo(iso){
     var d=new Date(iso), now=new Date();
@@ -1714,6 +1731,8 @@
     var revenue = 0, sales = 0, purchases = [];
     try{
       purchases = await allRows('purchases','email,payer_name,product_id,amount,currency,status,created_at');
+      await fxReady;
+      purchases.forEach(function(p){ p.amount = toUsd(p.amount, p.currency); });
       purchases.forEach(function(p){ revenue += Number(p.amount||0); sales += 1; });
     }catch(e){}
     $('ovIngresos').textContent = money0(revenue);
@@ -1901,6 +1920,8 @@
   async function loadVentas(){
     var purchases = [];
     try{ purchases = await allRows('purchases','email,payer_name,product_id,amount,currency,status,paypal_order_id,stripe_session_id,country,created_at'); }catch(e){}
+    await fxReady;
+    purchases.forEach(function(p){ p.amount = toUsd(p.amount, p.currency); });
 
     var paid = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='' || s==='paid' || s==='captured' || s==='completed'; });
     var pending = purchases.filter(function(p){ var s=String(p.status||'').toLowerCase(); return s==='pending' || s==='processing'; });
